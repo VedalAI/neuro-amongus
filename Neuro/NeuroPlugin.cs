@@ -68,6 +68,9 @@ public partial class NeuroPlugin : BasePlugin
         { new Vector2 { x = 5f, y = -8 }, "Admin" },
     };
 
+    public float roundStartTime = 0f; // in seconds
+    public float lastPlayerUpdateTime = 0f; // in seconds, records the last time PlayerControl.FixedUpdate was called
+
     public static string GetLocationFromPosition(Vector2 position)
     {
         float closestDistance = Mathf.Infinity;
@@ -367,6 +370,10 @@ public partial class NeuroPlugin : BasePlugin
                 }
             }*/
 
+            // Keep track of the amount of time it has been since the last time we were in this function
+            float timeSinceLastUpdate = Time.timeSinceLevelLoad - PluginSingleton<NeuroPlugin>.Instance.lastPlayerUpdateTime;
+            PluginSingleton<NeuroPlugin>.Instance.lastPlayerUpdateTime = Time.timeSinceLevelLoad;
+
             // TODO: Fix this
             PluginSingleton<NeuroPlugin>.Instance.deadBodies = GameObject.FindObjectsOfType<DeadBody>();
 
@@ -412,7 +419,23 @@ public partial class NeuroPlugin : BasePlugin
             {
                 if (PlayerControl.LocalPlayer == playerControl) continue;
 
-                if (playerControl.inVent || playerControl.Data.IsDead) continue;
+                if (playerControl.Data.IsDead) continue;
+
+                // Watch for players venting right in front of us
+                if (playerControl.inVent)
+                {
+                    // Check the last place we saw the player
+                    LastSeenPlayer previousSighting = PluginSingleton<NeuroPlugin>.Instance.playerLocations[playerControl];
+
+                    // If we were able to see them during our last update (~30 ms ago), and now they're in a vent, we must have seen them enter the vent
+                    if (previousSighting.time > Time.timeSinceLevelLoad - (2 * timeSinceLastUpdate))
+                    {
+                        previousSighting.sawVent = true; // Remember that we saw this player vent
+                        Debug.Log(playerControl.name + " vented right in front of me!");
+                    }
+
+                    continue; // Do not consider players in vents as recently seen
+                }
 
                 if(Vector2.Distance(playerControl.transform.position, PlayerControl.LocalPlayer.transform.position) < 5f)
                 {
@@ -431,6 +454,8 @@ public partial class NeuroPlugin : BasePlugin
                             PluginSingleton<NeuroPlugin>.Instance.playerLocations[playerControl].location = NeuroPlugin.GetLocationFromPosition(playerControl.transform.position);
                             PluginSingleton<NeuroPlugin>.Instance.playerLocations[playerControl].time = Time.timeSinceLevelLoad;
                             PluginSingleton<NeuroPlugin>.Instance.playerLocations[playerControl].dead = false;
+                            PluginSingleton<NeuroPlugin>.Instance.playerLocations[playerControl].gameTimeVisible += timeSinceLastUpdate; // Keep track of total time we've been able to see this player
+                            PluginSingleton<NeuroPlugin>.Instance.playerLocations[playerControl].roundTimeVisible += timeSinceLastUpdate; // Keep track of time this round we've been able to see this player
 
                             Debug.Log(playerControl.name + " is in " + NeuroPlugin.GetLocationFromPosition(playerControl.transform.position));
                         }
@@ -516,7 +541,38 @@ public partial class NeuroPlugin : BasePlugin
                 else
                 {
                     Debug.Log(playerLocation.Key.name + " was last seen in " + playerLocation.Value.location + " " + (Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time)).ToString() + " seconds ago.");
+
+                    // Report if we saw the player vent right in front of us
+                    if (playerLocation.Value.sawVent)
+                        Debug.Log("I saw " + playerLocation.Key.name + " vent right in front of me!");
+
+                    // Determine how much time the player was visible to Neuro-sama for
+                    float gamePercentage = playerLocation.Value.gameTimeVisible / Time.timeSinceLevelLoad;
+                    float roundPercentage = playerLocation.Value.roundTimeVisible / (Time.timeSinceLevelLoad - PluginSingleton<NeuroPlugin>.Instance.roundStartTime);
+                    TimeSpan gameTime = new TimeSpan(0, 0, (int) Math.Floor(playerLocation.Value.gameTimeVisible));
+                    TimeSpan roundTime = new TimeSpan(0, 0, (int) Math.Floor(playerLocation.Value.roundTimeVisible));
+                    Debug.Log(String.Format("{0} has spent {1} minutes and {2} seconds near me this game ({3:0.0}% of the game)", playerLocation.Key.name, gameTime.Minutes,  gameTime.Seconds,  gamePercentage * 100.0f));
+                    Debug.Log(String.Format("{0} has spent {1} minutes and {2} seconds near me this round ({3:0.0}% of the round)", playerLocation.Key.name, roundTime.Minutes, roundTime.Seconds, roundPercentage * 100.0f));
                 }
+                }
+            }
+        }
+
+    [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
+    public static class MeetingEndPatch
+    {
+        public static void Postfix (ExileController __instance)
+        {
+            Debug.Log("NEURO: MEETING IS FINISHED");
+
+            // Keep track of what time the round started
+            PluginSingleton<NeuroPlugin>.Instance.roundStartTime = Time.timeSinceLevelLoad;
+
+            // Reset our count of how much time per round we've spent near each other player
+            foreach (var playerLocation in PluginSingleton<NeuroPlugin>.Instance.playerLocations)
+            {
+                if (playerLocation.Key == PlayerControl.LocalPlayer || playerLocation.Value.location == "") continue;
+                playerLocation.Value.roundTimeVisible = 0f;
             }
         }
     }
@@ -527,12 +583,18 @@ public partial class NeuroPlugin : BasePlugin
         public float time;
         public bool dead;
         public PlayerControl[] witnesses;
+        public float gameTimeVisible; // Total time that we've been able to see this player for
+        public float roundTimeVisible; // Total time this round that we've been able to see this player for
+        public bool sawVent; // If we've caught this player venting in front of us before
 
         public LastSeenPlayer(string location, float time, bool dead)
         {
             this.location = location;
             this.time = time;
             this.dead = dead;
+            this.gameTimeVisible = 0f;
+            this.roundTimeVisible = 0f;
+            this.sawVent = false;
             this.witnesses = null;
         }
     }
