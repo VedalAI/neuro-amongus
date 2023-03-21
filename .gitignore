@@ -130,6 +130,10 @@ $RECYCLE.BIN/
 # Mac desktop service store files
 .DS_Store
 
+# JetBrains Rider
+.idea/
+*.sln.iml
+
 _NCrunch*
 
 .vs/
