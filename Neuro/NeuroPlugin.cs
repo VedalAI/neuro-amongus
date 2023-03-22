@@ -1,11 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using AmongUs.GameOptions;
 using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Neuro.Utils;
@@ -23,19 +22,15 @@ public partial class NeuroPlugin : BasePlugin
 
     public Vision vision = new();
 
-    public bool hasStarted = false; // TODO: This should be grabbed from Among Us when needed and not stored
-
     public Pathfinding pathfinding = new();
 
     public Vector2 directionToNearestTask = new();
     public Vector2 moveDirection = new();
 
-    public Vector2[] currentPath = new Vector2[0];
+    public Vector2[] currentPath = Array.Empty<Vector2>();
     public int pathIndex = -1;
 
     public LineRenderer arrow;
-
-    public List<PlayerTask> tasks = new(); // TODO: This should be grabbed from Among Us when needed and not stored
 
     public override void Load()
     {
@@ -126,7 +121,7 @@ public partial class NeuroPlugin : BasePlugin
                 nextWaypoint = currentPath[pathIndex];
             }
 
-            directionToNearestTask = (nextWaypoint - (Vector2) PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+            directionToNearestTask = (nextWaypoint - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
 
 
             LineRenderer renderer = arrow;

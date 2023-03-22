@@ -22,7 +22,7 @@ public class Pathfinding
 
                 //Debug.Log(point.ToString());
 
-                Collider2D[] cols = Physics2D.OverlapCircleAll(point, 0.25f, LayerMask.GetMask(new[] { "Ship", "ShortObjects" }));
+                Collider2D[] cols = Physics2D.OverlapCircleAll(point, 0.25f, LayerMask.GetMask(new[] {"Ship", "ShortObjects"}));
                 List<Collider2D> colsList = new List<Collider2D>();
                 foreach (Collider2D col in cols)
                 {
@@ -78,9 +78,9 @@ public class Pathfinding
 
         foreach (Node node in closedSet.ToList())
         {
-            GameObject test = new GameObject("Test");
+            GameObject test = new("Test");
             //Debug.Log(test.transform);
-            test.transform.position = (Vector3)node.worldPosition;
+            test.transform.position = node.worldPosition;
 
             LineRenderer renderer = test.AddComponent<LineRenderer>();
             renderer.SetPosition(0, test.transform.position);
@@ -95,7 +95,6 @@ public class Pathfinding
         {
             if (!closedSet.Contains(node)) node.accessible = false;
         }
-
     }
 
     public Node NodeFromWorldPoint(Vector2 position)
@@ -119,35 +118,38 @@ public class Pathfinding
         queue.Enqueue(closestNode);
         nodes.Add(closestNode);
 
-        while(!closestNode.accessible)
+        while (!closestNode.accessible)
         {
             closestNode = queue.Dequeue();
             float closestDistance = Mathf.Infinity;
             Node closestNeighbour = null;
-            foreach(Node neighbour in GetNeighbours(closestNode))
+            foreach (Node neighbour in GetNeighbours(closestNode))
             {
-                if(neighbour.accessible)
+                if (neighbour.accessible)
                 {
                     float distance = Vector2.Distance(position, neighbour.worldPosition);
-                    if(distance < closestDistance)
+                    if (distance < closestDistance)
                     {
                         closestNeighbour = neighbour;
                         closestDistance = distance;
                     }
-                } else
+                }
+                else
                 {
-                    if(!nodes.Contains(neighbour))
+                    if (!nodes.Contains(neighbour))
                     {
                         queue.Enqueue(neighbour);
                         nodes.Add(neighbour);
                     }
                 }
             }
-            if(closestNeighbour != null)
+
+            if (closestNeighbour != null)
             {
                 closestNode = closestNeighbour;
             }
         }
+
         return closestNode;
     }
 
@@ -198,11 +200,11 @@ public class Pathfinding
 
         GameObject endNodeObj = new GameObject("Test");
         //Debug.Log(test.transform);
-        endNodeObj.transform.position = (Vector3)targetNode.worldPosition;
+        endNodeObj.transform.position = targetNode.worldPosition;
 
         LineRenderer renderer2 = endNodeObj.AddComponent<LineRenderer>();
-        renderer2.SetPosition(0, (Vector3)targetNode.worldPosition);
-        renderer2.SetPosition(1, (Vector3)targetNode.worldPosition + new Vector3(0f, 0.3f, 0));
+        renderer2.SetPosition(0, targetNode.worldPosition);
+        renderer2.SetPosition(1, (Vector3) targetNode.worldPosition + new Vector3(0f, 0.3f, 0));
         renderer2.widthMultiplier = 0.3f;
         renderer2.positionCount = 2;
         renderer2.startColor = Color.blue;
@@ -220,18 +222,19 @@ public class Pathfinding
 
         openSet.Add(startNode);
 
-        while(openSet.Count > 0) {
+        while (openSet.Count > 0)
+        {
             Node currentNode = openSet.RemoveFirst();
 
             closedSet.Add(currentNode);
 
-            if(currentNode == targetNode)
+            if (currentNode == targetNode)
             {
                 pathSuccess = true;
                 break;
             }
 
-            foreach(Node neighbour in GetNeighbours(currentNode))
+            foreach (Node neighbour in GetNeighbours(currentNode))
             {
                 if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
 
@@ -263,15 +266,15 @@ public class Pathfinding
                         openSet.UpdateItem(neighbour);
                     }
                 }
-                    
             }
         }
 
-        if(pathSuccess)
+        if (pathSuccess)
         {
             Debug.Log("Path found successfully.");
             return RetracePath(startNode, targetNode);
-        } else
+        }
+        else
         {
             Debug.Log("Failed to find path");
             return path;
@@ -287,6 +290,7 @@ public class Pathfinding
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
+
         Vector2[] waypoints = SimplifyPath(path);
         Array.Reverse(waypoints);
 
@@ -295,13 +299,7 @@ public class Pathfinding
 
     Vector2[] SimplifyPath(List<Node> path)
     {
-        List<Vector2> waypoints = new List<Vector2>();
-        Vector2 directionOld = Vector2.zero;
-        for (int i = 0; i < path.Count; i++)
-        {
-            waypoints.Add(path[i].worldPosition);
-        }
-        return waypoints.ToArray();
+        return path.Select(p => p.worldPosition).ToArray();
     }
 
     int GetDistance(Node a, Node b)
@@ -328,6 +326,7 @@ public class Pathfinding
             Debug.Log(path[i].ToString());
             renderer.SetPosition(i, path[i]);
         }
+
         renderer.widthMultiplier = 0.2f;
         renderer.startColor = Color.blue;
     }

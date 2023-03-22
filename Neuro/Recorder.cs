@@ -15,20 +15,19 @@ namespace Neuro
     }
 
     [Serializable]
-    public record class Frame(bool isImposter, 
-        float killCooldown, 
-        MyVector2 directionToNearestTask, 
-        bool isEmergencyTask, 
-        MyVector2 directionToNearestVent, 
-        MyVector2 directionToNearestBody, 
-        bool canReport, 
-        List<PlayerRecord> 
-        playerRecords, 
-        MyVector2 direction, 
-        bool report, 
-        bool vent, 
-        bool kill, 
-        bool sabotage, 
+    public record Frame(bool isImposter,
+        float killCooldown,
+        MyVector2 directionToNearestTask,
+        bool isEmergencyTask,
+        MyVector2 directionToNearestVent,
+        MyVector2 directionToNearestBody,
+        bool canReport,
+        List<PlayerRecord> playerRecords,
+        MyVector2 direction,
+        bool report,
+        bool vent,
+        bool kill,
+        bool sabotage,
         bool doors
     );
 

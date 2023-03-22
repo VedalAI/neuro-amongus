@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
 using Reactor.Utilities;
-using System.Collections;
 using BepInEx.Unity.IL2CPP.Utils;
-using UnityEngine;
 
 namespace Neuro.Patches;
 
@@ -10,6 +8,7 @@ namespace Neuro.Patches;
 public static class NormalPlayerTask_Initialize
 {
     static bool done = false;
+
     public static void Postfix(NormalPlayerTask __instance)
     {
         if (done) return;

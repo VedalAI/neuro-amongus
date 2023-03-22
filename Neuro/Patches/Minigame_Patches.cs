@@ -2,6 +2,7 @@
 using Reactor.Utilities;
 using System.Collections;
 using BepInEx.Unity.IL2CPP.Utils;
+using Neuro.Utils;
 using UnityEngine;
 using Neuro.Utils;
 using Il2CppSystem;
@@ -26,7 +27,7 @@ public static class Minigame_Begin
         yield return new WaitForSeconds(time);
 
         //task.Complete();
-        if (task.TryCast<NormalPlayerTask>() is NormalPlayerTask normalPlayerTask)
+        if (task.TryCast<NormalPlayerTask>() is { } normalPlayerTask)
         {
             normalPlayerTask.NextStep();
         }
@@ -35,8 +36,8 @@ public static class Minigame_Begin
             Debug.Log("Not Normal Player Task");
             task.Complete();
         }
+
         minigame.Close();
-        PluginSingleton<NeuroPlugin>.Instance.inMinigame = false;
 
         GetPathToNextTask(task);
     }
@@ -62,10 +63,11 @@ public static class Minigame_Begin
         {
             nextTask = lastTask;
         }
+
         if (nextTask != null)
         {
             Debug.Log("Next task isn't null");
-            PluginSingleton<NeuroPlugin>.Instance.currentPath = PluginSingleton<NeuroPlugin>.Instance.pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations[0]);
+            PluginSingleton<NeuroPlugin>.Instance.currentPath = PluginSingleton<NeuroPlugin>.Instance.pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
             PluginSingleton<NeuroPlugin>.Instance.pathIndex = 0;
 
             //PluginSingleton<NeuroPlugin>.Instance.pathfinding.DrawPath(PluginSingleton<NeuroPlugin>.Instance.currentPath))
