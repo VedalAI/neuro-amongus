@@ -6,24 +6,24 @@ namespace Neuro.Utils;
 
 public static class Methods
 {
-    public static string GetLocationFromPosition(Vector2 position, bool includeHallways = false)
+    public static string GetLocationFromPosition(Vector2 position)
     {
         float closestDistance = Mathf.Infinity;
         PlainShipRoom closestLocation = null;
+        string nearPrefix = "outside near "; // If we're not in any rooms/hallways, we're "outside"
 
         if (ShipStatus.Instance == null) // In case this is called from the lobby
-            return "";
+            return "the lobby";
 
         foreach (PlainShipRoom room in ShipStatus.Instance.AllRooms)
         {
-            // Only include actual rooms (not hallways), if required
-            if (!includeHallways && room.RoomId == SystemTypes.Hallway)
-                continue;
-
             Collider2D collider = room.roomArea;
             if (collider.OverlapPoint(position))
             {
-                return room.DisplayName();
+                if (room.RoomId == SystemTypes.Hallway)
+                    nearPrefix = "a hallway near "; // keep looking for the nearest room
+                else
+                    return room.DisplayName(); // If we're inside a proper room, ignore the nearPrefix
             }
             else
             {
@@ -35,22 +35,14 @@ public static class Methods
                 }
             }
         }
-        
-        return closestLocation.DisplayName();
+
+        // We're not in an actual room, so say which room we're nearest to
+        return nearPrefix + closestLocation.DisplayName();
     }
 
     // Gets the name of a room, as displayed by the game's user interface
-    // Calling PlainShipRoom.RoomId.ToString() usually gives the correct name, but there are a few rooms for which it
-    // gives a different name than the game's UI shows (i.e., "LifeSupp" instead of "O2"); this function corrects this
     public static string DisplayName (this PlainShipRoom room)
     {
-        switch (room.RoomId)
-        {
-            case SystemTypes.LifeSupp: return "O2";
-            case SystemTypes.Nav: return "Navigation";
-            case SystemTypes.Decontamination2: return "Upper Decontamination"; // Used on Polus
-            case SystemTypes.Decontamination3: return "Lower Decontamination"; // Used on Polus
-            default: return Regex.Replace(room.RoomId.ToString(), "(\\B[A-Z])", " $1"); // Adds spaces to CamelCase strings
-        }
+        return TranslationController.Instance.GetString(room.RoomId);
     }
 }
