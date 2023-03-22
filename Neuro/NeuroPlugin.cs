@@ -8,6 +8,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using Neuro.Utils;
 using UnityEngine;
 using Reactor;
 
@@ -22,7 +23,7 @@ public partial class NeuroPlugin : BasePlugin
 
     public Vision vision = new();
 
-    public bool hasStarted = false;
+    public bool hasStarted = false; // TODO: This should be grabbed from Among Us when needed and not stored
 
     public Pathfinding pathfinding = new();
 
@@ -34,7 +35,7 @@ public partial class NeuroPlugin : BasePlugin
 
     public LineRenderer arrow;
 
-    public List<PlayerTask> tasks = new();
+    public List<PlayerTask> tasks = new(); // TODO: This should be grabbed from Among Us when needed and not stored
 
     public override void Load()
     {
@@ -105,6 +106,8 @@ public partial class NeuroPlugin : BasePlugin
 
     public bool MovePlayer(ref Vector2 direction)
     {
+        // TODO: Move to separate MonoBehaviour for handling movement
+
         moveDirection = direction;
         if (currentPath.Length > 0 && pathIndex != -1)
         {
@@ -143,27 +146,32 @@ public partial class NeuroPlugin : BasePlugin
 
     public void MeetingBegin()
     {
+        // TODO: Use events to invoke vision.ReportFindings or invoke it directly from the patch, don't route through NeuroPlugin
         Debug.Log("NEURO: MEETING CALLED");
         vision.ReportFindings();
     }
 
     public void MeetingEnd()
     {
+        // TODO: Use events to invoke vision.MeetingEnd or invoke it directly from the patch, don't route through NeuroPlugin
         Debug.Log("NEURO: MEETING IS FINISHED");
         vision.MeetingEnd();
     }
 
     public IEnumerator EvaluatePath(NormalPlayerTask initial)
     {
-        currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations[0]);
+        // TODO: Move to a separate MonoBehaviour for handling tasks
+
+        currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
         pathIndex = 0;
 
         while (true)
         {
             yield return new WaitForSeconds(1);
 
-            PlayerTask task = PlayerControl.LocalPlayer.myTasks[0];
+            PlayerTask task = PlayerControl.LocalPlayer.myTasks.At(0);
 
+            // TODO: Get the nearest location from all tasks instead of the first location of the next task
             PlayerTask nextTask = null;
             if (task.IsComplete)
             {
@@ -186,7 +194,7 @@ public partial class NeuroPlugin : BasePlugin
             if (nextTask != null)
             {
                 Debug.Log("Next task isn't null");
-                currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations[0]);
+                currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
                 pathIndex = 0;
 
                 //pathfinding.DrawPath(currentPath);
