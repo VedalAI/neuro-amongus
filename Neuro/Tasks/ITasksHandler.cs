@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Neuro.Tasks;
 
-public interface ITasksHandler : IContextAcceptor
+public interface ITasksHandler : IContextAccepter
 {
     public IEnumerator EvaluatePath(NormalPlayerTask task);
 

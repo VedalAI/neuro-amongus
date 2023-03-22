@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Neuro.DependencyInjection;
-using Neuro.Utils;
+using Neuro.Utilities;
 using Neuro.Vision.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -26,6 +26,8 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
 
     public void FixedUpdate()
     {
+        if (MeetingHud.Instance) return;
+
         // TODO: Fix this
         // I know what the problem is: Line 40 you are getting the position of the player which is not the same as the position of the body
         deadBodies = FindObjectsOfType<DeadBody>();
@@ -45,7 +47,7 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
             if (distance < 3f)
             {
                 PlayerControl playerControl = playerControls[deadBody.ParentId];
-                playerLocations[playerControl].location = Methods.GetLocationFromPosition(playerControl.transform.position);
+                playerLocations[playerControl].location = GetLocationFromPosition(playerControl.transform.position);
                 if (!playerLocations[playerControl].dead)
                 {
                     playerLocations[playerControl].time = Time.timeSinceLevelLoad;
@@ -64,7 +66,7 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
 
                 playerLocations[playerControl].dead = true;
 
-                Debug.Log(playerControl.name + " is dead in " + Methods.GetLocationFromPosition(playerControl.transform.position));
+                Debug.Log(playerControl.name + " is dead in " + GetLocationFromPosition(playerControl.transform.position));
             }
         }
 
@@ -105,13 +107,13 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
                 {
                     if (hits.At(0).collider == playerControl.Collider)
                     {
-                        playerLocations[playerControl].location = Methods.GetLocationFromPosition(playerControl.transform.position);
+                        playerLocations[playerControl].location = GetLocationFromPosition(playerControl.transform.position);
                         playerLocations[playerControl].time = Time.timeSinceLevelLoad;
                         playerLocations[playerControl].dead = false;
                         playerLocations[playerControl].gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
                         playerLocations[playerControl].roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
 
-                        Debug.Log(playerControl.name + " is in " + Methods.GetLocationFromPosition(playerControl.transform.position));
+                        Debug.Log(playerControl.name + " is in " + GetLocationFromPosition(playerControl.transform.position));
                     }
                 }
             }
@@ -178,4 +180,52 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
             playerLocation.Value.roundTimeVisible = 0f;
         }
     }
+
+    #region This is moved here temporarily until the changes from #7 are merged
+
+    private static readonly Dictionary<Vector2, string> locationNames = new Dictionary<Vector2, string>()
+    {
+        { new Vector2 { x = 0, y = 0 }, "Cafeteria" },
+        { new Vector2 { x = 9, y = 1 }, "Weapons" },
+        { new Vector2 { x = 6.6f, y = -3.7f }, "O2" },
+        { new Vector2 { x = 17, y = -5 }, "Navigation" },
+        { new Vector2 { x = 9, y = -12.5f }, "Shields" },
+        { new Vector2 { x = 4, y = 15.6f }, "Communications" },
+        { new Vector2 { x = 0, y = -17 }, "Trash Chute" },
+        { new Vector2 { x = 0, y = -12 }, "Storage" },
+        { new Vector2 { x = -9, y = -10f }, "Electrical" },
+        { new Vector2 { x = -15.6f, y = -10.6f }, "Lower Engine" },
+        { new Vector2 { x = -13f, y = -4.4f }, "Security" },
+        { new Vector2 { x = -21f, y = -5.5f }, "Reactor" },
+        { new Vector2 { x = -15.4f, y = 1 }, "Upper Engine" },
+        { new Vector2 { x = -8f, y = -3.5f }, "MedBay" },
+        { new Vector2 { x = 5f, y = -8 }, "Admin" },
+    };
+
+    private static string GetLocationFromPosition(Vector2 position)
+    {
+        float closestDistance = Mathf.Infinity;
+        string closestLocation = "";
+
+        foreach (KeyValuePair<Vector2, string> keyValuePair in locationNames)
+        {
+            float distance = Vector2.Distance(keyValuePair.Key, position);
+            if (distance < 2f)
+            {
+                return keyValuePair.Value;
+            }
+            else
+            {
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestLocation = keyValuePair.Value;
+                }
+            }
+        }
+
+        return closestLocation;
+    }
+
+    #endregion
 }

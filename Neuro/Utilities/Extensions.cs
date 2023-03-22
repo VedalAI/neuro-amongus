@@ -1,4 +1,4 @@
-﻿namespace Neuro.Utils;
+﻿namespace Neuro.Utilities;
 
 public static class Extensions
 {

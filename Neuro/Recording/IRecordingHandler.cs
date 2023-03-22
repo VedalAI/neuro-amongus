@@ -2,6 +2,6 @@
 
 namespace Neuro.Recording;
 
-public interface IRecordingHandler : IContextAcceptor
+public interface IRecordingHandler : IContextAccepter
 {
 }

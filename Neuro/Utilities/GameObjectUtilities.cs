@@ -13,7 +13,7 @@ public static class GameObjectUtilities
         return gameObject.AddComponent<T>();
     }
 
-    public static T CreatePermanentSingleton<T>(IContextProvider context) where T : MonoBehaviour, IContextAcceptor
+    public static T CreatePermanentSingleton<T>(IContextProvider context) where T : MonoBehaviour, IContextAccepter
     {
         T component = CreatePermanentSingleton<T>();
         component.Context = context;

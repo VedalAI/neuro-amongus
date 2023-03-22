@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Neuro.Movement;
 
-public interface IMovementHandler : IContextAcceptor
+public interface IMovementHandler : IContextAccepter
 {
     public Vector2? GetForcedMoveDirection(Vector2 actualDirection);
 
