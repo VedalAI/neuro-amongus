@@ -135,13 +135,6 @@ public class NeuroPlugind : BasePlugin
         return true;
     }
 
-    public void MeetingEnd()
-    {
-        // TODO: Use events to invoke vision.MeetingEnd or invoke it directly from the patch, don't route through NeuroPlugin
-        Debug.Log("NEURO: MEETING IS FINISHED");
-        vision.MeetingEnd();
-    }
-
     public IEnumerator EvaluatePath(NormalPlayerTask initial)
     {
         // TODO: Move to a separate MonoBehaviour for handling tasks
