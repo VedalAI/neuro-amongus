@@ -1,0 +1,68 @@
+﻿using HarmonyLib;
+using Reactor.Utilities;
+using System.Collections;
+using BepInEx.Unity.IL2CPP.Utils;
+using UnityEngine;
+
+namespace Neuro.Patches;
+
+[HarmonyPatch(typeof(Minigame), nameof(Minigame.Begin))]
+public static class Minigame_Begin
+{
+    public static void Postfix(Minigame __instance, PlayerTask task)
+    {
+        Debug.Log("Started task + " + __instance.name);
+        __instance.StartCoroutine(MinigameAutocomplete(__instance, task, 2f));
+    }
+
+    public static IEnumerator MinigameAutocomplete(Minigame minigame, PlayerTask task, float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        //task.Complete();
+        if (task.TryCast<NormalPlayerTask>() is NormalPlayerTask normalPlayerTask)
+        {
+            normalPlayerTask.NextStep();
+        }
+        else
+        {
+            Debug.Log("Not Normal Player Task");
+            task.Complete();
+        }
+        minigame.Close();
+        PluginSingleton<NeuroPlugin>.Instance.inMinigame = false;
+
+        GetPathToNextTask(task);
+    }
+
+    // This should probably be somewhere else
+    public static void GetPathToNextTask(PlayerTask lastTask)
+    {
+        PlayerTask nextTask = null;
+        if (lastTask.IsComplete)
+        {
+            Debug.Log("Task is complete");
+            foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+            {
+                if (!t.IsComplete && t.HasLocation)
+                {
+                    nextTask = t;
+                    Debug.Log(nextTask.name);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            nextTask = lastTask;
+        }
+        if (nextTask != null)
+        {
+            Debug.Log("Next task isn't null");
+            PluginSingleton<NeuroPlugin>.Instance.currentPath = PluginSingleton<NeuroPlugin>.Instance.pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations[0]);
+            PluginSingleton<NeuroPlugin>.Instance.pathIndex = 0;
+
+            //PluginSingleton<NeuroPlugin>.Instance.pathfinding.DrawPath(PluginSingleton<NeuroPlugin>.Instance.currentPath))
+        }
+    }
+}
