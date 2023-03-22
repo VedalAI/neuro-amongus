@@ -24,7 +24,7 @@ public static class Methods
                 else
                     return room.DisplayName(); // If we're inside a proper room, ignore the nearPrefix
             }
-            else
+            else if (room.RoomId != SystemTypes.Hallway)
             {
                 float distance = Vector2.Distance(position, collider.ClosestPoint(position));
                 if (distance < closestDistance)
@@ -34,6 +34,9 @@ public static class Methods
                 }
             }
         }
+
+        if (!closestLocation)
+            return "";
 
         // We're not in an actual room, so say which room we're nearest to
         return nearPrefix + closestLocation.DisplayName();
