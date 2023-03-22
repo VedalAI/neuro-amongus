@@ -20,17 +20,19 @@ public class RecordingHandler : MonoBehaviour, IRecordingHandler
 
     public void FixedUpdate()
     {
+        if (MeetingHud.Instance) return;
+
         // Record values
         Frame frame = new(
             PlayerControl.LocalPlayer.Data.Role.IsImpostor,
             PlayerControl.LocalPlayer.killTimer,
-            directionToNearestTask,
+            Context.MovementHandler.DirectionToNearestTask,
             PlayerControl.LocalPlayer.myTasks.ToArray().Any(PlayerTask.TaskIsEmergency),
             Vector2.zero,
             Context.VisionHandler.DirectionToNearestBody,
             GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.gameObject.activeInHierarchy, // TODO: Check if this is correct
             new List<PlayerRecord>(),
-            moveDirection,
+            Context.MovementHandler.LastMoveDirection,
             false,
             false,
             false,

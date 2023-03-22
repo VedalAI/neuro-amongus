@@ -15,13 +15,13 @@ public class TasksHandler : MonoBehaviour, ITasksHandler
     public IContextProvider Context { get; set; }
 
     // TODO: Move this to movement class
-    private Vector2[] currentPath = Array.Empty<Vector2>();
-    private int pathIndex = -1;
+    public Vector2[] CurrentPath { get; set; } = Array.Empty<Vector2>();
+    public int PathIndex { get; set; } = -1;
 
     public IEnumerator EvaluatePath(NormalPlayerTask initial)
     {
-        currentPath = Context.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
-        pathIndex = 0;
+        CurrentPath = Context.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
+        PathIndex = 0;
 
         while (true)
         {
@@ -50,8 +50,8 @@ public class TasksHandler : MonoBehaviour, ITasksHandler
             if (nextTask != null)
             {
                 Debug.Log("Next task isn't null");
-                currentPath = Context.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
-                pathIndex = 0;
+                CurrentPath = Context.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
+                PathIndex = 0;
 
                 //pathfinding.DrawPath(currentPath);
             }
