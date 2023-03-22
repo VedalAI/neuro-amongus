@@ -12,7 +12,7 @@ The plan is to first allow this plugin to record data from the game, which will 
 - Install Reactor [https://docs.reactor.gg/quick_start/install_reactor](https://docs.reactor.gg/quick_start/install_reactor)
 - Ensure you have the .NET 6.0 SDK [https://dotnet.microsoft.com/download/dotnet/6.0](https://dotnet.microsoft.com/download/dotnet/6.0)
 - Build the plugin using an IDE of your choice, I'm using Visual Studio
-- Add the built Neuro.dll to your plugins folder
+- Add the built Neuro.dll to your plugins folder (I'd recommend adding `<OutputPath>PATH_TO_AMONG_US_FOLDER\Among Us\BepInEx\plugins</OutputPath>` to the PropertyGroup section of the [Neuro.csproj](Neuro/Neuro.csproj) file) 
 - Run Among Us
 
 ## Contributing
