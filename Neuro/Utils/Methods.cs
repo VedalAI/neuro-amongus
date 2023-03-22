@@ -1,51 +1,56 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Neuro.Utils;
 
 public static class Methods
 {
-    private static Dictionary<Vector2, string> locationNames = new Dictionary<Vector2, string>()
-    {
-        { new Vector2 { x = 0, y = 0 }, "Cafeteria" },
-        { new Vector2 { x = 9, y = 1 }, "Weapons" },
-        { new Vector2 { x = 6.6f, y = -3.7f }, "O2" },
-        { new Vector2 { x = 17, y = -5 }, "Navigation" },
-        { new Vector2 { x = 9, y = -12.5f }, "Shields" },
-        { new Vector2 { x = 4, y = 15.6f }, "Communications" },
-        { new Vector2 { x = 0, y = -17 }, "Trash Chute" },
-        { new Vector2 { x = 0, y = -12 }, "Storage" },
-        { new Vector2 { x = -9, y = -10f }, "Electrical" },
-        { new Vector2 { x = -15.6f, y = -10.6f }, "Lower Engine" },
-        { new Vector2 { x = -13f, y = -4.4f }, "Security" },
-        { new Vector2 { x = -21f, y = -5.5f }, "Reactor" },
-        { new Vector2 { x = -15.4f, y = 1 }, "Upper Engine" },
-        { new Vector2 { x = -8f, y = -3.5f }, "MedBay" },
-        { new Vector2 { x = 5f, y = -8 }, "Admin" },
-    };
-
-    public static string GetLocationFromPosition(Vector2 position)
+    public static string GetLocationFromPosition(Vector2 position, bool excludeHallways = true)
     {
         float closestDistance = Mathf.Infinity;
-        string closestLocation = "";
+        PlainShipRoom closestLocation = null;
 
-        foreach (KeyValuePair<Vector2, string> keyValuePair in locationNames)
+        if (ShipStatus.Instance == null) // In case this is called from the lobby
+            return "";
+
+        foreach (PlainShipRoom room in ShipStatus.Instance.AllRooms)
         {
-            float distance = Vector2.Distance(keyValuePair.Key, position);
-            if (distance < 2f)
+            // Only include actual rooms (not hallways), if required
+            if (excludeHallways && room.RoomId == SystemTypes.Hallway)
+                continue;
+
+            Collider2D collider = room.roomArea;
+            if (collider.OverlapPoint(position))
             {
-                return keyValuePair.Value;
+                return room.DisplayName();
             }
             else
             {
+                float distance = Vector2.Distance(position, collider.ClosestPoint(position));
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
-                    closestLocation = keyValuePair.Value;
+                    closestLocation = room;
                 }
             }
         }
+        
+        return closestLocation.DisplayName();
+    }
 
-        return closestLocation;
+    // Gets the name of a room, as displayed by the game's user interface
+    // Calling PlainShipRoom.RoomId.ToString() usually gives the correct name, but there are a few rooms for which it
+    // gives a different name than the game's UI shows (i.e., "LifeSupp" instead of "O2"); this function corrects this
+    public static string DisplayName (this PlainShipRoom room)
+    {
+        switch (room.RoomId)
+        {
+            case SystemTypes.LifeSupp: return "O2";
+            case SystemTypes.Nav: return "Navigation";
+            case SystemTypes.Decontamination2: return "Decontamination";
+            case SystemTypes.Decontamination3: return "Decontamination";
+            default: return Regex.Replace(room.RoomId.ToString(), "(\\B[A-Z])", " $1"); // Adds spaces to CamelCase strings
+        }
     }
 }
