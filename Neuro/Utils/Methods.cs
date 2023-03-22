@@ -11,7 +11,7 @@ public static class Methods
         PlainShipRoom closestLocation = null;
         string nearPrefix = "outside near "; // If we're not in any rooms/hallways, we're "outside"
 
-        if (ShipStatus.Instance == null) // In case this is called from the lobby
+        if (!ShipStatus.Instance) // In case this is called from the lobby
             return "the lobby";
 
         foreach (PlainShipRoom room in ShipStatus.Instance.AllRooms)
