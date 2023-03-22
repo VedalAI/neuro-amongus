@@ -1,41 +1,47 @@
-﻿using Neuro.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Neuro.DependencyInjection;
+using Neuro.Pathfinding.DataStructures;
 using UnityEngine;
 
-namespace Neuro;
+namespace Neuro.Pathfinding;
 
-public class Pathfinding
+public class PathfindingHandler : IPathfindingHandler
 {
-    public Node[,] grid;
+    private const int GRID_SIZE = 500;
+    private const int GRID_LOWER_LIMIT = GRID_SIZE / -2;
+    private const int GRID_UPPER_LIMIT = GRID_SIZE / 2;
 
-    public void GenerateNodeGrid()
+    public IContextProvider Context { get; set; }
+
+    public void Initialize()
     {
-        grid = new Node[200, 200];
+        GenerateNodeGrid();
+        FloodFill(ShipStatus.Instance.MeetingSpawnCenter + Vector2.up * ShipStatus.Instance.SpawnRadius + new Vector2(0f, 0.3636f)); // TODO: Magic number?
+    }
 
-        for (int x = -100; x < 100; x++)
+    private Node[,] grid;
+
+    private void GenerateNodeGrid()
+    {
+        grid = new Node[GRID_SIZE, GRID_SIZE];
+
+        for (int x = GRID_LOWER_LIMIT; x < GRID_UPPER_LIMIT; x++)
+        for (int y = GRID_LOWER_LIMIT; y < GRID_UPPER_LIMIT; y++)
         {
-            for (int y = -100; y < 100; y++)
+            Vector2 point = new(x / 4f, y / 4f);
+
+            //Debug.Log(point.ToString());
+            Collider2D[] cols = Physics2D.OverlapCircleAll(point, 0.25f, LayerMask.GetMask("Ship", "ShortObjects"));
+            List<Collider2D> colsList = cols.Where(col => !col.isTrigger && !col.transform.name.Contains("Vent") && !col.transform.name.Contains("Door")).ToList();
+
+            bool accessible = colsList.Count == 0;
+
+            //Debug.Log(accessible);
+            if (accessible)
             {
-                Vector2 point = new Vector2(x / 4f, y / 4f);
-
-                //Debug.Log(point.ToString());
-
-                Collider2D[] cols = Physics2D.OverlapCircleAll(point, 0.25f, LayerMask.GetMask(new[] {"Ship", "ShortObjects"}));
-                List<Collider2D> colsList = new List<Collider2D>();
-                foreach (Collider2D col in cols)
-                {
-                    if (col.isTrigger || col.transform.name.Contains("Vent") || col.transform.name.Contains("Door")) continue;
-                    colsList.Add(col);
-                }
-
-                bool accessible = colsList.Count == 0;
-                //Debug.Log(accessible);
-
-                if (accessible)
-                {
-                    /*GameObject test = new GameObject("Test");
+                /*GameObject test = new GameObject("Test");
                     //Debug.Log(test.transform);
                     test.transform.position = (Vector3)point;
 
@@ -45,20 +51,19 @@ public class Pathfinding
                     renderer.widthMultiplier = 0.1f;
                     renderer.positionCount = 2;
                     renderer.startColor = Color.red;*/
-                }
-
-                grid[x + 100, y + 100] = new Node(accessible, point, x + 100, y + 100);
             }
+
+            grid[x + GRID_UPPER_LIMIT, y + GRID_UPPER_LIMIT] = new Node(accessible, point, x + GRID_UPPER_LIMIT, y + GRID_UPPER_LIMIT);
         }
     }
 
-    public void FloodFill(Vector2 accessiblePosition)
+    private void FloodFill(Vector2 accessiblePosition)
     {
         Node startingNode = NodeFromWorldPoint(accessiblePosition);
 
         // Flood fill
-        List<Node> openSet = new List<Node>();
-        HashSet<Node> closedSet = new HashSet<Node>();
+        List<Node> openSet = new();
+        HashSet<Node> closedSet = new();
         openSet.Add(startingNode);
 
         while (openSet.Count > 0)
@@ -97,7 +102,7 @@ public class Pathfinding
         }
     }
 
-    public Node NodeFromWorldPoint(Vector2 position)
+    private Node NodeFromWorldPoint(Vector2 position)
     {
         position *= 4;
         float percentX = Mathf.Clamp(position.x, -100, 100);
@@ -109,12 +114,12 @@ public class Pathfinding
         return grid[xIndex, yIndex];
     }
 
-    public Node FindClosestNode(Vector2 position)
+    private Node FindClosestNode(Vector2 position)
     {
         Node closestNode = NodeFromWorldPoint(position);
 
-        Queue<Node> queue = new Queue<Node>();
-        List<Node> nodes = new List<Node>();
+        Queue<Node> queue = new();
+        List<Node> nodes = new();
         queue.Enqueue(closestNode);
         nodes.Add(closestNode);
 
@@ -144,42 +149,33 @@ public class Pathfinding
                 }
             }
 
-            if (closestNeighbour != null)
-            {
-                closestNode = closestNeighbour;
-            }
+            if (closestNeighbour != null) closestNode = closestNeighbour;
         }
 
         return closestNode;
     }
 
-    public List<Node> GetNeighbours(Node node)
+    private List<Node> GetNeighbours(Node node)
     {
-        List<Node> neighbours = new List<Node>();
+        List<Node> neighbours = new();
 
         for (int x = -1; x <= 1; x++)
+        for (int y = -1; y <= 1; y++)
         {
-            for (int y = -1; y <= 1; y++)
-            {
-                if (x == 0 && y == 0)
-                    continue;
+            if (x == 0 && y == 0)
+                continue;
 
-                int checkX = node.gridX + x;
-                int checkY = node.gridY + y;
+            int checkX = node.gridX + x;
+            int checkY = node.gridY + y;
 
-                if (checkX >= 0 && checkX < 200 && checkY >= 0 && checkY < 200)
-                {
-                    neighbours.Add(grid[checkX, checkY]);
-                }
-            }
+            if (checkX is >= 0 and < GRID_SIZE && checkY is >= 0 and < GRID_SIZE) neighbours.Add(grid[checkX, checkY]);
         }
 
         return neighbours;
     }
 
-    public Vector2[] FindPath(Vector2 start, Vector2 target)
+    private Vector2[] FindPath(Vector2 start, Vector2 target)
     {
-        Vector2[] path = new Vector2[0];
         bool pathSuccess = false;
 
         /*GameObject test = new GameObject("Test");
@@ -193,12 +189,12 @@ public class Pathfinding
         renderer.positionCount = 2;
         renderer.startColor = Color.blue;*/
 
-        Debug.Log("Start Node");
+        // Debug.Log("Start Node");
         Node startNode = FindClosestNode(start);
-        Debug.Log("End Node");
+        // Debug.Log("End Node");
         Node targetNode = FindClosestNode(target);
 
-        GameObject endNodeObj = new GameObject("Test");
+        GameObject endNodeObj = new("Test");
         //Debug.Log(test.transform);
         endNodeObj.transform.position = targetNode.worldPosition;
 
@@ -209,16 +205,13 @@ public class Pathfinding
         renderer2.positionCount = 2;
         renderer2.startColor = Color.blue;
 
-        Debug.Log(startNode.worldPosition.ToString());
-        Debug.Log(targetNode.worldPosition.ToString());
+        // Debug.Log(startNode.worldPosition.ToString());
+        // Debug.Log(targetNode.worldPosition.ToString());
 
-        if (startNode == null || targetNode == null || !startNode.accessible || !targetNode.accessible)
-        {
-            return path;
-        }
+        if (startNode is not {accessible: true} || targetNode is not {accessible: true}) return Array.Empty<Vector2>();
 
-        Heap<Node> openSet = new Heap<Node>(200 * 200);
-        HashSet<Node> closedSet = new HashSet<Node>();
+        Heap<Node> openSet = new(200 * 200);
+        HashSet<Node> closedSet = new();
 
         openSet.Add(startNode);
 
@@ -251,21 +244,16 @@ public class Pathfinding
                 nodeRenderer.positionCount = 2;
                 nodeRenderer.startColor = Color.red;*/
 
-                if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
-                {
-                    neighbour.gCost = newMovementCostToNeighbour;
-                    neighbour.hCost = GetDistance(neighbour, targetNode);
-                    neighbour.parent = currentNode;
+                if (newMovementCostToNeighbour >= neighbour.gCost && openSet.Contains(neighbour)) continue;
 
-                    if (!openSet.Contains(neighbour))
-                    {
-                        openSet.Add(neighbour);
-                    }
-                    else
-                    {
-                        openSet.UpdateItem(neighbour);
-                    }
-                }
+                neighbour.gCost = newMovementCostToNeighbour;
+                neighbour.hCost = GetDistance(neighbour, targetNode);
+                neighbour.parent = currentNode;
+
+                if (!openSet.Contains(neighbour))
+                    openSet.Add(neighbour);
+                else
+                    openSet.UpdateItem(neighbour);
             }
         }
 
@@ -274,16 +262,14 @@ public class Pathfinding
             Debug.Log("Path found successfully.");
             return RetracePath(startNode, targetNode);
         }
-        else
-        {
-            Debug.Log("Failed to find path");
-            return path;
-        }
+
+        Debug.Log("Failed to find path");
+        return Array.Empty<Vector2>();
     }
 
-    Vector2[] RetracePath(Node startNode, Node endNode)
+    private Vector2[] RetracePath(Node startNode, Node endNode)
     {
-        List<Node> path = new List<Node>();
+        List<Node> path = new();
         Node currentNode = endNode;
         while (currentNode != startNode)
         {
@@ -291,31 +277,17 @@ public class Pathfinding
             currentNode = currentNode.parent;
         }
 
-        Vector2[] waypoints = SimplifyPath(path);
+        Vector2[] waypoints = path.Select(p => p.worldPosition).ToArray();
         Array.Reverse(waypoints);
 
         return waypoints;
     }
 
-    Vector2[] SimplifyPath(List<Node> path)
+    private void DrawPath(Vector2[] path)
     {
-        return path.Select(p => p.worldPosition).ToArray();
-    }
-
-    int GetDistance(Node a, Node b)
-    {
-        int dstX = Mathf.Abs(a.gridX - b.gridX);
-        int dstY = Mathf.Abs(a.gridY - b.gridY);
-
-        if (dstX > dstY)
-            return 14 * dstY + 10 * (dstX - dstY);
-        return 14 * dstX + 10 * (dstY - dstX);
-    }
-
-    public void DrawPath(Vector2[] path)
-    {
+        // TODO: Cache old path instead of destroying it by name
         GameObject.Destroy(GameObject.Find("Neuro Path"));
-        GameObject test = new GameObject("Neuro Path");
+        GameObject test = new("Neuro Path");
         //Debug.Log(test.transform);
         test.transform.position = PlayerControl.LocalPlayer.transform.position;
 
@@ -329,5 +301,13 @@ public class Pathfinding
 
         renderer.widthMultiplier = 0.2f;
         renderer.startColor = Color.blue;
+    }
+
+    private static int GetDistance(Node a, Node b)
+    {
+        int dstX = Mathf.Abs(a.gridX - b.gridX);
+        int dstY = Mathf.Abs(a.gridY - b.gridY);
+
+        return 14 * dstY + 10 * Math.Abs(dstX - dstY);
     }
 }

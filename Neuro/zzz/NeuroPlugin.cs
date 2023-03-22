@@ -37,17 +37,6 @@ public class NeuroPlugind : BasePlugin
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
     }
 
-    public void StartMap(ShipStatus shipStatus)
-    {
-        Debug.Log("OnShipLoad");
-        pathfinding.GenerateNodeGrid();
-
-        pathfinding.FloodFill(shipStatus.MeetingSpawnCenter + Vector2.up * shipStatus.SpawnRadius + new Vector2(0f, 0.3636f));
-
-        GameObject arrowGO = new("Arrow");
-        arrow = arrowGO.AddComponent<LineRenderer>();
-    }
-
     public void FixedUpdate()
     {
         // TODO: This method should be split into multiple MonoBehaviours - one for vision, one for recording and one for doing tasks
@@ -95,6 +84,12 @@ public class NeuroPlugind : BasePlugin
         recorder.Frames.Add(frame);
     }
 
+    public void ShipStatus_Awake()
+    {
+        GameObject arrowObject = new("Arrow");
+        arrow = arrowObject.AddComponent<LineRenderer>();
+    }
+
     public bool MovePlayer(ref Vector2 direction)
     {
         // TODO: Move to separate MonoBehaviour for handling movement
@@ -118,7 +113,6 @@ public class NeuroPlugind : BasePlugin
             }
 
             directionToNearestTask = (nextWaypoint - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
-
 
             LineRenderer renderer = arrow;
             renderer.SetPosition(0, PlayerControl.LocalPlayer.GetTruePosition());
