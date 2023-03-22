@@ -23,3 +23,7 @@ to discuss what you would like to change.
 ## License
 
 [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
+
+#
+<p align="center">This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC.</p>
+<p align="center">© Innersloth LLC.</p>
