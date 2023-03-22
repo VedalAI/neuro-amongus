@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text.Json;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Unity.IL2CPP;
-using HarmonyLib;
-using Neuro.Utils;
 using Reactor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Neuro;
 
-// [BepInAutoPlugin]
 [BepInProcess("Among Us.exe")]
 [BepInDependency(ReactorPlugin.Id)]
 public class NeuroPlugind : BasePlugin
@@ -25,8 +15,6 @@ public class NeuroPlugind : BasePlugin
     public Vector2 directionToNearestTask;
     public Vector2 moveDirection;
 
-    public Recorder recorder = new();
-
     public Vision vision = new();
 
     public void FixedUpdate()
@@ -36,27 +24,6 @@ public class NeuroPlugind : BasePlugin
         if (MeetingHud.Instance) return;
 
         vision.UpdateVision();
-
-        // Record values
-        Frame frame = new(
-            PlayerControl.LocalPlayer.Data.Role.IsImpostor,
-            PlayerControl.LocalPlayer.killTimer,
-            directionToNearestTask,
-            PlayerControl.LocalPlayer.myTasks.ToArray().Any(PlayerTask.TaskIsEmergency),
-            Vector2.zero,
-            vision.directionToNearestBody,
-            GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.gameObject.activeInHierarchy,
-            new List<PlayerRecord>(),
-            moveDirection,
-            false,
-            false,
-            false,
-            false,
-            false
-        );
-        string frameString = JsonSerializer.Serialize(frame);
-        Debug.Log(frameString);
-        recorder.Frames.Add(frame);
     }
 
     public void ShipStatus_Awake()
