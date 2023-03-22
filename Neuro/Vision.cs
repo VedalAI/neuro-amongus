@@ -7,7 +7,7 @@ namespace Neuro;
 
 public class Vision
 {
-    public DeadBody[] deadBodies = null;
+    public List<DeadBody> deadBodies = new List<DeadBody>();
 
     public Dictionary<PlayerControl, LastSeenPlayer> playerLocations = new Dictionary<PlayerControl, LastSeenPlayer>();
 
@@ -81,8 +81,17 @@ public class Vision
             if (playerLocation.Key == PlayerControl.LocalPlayer || playerLocation.Value.location == "") continue;
             playerLocation.Value.roundTimeVisible = 0f;
         }
+
+        // Reset dead bodies
+        deadBodies.Clear();
     }
-        
+
+    public void DeadBodyAppeared(DeadBody deadBody)
+    {
+        Debug.Log(String.Format("{0} has been killed", playerControls[deadBody.ParentId].Data.PlayerName));
+        deadBodies.Add(deadBody);
+    }
+
     // Called from FixedUpdate
     public void UpdateVision()
     {
@@ -95,9 +104,6 @@ public class Vision
     }
 
     void UpdateDeadBodiesVision() {
-        // TODO: Fix this
-        deadBodies = GameObject.FindObjectsOfType<DeadBody>();
-
         directionToNearestBody = Vector2.zero;
         float nearestBodyDistance = Mathf.Infinity;
 
