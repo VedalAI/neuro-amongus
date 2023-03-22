@@ -48,8 +48,8 @@ public static class Methods
         {
             case SystemTypes.LifeSupp: return "O2";
             case SystemTypes.Nav: return "Navigation";
-            case SystemTypes.Decontamination2: return "Decontamination";
-            case SystemTypes.Decontamination3: return "Decontamination";
+            case SystemTypes.Decontamination2: return "Upper Decontamination"; // Used on Polus
+            case SystemTypes.Decontamination3: return "Lower Decontamination"; // Used on Polus
             default: return Regex.Replace(room.RoomId.ToString(), "(\\B[A-Z])", " $1"); // Adds spaces to CamelCase strings
         }
     }
