@@ -17,6 +17,6 @@ public static class PlayerControlFixedUpdate
 {
     public static void Postfix(PlayerControl __instance)
     {
-        if (PlayerControl.LocalPlayer == __instance) PluginSingleton<NeuroPlugin>.Instance.FixedUpdate(__instance);
+        if (__instance.AmOwner) PluginSingleton<NeuroPlugin>.Instance.FixedUpdate();
     }
 }

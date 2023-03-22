@@ -1,12 +1,15 @@
-﻿using BepInEx;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text.Json;
+using AmongUs.GameOptions;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
-using Reactor;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Collections;
-using System.Text.Json;
+using Reactor;
 
 namespace Neuro;
 
@@ -15,35 +18,27 @@ namespace Neuro;
 [BepInDependency(ReactorPlugin.Id)]
 public partial class NeuroPlugin : BasePlugin
 {
-    public Harmony Harmony { get; } = new(Id);
+    public Recorder recorder = new();
 
-    public ConfigEntry<string> ConfigName { get; private set; }
-
-    public Recorder recorder = new Recorder();
-
-    public Vision vision = new Vision();
-
-    public bool inMinigame = false;
+    public Vision vision = new();
 
     public bool hasStarted = false;
 
-    public Pathfinding pathfinding = new Pathfinding();
+    public Pathfinding pathfinding = new();
 
-    public Vector2 directionToNearestTask = new Vector2();
-    public Vector2 moveDirection = new Vector2();
+    public Vector2 directionToNearestTask = new();
+    public Vector2 moveDirection = new();
 
     public Vector2[] currentPath = new Vector2[0];
     public int pathIndex = -1;
 
     public LineRenderer arrow;
 
-    public List<PlayerTask> tasks = new List<PlayerTask>();
+    public List<PlayerTask> tasks = new();
 
     public override void Load()
     {
-        ConfigName = Config.Bind("Neuro", "Name", "Neuro-sama");
-
-        Harmony.PatchAll();
+        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
     }
 
     public void StartMap(ShipStatus shipStatus)
@@ -53,58 +48,49 @@ public partial class NeuroPlugin : BasePlugin
 
         pathfinding.FloodFill(shipStatus.MeetingSpawnCenter + (Vector2.up * shipStatus.SpawnRadius) + new Vector2(0f, 0.3636f));
 
-        GameObject arrowGO = new GameObject("Arrow");
+        GameObject arrowGO = new("Arrow");
         arrow = arrowGO.AddComponent<LineRenderer>();
     }
 
-    public void FixedUpdate(PlayerControl localPlayer)
+    public void FixedUpdate()
     {
-        if (MeetingHud.Instance != null && MeetingHud.Instance.enabled) return;
+        // TODO: This method should be split into multiple MonoBehaviours - one for vision, one for recording and one for doing tasks
+
+        if (MeetingHud.Instance) return;
 
         vision.UpdateVision();
 
-        if (localPlayer.myTasks != null)
+        foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
         {
-            foreach (PlayerTask task in localPlayer.myTasks)
+            if (Minigame.Instance) break;
+
+            if (task == null || task.Locations == null) continue;
+            if (task.IsComplete) continue;
+            foreach (Vector2 location in task.Locations)
             {
-                if (task == null || task.Locations == null) continue;
-                if (task.IsComplete || inMinigame) continue;
-                foreach (Vector2 location in task.Locations)
+                if (Vector2.Distance(location, PlayerControl.LocalPlayer.transform.position) < 0.8f)
                 {
-                    if (Vector2.Distance(location, PlayerControl.LocalPlayer.transform.position) < 0.8f)
+                    if (task.MinigamePrefab)
                     {
-                        if (task.MinigamePrefab)
-                        {
-                            var minigame = GameObject.Instantiate(task.GetMinigamePrefab());
-                            minigame.transform.SetParent(Camera.main.transform, false);
-                            minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
-                            minigame.Console = GameObject.FindObjectOfType<Console>();
-                            minigame.Begin(task);
-                            inMinigame = true;
-                        }
+                        var minigame = GameObject.Instantiate(task.GetMinigamePrefab(), Camera.main!.transform, false);
+                        minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
+                        minigame.Console = GameObject.FindObjectOfType<Console>();
+                        minigame.Begin(task);
                     }
                 }
             }
         }
 
-        bool sabotageActive = false;
-        foreach (PlayerTask task in localPlayer.myTasks)
-            if (task.TaskType == TaskTypes.FixLights || task.TaskType == TaskTypes.RestoreOxy || task.TaskType == TaskTypes.ResetReactor || task.TaskType == TaskTypes.ResetSeismic || task.TaskType == TaskTypes.FixComms)
-                sabotageActive = true;
-
-        List<PlayerRecord> playerRecords = new List<PlayerRecord>();
-
-
         // Record values
-        Frame frame = new Frame(
-            localPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor,
-            localPlayer.killTimer,
+        Frame frame = new(
+            PlayerControl.LocalPlayer.Data.Role.IsImpostor,
+            PlayerControl.LocalPlayer.killTimer,
             directionToNearestTask,
-            sabotageActive,
+            PlayerControl.LocalPlayer.myTasks.ToArray().Any(PlayerTask.TaskIsEmergency),
             Vector2.zero,
             vision.directionToNearestBody,
             GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.gameObject.activeInHierarchy,
-            playerRecords,
+            new List<PlayerRecord>(),
             moveDirection,
             false,
             false,
@@ -137,7 +123,7 @@ public partial class NeuroPlugin : BasePlugin
                 nextWaypoint = currentPath[pathIndex];
             }
 
-            directionToNearestTask = (nextWaypoint - (Vector2)PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+            directionToNearestTask = (nextWaypoint - (Vector2) PlayerControl.LocalPlayer.GetTruePosition()).normalized;
 
 
             LineRenderer renderer = arrow;
@@ -166,6 +152,7 @@ public partial class NeuroPlugin : BasePlugin
         Debug.Log("NEURO: MEETING IS FINISHED");
         vision.MeetingEnd();
     }
+
     public IEnumerator EvaluatePath(NormalPlayerTask initial)
     {
         currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations[0]);
@@ -195,6 +182,7 @@ public partial class NeuroPlugin : BasePlugin
             {
                 nextTask = task;
             }
+
             if (nextTask != null)
             {
                 Debug.Log("Next task isn't null");
