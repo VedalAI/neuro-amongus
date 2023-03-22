@@ -27,11 +27,13 @@ public class Vision
             if (!playerControls.ContainsKey(playerControl.PlayerId))
                 playerControls.Add(playerControl.PlayerId, playerControl);
         }
+
         foreach (PlayerControl playerControl in playerControls.Values)
         {
             if (playerLocations.ContainsKey(playerControl)) continue;
             playerLocations.Add(playerControl, new LastSeenPlayer("", 0f, false));
         }
+
         Debug.Log("Updating playerControls: " + playerControls.Count.ToString());
     }
 
@@ -43,7 +45,7 @@ public class Vision
             if (playerLocation.Value.location == "") continue;
             if (playerLocation.Value.dead)
             {
-                Debug.Log(playerLocation.Key.name + " was found dead in " + playerLocation.Value.location + " " + (Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time)).ToString() + " seconds ago.");
+                Debug.Log(playerLocation.Key.name + " was found dead in " + playerLocation.Value.location + " " + (Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time)) + " seconds ago.");
                 Debug.Log("Witnesses:");
                 foreach (PlayerControl witness in playerLocation.Value.witnesses)
                 {
@@ -52,7 +54,7 @@ public class Vision
             }
             else
             {
-                Debug.Log(playerLocation.Key.name + " was last seen in " + playerLocation.Value.location + " " + (Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time)).ToString() + " seconds ago.");
+                Debug.Log(playerLocation.Key.name + " was last seen in " + playerLocation.Value.location + " " + (Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time)) + " seconds ago.");
 
                 // Report if we saw the player vent right in front of us
                 if (playerLocation.Value.sawVent)
@@ -61,15 +63,16 @@ public class Vision
                 // Determine how much time the player was visible to Neuro-sama for
                 float gamePercentage = playerLocation.Value.gameTimeVisible / Time.timeSinceLevelLoad;
                 float roundPercentage = playerLocation.Value.roundTimeVisible / (Time.timeSinceLevelLoad - roundStartTime);
-                TimeSpan gameTime = new TimeSpan(0, 0, (int)Math.Floor(playerLocation.Value.gameTimeVisible));
-                TimeSpan roundTime = new TimeSpan(0, 0, (int)Math.Floor(playerLocation.Value.roundTimeVisible));
-                Debug.Log(String.Format("{0} has spent {1} minutes and {2} seconds near me this game ({3:0.0}% of the game)", playerLocation.Key.name, gameTime.Minutes, gameTime.Seconds, gamePercentage * 100.0f));
-                Debug.Log(String.Format("{0} has spent {1} minutes and {2} seconds near me this round ({3:0.0}% of the round)", playerLocation.Key.name, roundTime.Minutes, roundTime.Seconds, roundPercentage * 100.0f));
+                TimeSpan gameTime = new TimeSpan(0, 0, (int) Math.Floor(playerLocation.Value.gameTimeVisible));
+                TimeSpan roundTime = new TimeSpan(0, 0, (int) Math.Floor(playerLocation.Value.roundTimeVisible));
+                Debug.Log($"{playerLocation.Key.name} has spent {gameTime.Minutes} minutes and {gameTime.Seconds} seconds near me this game ({gamePercentage * 100.0f:0.0}% of the game)");
+                Debug.Log($"{playerLocation.Key.name} has spent {roundTime.Minutes} minutes and {roundTime.Seconds} seconds near me this round ({roundPercentage * 100.0f:0.0}% of the round)");
             }
         }
     }
 
-    public void MeetingEnd() {
+    public void MeetingEnd()
+    {
         // Keep track of what time the round started
         roundStartTime = Time.timeSinceLevelLoad;
 
@@ -80,7 +83,7 @@ public class Vision
             playerLocation.Value.roundTimeVisible = 0f;
         }
     }
-        
+
     // Called from FixedUpdate
     public void UpdateVision()
     {
@@ -102,6 +105,7 @@ public class Vision
                 nearestBodyDistance = distance;
                 directionToNearestBody = (deadBody.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
             }
+
             if (distance < 3f)
             {
                 PlayerControl playerControl = playerControls[deadBody.ParentId];
@@ -121,8 +125,10 @@ public class Vision
                             witnesses.Add(potentialWitness);
                         }
                     }
+
                     playerLocations[playerControl].witnesses = witnesses.ToArray();
                 }
+
                 playerLocations[playerControl].dead = true;
 
                 Debug.Log(playerControl.name + " is dead in " + Methods.GetLocationFromPosition(playerControl.transform.position));
@@ -154,7 +160,7 @@ public class Vision
             if (Vector2.Distance(playerControl.transform.position, PlayerControl.LocalPlayer.transform.position) < 5f)
             {
                 // raycasting
-                int layerSolid = LayerMask.GetMask(new[] { "Ship", "Shadow" });
+                int layerSolid = LayerMask.GetMask(new[] {"Ship", "Shadow"});
                 ContactFilter2D filter = new()
                 {
                     layerMask = layerSolid
@@ -164,7 +170,7 @@ public class Vision
 
                 if (PlayerControl.LocalPlayer.Collider.RaycastList_Internal((playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).normalized, 100f, filter, hits) > 0)
                 {
-                    if (hits[0].collider == playerControl.Collider)
+                    if (hits.At(0).collider == playerControl.Collider)
                     {
                         playerLocations[playerControl].location = Methods.GetLocationFromPosition(playerControl.transform.position);
                         playerLocations[playerControl].time = Time.timeSinceLevelLoad;

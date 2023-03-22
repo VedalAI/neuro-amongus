@@ -35,13 +35,7 @@ public class Heap<T> where T : IHeapItem<T>
         SortUp(item); //Call SortDown() as well if you need it but pathfinding doesn't
     }
 
-    public int Count
-    {
-        get
-        {
-            return currentItemCount;
-        }
-    }
+    public int Count => currentItemCount;
 
     public bool Contains(T item)
     {
@@ -54,10 +48,9 @@ public class Heap<T> where T : IHeapItem<T>
         {
             int childIndexLeft = item.HeapIndex * 2 + 1;
             int childIndexRight = item.HeapIndex * 2 + 2;
-            int swapIndex = 0;
             if (childIndexLeft < currentItemCount)
             {
-                swapIndex = childIndexLeft;
+                int swapIndex = childIndexLeft;
 
                 if (childIndexRight < currentItemCount)
                 {
@@ -107,17 +100,11 @@ public class Heap<T> where T : IHeapItem<T>
     {
         items[itemA.HeapIndex] = itemB;
         items[itemB.HeapIndex] = itemA;
-        int itemAIndex = itemA.HeapIndex;
-        itemA.HeapIndex = itemB.HeapIndex;
-        itemB.HeapIndex = itemAIndex;
+        (itemA.HeapIndex, itemB.HeapIndex) = (itemB.HeapIndex, itemA.HeapIndex);
     }
 }
 
 public interface IHeapItem<T> : IComparable<T>
 {
-    int HeapIndex
-    {
-        get;
-        set;
-    }
+    int HeapIndex { get; set; }
 }
