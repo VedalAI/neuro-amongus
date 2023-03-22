@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Neuro.DependencyInjection;
-using Neuro.Utils;
+using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 

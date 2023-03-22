@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Neuro.Vision;
 
-public interface IVisionHandler : IContextAcceptor
+public interface IVisionHandler : IContextAccepter
 {
     public void StartTrackingPlayer(PlayerControl player);
 

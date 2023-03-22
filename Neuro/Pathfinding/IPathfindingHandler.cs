@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Neuro.Pathfinding;
 
-public interface IPathfindingHandler : IContextAcceptor
+public interface IPathfindingHandler : IContextAccepter
 {
     public void Initialize();
 

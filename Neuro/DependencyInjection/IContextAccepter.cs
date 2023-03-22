@@ -1,6 +1,6 @@
 ﻿namespace Neuro.DependencyInjection;
 
-public interface IContextAcceptor
+public interface IContextAccepter
 {
     public IContextProvider Context { set; }
 }
