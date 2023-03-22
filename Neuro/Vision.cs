@@ -115,6 +115,12 @@ public class Vision
                 nearestBodyDistance = distance;
                 directionToNearestBody = (deadBody.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
             }
+
+            if (!CheckVisibility(deadBody.TruePosition))
+            {
+                continue;
+            }
+
             if (distance < 3f)
             {
                 PlayerControl playerControl = playerControls[deadBody.ParentId];
@@ -168,29 +174,32 @@ public class Vision
 
             if (Vector2.Distance(playerControl.transform.position, PlayerControl.LocalPlayer.transform.position) < 5f)
             {
-                // raycasting
-                int layerSolid = LayerMask.GetMask(new[] { "Ship", "Shadow" });
-                ContactFilter2D filter = new()
+                if (CheckVisibility(playerControl.GetTruePosition()))
                 {
-                    layerMask = layerSolid
-                };
+                    playerLocations[playerControl].location = Methods.GetLocationFromPosition(playerControl.transform.position);
+                    playerLocations[playerControl].time = Time.timeSinceLevelLoad;
+                    playerLocations[playerControl].dead = false;
+                    playerLocations[playerControl].gameTimeVisible += lastPlayerUpdateDuration; // Keep track of total time we've been able to see this player
+                    playerLocations[playerControl].roundTimeVisible += lastPlayerUpdateDuration; // Keep track of time this round we've been able to see this player
 
-                Il2CppSystem.Collections.Generic.List<RaycastHit2D> hits = new();
-
-                if (PlayerControl.LocalPlayer.Collider.RaycastList_Internal((playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).normalized, 100f, filter, hits) > 0)
+                    Debug.Log(playerControl.name + " is in " + Methods.GetLocationFromPosition(playerControl.transform.position));
+                }
+                else
                 {
-                    if (hits[0].collider == playerControl.Collider)
-                    {
-                        playerLocations[playerControl].location = Methods.GetLocationFromPosition(playerControl.transform.position);
-                        playerLocations[playerControl].time = Time.timeSinceLevelLoad;
-                        playerLocations[playerControl].dead = false;
-                        playerLocations[playerControl].gameTimeVisible += lastPlayerUpdateDuration; // Keep track of total time we've been able to see this player
-                        playerLocations[playerControl].roundTimeVisible += lastPlayerUpdateDuration; // Keep track of time this round we've been able to see this player
-
-                        Debug.Log(playerControl.name + " is in " + Methods.GetLocationFromPosition(playerControl.transform.position));
-                    }
+                    Debug.Log(String.Format("{0} is close, but out of sight", playerControl.Data.PlayerName));
                 }
             }
         }
+    }
+
+    bool CheckVisibility(Vector2 rayEnd)
+    {
+        // Raycasting
+        // If raycast hits shadow, this usually means that player is not visible
+        // So check that there is no shadow
+        int layerShadow = LayerMask.GetMask(new[] { "Shadow" });
+        Vector2 rayStart = PlayerControl.LocalPlayer.GetTruePosition();
+        RaycastHit2D hit = Physics2D.Raycast(rayStart, (rayEnd - rayStart).normalized, (rayEnd - rayStart).magnitude, layerShadow);
+        return !hit;
     }
 }
