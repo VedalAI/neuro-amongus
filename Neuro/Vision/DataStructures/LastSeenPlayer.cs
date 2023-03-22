@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Neuro.Utils;
+namespace Neuro.Vision.DataStructures;
 
 [Serializable]
 public class LastSeenPlayer

@@ -5,6 +5,8 @@ namespace Neuro.Vision;
 
 public interface IVisionHandler : IContextAcceptor
 {
+    public void StartTrackingPlayer(PlayerControl player);
+
     public void ReportFindings();
 
     public void ResetAfterMeeting();
