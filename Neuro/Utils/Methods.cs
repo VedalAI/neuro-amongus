@@ -6,7 +6,7 @@ namespace Neuro.Utils;
 
 public static class Methods
 {
-    public static string GetLocationFromPosition(Vector2 position, bool excludeHallways = true)
+    public static string GetLocationFromPosition(Vector2 position, bool includeHallways = false)
     {
         float closestDistance = Mathf.Infinity;
         PlainShipRoom closestLocation = null;
@@ -17,7 +17,7 @@ public static class Methods
         foreach (PlainShipRoom room in ShipStatus.Instance.AllRooms)
         {
             // Only include actual rooms (not hallways), if required
-            if (excludeHallways && room.RoomId == SystemTypes.Hallway)
+            if (!includeHallways && room.RoomId == SystemTypes.Hallway)
                 continue;
 
             Collider2D collider = room.roomArea;
