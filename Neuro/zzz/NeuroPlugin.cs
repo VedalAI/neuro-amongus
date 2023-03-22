@@ -21,21 +21,13 @@ public class NeuroPlugind : BasePlugin
 {
     public LineRenderer arrow;
 
-    public Vector2[] currentPath = Array.Empty<Vector2>();
 
     public Vector2 directionToNearestTask;
     public Vector2 moveDirection;
 
-    public Pathfinding pathfinding = new();
-    public int pathIndex = -1;
     public Recorder recorder = new();
 
     public Vision vision = new();
-
-    public override void Load()
-    {
-        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
-    }
 
     public void FixedUpdate()
     {
@@ -44,23 +36,6 @@ public class NeuroPlugind : BasePlugin
         if (MeetingHud.Instance) return;
 
         vision.UpdateVision();
-
-        foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
-        {
-            if (Minigame.Instance) break;
-
-            if (task == null || task.Locations == null) continue;
-            if (task.IsComplete) continue;
-            foreach (Vector2 location in task.Locations)
-                if (Vector2.Distance(location, PlayerControl.LocalPlayer.transform.position) < 0.8f)
-                    if (task.MinigamePrefab)
-                    {
-                        Minigame minigame = Object.Instantiate(task.GetMinigamePrefab(), Camera.main!.transform, false);
-                        minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
-                        minigame.Console = Object.FindObjectOfType<Console>();
-                        minigame.Begin(task);
-                    }
-        }
 
         // Record values
         Frame frame = new(
@@ -127,47 +102,5 @@ public class NeuroPlugind : BasePlugin
         }
 
         return true;
-    }
-
-    public IEnumerator EvaluatePath(NormalPlayerTask initial)
-    {
-        // TODO: Move to a separate MonoBehaviour for handling tasks
-
-        currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
-        pathIndex = 0;
-
-        while (true)
-        {
-            yield return new WaitForSeconds(1);
-
-            PlayerTask task = PlayerControl.LocalPlayer.myTasks.At(0);
-
-            // TODO: Get the nearest location from all tasks instead of the first location of the next task
-            PlayerTask nextTask = null;
-            if (task.IsComplete)
-            {
-                Debug.Log("Task is complete");
-                foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
-                    if (!t.IsComplete && t.HasLocation)
-                    {
-                        nextTask = t;
-                        Debug.Log(nextTask.name);
-                        break;
-                    }
-            }
-            else
-            {
-                nextTask = task;
-            }
-
-            if (nextTask != null)
-            {
-                Debug.Log("Next task isn't null");
-                currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
-                pathIndex = 0;
-
-                //pathfinding.DrawPath(currentPath);
-            }
-        }
     }
 }
