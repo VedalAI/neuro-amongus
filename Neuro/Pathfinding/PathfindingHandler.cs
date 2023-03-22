@@ -15,13 +15,106 @@ public class PathfindingHandler : IPathfindingHandler
 
     public IContextProvider Context { get; set; }
 
+    private Node[,] grid;
+
     public void Initialize()
     {
         GenerateNodeGrid();
         FloodFill(ShipStatus.Instance.MeetingSpawnCenter + Vector2.up * ShipStatus.Instance.SpawnRadius + new Vector2(0f, 0.3636f)); // TODO: Magic number?
     }
 
-    private Node[,] grid;
+    public Vector2[] FindPath(Vector2 start, Vector2 target)
+    {
+        bool pathSuccess = false;
+
+        /*GameObject test = new GameObject("Test");
+        //Debug.Log(test.transform);
+        test.transform.position = (Vector3)start;
+
+        LineRenderer renderer = test.AddComponent<LineRenderer>();
+        renderer.SetPosition(0, start);
+        renderer.SetPosition(1, (Vector3)target + new Vector3(0, 0.1f, 0));
+        renderer.widthMultiplier = 0.2f;
+        renderer.positionCount = 2;
+        renderer.startColor = Color.blue;*/
+
+        // Debug.Log("Start Node");
+        Node startNode = FindClosestNode(start);
+        // Debug.Log("End Node");
+        Node targetNode = FindClosestNode(target);
+
+        GameObject endNodeObj = new("Test");
+        //Debug.Log(test.transform);
+        endNodeObj.transform.position = targetNode.worldPosition;
+
+        LineRenderer renderer2 = endNodeObj.AddComponent<LineRenderer>();
+        renderer2.SetPosition(0, targetNode.worldPosition);
+        renderer2.SetPosition(1, (Vector3) targetNode.worldPosition + new Vector3(0f, 0.3f, 0));
+        renderer2.widthMultiplier = 0.3f;
+        renderer2.positionCount = 2;
+        renderer2.startColor = Color.blue;
+
+        // Debug.Log(startNode.worldPosition.ToString());
+        // Debug.Log(targetNode.worldPosition.ToString());
+
+        if (startNode is not {accessible: true} || targetNode is not {accessible: true}) return Array.Empty<Vector2>();
+
+        Heap<Node> openSet = new(200 * 200);
+        HashSet<Node> closedSet = new();
+
+        openSet.Add(startNode);
+
+        while (openSet.Count > 0)
+        {
+            Node currentNode = openSet.RemoveFirst();
+
+            closedSet.Add(currentNode);
+
+            if (currentNode == targetNode)
+            {
+                pathSuccess = true;
+                break;
+            }
+
+            foreach (Node neighbour in GetNeighbours(currentNode))
+            {
+                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
+
+                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
+
+                /*GameObject nodeGO = new GameObject("Test");
+                //Debug.Log(test.transform);
+                nodeGO.transform.position = (Vector3)currentNode.worldPosition;
+
+                LineRenderer nodeRenderer = nodeGO.AddComponent<LineRenderer>();
+                nodeRenderer.SetPosition(0, (Vector3)currentNode.worldPosition);
+                nodeRenderer.SetPosition(1, (Vector3)currentNode.worldPosition + new Vector3(0, 0.1f, 0));
+                nodeRenderer.widthMultiplier = 0.1f;
+                nodeRenderer.positionCount = 2;
+                nodeRenderer.startColor = Color.red;*/
+
+                if (newMovementCostToNeighbour >= neighbour.gCost && openSet.Contains(neighbour)) continue;
+
+                neighbour.gCost = newMovementCostToNeighbour;
+                neighbour.hCost = GetDistance(neighbour, targetNode);
+                neighbour.parent = currentNode;
+
+                if (!openSet.Contains(neighbour))
+                    openSet.Add(neighbour);
+                else
+                    openSet.UpdateItem(neighbour);
+            }
+        }
+
+        if (pathSuccess)
+        {
+            Debug.Log("Path found successfully.");
+            return RetracePath(startNode, targetNode);
+        }
+
+        Debug.Log("Failed to find path");
+        return Array.Empty<Vector2>();
+    }
 
     private void GenerateNodeGrid()
     {
@@ -174,99 +267,6 @@ public class PathfindingHandler : IPathfindingHandler
         return neighbours;
     }
 
-    private Vector2[] FindPath(Vector2 start, Vector2 target)
-    {
-        bool pathSuccess = false;
-
-        /*GameObject test = new GameObject("Test");
-        //Debug.Log(test.transform);
-        test.transform.position = (Vector3)start;
-
-        LineRenderer renderer = test.AddComponent<LineRenderer>();
-        renderer.SetPosition(0, start);
-        renderer.SetPosition(1, (Vector3)target + new Vector3(0, 0.1f, 0));
-        renderer.widthMultiplier = 0.2f;
-        renderer.positionCount = 2;
-        renderer.startColor = Color.blue;*/
-
-        // Debug.Log("Start Node");
-        Node startNode = FindClosestNode(start);
-        // Debug.Log("End Node");
-        Node targetNode = FindClosestNode(target);
-
-        GameObject endNodeObj = new("Test");
-        //Debug.Log(test.transform);
-        endNodeObj.transform.position = targetNode.worldPosition;
-
-        LineRenderer renderer2 = endNodeObj.AddComponent<LineRenderer>();
-        renderer2.SetPosition(0, targetNode.worldPosition);
-        renderer2.SetPosition(1, (Vector3) targetNode.worldPosition + new Vector3(0f, 0.3f, 0));
-        renderer2.widthMultiplier = 0.3f;
-        renderer2.positionCount = 2;
-        renderer2.startColor = Color.blue;
-
-        // Debug.Log(startNode.worldPosition.ToString());
-        // Debug.Log(targetNode.worldPosition.ToString());
-
-        if (startNode is not {accessible: true} || targetNode is not {accessible: true}) return Array.Empty<Vector2>();
-
-        Heap<Node> openSet = new(200 * 200);
-        HashSet<Node> closedSet = new();
-
-        openSet.Add(startNode);
-
-        while (openSet.Count > 0)
-        {
-            Node currentNode = openSet.RemoveFirst();
-
-            closedSet.Add(currentNode);
-
-            if (currentNode == targetNode)
-            {
-                pathSuccess = true;
-                break;
-            }
-
-            foreach (Node neighbour in GetNeighbours(currentNode))
-            {
-                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
-
-                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
-
-                /*GameObject nodeGO = new GameObject("Test");
-                //Debug.Log(test.transform);
-                nodeGO.transform.position = (Vector3)currentNode.worldPosition;
-
-                LineRenderer nodeRenderer = nodeGO.AddComponent<LineRenderer>();
-                nodeRenderer.SetPosition(0, (Vector3)currentNode.worldPosition);
-                nodeRenderer.SetPosition(1, (Vector3)currentNode.worldPosition + new Vector3(0, 0.1f, 0));
-                nodeRenderer.widthMultiplier = 0.1f;
-                nodeRenderer.positionCount = 2;
-                nodeRenderer.startColor = Color.red;*/
-
-                if (newMovementCostToNeighbour >= neighbour.gCost && openSet.Contains(neighbour)) continue;
-
-                neighbour.gCost = newMovementCostToNeighbour;
-                neighbour.hCost = GetDistance(neighbour, targetNode);
-                neighbour.parent = currentNode;
-
-                if (!openSet.Contains(neighbour))
-                    openSet.Add(neighbour);
-                else
-                    openSet.UpdateItem(neighbour);
-            }
-        }
-
-        if (pathSuccess)
-        {
-            Debug.Log("Path found successfully.");
-            return RetracePath(startNode, targetNode);
-        }
-
-        Debug.Log("Failed to find path");
-        return Array.Empty<Vector2>();
-    }
-
     private Vector2[] RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new();
@@ -308,6 +308,6 @@ public class PathfindingHandler : IPathfindingHandler
         int dstX = Mathf.Abs(a.gridX - b.gridX);
         int dstY = Mathf.Abs(a.gridY - b.gridY);
 
-        return 14 * dstY + 10 * Math.Abs(dstX - dstY);
+        return 14 * dstY + 10 * Math.Abs(dstX - dstY); // TODO: 14 magic number?
     }
 }
