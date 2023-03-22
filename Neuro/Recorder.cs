@@ -21,8 +21,10 @@ namespace Neuro
         bool isEmergencyTask, 
         MyVector2 directionToNearestVent, 
         MyVector2 directionToNearestBody, 
-        bool canReport, List<PlayerRecord> 
-        playerRecords, MyVector2 direction, 
+        bool canReport, 
+        List<PlayerRecord> 
+        playerRecords, 
+        MyVector2 direction, 
         bool report, 
         bool vent, 
         bool kill, 
