@@ -4,7 +4,7 @@ namespace Neuro.Vision;
 
 public interface IVisionHandler : IContextAcceptor
 {
-    public void Update();
-
     public void ReportFindings();
+
+    public void ResetAfterMeeting();
 }

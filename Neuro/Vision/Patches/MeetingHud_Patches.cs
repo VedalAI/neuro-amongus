@@ -8,6 +8,6 @@ public static class MeetingHud_Start_Patch
 {
     public static void Postfix(EmergencyMinigame __instance)
     {
-        PluginSingleton<NeuroPlugin>.Instance.VisionHandler.ReportFindings();
+        PluginSingleton<NeuroPlugin>.Instance.MainContext.VisionHandler.ReportFindings();
     }
 }
