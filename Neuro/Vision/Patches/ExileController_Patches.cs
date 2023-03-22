@@ -6,7 +6,8 @@ namespace Neuro.Vision.Patches;
 [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
 public static class ExileController_WrapUp
 {
-    public static void Postfix(ExileController __instance)
+    [HarmonyPostfix]
+    public static void Postfix()
     {
         PluginSingleton<NeuroPlugin>.Instance.MainContext.VisionHandler.ResetAfterMeeting();
     }
