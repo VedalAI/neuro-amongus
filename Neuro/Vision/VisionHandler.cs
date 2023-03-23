@@ -46,14 +46,14 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
             playerLocations.Add(playerControl, new LastSeenPlayer("", 0f, false));
         }
 
-        Debug.Log("Updating playerControls: " + playerControls.Count);
+        Info("Updating playerControls: " + playerControls.Count);
     }
 
     public void AddDeadBody(DeadBody body)
     {
         if (deadBodies.Any(b => b.ParentId == body.ParentId)) return;
 
-        Debug.Log($"{GameData.Instance.GetPlayerById(body.ParentId).PlayerName} has been killed");
+        Info($"{GameData.Instance.GetPlayerById(body.ParentId).PlayerName} has been killed");
         deadBodies.Add(body);
     }
 
@@ -65,25 +65,25 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
             if (playerLocation.Value.location == "") continue;
             if (playerLocation.Value.dead)
             {
-                Debug.Log(playerLocation.Key.name + " was found dead in " + playerLocation.Value.location + " " + Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time) + " seconds ago.");
-                Debug.Log("Witnesses:");
-                foreach (PlayerControl witness in playerLocation.Value.witnesses) Debug.Log(witness.name);
+                Info(playerLocation.Key.name + " was found dead in " + playerLocation.Value.location + " " + Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time) + " seconds ago.");
+                Info("Witnesses:");
+                foreach (PlayerControl witness in playerLocation.Value.witnesses) Info(witness.name);
             }
             else
             {
-                Debug.Log(playerLocation.Key.name + " was last seen in " + playerLocation.Value.location + " " + Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time) + " seconds ago.");
+                Info(playerLocation.Key.name + " was last seen in " + playerLocation.Value.location + " " + Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time) + " seconds ago.");
 
                 // Report if we saw the player vent right in front of us
                 if (playerLocation.Value.sawVent)
-                    Debug.Log("I saw " + playerLocation.Key.name + " vent right in front of me!");
+                    Info("I saw " + playerLocation.Key.name + " vent right in front of me!");
 
                 // Determine how much time the player was visible to Neuro-sama for
                 float gamePercentage = playerLocation.Value.gameTimeVisible / Time.timeSinceLevelLoad;
                 float roundPercentage = playerLocation.Value.roundTimeVisible / (Time.timeSinceLevelLoad - roundStartTime);
                 TimeSpan gameTime = new(0, 0, (int) Math.Floor(playerLocation.Value.gameTimeVisible));
                 TimeSpan roundTime = new(0, 0, (int) Math.Floor(playerLocation.Value.roundTimeVisible));
-                Debug.Log($"{playerLocation.Key.name} has spent {gameTime.Minutes} minutes and {gameTime.Seconds} seconds near me this game ({gamePercentage * 100.0f:0.0}% of the game)");
-                Debug.Log($"{playerLocation.Key.name} has spent {roundTime.Minutes} minutes and {roundTime.Seconds} seconds near me this round ({roundPercentage * 100.0f:0.0}% of the round)");
+                Info($"{playerLocation.Key.name} has spent {gameTime.Minutes} minutes and {gameTime.Seconds} seconds near me this game ({gamePercentage * 100.0f:0.0}% of the game)");
+                Info($"{playerLocation.Key.name} has spent {roundTime.Minutes} minutes and {roundTime.Seconds} seconds near me this round ({roundPercentage * 100.0f:0.0}% of the round)");
             }
         }
     }
@@ -144,7 +144,7 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
 
                 playerLocations[playerControl].dead = true;
 
-                Debug.Log(playerControl.name + " is dead in " + GetLocationFromPosition(playerControl.transform.position));
+                Info(playerControl.name + " is dead in " + GetLocationFromPosition(playerControl.transform.position));
             }
         }
     }
@@ -167,7 +167,7 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
                 if (previousSighting.time > Time.timeSinceLevelLoad - 2 * Time.fixedDeltaTime)
                 {
                     previousSighting.sawVent = true; // Remember that we saw this player vent
-                    Debug.Log(playerControl.name + " vented right in front of me!");
+                    Info(playerControl.name + " vented right in front of me!");
                 }
 
                 continue; // Do not consider players in vents as recently seen
@@ -183,11 +183,11 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
                     playerLocations[playerControl].gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
                     playerLocations[playerControl].roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
 
-                    Debug.Log(playerControl.name + " is in " + GetLocationFromPosition(playerControl.transform.position));
+                    Info(playerControl.name + " is in " + GetLocationFromPosition(playerControl.transform.position));
                 }
                 else
                 {
-                    Debug.Log($"{playerControl.Data.PlayerName} is close, but out of sight");
+                    Info($"{playerControl.Data.PlayerName} is close, but out of sight");
                 }
             }
         }

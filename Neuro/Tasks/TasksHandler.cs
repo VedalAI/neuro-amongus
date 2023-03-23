@@ -33,12 +33,12 @@ public class TasksHandler : MonoBehaviour, ITasksHandler
             PlayerTask nextTask = null;
             if (task.IsComplete)
             {
-                Debug.Log("Task is complete");
+                Info("Task is complete");
                 foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
                     if (!t.IsComplete && t.HasLocation)
                     {
                         nextTask = t;
-                        Debug.Log(nextTask.name);
+                        Info(nextTask.name);
                         break;
                     }
             }
@@ -49,7 +49,7 @@ public class TasksHandler : MonoBehaviour, ITasksHandler
 
             if (nextTask != null)
             {
-                Debug.Log("Next task isn't null");
+                Info("Next task isn't null");
                 CurrentPath = Context.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
                 PathIndex = 0;
 

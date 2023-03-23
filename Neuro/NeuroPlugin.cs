@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿global using static Reactor.Utilities.Logger<Neuro.NeuroPlugin>;
+
+using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;

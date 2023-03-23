@@ -40,7 +40,7 @@ public class RecordingHandler : MonoBehaviour, IRecordingHandler
             false
         );
         string frameString = JsonSerializer.Serialize(frame);
-        Debug.Log(frameString);
+        Info(frameString);
         Frames.Add(frame);
     }
 }

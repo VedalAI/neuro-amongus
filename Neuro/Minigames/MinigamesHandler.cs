@@ -21,7 +21,7 @@ public class MinigamesHandler : IMinigamesHandler
         }
         else
         {
-            Debug.Log("Not Normal Player Task");
+            Warning("Not Normal Player Task");
             task.Complete();
         }
 
@@ -37,13 +37,13 @@ public class MinigamesHandler : IMinigamesHandler
         PlayerTask nextTask = null;
         if (lastTask.IsComplete)
         {
-            Debug.Log("Task is complete");
+            Info("Task is complete");
             foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
             {
                 if (!t.IsComplete && t.HasLocation) // TODO: Get nearest location of any task instead of next task in list
                 {
                     nextTask = t;
-                    Debug.Log(nextTask.name);
+                    Info(nextTask.name);
                     break;
                 }
             }
@@ -55,7 +55,7 @@ public class MinigamesHandler : IMinigamesHandler
 
         if (nextTask != null)
         {
-            Debug.Log("Next task isn't null");
+            Info("Next task isn't null");
             NeuroPlugin.Instance.MainContext.TasksHandler.CurrentPath = NeuroPlugin.Instance.MainContext.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
             NeuroPlugin.Instance.MainContext.TasksHandler.PathIndex = 0;
         }

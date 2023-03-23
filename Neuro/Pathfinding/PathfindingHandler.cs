@@ -30,7 +30,7 @@ public class PathfindingHandler : IPathfindingHandler
         bool pathSuccess = false;
 
         /*GameObject test = new GameObject("Test");
-        //Debug.Log(test.transform);
+        //Info(test.transform);
         test.transform.position = (Vector3)start;
 
         LineRenderer renderer = test.AddComponent<LineRenderer>();
@@ -40,13 +40,13 @@ public class PathfindingHandler : IPathfindingHandler
         renderer.positionCount = 2;
         renderer.startColor = Color.blue;*/
 
-        // Debug.Log("Start Node");
+        // Info("Start Node");
         Node startNode = FindClosestNode(start);
-        // Debug.Log("End Node");
+        // Info("End Node");
         Node targetNode = FindClosestNode(target);
 
         GameObject endNodeObj = new("Test");
-        //Debug.Log(test.transform);
+        //Info(test.transform);
         endNodeObj.transform.position = targetNode.worldPosition;
 
         LineRenderer renderer2 = endNodeObj.AddComponent<LineRenderer>();
@@ -56,8 +56,8 @@ public class PathfindingHandler : IPathfindingHandler
         renderer2.positionCount = 2;
         renderer2.startColor = Color.blue;
 
-        // Debug.Log(startNode.worldPosition.ToString());
-        // Debug.Log(targetNode.worldPosition.ToString());
+        // Info(startNode.worldPosition.ToString());
+        // Info(targetNode.worldPosition.ToString());
 
         if (startNode is not {accessible: true} || targetNode is not {accessible: true}) return Array.Empty<Vector2>();
 
@@ -85,7 +85,7 @@ public class PathfindingHandler : IPathfindingHandler
                 int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
 
                 /*GameObject nodeGO = new GameObject("Test");
-                //Debug.Log(test.transform);
+                //Info(test.transform);
                 nodeGO.transform.position = (Vector3)currentNode.worldPosition;
 
                 LineRenderer nodeRenderer = nodeGO.AddComponent<LineRenderer>();
@@ -110,11 +110,11 @@ public class PathfindingHandler : IPathfindingHandler
 
         if (pathSuccess)
         {
-            Debug.Log("Path found successfully.");
+            Info("Path found successfully.");
             return RetracePath(startNode, targetNode);
         }
 
-        Debug.Log("Failed to find path");
+        Warning("Failed to find path");
         return Array.Empty<Vector2>();
     }
 
@@ -127,17 +127,17 @@ public class PathfindingHandler : IPathfindingHandler
         {
             Vector2 point = new(x / 4f, y / 4f);
 
-            //Debug.Log(point.ToString());
+            //Info(point.ToString());
             Collider2D[] cols = Physics2D.OverlapCircleAll(point, 0.25f, LayerMask.GetMask("Ship", "ShortObjects"));
             List<Collider2D> colsList = cols.Where(col => !col.isTrigger && !col.transform.name.Contains("Vent") && !col.transform.name.Contains("Door")).ToList();
 
             bool accessible = colsList.Count == 0;
 
-            //Debug.Log(accessible);
+            //Info(accessible);
             if (accessible)
             {
                 /*GameObject test = new GameObject("Test");
-                    //Debug.Log(test.transform);
+                    //Info(test.transform);
                     test.transform.position = (Vector3)point;
 
                     LineRenderer renderer = test.AddComponent<LineRenderer>();
@@ -179,7 +179,7 @@ public class PathfindingHandler : IPathfindingHandler
         foreach (Node node in closedSet.ToList())
         {
             GameObject test = new("Test");
-            //Debug.Log(test.transform);
+            //Info(test.transform);
             test.transform.position = node.worldPosition;
 
             LineRenderer renderer = test.AddComponent<LineRenderer>();
@@ -290,14 +290,14 @@ public class PathfindingHandler : IPathfindingHandler
         // TODO: Cache old path instead of destroying it by name
         GameObject.Destroy(GameObject.Find("Neuro Path"));
         GameObject test = new("Neuro Path");
-        //Debug.Log(test.transform);
+        //Info(test.transform);
         test.transform.position = PlayerControl.LocalPlayer.transform.position;
 
         LineRenderer renderer = test.AddComponent<LineRenderer>();
         renderer.positionCount = path.Length;
         for (int i = 0; i < path.Length; i++)
         {
-            Debug.Log(path[i].ToString());
+            Info(path[i].ToString());
             renderer.SetPosition(i, path[i]);
         }
 
