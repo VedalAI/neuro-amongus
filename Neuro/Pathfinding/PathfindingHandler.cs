@@ -20,7 +20,9 @@ public class PathfindingHandler : IPathfindingHandler
     public void Initialize()
     {
         GenerateNodeGrid();
-        FloodFill(ShipStatus.Instance.MeetingSpawnCenter + Vector2.up * ShipStatus.Instance.SpawnRadius + new Vector2(0f, 0.3636f)); // TODO: Magic number?
+
+        // TODO: This currently only works for the Skeld, for Polus it might not function correctly since spawning is handled in a different way
+        FloodFill(ShipStatus.Instance.MeetingSpawnCenter + Vector2.up * ShipStatus.Instance.SpawnRadius + new Vector2(0f, 0.3636f));
     }
 
     public Vector2[] FindPath(Vector2 start, Vector2 target)

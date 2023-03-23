@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Neuro.Arrow.Patches;
 
-// TODO: Do we need to also patch PolusShipStatus.Awake?
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Awake))]
 public static class ShipStatus_Awake_Patch
 {

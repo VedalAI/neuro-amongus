@@ -30,6 +30,7 @@ public class MinigamesHandler : IMinigamesHandler
         GetPathToNextTask(task);
     }
 
+    // TODO: Duplicated code with TasksHandler.EvaluatePath
     private static void GetPathToNextTask(PlayerTask lastTask)
     {
         // TODO: This method should be somewhere else
@@ -39,7 +40,7 @@ public class MinigamesHandler : IMinigamesHandler
             Debug.Log("Task is complete");
             foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
             {
-                if (!t.IsComplete && t.HasLocation)
+                if (!t.IsComplete && t.HasLocation) // TODO: Get nearest location of any task instead of next task in list
                 {
                     nextTask = t;
                     Debug.Log(nextTask.name);
