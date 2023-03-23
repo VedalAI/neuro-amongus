@@ -11,6 +11,8 @@ public class MovementHandler : IMovementHandler
     public Vector2 LastMoveDirection { get; private set; }
     public Vector2 DirectionToNearestTask { get; private set; }
 
+    public LineRenderer Arrow { get; set; }
+
     public Vector2? GetForcedMoveDirection(Vector2 actualDirection)
     {
         // TODO: This is terrible, MovementHandler should not assign to fields in different handlers
@@ -36,7 +38,7 @@ public class MovementHandler : IMovementHandler
 
             DirectionToNearestTask = (nextWaypoint - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
 
-            LineRenderer renderer = Context.ArrowHandler.Arrow;
+            LineRenderer renderer = Arrow;
             renderer.SetPosition(0, PlayerControl.LocalPlayer.GetTruePosition());
             renderer.SetPosition(1, PlayerControl.LocalPlayer.GetTruePosition() + DirectionToNearestTask);
             renderer.widthMultiplier = 0.1f;

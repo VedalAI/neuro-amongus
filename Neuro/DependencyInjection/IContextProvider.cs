@@ -1,5 +1,4 @@
-﻿using Neuro.Arrow;
-using Neuro.Minigames;
+﻿using Neuro.Minigames;
 using Neuro.Movement;
 using Neuro.Pathfinding;
 using Neuro.Recording;
@@ -10,7 +9,6 @@ namespace Neuro.DependencyInjection;
 
 public interface IContextProvider
 {
-    public IArrowHandler ArrowHandler { get; }
     public IMinigamesHandler MinigamesHandler { get; }
     public IMovementHandler MovementHandler { get; }
     public IPathfindingHandler PathfindingHandler { get; }

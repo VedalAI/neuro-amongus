@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace Neuro.Arrow.Patches;
+namespace Neuro.Movement.Patches;
 
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Awake))]
 public static class ShipStatus_Awake_Patch
@@ -10,6 +10,6 @@ public static class ShipStatus_Awake_Patch
     public static void Postfix()
     {
         GameObject arrowObject = new("Arrow");
-        NeuroPlugin.Instance.MainContext.ArrowHandler.Arrow = arrowObject.AddComponent<LineRenderer>();
+        NeuroPlugin.Instance.MainContext.MovementHandler.Arrow = arrowObject.AddComponent<LineRenderer>();
     }
 }

@@ -30,7 +30,7 @@ public class RecordingHandler : MonoBehaviour, IRecordingHandler
             PlayerControl.LocalPlayer.myTasks.ToArray().Any(PlayerTask.TaskIsEmergency),
             Vector2.zero,
             Context.VisionHandler.DirectionToNearestBody,
-            GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.gameObject.activeInHierarchy, // TODO: Check if this is correct
+            GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.isActiveAndEnabled,
             new List<PlayerRecord>(),
             Context.MovementHandler.LastMoveDirection,
             false,

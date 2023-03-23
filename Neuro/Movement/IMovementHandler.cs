@@ -10,4 +10,6 @@ public interface IMovementHandler : IContextAccepter
     public Vector2 LastMoveDirection { get; }
 
     public Vector2 DirectionToNearestTask { get; }
+
+    public LineRenderer Arrow { set; }
 }

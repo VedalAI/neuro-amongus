@@ -2,7 +2,6 @@
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
-using Neuro.Arrow;
 using Neuro.DependencyInjection;
 using Neuro.Minigames;
 using Neuro.Movement;
@@ -25,7 +24,6 @@ public partial class NeuroPlugin : BasePlugin, IContextProvider
 
     public IContextProvider MainContext => this;
 
-    public IArrowHandler ArrowHandler { get; private set; }
     public IMinigamesHandler MinigamesHandler { get; private set; }
     public IMovementHandler MovementHandler { get; private set; }
     public IPathfindingHandler PathfindingHandler { get; private set; }
@@ -37,7 +35,6 @@ public partial class NeuroPlugin : BasePlugin, IContextProvider
     {
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
 
-        ArrowHandler = new ArrowHandler();
         MinigamesHandler = new MinigamesHandler();
         MovementHandler = new MovementHandler();
         PathfindingHandler = new PathfindingHandler();
