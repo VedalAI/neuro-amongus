@@ -7,7 +7,7 @@ namespace Neuro;
 
 public class Vision
 {
-    public DeadBody[] deadBodies = null;
+    public List<DeadBody> deadBodies = new List<DeadBody>();
 
     public Dictionary<PlayerControl, LastSeenPlayer> playerLocations = new Dictionary<PlayerControl, LastSeenPlayer>();
 
@@ -15,6 +15,7 @@ public class Vision
 
     public float roundStartTime = 0f; // in seconds
     public float lastPlayerUpdateTime = 0f; // in seconds, records the last time PlayerControl.FixedUpdate was called
+    public float lastPlayerUpdateDuration = 0f; // in seconds, records the time elapsed since last PlayerControl.FixedUpdate was called
 
     public Vector2 directionToNearestBody;
 
@@ -69,7 +70,8 @@ public class Vision
         }
     }
 
-    public void MeetingEnd() {
+    public void MeetingEnd()
+    {
         // Keep track of what time the round started
         roundStartTime = Time.timeSinceLevelLoad;
 
@@ -79,18 +81,29 @@ public class Vision
             if (playerLocation.Key == PlayerControl.LocalPlayer || playerLocation.Value.location == "") continue;
             playerLocation.Value.roundTimeVisible = 0f;
         }
+
+        // Reset dead bodies
+        deadBodies.Clear();
     }
-        
+
+    public void DeadBodyAppeared(DeadBody deadBody)
+    {
+        Debug.Log(String.Format("{0} has been killed", playerControls[deadBody.ParentId].Data.PlayerName));
+        deadBodies.Add(deadBody);
+    }
+
     // Called from FixedUpdate
     public void UpdateVision()
     {
         // Keep track of the amount of time it has been since the last time we were in this function
-        float timeSinceLastUpdate = Time.timeSinceLevelLoad - lastPlayerUpdateTime;
+        lastPlayerUpdateDuration = Time.timeSinceLevelLoad - lastPlayerUpdateTime;
         lastPlayerUpdateTime = Time.timeSinceLevelLoad;
 
-        // TODO: Fix this
-        deadBodies = GameObject.FindObjectsOfType<DeadBody>();
+        UpdateDeadBodiesVision();
+        UpdateNearbyPlayersVision();
+    }
 
+    void UpdateDeadBodiesVision() {
         directionToNearestBody = Vector2.zero;
         float nearestBodyDistance = Mathf.Infinity;
 
@@ -102,6 +115,12 @@ public class Vision
                 nearestBodyDistance = distance;
                 directionToNearestBody = (deadBody.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
             }
+
+            if (!CheckVisibility(deadBody.TruePosition))
+            {
+                continue;
+            }
+
             if (distance < 3f)
             {
                 PlayerControl playerControl = playerControls[deadBody.ParentId];
@@ -128,7 +147,9 @@ public class Vision
                 Debug.Log(playerControl.name + " is dead in " + Methods.GetLocationFromPosition(playerControl.transform.position));
             }
         }
+    }
 
+    void UpdateNearbyPlayersVision() {
         foreach (PlayerControl playerControl in playerControls.Values)
         {
             if (PlayerControl.LocalPlayer == playerControl) continue;
@@ -142,7 +163,7 @@ public class Vision
                 LastSeenPlayer previousSighting = playerLocations[playerControl];
 
                 // If we were able to see them during our last update (~30 ms ago), and now they're in a vent, we must have seen them enter the vent
-                if (previousSighting.time > Time.timeSinceLevelLoad - (2 * timeSinceLastUpdate))
+                if (previousSighting.time > Time.timeSinceLevelLoad - (2 * lastPlayerUpdateDuration))
                 {
                     previousSighting.sawVent = true; // Remember that we saw this player vent
                     Debug.Log(playerControl.name + " vented right in front of me!");
@@ -153,29 +174,32 @@ public class Vision
 
             if (Vector2.Distance(playerControl.transform.position, PlayerControl.LocalPlayer.transform.position) < 5f)
             {
-                // raycasting
-                int layerSolid = LayerMask.GetMask(new[] { "Ship", "Shadow" });
-                ContactFilter2D filter = new()
+                if (CheckVisibility(playerControl.GetTruePosition()))
                 {
-                    layerMask = layerSolid
-                };
+                    playerLocations[playerControl].location = Methods.GetLocationFromPosition(playerControl.transform.position);
+                    playerLocations[playerControl].time = Time.timeSinceLevelLoad;
+                    playerLocations[playerControl].dead = false;
+                    playerLocations[playerControl].gameTimeVisible += lastPlayerUpdateDuration; // Keep track of total time we've been able to see this player
+                    playerLocations[playerControl].roundTimeVisible += lastPlayerUpdateDuration; // Keep track of time this round we've been able to see this player
 
-                Il2CppSystem.Collections.Generic.List<RaycastHit2D> hits = new();
-
-                if (PlayerControl.LocalPlayer.Collider.RaycastList_Internal((playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).normalized, 100f, filter, hits) > 0)
+                    Debug.Log(playerControl.name + " is in " + Methods.GetLocationFromPosition(playerControl.transform.position));
+                }
+                else
                 {
-                    if (hits[0].collider == playerControl.Collider)
-                    {
-                        playerLocations[playerControl].location = Methods.GetLocationFromPosition(playerControl.transform.position);
-                        playerLocations[playerControl].time = Time.timeSinceLevelLoad;
-                        playerLocations[playerControl].dead = false;
-                        playerLocations[playerControl].gameTimeVisible += timeSinceLastUpdate; // Keep track of total time we've been able to see this player
-                        playerLocations[playerControl].roundTimeVisible += timeSinceLastUpdate; // Keep track of time this round we've been able to see this player
-
-                        Debug.Log(playerControl.name + " is in " + Methods.GetLocationFromPosition(playerControl.transform.position));
-                    }
+                    Debug.Log(String.Format("{0} is close, but out of sight", playerControl.Data.PlayerName));
                 }
             }
         }
+    }
+
+    bool CheckVisibility(Vector2 rayEnd)
+    {
+        // Raycasting
+        // If raycast hits shadow, this usually means that player is not visible
+        // So check that there is no shadow
+        int layerShadow = LayerMask.GetMask(new[] { "Shadow" });
+        Vector2 rayStart = PlayerControl.LocalPlayer.GetTruePosition();
+        RaycastHit2D hit = Physics2D.Raycast(rayStart, (rayEnd - rayStart).normalized, (rayEnd - rayStart).magnitude, layerShadow);
+        return !hit;
     }
 }
