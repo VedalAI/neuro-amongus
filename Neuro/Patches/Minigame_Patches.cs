@@ -3,6 +3,8 @@ using Reactor.Utilities;
 using System.Collections;
 using BepInEx.Unity.IL2CPP.Utils;
 using UnityEngine;
+using Neuro.Utils;
+using Il2CppSystem;
 
 namespace Neuro.Patches;
 
@@ -12,7 +14,11 @@ public static class Minigame_Begin
     public static void Postfix(Minigame __instance, PlayerTask task)
     {
         Debug.Log("Started task + " + __instance.name);
-        __instance.StartCoroutine(MinigameAutocomplete(__instance, task, 2f));
+
+        (float min, float max) timeToComplete = Methods.TaskTypeToTimeToCompleteTask(__instance.TaskType);
+        float timeToWait = UnityEngine.Random.RandomRange(timeToComplete.min, timeToComplete.max);
+
+        __instance.StartCoroutine(MinigameAutocomplete(__instance, task, timeToWait));
     }
 
     public static IEnumerator MinigameAutocomplete(Minigame minigame, PlayerTask task, float time)
@@ -64,5 +70,7 @@ public static class Minigame_Begin
 
             //PluginSingleton<NeuroPlugin>.Instance.pathfinding.DrawPath(PluginSingleton<NeuroPlugin>.Instance.currentPath))
         }
+
+     
     }
 }
