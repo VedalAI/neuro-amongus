@@ -5,47 +5,46 @@ namespace Neuro.Utils;
 
 public static class Methods
 {
-    private static Dictionary<Vector2, string> locationNames = new Dictionary<Vector2, string>()
-    {
-        { new Vector2 { x = 0, y = 0 }, "Cafeteria" },
-        { new Vector2 { x = 9, y = 1 }, "Weapons" },
-        { new Vector2 { x = 6.6f, y = -3.7f }, "O2" },
-        { new Vector2 { x = 17, y = -5 }, "Navigation" },
-        { new Vector2 { x = 9, y = -12.5f }, "Shields" },
-        { new Vector2 { x = 4, y = 15.6f }, "Communications" },
-        { new Vector2 { x = 0, y = -17 }, "Trash Chute" },
-        { new Vector2 { x = 0, y = -12 }, "Storage" },
-        { new Vector2 { x = -9, y = -10f }, "Electrical" },
-        { new Vector2 { x = -15.6f, y = -10.6f }, "Lower Engine" },
-        { new Vector2 { x = -13f, y = -4.4f }, "Security" },
-        { new Vector2 { x = -21f, y = -5.5f }, "Reactor" },
-        { new Vector2 { x = -15.4f, y = 1 }, "Upper Engine" },
-        { new Vector2 { x = -8f, y = -3.5f }, "MedBay" },
-        { new Vector2 { x = 5f, y = -8 }, "Admin" },
-    };
-
     public static string GetLocationFromPosition(Vector2 position)
     {
         float closestDistance = Mathf.Infinity;
-        string closestLocation = "";
+        PlainShipRoom closestLocation = null;
+        string nearPrefix = "outside near "; // If we're not in any rooms/hallways, we're "outside"
 
-        foreach (KeyValuePair<Vector2, string> keyValuePair in locationNames)
+        if (!ShipStatus.Instance) // In case this is called from the lobby
+            return "the lobby";
+
+        foreach (PlainShipRoom room in ShipStatus.Instance.AllRooms)
         {
-            float distance = Vector2.Distance(keyValuePair.Key, position);
-            if (distance < 2f)
+            Collider2D collider = room.roomArea;
+            if (collider.OverlapPoint(position))
             {
-                return keyValuePair.Value;
+                if (room.RoomId == SystemTypes.Hallway)
+                    nearPrefix = "a hallway near "; // keep looking for the nearest room
+                else
+                    return room.DisplayName(); // If we're inside a proper room, ignore the nearPrefix
             }
-            else
+            else if (room.RoomId != SystemTypes.Hallway)
             {
+                float distance = Vector2.Distance(position, collider.ClosestPoint(position));
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
-                    closestLocation = keyValuePair.Value;
+                    closestLocation = room;
                 }
             }
         }
 
-        return closestLocation;
+        if (!closestLocation)
+            return "";
+
+        // We're not in an actual room, so say which room we're nearest to
+        return nearPrefix + closestLocation.DisplayName();
+    }
+
+    // Gets the name of a room, as displayed by the game's user interface
+    public static string DisplayName (this PlainShipRoom room)
+    {
+        return TranslationController.Instance.GetString(room.RoomId);
     }
 }
