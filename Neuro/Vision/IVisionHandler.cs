@@ -7,6 +7,8 @@ public interface IVisionHandler : IContextAccepter
 {
     public void StartTrackingPlayer(PlayerControl player);
 
+    public void AddDeadBody(DeadBody body);
+
     public void ReportFindings();
 
     public void ResetAfterMeeting();

@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Reactor.Utilities;
 
 namespace Neuro.Vision.Patches;
 
@@ -9,6 +8,6 @@ public static class ExileController_WrapUp
     [HarmonyPostfix]
     public static void Postfix()
     {
-        PluginSingleton<NeuroPlugin>.Instance.MainContext.VisionHandler.ResetAfterMeeting();
+        NeuroPlugin.Instance.MainContext.VisionHandler.ResetAfterMeeting();
     }
 }

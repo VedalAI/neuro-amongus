@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Reactor.Utilities;
 using UnityEngine;
 
 namespace Neuro.Arrow.Patches;
@@ -12,6 +11,6 @@ public static class ShipStatus_Awake_Patch
     public static void Postfix()
     {
         GameObject arrowObject = new("Arrow");
-        PluginSingleton<NeuroPlugin>.Instance.MainContext.ArrowHandler.Arrow = arrowObject.AddComponent<LineRenderer>();
+        NeuroPlugin.Instance.MainContext.ArrowHandler.Arrow = arrowObject.AddComponent<LineRenderer>();
     }
 }

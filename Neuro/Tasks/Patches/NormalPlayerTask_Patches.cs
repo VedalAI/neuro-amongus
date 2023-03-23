@@ -1,6 +1,5 @@
 ﻿using BepInEx.Unity.IL2CPP.Utils;
 using HarmonyLib;
-using Reactor.Utilities;
 
 namespace Neuro.Tasks.Patches;
 
@@ -14,8 +13,8 @@ public static class NormalPlayerTask_Initialize
         if (done) return;
         done = true;
 
-        PlayerControl.LocalPlayer.StartCoroutine(PluginSingleton<NeuroPlugin>.Instance.MainContext.TasksHandler.EvaluatePath(__instance));
+        PlayerControl.LocalPlayer.StartCoroutine(NeuroPlugin.Instance.MainContext.TasksHandler.EvaluatePath(__instance));
 
-        //PluginSingleton<NeuroPlugin>.Instance.pathfinding.DrawPath(PluginSingleton<NeuroPlugin>.Instance.currentPath))
+        //NeuroPlugin.Instance.pathfinding.DrawPath(NeuroPlugin.Instance.currentPath))
     }
 }

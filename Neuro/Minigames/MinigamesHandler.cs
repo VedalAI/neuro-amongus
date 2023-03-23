@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Neuro.DependencyInjection;
 using Neuro.Utilities;
-using Reactor.Utilities;
 using UnityEngine;
 
 namespace Neuro.Minigames;
@@ -56,8 +55,8 @@ public class MinigamesHandler : IMinigamesHandler
         if (nextTask != null)
         {
             Debug.Log("Next task isn't null");
-            PluginSingleton<NeuroPlugin>.Instance.MainContext.TasksHandler.CurrentPath = PluginSingleton<NeuroPlugin>.Instance.MainContext.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
-            PluginSingleton<NeuroPlugin>.Instance.MainContext.TasksHandler.PathIndex = 0;
+            NeuroPlugin.Instance.MainContext.TasksHandler.CurrentPath = NeuroPlugin.Instance.MainContext.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
+            NeuroPlugin.Instance.MainContext.TasksHandler.PathIndex = 0;
         }
     }
 

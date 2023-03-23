@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Neuro.DependencyInjection;
-using Neuro.Utilities;
 using Neuro.Vision.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -18,7 +18,7 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
 
     public Vector2 DirectionToNearestBody { get; set; }
 
-    private DeadBody[] deadBodies;
+    private readonly List<DeadBody> deadBodies = new();
     private readonly Dictionary<byte, PlayerControl> playerControls = new(); // TODO: Use GameData.GetPlayerById
     private readonly Dictionary<PlayerControl, LastSeenPlayer> playerLocations = new(); // TODO: Don't use PlayerControls as dictionary keys,
                                                                                         // TODO#2: These dictionaries arent cleaned after games
@@ -28,96 +28,8 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
     {
         if (MeetingHud.Instance) return;
 
-        // TODO: Fix this
-        // I know what the problem is: Line 40 you are getting the position of the player which is not the same as the position of the body
-        deadBodies = FindObjectsOfType<DeadBody>();
-
-        DirectionToNearestBody = Vector2.zero;
-        float nearestBodyDistance = Mathf.Infinity;
-
-        foreach (DeadBody deadBody in deadBodies)
-        {
-            float distance = Vector2.Distance(deadBody.transform.position, PlayerControl.LocalPlayer.transform.position);
-            if (distance < nearestBodyDistance)
-            {
-                nearestBodyDistance = distance;
-                DirectionToNearestBody = (deadBody.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
-            }
-
-            if (distance < 3f)
-            {
-                PlayerControl playerControl = playerControls[deadBody.ParentId];
-                playerLocations[playerControl].location = GetLocationFromPosition(playerControl.transform.position);
-                if (!playerLocations[playerControl].dead)
-                {
-                    playerLocations[playerControl].time = Time.timeSinceLevelLoad;
-                    List<PlayerControl> witnesses = new();
-                    foreach (PlayerControl potentialWitness in playerControls.Values)
-                    {
-                        if (PlayerControl.LocalPlayer == potentialWitness) continue;
-
-                        if (potentialWitness.inVent || potentialWitness.Data.IsDead) continue;
-
-                        if (Vector2.Distance(potentialWitness.transform.position, deadBody.transform.position) < 3f) witnesses.Add(potentialWitness);
-                    }
-
-                    playerLocations[playerControl].witnesses = witnesses.ToArray();
-                }
-
-                playerLocations[playerControl].dead = true;
-
-                Debug.Log(playerControl.name + " is dead in " + GetLocationFromPosition(playerControl.transform.position));
-            }
-        }
-
-        foreach (PlayerControl playerControl in playerControls.Values)
-        {
-            if (PlayerControl.LocalPlayer == playerControl) continue;
-
-            if (playerControl.Data.IsDead) continue;
-
-            // Watch for players venting right in front of us
-            if (playerControl.inVent)
-            {
-                // Check the last place we saw the player
-                LastSeenPlayer previousSighting = playerLocations[playerControl];
-
-                // If we were able to see them during our last update (~30 ms ago), and now they're in a vent, we must have seen them enter the vent
-                if (previousSighting.time > Time.timeSinceLevelLoad - 2 * Time.fixedDeltaTime)
-                {
-                    previousSighting.sawVent = true; // Remember that we saw this player vent
-                    Debug.Log(playerControl.name + " vented right in front of me!");
-                }
-
-                continue; // Do not consider players in vents as recently seen
-            }
-
-            if (Vector2.Distance(playerControl.transform.position, PlayerControl.LocalPlayer.transform.position) < 5f)
-            {
-                // raycasting
-                int layerSolid = LayerMask.GetMask("Ship", "Shadow");
-                ContactFilter2D filter = new()
-                {
-                    layerMask = layerSolid
-                };
-
-                Il2CppSystem.Collections.Generic.List<RaycastHit2D> hits = new();
-
-                if (PlayerControl.LocalPlayer.Collider.RaycastList_Internal((playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).normalized, 100f, filter, hits) > 0)
-                {
-                    if (hits.At(0).collider == playerControl.Collider)
-                    {
-                        playerLocations[playerControl].location = GetLocationFromPosition(playerControl.transform.position);
-                        playerLocations[playerControl].time = Time.timeSinceLevelLoad;
-                        playerLocations[playerControl].dead = false;
-                        playerLocations[playerControl].gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
-                        playerLocations[playerControl].roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
-
-                        Debug.Log(playerControl.name + " is in " + GetLocationFromPosition(playerControl.transform.position));
-                    }
-                }
-            }
-        }
+        UpdateDeadBodiesVision();
+        UpdateNearbyPlayersVision();
     }
 
     public void StartTrackingPlayer(PlayerControl player)
@@ -135,6 +47,14 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
         }
 
         Debug.Log("Updating playerControls: " + playerControls.Count);
+    }
+
+    public void AddDeadBody(DeadBody body)
+    {
+        if (deadBodies.Any(b => b.ParentId == body.ParentId)) return;
+
+        Debug.Log($"{GameData.Instance.GetPlayerById(body.ParentId).PlayerName} has been killed");
+        deadBodies.Add(body);
     }
 
     public void ReportFindings()
@@ -179,6 +99,109 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
             if (playerLocation.Key == PlayerControl.LocalPlayer || playerLocation.Value.location == "") continue;
             playerLocation.Value.roundTimeVisible = 0f;
         }
+
+        deadBodies.Clear();
+    }
+
+        private void UpdateDeadBodiesVision()
+    {
+        DirectionToNearestBody = Vector2.zero;
+        float nearestBodyDistance = Mathf.Infinity;
+
+        foreach (DeadBody deadBody in deadBodies)
+        {
+            float distance = Vector2.Distance(deadBody.transform.position, PlayerControl.LocalPlayer.transform.position);
+            if (distance < nearestBodyDistance)
+            {
+                nearestBodyDistance = distance;
+                DirectionToNearestBody = (deadBody.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
+            }
+
+            if (!IsVisible(deadBody.TruePosition)) // TODO: Extract visibility to different handler (maybe)
+            {
+                continue;
+            }
+
+            if (distance < 3f)
+            {
+                PlayerControl playerControl = playerControls[deadBody.ParentId];
+                playerLocations[playerControl].location = GetLocationFromPosition(playerControl.transform.position);
+                if (!playerLocations[playerControl].dead)
+                {
+                    playerLocations[playerControl].time = Time.timeSinceLevelLoad;
+                    List<PlayerControl> witnesses = new();
+                    foreach (PlayerControl potentialWitness in playerControls.Values)
+                    {
+                        if (PlayerControl.LocalPlayer == potentialWitness) continue;
+
+                        if (potentialWitness.inVent || potentialWitness.Data.IsDead) continue;
+
+                        if (Vector2.Distance(potentialWitness.transform.position, deadBody.transform.position) < 3f) witnesses.Add(potentialWitness);
+                    }
+
+                    playerLocations[playerControl].witnesses = witnesses.ToArray();
+                }
+
+                playerLocations[playerControl].dead = true;
+
+                Debug.Log(playerControl.name + " is dead in " + GetLocationFromPosition(playerControl.transform.position));
+            }
+        }
+    }
+
+    private void UpdateNearbyPlayersVision()
+    {
+        foreach (PlayerControl playerControl in playerControls.Values)
+        {
+            if (PlayerControl.LocalPlayer == playerControl) continue;
+
+            if (playerControl.Data.IsDead) continue;
+
+            // Watch for players venting right in front of us
+            if (playerControl.inVent)
+            {
+                // Check the last place we saw the player
+                LastSeenPlayer previousSighting = playerLocations[playerControl];
+
+                // If we were able to see them during our last update (~30 ms ago), and now they're in a vent, we must have seen them enter the vent
+                if (previousSighting.time > Time.timeSinceLevelLoad - 2 * Time.fixedDeltaTime)
+                {
+                    previousSighting.sawVent = true; // Remember that we saw this player vent
+                    Debug.Log(playerControl.name + " vented right in front of me!");
+                }
+
+                continue; // Do not consider players in vents as recently seen
+            }
+
+            if (Vector2.Distance(playerControl.transform.position, PlayerControl.LocalPlayer.transform.position) < 5f)
+            {
+                if (IsVisible(playerControl.GetTruePosition()))
+                {
+                    playerLocations[playerControl].location = GetLocationFromPosition(playerControl.transform.position);
+                    playerLocations[playerControl].time = Time.timeSinceLevelLoad;
+                    playerLocations[playerControl].dead = false;
+                    playerLocations[playerControl].gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
+                    playerLocations[playerControl].roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
+
+                    Debug.Log(playerControl.name + " is in " + GetLocationFromPosition(playerControl.transform.position));
+                }
+                else
+                {
+                    Debug.Log($"{playerControl.Data.PlayerName} is close, but out of sight");
+                }
+            }
+        }
+    }
+
+    private static bool IsVisible(Vector2 rayEnd)
+    {
+        // Raycasting
+        // If raycast hits shadow, this usually means that player is not visible
+        // So check that there is no shadow
+        int layerShadow = LayerMask.GetMask(new[] { "Shadow" });
+        Vector2 rayStart = PlayerControl.LocalPlayer.GetTruePosition();
+        RaycastHit2D hit = Physics2D.Raycast(rayStart, (rayEnd - rayStart).normalized, (rayEnd - rayStart).magnitude, layerShadow);
+        return !hit;
     }
 
     private static string GetLocationFromPosition(Vector2 position)
