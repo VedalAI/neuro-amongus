@@ -10,8 +10,8 @@ namespace Neuro.Pathfinding;
 public class PathfindingHandler : IPathfindingHandler
 {
     private const int GRID_SIZE = 500;
-    private const int GRID_LOWER_LIMIT = GRID_SIZE / -2;
-    private const int GRID_UPPER_LIMIT = GRID_SIZE / 2;
+    private const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;
+    private const int GRID_UPPER_BOUNDS = GRID_SIZE / 2;
 
     public IContextProvider Context { get; set; }
 
@@ -61,7 +61,7 @@ public class PathfindingHandler : IPathfindingHandler
 
         if (startNode is not {accessible: true} || targetNode is not {accessible: true}) return Array.Empty<Vector2>();
 
-        Heap<Node> openSet = new(200 * 200);
+        Heap<Node> openSet = new(GRID_SIZE * GRID_SIZE);
         HashSet<Node> closedSet = new();
 
         openSet.Add(startNode);
@@ -122,8 +122,8 @@ public class PathfindingHandler : IPathfindingHandler
     {
         grid = new Node[GRID_SIZE, GRID_SIZE];
 
-        for (int x = GRID_LOWER_LIMIT; x < GRID_UPPER_LIMIT; x++)
-        for (int y = GRID_LOWER_LIMIT; y < GRID_UPPER_LIMIT; y++)
+        for (int x = GRID_LOWER_BOUNDS; x < GRID_UPPER_BOUNDS; x++)
+        for (int y = GRID_LOWER_BOUNDS; y < GRID_UPPER_BOUNDS; y++)
         {
             Vector2 point = new(x / 4f, y / 4f);
 
@@ -148,7 +148,7 @@ public class PathfindingHandler : IPathfindingHandler
                     renderer.startColor = Color.red;*/
             }
 
-            grid[x + GRID_UPPER_LIMIT, y + GRID_UPPER_LIMIT] = new Node(accessible, point, x + GRID_UPPER_LIMIT, y + GRID_UPPER_LIMIT);
+            grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
         }
     }
 
@@ -200,11 +200,11 @@ public class PathfindingHandler : IPathfindingHandler
     private Node NodeFromWorldPoint(Vector2 position)
     {
         position *= 4;
-        float percentX = Mathf.Clamp(position.x, -100, 100);
-        float percentY = Mathf.Clamp(position.y, -100, 100);
+        float percentX = Mathf.Clamp(position.x, GRID_LOWER_BOUNDS, GRID_UPPER_BOUNDS);
+        float percentY = Mathf.Clamp(position.y, GRID_LOWER_BOUNDS, GRID_UPPER_BOUNDS);
 
-        int xIndex = Mathf.RoundToInt(percentX + 100);
-        int yIndex = Mathf.RoundToInt(percentY + 100);
+        int xIndex = Mathf.RoundToInt(percentX + GRID_UPPER_BOUNDS);
+        int yIndex = Mathf.RoundToInt(percentY + GRID_UPPER_BOUNDS);
 
         return grid[xIndex, yIndex];
     }

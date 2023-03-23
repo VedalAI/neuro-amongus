@@ -21,7 +21,7 @@ namespace Neuro;
 [BepInDependency(ReactorPlugin.Id)]
 public partial class NeuroPlugin : BasePlugin, IContextProvider
 {
-    public static NeuroPlugin Instance => NeuroPlugin.Instance;
+    public static NeuroPlugin Instance => PluginSingleton<NeuroPlugin>.Instance;
 
     public IContextProvider MainContext => this;
 

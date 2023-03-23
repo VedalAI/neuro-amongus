@@ -103,7 +103,7 @@ public class VisionHandler : MonoBehaviour, IVisionHandler
         deadBodies.Clear();
     }
 
-        private void UpdateDeadBodiesVision()
+    private void UpdateDeadBodiesVision()
     {
         DirectionToNearestBody = Vector2.zero;
         float nearestBodyDistance = Mathf.Infinity;
