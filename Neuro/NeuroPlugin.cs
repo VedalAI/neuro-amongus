@@ -78,7 +78,6 @@ public partial class NeuroPlugin : BasePlugin
                             var minigame = GameObject.Instantiate(task.GetMinigamePrefab());
                             minigame.transform.SetParent(Camera.main.transform, false);
                             minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
-                            minigame.Console = GameObject.FindObjectOfType<Console>();
                             minigame.Begin(task);
                             inMinigame = true;
                         }
