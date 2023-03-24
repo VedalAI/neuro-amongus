@@ -25,10 +25,16 @@ public static class Minigame_Begin
     {
         yield return new WaitForSeconds(time);
 
-        //task.Complete();
         if (task.TryCast<NormalPlayerTask>() is NormalPlayerTask normalPlayerTask)
         {
             normalPlayerTask.NextStep();
+            Debug.Log(String.Format("Task {0} is at step {1}/{2}", normalPlayerTask, normalPlayerTask.TaskStep, normalPlayerTask.MaxStep));
+
+            // If NextStep() doesn't create an arrow, then this task does not require moving
+            // to a different location and should be completed.
+            if (normalPlayerTask.Arrow == null) {
+                normalPlayerTask.Complete();
+            }
         }
         else
         {
