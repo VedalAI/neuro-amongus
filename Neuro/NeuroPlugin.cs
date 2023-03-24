@@ -67,8 +67,11 @@ public partial class NeuroPlugin : BasePlugin
         {
             foreach (PlayerTask task in localPlayer.myTasks)
             {
-                if (task == null || task.Locations == null) continue;
+                // Must be in this order or else breaks Wires task
+                if (task == null) continue;
                 if (task.IsComplete || inMinigame) continue;
+                if (task.Locations == null) continue;
+
                 foreach (Vector2 location in task.Locations)
                 {
                     if (Vector2.Distance(location, PlayerControl.LocalPlayer.transform.position) < 0.8f)
@@ -78,7 +81,6 @@ public partial class NeuroPlugin : BasePlugin
                             var minigame = GameObject.Instantiate(task.GetMinigamePrefab());
                             minigame.transform.SetParent(Camera.main.transform, false);
                             minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
-                            minigame.Console = GameObject.FindObjectOfType<Console>();
                             minigame.Begin(task);
                             inMinigame = true;
                         }
