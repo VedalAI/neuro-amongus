@@ -8,6 +8,6 @@ public static class MeetingHud_Start_Patch
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.MainContext.VisionHandler.ReportFindings();
+        NeuroPlugin.Instance.VisionHandler.ReportFindings();
     }
 }

@@ -1,15 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Neuro.DependencyInjection;
 using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Minigames;
 
-public class MinigamesHandler : IMinigamesHandler
+public class MinigamesHandler
 {
-    public IContextProvider Context { get; set; }
-
     public IEnumerator CompleteMinigame(PlayerTask task, Minigame minigame)
     {
         yield return new WaitForSeconds(GetTimeToComplete(task.TaskType));
@@ -56,8 +53,8 @@ public class MinigamesHandler : IMinigamesHandler
         if (nextTask != null)
         {
             Info("Next task isn't null");
-            NeuroPlugin.Instance.MainContext.TasksHandler.CurrentPath = NeuroPlugin.Instance.MainContext.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
-            NeuroPlugin.Instance.MainContext.TasksHandler.PathIndex = 0;
+            NeuroPlugin.Instance.TasksHandler.CurrentPath = NeuroPlugin.Instance.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
+            NeuroPlugin.Instance.TasksHandler.PathIndex = 0;
         }
     }
 

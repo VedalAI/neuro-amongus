@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using Neuro.DependencyInjection;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -8,11 +7,9 @@ using UnityEngine;
 namespace Neuro.Tasks;
 
 [RegisterInIl2Cpp]
-public class TasksHandler : MonoBehaviour, ITasksHandler
+public class TasksHandler : MonoBehaviour
 {
     public TasksHandler(IntPtr ptr) : base(ptr) { }
-
-    public IContextProvider Context { get; set; }
 
     // TODO: Move this to movement class
     public Vector2[] CurrentPath { get; set; } = Array.Empty<Vector2>();
@@ -20,7 +17,7 @@ public class TasksHandler : MonoBehaviour, ITasksHandler
 
     public IEnumerator EvaluatePath(NormalPlayerTask initial)
     {
-        CurrentPath = Context.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
+        CurrentPath = NeuroPlugin.Instance.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
         PathIndex = 0;
 
         while (true)
@@ -35,12 +32,14 @@ public class TasksHandler : MonoBehaviour, ITasksHandler
             {
                 Info("Task is complete");
                 foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+                {
                     if (!t.IsComplete && t.HasLocation)
                     {
                         nextTask = t;
                         Info(nextTask.name);
                         break;
                     }
+                }
             }
             else
             {
@@ -50,7 +49,7 @@ public class TasksHandler : MonoBehaviour, ITasksHandler
             if (nextTask != null)
             {
                 Info("Next task isn't null");
-                CurrentPath = Context.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
+                CurrentPath = NeuroPlugin.Instance.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
                 PathIndex = 0;
 
                 //pathfinding.DrawPath(currentPath);

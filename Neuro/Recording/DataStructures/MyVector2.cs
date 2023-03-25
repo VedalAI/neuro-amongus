@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Neuro.Recording.DataStructures;
 
-// TODO: Can this be replaced with System.Numerics.Vector2?
+// TODO: Use UnityEngine.Vector2 instead and either: 1. Create a custom JsonConverter or 2. Use a custom binary converter
 [Serializable]
 public record struct MyVector2(float x, float y)
 {

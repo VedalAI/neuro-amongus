@@ -4,7 +4,6 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
-using Neuro.DependencyInjection;
 using Neuro.Minigames;
 using Neuro.Movement;
 using Neuro.Pathfinding;
@@ -20,18 +19,16 @@ namespace Neuro;
 [BepInAutoPlugin]
 [BepInProcess("Among Us.exe")]
 [BepInDependency(ReactorPlugin.Id)]
-public partial class NeuroPlugin : BasePlugin, IContextProvider
+public partial class NeuroPlugin : BasePlugin
 {
     public static NeuroPlugin Instance => PluginSingleton<NeuroPlugin>.Instance;
 
-    public IContextProvider MainContext => this;
-
-    public IMinigamesHandler MinigamesHandler { get; private set; }
-    public IMovementHandler MovementHandler { get; private set; }
-    public IPathfindingHandler PathfindingHandler { get; private set; }
-    public IRecordingHandler RecordingHandler { get; private set; }
-    public ITasksHandler TasksHandler { get; private set; }
-    public IVisionHandler VisionHandler { get; private set; }
+    public MinigamesHandler MinigamesHandler { get; private set; }
+    public MovementHandler MovementHandler { get; private set; }
+    public PathfindingHandler PathfindingHandler { get; private set; }
+    public RecordingHandler RecordingHandler { get; private set; }
+    public TasksHandler TasksHandler { get; private set; }
+    public VisionHandler VisionHandler { get; private set; }
 
     public override void Load()
     {
@@ -40,8 +37,8 @@ public partial class NeuroPlugin : BasePlugin, IContextProvider
         MinigamesHandler = new MinigamesHandler();
         MovementHandler = new MovementHandler();
         PathfindingHandler = new PathfindingHandler();
-        RecordingHandler = GameObjectUtilities.CreatePermanentSingleton<RecordingHandler>(MainContext);
-        TasksHandler = GameObjectUtilities.CreatePermanentSingleton<TasksHandler>(MainContext);
-        VisionHandler = GameObjectUtilities.CreatePermanentSingleton<VisionHandler>(MainContext);
+        RecordingHandler = GameObjectUtilities.CreatePermanentSingleton<RecordingHandler>();
+        TasksHandler = GameObjectUtilities.CreatePermanentSingleton<TasksHandler>();
+        VisionHandler = GameObjectUtilities.CreatePermanentSingleton<VisionHandler>();
     }
 }

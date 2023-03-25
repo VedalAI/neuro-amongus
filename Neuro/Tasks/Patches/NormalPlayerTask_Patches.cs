@@ -13,7 +13,7 @@ public static class NormalPlayerTask_Initialize
         if (done) return;
         done = true;
 
-        PlayerControl.LocalPlayer.StartCoroutine(NeuroPlugin.Instance.MainContext.TasksHandler.EvaluatePath(__instance));
+        PlayerControl.LocalPlayer.StartCoroutine(NeuroPlugin.Instance.TasksHandler.EvaluatePath(__instance));
 
         //NeuroPlugin.Instance.pathfinding.DrawPath(NeuroPlugin.Instance.currentPath))
     }

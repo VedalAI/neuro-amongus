@@ -9,7 +9,7 @@ public static class PlayerPhysics_SetNormalizedVelocity_Patch
     [HarmonyPrefix]
     public static void Prefix(ref Vector2 direction)
     {
-        Vector2? newDirection = NeuroPlugin.Instance.MainContext.MovementHandler.GetForcedMoveDirection(direction);
+        Vector2? newDirection = NeuroPlugin.Instance.MovementHandler.GetForcedMoveDirection(direction);
         if (newDirection.HasValue) direction = newDirection.Value;
     }
 }

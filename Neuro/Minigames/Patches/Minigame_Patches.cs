@@ -9,6 +9,6 @@ public static class Minigame_Begin_Patch
     [HarmonyPostfix]
     public static void Postfix(Minigame __instance, PlayerTask task)
     {
-        __instance.StartCoroutine(NeuroPlugin.Instance.MainContext.MinigamesHandler.CompleteMinigame(task, __instance));
+        __instance.StartCoroutine(NeuroPlugin.Instance.MinigamesHandler.CompleteMinigame(task, __instance));
     }
 }

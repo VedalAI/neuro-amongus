@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using Neuro.DependencyInjection;
 using Neuro.Recording.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -10,11 +9,9 @@ using UnityEngine;
 namespace Neuro.Recording;
 
 [RegisterInIl2Cpp]
-public class RecordingHandler : MonoBehaviour, IRecordingHandler
+public class RecordingHandler : MonoBehaviour
 {
     public RecordingHandler(IntPtr ptr) : base(ptr) { }
-
-    public IContextProvider Context { get; set; }
 
     public List<Frame> Frames { get; set; } = new();
 
@@ -26,13 +23,13 @@ public class RecordingHandler : MonoBehaviour, IRecordingHandler
         Frame frame = new(
             PlayerControl.LocalPlayer.Data.Role.IsImpostor,
             PlayerControl.LocalPlayer.killTimer,
-            Context.MovementHandler.DirectionToNearestTask,
+            NeuroPlugin.Instance.MovementHandler.DirectionToNearestTask,
             PlayerControl.LocalPlayer.myTasks.ToArray().Any(PlayerTask.TaskIsEmergency),
             Vector2.zero,
-            Context.VisionHandler.DirectionToNearestBody,
+            NeuroPlugin.Instance.VisionHandler.DirectionToNearestBody,
             GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.isActiveAndEnabled,
             new List<PlayerRecord>(),
-            Context.MovementHandler.LastMoveDirection,
+            NeuroPlugin.Instance.MovementHandler.LastMoveDirection,
             false,
             false,
             false,

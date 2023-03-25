@@ -10,6 +10,6 @@ public static class ShipStatus_Awake_Patch
     public static void Postfix()
     {
         GameObject arrowObject = new("Arrow");
-        NeuroPlugin.Instance.MainContext.MovementHandler.Arrow = arrowObject.AddComponent<LineRenderer>();
+        NeuroPlugin.Instance.MovementHandler.Arrow = arrowObject.AddComponent<LineRenderer>();
     }
 }

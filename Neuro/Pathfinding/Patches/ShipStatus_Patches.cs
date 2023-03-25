@@ -8,6 +8,6 @@ public static class ShipStatus_Awake_Patch
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.MainContext.PathfindingHandler.Initialize();
+        NeuroPlugin.Instance.PathfindingHandler.Initialize();
     }
 }

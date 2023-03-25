@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Neuro.DependencyInjection;
 using Neuro.Vision.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -10,11 +9,9 @@ namespace Neuro.Vision;
 
 // TODO: Refactor this entire class
 [RegisterInIl2Cpp]
-public class VisionHandler : MonoBehaviour, IVisionHandler
+public class VisionHandler : MonoBehaviour
 {
     public VisionHandler(IntPtr ptr) : base(ptr) { }
-
-    public IContextProvider Context { get; set; }
 
     public Vector2 DirectionToNearestBody { get; set; }
 

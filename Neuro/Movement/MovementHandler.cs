@@ -1,13 +1,10 @@
-﻿using Neuro.DependencyInjection;
-using Neuro.Tasks;
+﻿using Neuro.Tasks;
 using UnityEngine;
 
 namespace Neuro.Movement;
 
-public class MovementHandler : IMovementHandler
+public class MovementHandler
 {
-    public IContextProvider Context { get; set; }
-
     public Vector2 LastMoveDirection { get; private set; }
     public Vector2 DirectionToNearestTask { get; private set; }
 
@@ -16,7 +13,7 @@ public class MovementHandler : IMovementHandler
     public Vector2? GetForcedMoveDirection(Vector2 actualDirection)
     {
         // TODO: This is terrible, MovementHandler should not assign to fields in different handlers
-        ITasksHandler handler = Context.TasksHandler;
+        TasksHandler handler = NeuroPlugin.Instance.TasksHandler;
 
         LastMoveDirection = actualDirection;
         if (handler.CurrentPath.Length > 0 && handler.PathIndex != -1)

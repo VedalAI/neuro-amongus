@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Neuro.DependencyInjection;
 using Neuro.Pathfinding.DataStructures;
 using UnityEngine;
 
 namespace Neuro.Pathfinding;
 
-public class PathfindingHandler : IPathfindingHandler
+public class PathfindingHandler
 {
     private const int GRID_SIZE = 500;
     private const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;
     private const int GRID_UPPER_BOUNDS = GRID_SIZE / 2;
-
-    public IContextProvider Context { get; set; }
 
     private Node[,] grid;
 
