@@ -10,12 +10,13 @@ public class MovementHandler
 
     public LineRenderer Arrow { get; set; }
 
-    public Vector2? GetForcedMoveDirection(Vector2 actualDirection)
+    // TODO: This method wasn't actually changing anything, why not?
+    public void GetForcedMoveDirection(ref Vector2 direction)
     {
         // TODO: This is terrible, MovementHandler should not assign to fields in different handlers
         TasksHandler handler = NeuroPlugin.Instance.TasksHandler;
 
-        LastMoveDirection = actualDirection;
+        LastMoveDirection = direction;
         if (handler.CurrentPath.Length > 0 && handler.PathIndex != -1)
         {
             Vector2 nextWaypoint = handler.CurrentPath[handler.PathIndex];
@@ -46,7 +47,5 @@ public class MovementHandler
         {
             DirectionToNearestTask = Vector2.zero;
         }
-
-        return null;
     }
 }

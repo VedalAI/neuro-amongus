@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Neuro.Recording.DataStructures;
 
-[Serializable]
-public record Frame(bool isImposter,
-    float killCooldown,
-    MyVector2 directionToNearestTask,
-    bool isEmergencyTask,
-    MyVector2 directionToNearestVent,
-    MyVector2 directionToNearestBody,
-    bool canReport,
-    List<PlayerRecord> playerRecords,
-    MyVector2 direction,
-    bool report,
-    bool vent,
-    bool kill,
-    bool sabotage,
-    bool doors
+public record Frame(
+    bool IsImposter,
+    float KillCooldown,
+    MyVector2 DirectionToNearestTask,
+    bool IsEmergencyTask,
+    MyVector2 DirectionToNearestVent,
+    MyVector2 DirectionToNearestBody,
+    bool CanReport,
+    List<PlayerRecord> PlayerRecords,
+    MyVector2 Direction,
+    bool Report,
+    bool Vent,
+    bool Kill,
+    bool Sabotage,
+    bool Doors
 );
