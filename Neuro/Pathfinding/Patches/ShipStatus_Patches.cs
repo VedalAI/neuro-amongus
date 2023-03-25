@@ -3,7 +3,7 @@
 namespace Neuro.Pathfinding.Patches;
 
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Awake))]
-public static class ShipStatus_Awake_Patch
+public static class ShipStatus_Awake
 {
     [HarmonyPostfix]
     public static void Postfix()

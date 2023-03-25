@@ -14,7 +14,7 @@ public static class PlayerControl_Start
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
-public static class PlayerControl_Die_Patch
+public static class PlayerControl_Die
 {
     [HarmonyPostfix]
     public static void Postfix(PlayerControl __instance, DeathReason reason)

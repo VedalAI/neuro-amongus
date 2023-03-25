@@ -3,7 +3,7 @@
 namespace Neuro.Recording.Patches;
 
 [HarmonyPatch(typeof(Vent), nameof(Vent.Use))]
-public static class Vent_Use_Patch
+public static class Vent_Use
 {
     [HarmonyPostfix]
     public static void Postfix()
