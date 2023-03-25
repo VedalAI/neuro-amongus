@@ -13,6 +13,10 @@ public class Vision
 
     public Dictionary<byte, PlayerControl> playerControls = new Dictionary<byte, PlayerControl>();
 
+    public Dictionary<byte, int> playerRecordIndexes = new Dictionary<byte, int>();
+
+    public List<PlayerRecord> playerRecords = new();
+
     public float roundStartTime = 0f; // in seconds
     public float lastPlayerUpdateTime = 0f; // in seconds, records the last time PlayerControl.FixedUpdate was called
     public float lastPlayerUpdateDuration = 0f; // in seconds, records the time elapsed since last PlayerControl.FixedUpdate was called
@@ -23,10 +27,17 @@ public class Vision
     {
         if (PlayerControl.LocalPlayer == null) PlayerControl.LocalPlayer = newPlayerControl;
 
+        playerRecords.Clear();
+        playerRecordIndexes.Clear();
+
+        int i = 0;
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls.ToArray())
         {
             if (!playerControls.ContainsKey(playerControl.PlayerId))
                 playerControls.Add(playerControl.PlayerId, playerControl);
+            playerRecords.Add(new PlayerRecord(new MyVector2(0, 0), -1));
+            playerRecordIndexes.Add(playerControl.PlayerId, i);
+            i++;
         }
         foreach (PlayerControl playerControl in playerControls.Values)
         {
@@ -152,6 +163,13 @@ public class Vision
     void UpdateNearbyPlayersVision() {
         foreach (PlayerControl playerControl in playerControls.Values)
         {
+            int playerIndex = playerRecordIndexes[playerControl.PlayerId];
+            PlayerRecord playerRecord = playerRecords[playerIndex];
+            playerRecord.distance = -1;
+            playerRecord.relativeDirection = new MyVector2(0, 0);
+
+            playerRecords[playerIndex] = playerRecord;
+
             if (PlayerControl.LocalPlayer == playerControl) continue;
 
             if (playerControl.Data.IsDead) continue;
@@ -181,6 +199,10 @@ public class Vision
                     playerLocations[playerControl].dead = false;
                     playerLocations[playerControl].gameTimeVisible += lastPlayerUpdateDuration; // Keep track of total time we've been able to see this player
                     playerLocations[playerControl].roundTimeVisible += lastPlayerUpdateDuration; // Keep track of time this round we've been able to see this player
+
+                    playerRecord.distance = (playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).magnitude;
+                    playerRecord.relativeDirection = (MyVector2)(playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+                    playerRecords[playerIndex] = playerRecord;
 
                     Debug.Log(playerControl.name + " is in " + Methods.GetLocationFromPosition(playerControl.transform.position));
                 }

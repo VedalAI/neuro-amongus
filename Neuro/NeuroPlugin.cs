@@ -39,6 +39,10 @@ public partial class NeuroPlugin : BasePlugin
 
     public List<PlayerTask> tasks = new List<PlayerTask>();
 
+    public bool didKill = false;
+    public bool didReport = false;
+    public bool didVent = false;
+
     public override void Load()
     {
         ConfigName = Config.Bind("Neuro", "Name", "Neuro-sama");
@@ -100,9 +104,6 @@ public partial class NeuroPlugin : BasePlugin
             if (task.TaskType == TaskTypes.FixLights || task.TaskType == TaskTypes.RestoreOxy || task.TaskType == TaskTypes.ResetReactor || task.TaskType == TaskTypes.ResetSeismic || task.TaskType == TaskTypes.FixComms)
                 sabotageActive = true;
 
-        List<PlayerRecord> playerRecords = new List<PlayerRecord>();
-
-
         // Record values
         Frame frame = new Frame(
             localPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor,
@@ -111,17 +112,24 @@ public partial class NeuroPlugin : BasePlugin
             sabotageActive,
             Vector2.zero,
             vision.directionToNearestBody,
-            GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.gameObject.activeInHierarchy,
-            playerRecords,
+            GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.canInteract,
+            vision.playerRecords,
             moveDirection,
-            false,
-            false,
-            false,
+            didReport,
+            didVent,
+            didKill,
+            // TODO: Implement these two
             false,
             false
         );
-        string frameString = JsonSerializer.Serialize(frame);
-        Debug.Log(frameString);
+
+        didKill = false;
+        didReport = false;
+        didVent = false;
+
+        //string frameString = JsonSerializer.Serialize(frame);
+        //Debug.Log(frameString);
+
         recorder.Frames.Add(frame);
     }
 
@@ -178,36 +186,61 @@ public partial class NeuroPlugin : BasePlugin
 
         while (true)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(0.5f);
 
-            PlayerTask task = PlayerControl.LocalPlayer.myTasks[0];
+            UpdatePathToTask();
+        }
+    }
 
-            PlayerTask nextTask = null;
-            if (task.IsComplete)
+    public void UpdatePathToTask(PlayerTask task = null)
+    {
+        if(task == null) task = PlayerControl.LocalPlayer.myTasks[0];
+
+        PlayerTask nextTask = null;
+        if (task.IsComplete)
+        {
+            Debug.Log("Task is complete, getting next one.");
+            PlayerTask closestTask = null;
+            float closestDistance = Mathf.Infinity;
+
+            foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
             {
-                Debug.Log("Task is complete");
-                foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+                if (!t.IsComplete && t.HasLocation)
                 {
-                    if (!t.IsComplete && t.HasLocation)
+                    Vector2[] path = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations[0]);
+                    // Evaluate length of path
+                    float distance = 0f;
+                    for (int i = 0; i < path.Length - 1; i++)
                     {
-                        nextTask = t;
-                        Debug.Log(nextTask.name);
-                        break;
+                        distance += Vector2.Distance(path[i], path[i + 1]);
+                    }
+
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestTask = t;
                     }
                 }
             }
-            else
+            if(closestTask == null)
             {
-                nextTask = task;
+                pathIndex = -1;
+                GameObject.Destroy(GameObject.Find("Arrow"));
+                return;
             }
-            if (nextTask != null)
-            {
-                Debug.Log("Next task isn't null");
-                currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations[0]);
-                pathIndex = 0;
+            nextTask = closestTask;
+        }
+        else
+        {
+            nextTask = task;
+        }
+        if (nextTask != null)
+        {
+            Debug.Log("Next task isn't null");
+            currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations[0]);
+            pathIndex = 0;
 
-                //pathfinding.DrawPath(currentPath);
-            }
+            //pathfinding.DrawPath(currentPath);
         }
     }
 }

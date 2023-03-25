@@ -44,39 +44,6 @@ public static class Minigame_Begin
         minigame.Close();
         PluginSingleton<NeuroPlugin>.Instance.inMinigame = false;
 
-        GetPathToNextTask(task);
-    }
-
-    // This should probably be somewhere else
-    public static void GetPathToNextTask(PlayerTask lastTask)
-    {
-        PlayerTask nextTask = null;
-        if (lastTask.IsComplete)
-        {
-            Debug.Log("Task is complete");
-            foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
-            {
-                if (!t.IsComplete && t.HasLocation)
-                {
-                    nextTask = t;
-                    Debug.Log(nextTask.name);
-                    break;
-                }
-            }
-        }
-        else
-        {
-            nextTask = lastTask;
-        }
-        if (nextTask != null)
-        {
-            Debug.Log("Next task isn't null");
-            PluginSingleton<NeuroPlugin>.Instance.currentPath = PluginSingleton<NeuroPlugin>.Instance.pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations[0]);
-            PluginSingleton<NeuroPlugin>.Instance.pathIndex = 0;
-
-            //PluginSingleton<NeuroPlugin>.Instance.pathfinding.DrawPath(PluginSingleton<NeuroPlugin>.Instance.currentPath))
-        }
-
-     
+        PluginSingleton<NeuroPlugin>.Instance.UpdatePathToTask(task);
     }
 }

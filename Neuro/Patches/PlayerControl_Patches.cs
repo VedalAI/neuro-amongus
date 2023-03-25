@@ -44,3 +44,23 @@ public static class PlayerControl_Die
         }
     }
 }
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckMurder))]
+public static class PlayerControl_CmdCheckMurder
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        Debug.Log("CmdCheckMurder");
+        PluginSingleton<NeuroPlugin>.Instance.didKill = true;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdReportDeadBody))]
+public static class PlayerControl_CmdReportDeadBody
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        Debug.Log("CmdReportDeadBody");
+        PluginSingleton<NeuroPlugin>.Instance.didReport = true;
+    }
+}
