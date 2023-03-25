@@ -1,4 +1,5 @@
 ﻿using Neuro.Utils;
+using Reactor.Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -95,6 +96,9 @@ public class Vision
 
         // Reset dead bodies
         deadBodies.Clear();
+
+        // Clear out the target player
+        PluginSingleton<NeuroPlugin>.Instance.killTarget = null;
     }
 
     public void DeadBodyAppeared(DeadBody deadBody)

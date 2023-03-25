@@ -240,7 +240,7 @@ public partial class NeuroPlugin : BasePlugin
         currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, player.transform.position);
         pathIndex = 0;
 
-        while (!player.Data.IsDead)
+        while (!player.Data.IsDead || killTarget != null)
         {
             yield return new WaitForSeconds(0.5f);
 
@@ -253,7 +253,7 @@ public partial class NeuroPlugin : BasePlugin
 
     public void UpdatePathToPlayer(PlayerControl player)
     {
-        if (player.Data.IsDead) return;
+        if (player.Data.IsDead || killTarget == null) return;
         currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, player.transform.position);
         pathIndex = 0;
     }
