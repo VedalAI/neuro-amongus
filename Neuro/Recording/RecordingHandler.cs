@@ -15,6 +15,11 @@ public class RecordingHandler : MonoBehaviour
 
     public List<Frame> Frames { get; set; } = new();
 
+    // TODO: Maybe there's a better way to store this than to keep random properties in this class
+    public bool DidReport { get; set; }
+    public bool DidVent { get; set; }
+    public bool DidKill { get; set; }
+
     public void FixedUpdate()
     {
         if (MeetingHud.Instance) return;
@@ -30,14 +35,17 @@ public class RecordingHandler : MonoBehaviour
             GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.isActiveAndEnabled,
             new List<PlayerRecord>(),
             NeuroPlugin.Instance.MovementHandler.LastMoveDirection,
-            false,
-            false,
-            false,
+            DidReport,
+            DidVent,
+            DidKill,
+            // TODO: Implement these two
             false,
             false
         );
         string frameString = JsonSerializer.Serialize(frame);
         Info(frameString);
         Frames.Add(frame);
+
+        DidReport = DidVent = DidKill = false;
     }
 }
