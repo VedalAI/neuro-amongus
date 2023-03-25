@@ -1,12 +1,14 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.IL2CPP.Utils;
 using HarmonyLib;
 using Reactor;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text.Json;
+using System;
 
 namespace Neuro;
 
@@ -39,6 +41,8 @@ public partial class NeuroPlugin : BasePlugin
 
     public List<PlayerTask> tasks = new List<PlayerTask>();
 
+    public PlayerControl killTarget = null;
+
     public bool didKill = false;
     public bool didReport = false;
     public bool didVent = false;
@@ -65,6 +69,8 @@ public partial class NeuroPlugin : BasePlugin
         arrow.material = new Material(Shader.Find("Sprites/Default"));
         arrow.startColor = Color.blue;
         arrow.endColor = Color.cyan;
+
+        killTarget = null;
     }
 
     public void FixedUpdate(PlayerControl localPlayer)
@@ -73,7 +79,9 @@ public partial class NeuroPlugin : BasePlugin
 
         vision.UpdateVision();
 
-        if (localPlayer.myTasks != null)
+        // only do tasks when we aren't trying to kill anyone
+        // prevents weird interactions such as stopping to do a task during a chase
+        if (localPlayer.myTasks != null && killTarget == null)
         {
             foreach (PlayerTask task in localPlayer.myTasks)
             {
@@ -99,6 +107,53 @@ public partial class NeuroPlugin : BasePlugin
             }
         }
 
+        bool isImpostor = localPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor;
+
+        // comment this out if in practice area
+        if (isImpostor && !localPlayer.IsKillTimerEnabled)
+        {
+            if (killTarget == null)
+            {
+                PlayerControl potentialKillTarget = null;
+
+                foreach (KeyValuePair<PlayerControl, Utils.LastSeenPlayer> player in vision.playerLocations)
+                {
+                    // ignore ourselves, dead players, and other impostors
+                    if (localPlayer == player.Key) continue;
+                    if (player.Key.Data.IsDead) continue;
+                    if (player.Key.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor) continue;
+
+                    if (player.Value.time > Time.timeSinceLevelLoad - (2 * vision.lastPlayerUpdateDuration))
+                    {
+                        // if there are multiple players in view, avoid trying to kill so we dont give ourselves up
+                        if (potentialKillTarget != null)
+                        {
+                            potentialKillTarget = null;
+                            break;
+                        }
+                        potentialKillTarget = player.Key;
+                    }
+                }
+                // if the target ends up being the only target in the room, mark them a kill target and pathfind to them
+                if (potentialKillTarget != null)
+                {
+                    killTarget = potentialKillTarget;
+                    localPlayer.StartCoroutine(EvaluatePathToPlayer(killTarget));
+                }
+            }
+            else
+            {
+                float distance = Vector2.Distance(killTarget.transform.position, PlayerControl.LocalPlayer.transform.position);
+                if (distance < 0.8f)
+                {
+                    // this actually works in practice area which is pretty nice
+                    localPlayer.MurderPlayer(killTarget);
+                    Debug.Log(String.Format("I just killed {0}!", killTarget.Data.PlayerName));
+                    killTarget = null;
+                }
+            }
+        }
+
         bool sabotageActive = false;
         foreach (PlayerTask task in localPlayer.myTasks)
             if (task.TaskType == TaskTypes.FixLights || task.TaskType == TaskTypes.RestoreOxy || task.TaskType == TaskTypes.ResetReactor || task.TaskType == TaskTypes.ResetSeismic || task.TaskType == TaskTypes.FixComms)
@@ -106,7 +161,7 @@ public partial class NeuroPlugin : BasePlugin
 
         // Record values
         Frame frame = new Frame(
-            localPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor,
+            isImpostor,
             localPlayer.killTimer,
             directionToNearestTask,
             sabotageActive,
@@ -179,6 +234,30 @@ public partial class NeuroPlugin : BasePlugin
         Debug.Log("NEURO: MEETING IS FINISHED");
         vision.MeetingEnd();
     }
+
+    public IEnumerator EvaluatePathToPlayer(PlayerControl player)
+    {
+        currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, player.transform.position);
+        pathIndex = 0;
+
+        while (!player.Data.IsDead)
+        {
+            yield return new WaitForSeconds(0.5f);
+
+            UpdatePathToPlayer(player);
+        }
+
+        // after killing the player get the next closest task by restarting the task pathfinding coroutine
+        PlayerControl.LocalPlayer.StartCoroutine(EvaluatePath(PlayerControl.LocalPlayer.myTasks[0].TryCast<NormalPlayerTask>()));
+    }
+
+    public void UpdatePathToPlayer(PlayerControl player)
+    {
+        if (player.Data.IsDead) return;
+        currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, player.transform.position);
+        pathIndex = 0;
+    }
+
     public IEnumerator EvaluatePath(NormalPlayerTask initial)
     {
         currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations[0]);
@@ -188,8 +267,15 @@ public partial class NeuroPlugin : BasePlugin
         {
             yield return new WaitForSeconds(0.5f);
 
+            // if we are attempting to kill someone, temporarily stop pathfinding to tasks
+            if (killTarget != null)
+            {
+                yield break;
+            }
+
             UpdatePathToTask();
         }
+
     }
 
     public void UpdatePathToTask(PlayerTask task = null)
