@@ -53,8 +53,14 @@ public partial class NeuroPlugin : BasePlugin
 
         pathfinding.FloodFill(shipStatus.MeetingSpawnCenter + (Vector2.up * shipStatus.SpawnRadius) + new Vector2(0f, 0.3636f));
 
-        GameObject arrowGO = new GameObject("Arrow");
-        arrow = arrowGO.AddComponent<LineRenderer>();
+        GameObject arrowGo = new GameObject("Arrow");
+        arrow = arrowGo.AddComponent<LineRenderer>();
+        arrow.startWidth = 0.4f;
+        arrow.endWidth = 0.05f;
+        arrow.positionCount = 2;
+        arrow.material = new Material(Shader.Find("Sprites/Default"));
+        arrow.startColor = Color.blue;
+        arrow.endColor = Color.cyan;
     }
 
     public void FixedUpdate(PlayerControl localPlayer)
@@ -145,9 +151,6 @@ public partial class NeuroPlugin : BasePlugin
             LineRenderer renderer = arrow;
             renderer.SetPosition(0, PlayerControl.LocalPlayer.GetTruePosition());
             renderer.SetPosition(1, PlayerControl.LocalPlayer.GetTruePosition() + directionToNearestTask);
-            renderer.widthMultiplier = 0.1f;
-            renderer.positionCount = 2;
-            renderer.startColor = Color.red;
         }
         else
         {

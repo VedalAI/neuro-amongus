@@ -76,18 +76,22 @@ public class Pathfinding
             }
         }
 
+        var nodeMaterial = new Material(Shader.Find("Unlit/MaskShader"));
         foreach (Node node in closedSet.ToList())
         {
-            GameObject test = new GameObject("Test");
-            //Debug.Log(test.transform);
-            test.transform.position = (Vector3)node.worldPosition;
+            GameObject nodeVisualPoint = new GameObject("Node Visual Point");
 
-            LineRenderer renderer = test.AddComponent<LineRenderer>();
-            renderer.SetPosition(0, test.transform.position);
-            renderer.SetPosition(1, test.transform.position + new Vector3(0, 0.1f, 0));
+            var position = (Vector3)node.worldPosition;
+            nodeVisualPoint.transform.position = position;
+
+            LineRenderer renderer = nodeVisualPoint.AddComponent<LineRenderer>();
+            renderer.SetPosition(0, position);
+            renderer.SetPosition(1, position + new Vector3(0, 0.1f, 0));
             renderer.widthMultiplier = 0.1f;
             renderer.positionCount = 2;
+            renderer.material = nodeMaterial;
             renderer.startColor = Color.red;
+            renderer.endColor = Color.red;
         }
 
         // Set all nodes not in closed set to inaccessible
@@ -196,19 +200,21 @@ public class Pathfinding
         Debug.Log("End Node");
         Node targetNode = FindClosestNode(target);
 
-        GameObject endNodeObj = new GameObject("Test");
-        //Debug.Log(test.transform);
-        endNodeObj.transform.position = (Vector3)targetNode.worldPosition;
+        GameObject endNodeObj = new GameObject("Task Visual Point");
+
+        var position = (Vector3)targetNode.worldPosition;
+        endNodeObj.transform.position = position;
 
         LineRenderer renderer2 = endNodeObj.AddComponent<LineRenderer>();
-        renderer2.SetPosition(0, (Vector3)targetNode.worldPosition);
-        renderer2.SetPosition(1, (Vector3)targetNode.worldPosition + new Vector3(0f, 0.3f, 0));
+        renderer2.SetPosition(0, position);
+        renderer2.SetPosition(1, position + new Vector3(0f, 0.3f, 0));
         renderer2.widthMultiplier = 0.3f;
         renderer2.positionCount = 2;
+        renderer2.material = new Material(Shader.Find("Unlit/MaskShader"));
         renderer2.startColor = Color.blue;
+        renderer2.endColor = Color.blue;
 
-        Debug.Log(startNode.worldPosition.ToString());
-        Debug.Log(targetNode.worldPosition.ToString());
+        Debug.Log($"startNode: {startNode.worldPosition} targetNode: {targetNode.worldPosition}");
 
         if (startNode == null || targetNode == null || !startNode.accessible || !targetNode.accessible)
         {
@@ -263,7 +269,7 @@ public class Pathfinding
                         openSet.UpdateItem(neighbour);
                     }
                 }
-                    
+
             }
         }
 
