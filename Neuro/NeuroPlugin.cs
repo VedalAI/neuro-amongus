@@ -7,8 +7,8 @@ using Reactor;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
-using System.Text.Json;
 using System;
+using System.Linq;
 
 namespace Neuro;
 
@@ -41,8 +41,11 @@ public partial class NeuroPlugin : BasePlugin
 
     public List<PlayerTask> tasks = new List<PlayerTask>();
 
-    bool isImpostor = false;
+    public List<Vent> vents = new List<Vent>();
+
+    public bool isImpostor = false;
     public PlayerControl killTarget = null;
+    public int ventCooldown = 0;
 
     public bool didKill = false;
     public bool didReport = false;
@@ -72,6 +75,9 @@ public partial class NeuroPlugin : BasePlugin
         arrow.endColor = Color.cyan;
 
         killTarget = null;
+
+        // only run once on game start so negligable performance impact
+        vents = GameObject.FindObjectsOfType<Vent>().ToList();
     }
 
     public void FixedUpdate(PlayerControl localPlayer)
@@ -108,11 +114,12 @@ public partial class NeuroPlugin : BasePlugin
             }
         }
 
+
         isImpostor = localPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor;
         // for testing purposes
-        // isImpostor = true;
+        //isImpostor = true;
 
-        // comment this out if in practice area
+        // in practice area go to the laptop and click "Be_Impostor.exe" to be impostor
         if (isImpostor && !localPlayer.IsKillTimerEnabled)
         {
             if (killTarget == null)
@@ -146,16 +153,39 @@ public partial class NeuroPlugin : BasePlugin
             }
             else
             {
-                float distance = Vector2.Distance(killTarget.transform.position, PlayerControl.LocalPlayer.transform.position);
+                float distance = Vector2.Distance(killTarget.transform.position, localPlayer.transform.position);
                 if (distance < 0.8f)
                 {
                     // this actually works in practice area which is pretty nice
                     localPlayer.MurderPlayer(killTarget);
                     Debug.Log(String.Format("I just killed {0}!", killTarget.Data.PlayerName));
+                    didKill = true;
                     killTarget = null;
                 }
             }
         }
+
+        // currently, this will just vent whenever we're near a vent
+        // in practice it should only activate under certain circumstances, such as after a kill
+        // TODO: Pathfind to vents
+        if (isImpostor && ventCooldown == 0 && !localPlayer.inVent && !localPlayer.walkingToVent)
+        {
+            foreach (Vent vent in vents)
+            {
+                float distance = Vector2.Distance(vent.transform.position, localPlayer.transform.position);
+                if (distance < 0.4f)
+                {
+                    // vent.EnterVent() and vent.Use() dont actually put you in the vent for whatever reason so just click the button virtually
+                    HudManager.Instance.ImpostorVentButton.DoClick();
+                    break;
+                }
+            }
+        }
+
+        // cooldown so we dont just hop right back in the vent we just exited
+        // can probably be removed if the above commented conditions are implemented
+        if (ventCooldown > 0)
+            ventCooldown--;
 
         bool sabotageActive = false;
         foreach (PlayerTask task in localPlayer.myTasks)
@@ -224,6 +254,45 @@ public partial class NeuroPlugin : BasePlugin
         }
 
         return true;
+    }
+
+    public IEnumerator Vent(Vent original)
+    {
+        Debug.Log("I entered a vent!");
+        // there is a vent.NearbyVents variable, but seems to break randomly
+        // so currently we just go to random vent
+        Vent current = vents[UnityEngine.Random.RandomRangeInt(0, vents.Count)];
+        yield return new WaitForSeconds(1.5f);
+        original.MoveToVent(current);
+        while (true)
+        {
+            yield return new WaitForSeconds(1.5f);
+            bool playerFound = false;
+            foreach (KeyValuePair<PlayerControl, Utils.LastSeenPlayer> player in vision.playerLocations)
+            {
+                if (PlayerControl.LocalPlayer == player.Key) continue;
+                if (player.Key.Data.IsDead) continue;
+                if (player.Key.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor) continue;
+
+                // if we see a player in our radius, try a different vent
+                if (player.Value.time > Time.timeSinceLevelLoad - (2 * vision.lastPlayerUpdateDuration))
+                {
+                    Debug.Log(String.Format("Spotted {0}, trying a different exit vent...", player.Key.name));
+                    Vent next = vents[UnityEngine.Random.RandomRangeInt(0, vents.Count)];
+                    current.MoveToVent(next);
+                    current = next;
+                    playerFound = true;
+                    break;
+                }
+            }
+            // if we dont see anyone, exit the vent we're currently in
+            if (!playerFound)
+            {
+                HudManager.Instance.ImpostorVentButton.DoClick();
+                ventCooldown = 60;
+                yield break;
+            }
+        }
     }
 
     public void MeetingBegin()
