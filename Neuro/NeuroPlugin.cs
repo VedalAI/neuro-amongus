@@ -41,6 +41,7 @@ public partial class NeuroPlugin : BasePlugin
 
     public List<PlayerTask> tasks = new List<PlayerTask>();
 
+    bool isImpostor = false;
     public PlayerControl killTarget = null;
 
     public bool didKill = false;
@@ -107,7 +108,9 @@ public partial class NeuroPlugin : BasePlugin
             }
         }
 
-        bool isImpostor = localPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor;
+        isImpostor = localPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor;
+        // for testing purposes
+        // isImpostor = true;
 
         // comment this out if in practice area
         if (isImpostor && !localPlayer.IsKillTimerEnabled)
@@ -123,7 +126,7 @@ public partial class NeuroPlugin : BasePlugin
                     if (player.Key.Data.IsDead) continue;
                     if (player.Key.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor) continue;
 
-                    if (player.Value.time > Time.timeSinceLevelLoad - (2 * vision.lastPlayerUpdateDuration))
+                    if (player.Value.time > Time.timeSinceLevelLoad - (60 * vision.lastPlayerUpdateDuration))
                     {
                         // if there are multiple players in view, avoid trying to kill so we dont give ourselves up
                         if (potentialKillTarget != null)
@@ -286,35 +289,25 @@ public partial class NeuroPlugin : BasePlugin
         if (task.IsComplete)
         {
             Debug.Log("Task is complete, getting next one.");
-            PlayerTask closestTask = null;
-            float closestDistance = Mathf.Infinity;
-
-            foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+            PlayerTask targetTask;
+            // as impostor, getting the furthest task instead of the closest one is good for post-kills
+            // as it prevents neuro from doing a task in the same room as a dead body
+            // it also helps her find more people to kill by traversing the entire map
+            if (isImpostor)
             {
-                if (!t.IsComplete && t.HasLocation)
-                {
-                    Vector2[] path = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations[0]);
-                    // Evaluate length of path
-                    float distance = 0f;
-                    for (int i = 0; i < path.Length - 1; i++)
-                    {
-                        distance += Vector2.Distance(path[i], path[i + 1]);
-                    }
-
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestTask = t;
-                    }
-                }
+                targetTask = GetFurthestTask();
             }
-            if(closestTask == null)
+            else
+            {
+                targetTask = GetClosestTask();
+            }
+            if(targetTask == null)
             {
                 pathIndex = -1;
                 GameObject.Destroy(GameObject.Find("Arrow"));
                 return;
             }
-            nextTask = closestTask;
+            nextTask = targetTask;
         }
         else
         {
@@ -328,5 +321,61 @@ public partial class NeuroPlugin : BasePlugin
 
             //pathfinding.DrawPath(currentPath);
         }
+    }
+
+    private PlayerTask GetClosestTask()
+    {
+        PlayerTask closestTask = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+        {
+            if (!t.IsComplete && t.HasLocation)
+            {
+                Vector2[] path = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations[0]);
+                // Evaluate length of path
+                float distance = 0f;
+                for (int i = 0; i < path.Length - 1; i++)
+                {
+                    distance += Vector2.Distance(path[i], path[i + 1]);
+                }
+
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestTask = t;
+                }
+            }
+        }
+
+        return closestTask;
+    }
+
+    private PlayerTask GetFurthestTask()
+    {
+        PlayerTask furthestTask = null;
+        float furthestDistance = 0f;
+
+        foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+        {
+            if (!t.IsComplete && t.HasLocation)
+            {
+                Vector2[] path = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations[0]);
+                // Evaluate length of path
+                float distance = 0f;
+                for (int i = 0; i < path.Length - 1; i++)
+                {
+                    distance += Vector2.Distance(path[i], path[i + 1]);
+                }
+
+                if (distance > furthestDistance)
+                {
+                    furthestDistance = distance;
+                    furthestTask = t;
+                }
+            }
+        }
+
+        return furthestTask;
     }
 }
