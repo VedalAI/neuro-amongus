@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Minigames;
@@ -24,38 +23,7 @@ public class MinigamesHandler
 
         minigame.Close();
 
-        GetPathToNextTask(task);
-    }
-
-    // TODO: Duplicated code with TasksHandler.EvaluatePath
-    private static void GetPathToNextTask(PlayerTask lastTask)
-    {
-        // TODO: This method should be somewhere else
-        PlayerTask nextTask = null;
-        if (lastTask.IsComplete)
-        {
-            Info("Task is complete");
-            foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
-            {
-                if (!t.IsComplete && t.HasLocation) // TODO: Get nearest location of any task instead of next task in list
-                {
-                    nextTask = t;
-                    Info(nextTask.name);
-                    break;
-                }
-            }
-        }
-        else
-        {
-            nextTask = lastTask;
-        }
-
-        if (nextTask != null)
-        {
-            Info("Next task isn't null");
-            NeuroPlugin.Instance.TasksHandler.CurrentPath = NeuroPlugin.Instance.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
-            NeuroPlugin.Instance.TasksHandler.PathIndex = 0;
-        }
+        NeuroPlugin.Instance.Tasks.UpdatePathToTask(task);
     }
 
     private static float GetTimeToComplete(TaskTypes task)
@@ -66,59 +34,59 @@ public class MinigamesHandler
 
     private static (float min, float max) GetMinMaxTimeToComplete(TaskTypes taskTypes) => MiniGameTimes.GetValueOrDefault(taskTypes, (2f, 4f));
 
-    private static readonly Dictionary<TaskTypes, (float min, float max)> MiniGameTimes = new Dictionary<TaskTypes, (float min, float max)>
+    private static readonly Dictionary<TaskTypes, (float min, float max)> MiniGameTimes = new()
     {
-        {TaskTypes.AlignEngineOutput, new (10f,15f)},
-        {TaskTypes.AlignTelescope, new (2f, 4f)},
-        {TaskTypes.AssembleArtifact, new (2f, 4f)},
-        {TaskTypes.BuyBeverage, new (2f, 4f)},
-        {TaskTypes.CalibrateDistributor, new (2f, 4f)},
-        {TaskTypes.ChartCourse, new (2f, 4f)},
-        {TaskTypes.CleanO2Filter, new (2f, 4f)},
-        {TaskTypes.CleanToilet, new (2f, 4f)},
-        {TaskTypes.VentCleaning, new (2f, 4f)},
-        {TaskTypes.ClearAsteroids, new (10f, 15f)},
-        {TaskTypes.Decontaminate, new (2f, 4f)},
-        {TaskTypes.DevelopPhotos, new (10f, 15f)},
-        {TaskTypes.DivertPower, new (2f, 4f)},
-        {TaskTypes.DressMannequin, new (2f, 4f)},
-        {TaskTypes.EmptyChute, new (10f, 15f)},
-        {TaskTypes.EmptyGarbage, new (10f, 15f)},
-        {TaskTypes.EnterIdCode, new (5f, 8f)},
-        {TaskTypes.FillCanisters, new (2f, 4f)},
-        {TaskTypes.FixShower, new (2f, 4f)},
-        {TaskTypes.FixWiring, new (5f, 8f)},
-        {TaskTypes.FuelEngines, new (10f, 15f)},
-        {TaskTypes.InsertKeys, new (5f, 8f)},
-        {TaskTypes.InspectSample, new (10f, 15f)},
-        {TaskTypes.MakeBurger, new (2f, 4f)},
-        {TaskTypes.MeasureWeather, new (2f, 4f)},
-        {TaskTypes.OpenWaterways, new (10f, 15f)},
-        {TaskTypes.PickUpTowels, new (2f, 4f)},
-        {TaskTypes.PolishRuby, new (2f, 4f)},
-        {TaskTypes.PrimeShields, new (2f, 4f)},
-        {TaskTypes.ProcessData, new (2f, 4f)},
-        {TaskTypes.PutAwayPistols, new (2f, 4f)},
-        {TaskTypes.PutAwayRifles, new (2f, 4f)},
-        {TaskTypes.RebootWifi, new (10f, 15f)},
-        {TaskTypes.RecordTemperature, new (2f, 4f)},
-        {TaskTypes.RepairDrill, new (2f, 4f)},
-        {TaskTypes.ReplaceWaterJug, new (5f, 8f)},
-        {TaskTypes.ResetBreakers, new (10f, 15f)},
-        {TaskTypes.RewindTapes, new (10f, 15f)},
-        {TaskTypes.RunDiagnostics, new (2f, 4f)},
-        {TaskTypes.ScanBoardingPass, new (5f, 8f)},
-        {TaskTypes.SortRecords, new (2f, 4f)},
-        {TaskTypes.SortSamples, new (2f, 4f)},
-        {TaskTypes.StabilizeSteering, new (2f, 4f)},
-        {TaskTypes.StartFans, new (10f, 15f)},
-        {TaskTypes.StartReactor, new (10f, 15f)},
-        {TaskTypes.StoreArtifacts, new (2f, 4f)},
-        {TaskTypes.SubmitScan, new (10f, 15f)},
-        {TaskTypes.SwipeCard, new (5f, 8f)},
-        {TaskTypes.UnlockManifolds, new (2f, 4f)},
-        {TaskTypes.UnlockSafe, new (10f, 15f)},
-        {TaskTypes.UploadData, new (5f, 8f)},
-        {TaskTypes.WaterPlants, new (10f, 15f)}
+        {TaskTypes.AlignEngineOutput, (10f, 15f)},
+        {TaskTypes.AlignTelescope, (2f, 4f)},
+        {TaskTypes.AssembleArtifact, (2f, 4f)},
+        {TaskTypes.BuyBeverage, (2f, 4f)},
+        {TaskTypes.CalibrateDistributor, (2f, 4f)},
+        {TaskTypes.ChartCourse, (2f, 4f)},
+        {TaskTypes.CleanO2Filter, (2f, 4f)},
+        {TaskTypes.CleanToilet, (2f, 4f)},
+        {TaskTypes.VentCleaning, (2f, 4f)},
+        {TaskTypes.ClearAsteroids, (10f, 15f)},
+        {TaskTypes.Decontaminate, (2f, 4f)},
+        {TaskTypes.DevelopPhotos, (10f, 15f)},
+        {TaskTypes.DivertPower, (2f, 4f)},
+        {TaskTypes.DressMannequin, (2f, 4f)},
+        {TaskTypes.EmptyChute, (10f, 15f)},
+        {TaskTypes.EmptyGarbage, (10f, 15f)},
+        {TaskTypes.EnterIdCode, (5f, 8f)},
+        {TaskTypes.FillCanisters, (2f, 4f)},
+        {TaskTypes.FixShower, (2f, 4f)},
+        {TaskTypes.FixWiring, (5f, 8f)},
+        {TaskTypes.FuelEngines, (10f, 15f)},
+        {TaskTypes.InsertKeys, (5f, 8f)},
+        {TaskTypes.InspectSample, (10f, 15f)},
+        {TaskTypes.MakeBurger, (2f, 4f)},
+        {TaskTypes.MeasureWeather, (2f, 4f)},
+        {TaskTypes.OpenWaterways, (10f, 15f)},
+        {TaskTypes.PickUpTowels, (2f, 4f)},
+        {TaskTypes.PolishRuby, (2f, 4f)},
+        {TaskTypes.PrimeShields, (2f, 4f)},
+        {TaskTypes.ProcessData, (2f, 4f)},
+        {TaskTypes.PutAwayPistols, (2f, 4f)},
+        {TaskTypes.PutAwayRifles, (2f, 4f)},
+        {TaskTypes.RebootWifi, (10f, 15f)},
+        {TaskTypes.RecordTemperature, (2f, 4f)},
+        {TaskTypes.RepairDrill, (2f, 4f)},
+        {TaskTypes.ReplaceWaterJug, (5f, 8f)},
+        {TaskTypes.ResetBreakers, (10f, 15f)},
+        {TaskTypes.RewindTapes, (10f, 15f)},
+        {TaskTypes.RunDiagnostics, (2f, 4f)},
+        {TaskTypes.ScanBoardingPass, (5f, 8f)},
+        {TaskTypes.SortRecords, (2f, 4f)},
+        {TaskTypes.SortSamples, (2f, 4f)},
+        {TaskTypes.StabilizeSteering, (2f, 4f)},
+        {TaskTypes.StartFans, (10f, 15f)},
+        {TaskTypes.StartReactor, (10f, 15f)},
+        {TaskTypes.StoreArtifacts, (2f, 4f)},
+        {TaskTypes.SubmitScan, (10f, 15f)},
+        {TaskTypes.SwipeCard, (5f, 8f)},
+        {TaskTypes.UnlockManifolds, (2f, 4f)},
+        {TaskTypes.UnlockSafe, (10f, 15f)},
+        {TaskTypes.UploadData, (5f, 8f)},
+        {TaskTypes.WaterPlants, (10f, 15f)}
     };
 }

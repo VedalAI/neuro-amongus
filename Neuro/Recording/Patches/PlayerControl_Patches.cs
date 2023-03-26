@@ -9,7 +9,7 @@ public static class PlayerControl_CmdCheckMurder
     public static void Postfix()
     {
         // Info("CmdCheckMurder");
-        NeuroPlugin.Instance.RecordingHandler.DidKill = true;
+        NeuroPlugin.Instance.Recording.DidKill = true;
     }
 }
 
@@ -20,6 +20,6 @@ public static class PlayerControl_CmdReportDeadBody
     public static void Postfix()
     {
         // Info("CmdReportDeadBody");
-        NeuroPlugin.Instance.RecordingHandler.DidReport = true;
+        NeuroPlugin.Instance.Recording.DidReport = true;
     }
 }

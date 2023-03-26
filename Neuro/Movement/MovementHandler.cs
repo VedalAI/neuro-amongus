@@ -14,7 +14,7 @@ public class MovementHandler
     public void GetForcedMoveDirection(ref Vector2 direction)
     {
         // TODO: This is terrible, MovementHandler should not assign to fields in different handlers
-        TasksHandler handler = NeuroPlugin.Instance.TasksHandler;
+        TasksHandler handler = NeuroPlugin.Instance.Tasks;
 
         LastMoveDirection = direction;
         if (handler.CurrentPath.Length > 0 && handler.PathIndex != -1)

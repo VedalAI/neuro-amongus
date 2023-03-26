@@ -10,7 +10,7 @@ public record Frame(
     MyVector2 DirectionToNearestVent,
     MyVector2 DirectionToNearestBody,
     bool CanReport,
-    List<PlayerRecord> PlayerRecords,
+    Dictionary<byte, PlayerRecord> PlayerRecords,
     MyVector2 Direction,
     bool Report,
     bool Vent,

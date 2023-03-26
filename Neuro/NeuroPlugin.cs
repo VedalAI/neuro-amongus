@@ -23,22 +23,24 @@ public partial class NeuroPlugin : BasePlugin
 {
     public static NeuroPlugin Instance => PluginSingleton<NeuroPlugin>.Instance;
 
-    public MinigamesHandler MinigamesHandler { get; private set; }
-    public MovementHandler MovementHandler { get; private set; }
-    public PathfindingHandler PathfindingHandler { get; private set; }
-    public RecordingHandler RecordingHandler { get; private set; }
-    public TasksHandler TasksHandler { get; private set; }
-    public VisionHandler VisionHandler { get; private set; }
+    public MinigamesHandler Minigames { get; private set; }
+    public MovementHandler Movement { get; private set; }
+    public PathfindingHandler Pathfinding { get; private set; }
+    public RecordingHandler Recording { get; private set; }
+    public TasksHandler Tasks { get; private set; }
+    public VisionHandler Vision { get; private set; }
 
     public override void Load()
     {
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
 
-        MinigamesHandler = new MinigamesHandler();
-        MovementHandler = new MovementHandler();
-        PathfindingHandler = new PathfindingHandler();
-        RecordingHandler = GameObjectUtilities.CreatePermanentSingleton<RecordingHandler>();
-        TasksHandler = GameObjectUtilities.CreatePermanentSingleton<TasksHandler>();
-        VisionHandler = GameObjectUtilities.CreatePermanentSingleton<VisionHandler>();
+        // TODO: Maybe reset these when a new game begins.
+
+        Minigames = new MinigamesHandler();
+        Movement = new MovementHandler();
+        Pathfinding = new PathfindingHandler();
+        Recording = GameObjectUtilities.CreatePermanentSingleton<RecordingHandler>();
+        Tasks = GameObjectUtilities.CreatePermanentSingleton<TasksHandler>();
+        Vision = GameObjectUtilities.CreatePermanentSingleton<VisionHandler>();
     }
 }

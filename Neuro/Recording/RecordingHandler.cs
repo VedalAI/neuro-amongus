@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using Neuro.Recording.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -28,13 +27,13 @@ public class RecordingHandler : MonoBehaviour
         Frame frame = new(
             PlayerControl.LocalPlayer.Data.Role.IsImpostor,
             PlayerControl.LocalPlayer.killTimer,
-            NeuroPlugin.Instance.MovementHandler.DirectionToNearestTask,
+            NeuroPlugin.Instance.Movement.DirectionToNearestTask,
             PlayerControl.LocalPlayer.myTasks.ToArray().Any(PlayerTask.TaskIsEmergency),
             Vector2.zero,
-            NeuroPlugin.Instance.VisionHandler.DirectionToNearestBody,
+            NeuroPlugin.Instance.Vision.DirectionToNearestBody,
             GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.isActiveAndEnabled,
-            new List<PlayerRecord>(),
-            NeuroPlugin.Instance.MovementHandler.LastMoveDirection,
+            NeuroPlugin.Instance.Vision.PlayerRecords,
+            NeuroPlugin.Instance.Movement.LastMoveDirection,
             DidReport,
             DidVent,
             DidKill,
@@ -42,9 +41,10 @@ public class RecordingHandler : MonoBehaviour
             false,
             false
         );
-        string frameString = JsonSerializer.Serialize(frame);
-        Info(frameString);
         Frames.Add(frame);
+
+        // string frameString = JsonSerializer.Serialize(frame);
+        // Info(frameString);
 
         DidReport = DidVent = DidKill = false;
     }

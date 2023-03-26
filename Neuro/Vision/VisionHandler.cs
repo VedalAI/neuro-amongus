@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Neuro.Recording.DataStructures;
 using Neuro.Vision.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -14,11 +16,14 @@ public class VisionHandler : MonoBehaviour
     public VisionHandler(IntPtr ptr) : base(ptr) { }
 
     public Vector2 DirectionToNearestBody { get; set; }
+    public readonly Dictionary<byte, PlayerRecord> PlayerRecords = new(); // TODO: Store this data using a monobehaviour on the player
 
+    // TODO: Handle players disconnecting
     private readonly List<DeadBody> deadBodies = new();
     private readonly Dictionary<byte, PlayerControl> playerControls = new(); // TODO: Use GameData.GetPlayerById
     private readonly Dictionary<PlayerControl, LastSeenPlayer> playerLocations = new(); // TODO: Don't use PlayerControls as dictionary keys,
-                                                                                        // TODO#2: These dictionaries arent cleaned after games
+    // TODO#2: These dictionaries arent cleaned after games
+
     private float roundStartTime; // in seconds
 
     public void FixedUpdate()
@@ -33,9 +38,15 @@ public class VisionHandler : MonoBehaviour
     {
         // TODO: This entire implementation is just terrible.
 
-        foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls.ToArray())
+        Il2CppArrayBase<PlayerControl> @base = PlayerControl.AllPlayerControls.ToArray();
+        for (int i = 0; i < @base.Count; i++)
+        {
+            PlayerControl playerControl = @base[i];
             if (!playerControls.ContainsKey(playerControl.PlayerId))
                 playerControls.Add(playerControl.PlayerId, playerControl);
+
+            PlayerRecords.Add(playerControl.PlayerId, new PlayerRecord(-1, new MyVector2(0, 0)));
+        }
 
         foreach (PlayerControl playerControl in playerControls.Values)
         {
@@ -150,6 +161,8 @@ public class VisionHandler : MonoBehaviour
     {
         foreach (PlayerControl playerControl in playerControls.Values)
         {
+            PlayerRecords[playerControl.PlayerId] = new PlayerRecord();
+
             if (PlayerControl.LocalPlayer == playerControl) continue;
 
             if (playerControl.Data.IsDead) continue;
@@ -179,6 +192,10 @@ public class VisionHandler : MonoBehaviour
                     playerLocations[playerControl].dead = false;
                     playerLocations[playerControl].gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
                     playerLocations[playerControl].roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
+
+                    float distance = (playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).magnitude;
+                    Vector2 direction = (playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+                    PlayerRecords[playerControl.PlayerId] = new PlayerRecord(distance, direction);
 
                     Info(playerControl.name + " is in " + GetLocationFromPosition(playerControl.transform.position));
                 }

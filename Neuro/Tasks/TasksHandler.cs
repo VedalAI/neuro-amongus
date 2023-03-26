@@ -15,45 +15,73 @@ public class TasksHandler : MonoBehaviour
     public Vector2[] CurrentPath { get; set; } = Array.Empty<Vector2>();
     public int PathIndex { get; set; } = -1;
 
-    public IEnumerator EvaluatePath(NormalPlayerTask initial)
+    public void UpdatePathToTask(PlayerTask task = null)
     {
-        CurrentPath = NeuroPlugin.Instance.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
+        if (!task) task = PlayerControl.LocalPlayer.myTasks.At(0);
+
+        PlayerTask nextTask = null;
+        if (task.IsComplete)
+        {
+            Info("Task is complete, getting next one.");
+            PlayerTask closestTask = null;
+            float closestDistance = Mathf.Infinity;
+
+            foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+            {
+                if (!t.IsComplete && t.HasLocation)
+                {
+                    Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
+                    // Evaluate length of path
+                    float distance = 0f;
+                    for (int i = 0; i < path.Length - 1; i++)
+                    {
+                        distance += Vector2.Distance(path[i], path[i + 1]);
+                    }
+
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestTask = t;
+                    }
+                }
+            }
+
+            if (closestTask == null)
+            {
+                PathIndex = -1;
+                Destroy(GameObject.Find("Arrow")); // TODO: Cache this object or something
+                return;
+            }
+
+            nextTask = closestTask;
+        }
+        else
+        {
+            nextTask = task;
+        }
+
+        if (nextTask != null)
+        {
+            // Info("Next task isn't null");
+            CurrentPath = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
+            PathIndex = 0;
+
+            //pathfinding.DrawPath(currentPath);
+        }
+    }
+
+    public IEnumerator UpdatePathToFirstTask(NormalPlayerTask initial)
+    {
+        CurrentPath = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
         PathIndex = 0;
 
         while (true)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(0.5f);
 
-            PlayerTask task = PlayerControl.LocalPlayer.myTasks.At(0);
+            UpdatePathToTask();
 
-            // TODO: Get the nearest location from all tasks instead of the first location of the next task
-            PlayerTask nextTask = null;
-            if (task.IsComplete)
-            {
-                Info("Task is complete");
-                foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
-                {
-                    if (!t.IsComplete && t.HasLocation)
-                    {
-                        nextTask = t;
-                        Info(nextTask.name);
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                nextTask = task;
-            }
-
-            if (nextTask != null)
-            {
-                Info("Next task isn't null");
-                CurrentPath = NeuroPlugin.Instance.PathfindingHandler.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
-                PathIndex = 0;
-
-                //pathfinding.DrawPath(currentPath);
-            }
+            // TODO: Is this while loop purposefully infinite? If so, we should have a stop condition for example when the game ends.
         }
     }
 
