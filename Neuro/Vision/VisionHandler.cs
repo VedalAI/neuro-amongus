@@ -28,6 +28,7 @@ public class VisionHandler : MonoBehaviour
 
     public void FixedUpdate()
     {
+        if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
 
         UpdateDeadBodiesVision();
@@ -36,7 +37,7 @@ public class VisionHandler : MonoBehaviour
 
     public void StartTrackingPlayer(PlayerControl player)
     {
-        // TODO: This entire implementation is just terrible.
+        // TODO: I don't like this
 
         Il2CppArrayBase<PlayerControl> @base = PlayerControl.AllPlayerControls.ToArray();
         for (int i = 0; i < @base.Count; i++)
@@ -125,7 +126,7 @@ public class VisionHandler : MonoBehaviour
                 DirectionToNearestBody = (deadBody.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
             }
 
-            if (!IsVisible(deadBody.TruePosition)) // TODO: Extract visibility to different handler (maybe)
+            if (!IsVisible(deadBody.TruePosition))
             {
                 continue;
             }

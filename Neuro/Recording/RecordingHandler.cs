@@ -21,6 +21,7 @@ public class RecordingHandler : MonoBehaviour
 
     public void FixedUpdate()
     {
+        if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
 
         // Record values

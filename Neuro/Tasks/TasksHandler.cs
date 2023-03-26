@@ -87,6 +87,7 @@ public class TasksHandler : MonoBehaviour
 
     private void Update()
     {
+        if (!ShipStatus.Instance) return;
         if (Minigame.Instance) return;
 
         foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)

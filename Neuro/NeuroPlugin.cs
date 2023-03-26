@@ -9,7 +9,6 @@ using Neuro.Movement;
 using Neuro.Pathfinding;
 using Neuro.Recording;
 using Neuro.Tasks;
-using Neuro.Utilities;
 using Neuro.Vision;
 using Reactor;
 using Reactor.Utilities;
@@ -39,8 +38,8 @@ public partial class NeuroPlugin : BasePlugin
         Minigames = new MinigamesHandler();
         Movement = new MovementHandler();
         Pathfinding = new PathfindingHandler();
-        Recording = GameObjectUtilities.CreatePermanentSingleton<RecordingHandler>();
-        Tasks = GameObjectUtilities.CreatePermanentSingleton<TasksHandler>();
-        Vision = GameObjectUtilities.CreatePermanentSingleton<VisionHandler>();
+        Recording = AddComponent<RecordingHandler>();
+        Tasks = AddComponent<TasksHandler>();
+        Vision = AddComponent<VisionHandler>();
     }
 }
