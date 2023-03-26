@@ -91,7 +91,7 @@ public class TasksHandler : MonoBehaviour
 
         foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
         {
-            if (task.Locations == null || task.IsComplete) continue;
+            if (task.IsComplete || task.Locations == null) continue;
 
             // TODO: Invoke Console.Use directly
             foreach (Vector2 location in task.Locations)
@@ -102,7 +102,7 @@ public class TasksHandler : MonoBehaviour
                     {
                         Minigame minigame = Instantiate(task.GetMinigamePrefab(), Camera.main!.transform, false);
                         minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
-                        minigame.Console = FindObjectOfType<Console>(); // TODO: What the fuck is this
+                        // minigame.Console = FindObjectOfType<Console>(); // TODO: What the fuck is this
                         minigame.Begin(task);
                     }
                 }

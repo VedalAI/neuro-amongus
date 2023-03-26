@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Neuro.Minigames;
 
@@ -14,6 +16,14 @@ public class MinigamesHandler
         if (task.TryCast<NormalPlayerTask>() is { } normalPlayerTask)
         {
             normalPlayerTask.NextStep();
+            Info($"Task {normalPlayerTask} is at step {normalPlayerTask.TaskStep}/{normalPlayerTask.MaxStep}");
+
+            // If NextStep() doesn't create an arrow, then this task does not require moving
+            // to a different location and should be completed.
+            if (normalPlayerTask.Arrow == null)
+            {
+                normalPlayerTask.Complete();
+            }
         }
         else
         {
