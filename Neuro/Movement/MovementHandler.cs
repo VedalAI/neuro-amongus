@@ -39,9 +39,6 @@ public class MovementHandler
             LineRenderer renderer = Arrow;
             renderer.SetPosition(0, PlayerControl.LocalPlayer.GetTruePosition());
             renderer.SetPosition(1, PlayerControl.LocalPlayer.GetTruePosition() + DirectionToNearestTask);
-            renderer.widthMultiplier = 0.1f;
-            renderer.positionCount = 2;
-            renderer.startColor = Color.red;
         }
         else
         {

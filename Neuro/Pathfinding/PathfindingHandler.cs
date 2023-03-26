@@ -37,24 +37,26 @@ public class PathfindingHandler
         renderer.positionCount = 2;
         renderer.startColor = Color.blue;*/
 
-        // Info("Start Node");
+        Info("Start Node");
         Node startNode = FindClosestNode(start);
-        // Info("End Node");
+        Info("End Node");
         Node targetNode = FindClosestNode(target);
 
-        GameObject endNodeObj = new("Test");
-        //Info(test.transform);
-        endNodeObj.transform.position = targetNode.worldPosition;
+        GameObject endNodeObj = new("Task Visual Point");
+
+        Vector3 position = targetNode.worldPosition;
+        endNodeObj.transform.position = position;
 
         LineRenderer renderer2 = endNodeObj.AddComponent<LineRenderer>();
-        renderer2.SetPosition(0, targetNode.worldPosition);
-        renderer2.SetPosition(1, (Vector3) targetNode.worldPosition + new Vector3(0f, 0.3f, 0));
+        renderer2.SetPosition(0, position);
+        renderer2.SetPosition(1, position + new Vector3(0f, 0.3f, 0));
         renderer2.widthMultiplier = 0.3f;
         renderer2.positionCount = 2;
+        renderer2.material = new Material(Shader.Find("Unlit/MaskShader"));
         renderer2.startColor = Color.blue;
+        renderer2.endColor = Color.blue;
 
-        // Info(startNode.worldPosition.ToString());
-        // Info(targetNode.worldPosition.ToString());
+        Info($"startNode: {startNode.worldPosition} targetNode: {targetNode.worldPosition}");
 
         if (startNode is not {accessible: true} || targetNode is not {accessible: true}) return Array.Empty<Vector2>();
 
@@ -173,18 +175,22 @@ public class PathfindingHandler
             }
         }
 
+        Material nodeMaterial = new(Shader.Find("Unlit/MaskShader"));
         foreach (Node node in closedSet.ToList())
         {
-            GameObject test = new("Test");
-            //Info(test.transform);
-            test.transform.position = node.worldPosition;
+            GameObject nodeVisualPoint = new("Node Visual Point");
 
-            LineRenderer renderer = test.AddComponent<LineRenderer>();
-            renderer.SetPosition(0, test.transform.position);
-            renderer.SetPosition(1, test.transform.position + new Vector3(0, 0.1f, 0));
+            Vector3 position = node.worldPosition;
+            nodeVisualPoint.transform.position = position;
+
+            LineRenderer renderer = nodeVisualPoint.AddComponent<LineRenderer>();
+            renderer.SetPosition(0, position);
+            renderer.SetPosition(1, position + new Vector3(0, 0.1f, 0));
             renderer.widthMultiplier = 0.1f;
             renderer.positionCount = 2;
+            renderer.material = nodeMaterial;
             renderer.startColor = Color.red;
+            renderer.endColor = Color.red;
         }
 
         // Set all nodes not in closed set to inaccessible
