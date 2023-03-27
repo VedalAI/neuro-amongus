@@ -100,7 +100,7 @@ public class VisionHandler : MonoBehaviour
         deadBodies.Clear();
     }
 
-    private void UpdateDeadBodiesVision()
+    private void UpdateDeadBodiesVision() // TODO: Refactor
     {
         DirectionToNearestBody = Vector2.zero;
         float nearestBodyDistance = Mathf.Infinity;
@@ -147,7 +147,7 @@ public class VisionHandler : MonoBehaviour
         }
     }
 
-    private void UpdateNearbyPlayersVision()
+    private void UpdateNearbyPlayersVision() // TODO: Refactor
     {
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
