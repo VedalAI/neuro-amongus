@@ -46,7 +46,7 @@ public partial class NeuroPlugin : BasePlugin
     public bool isImpostor = false;
     public bool goingForKill = false;
     public PlayerControl killTarget = null;
-    public int ventCooldown = 0;
+    public Vent ventTarget = null;
 
     public bool didKill = false;
     public bool didReport = false;
@@ -117,7 +117,6 @@ public partial class NeuroPlugin : BasePlugin
 
 
         isImpostor = localPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor;
-        // for testing purposes
 
         // in practice area go to the laptop and click "Be_Impostor.exe" to be impostor
         if (isImpostor && localPlayer.killTimer == 0f)
@@ -160,27 +159,16 @@ public partial class NeuroPlugin : BasePlugin
             }
         }
 
-        // currently, this will just vent whenever we're near a vent
-        // in practice it should only activate under certain circumstances, such as after a kill
-        // TODO: Pathfind to vents
-        if (isImpostor && ventCooldown == 0 && !localPlayer.inVent && !localPlayer.walkingToVent)
-        {
-            foreach (Vent vent in vents)
+
+        if (isImpostor && ventTarget != null && !localPlayer.inVent && !localPlayer.walkingToVent)
+        {          
+            if (HudManager.Instance.ImpostorVentButton.currentTarget == ventTarget)
             {
-                float distance = Vector2.Distance(vent.transform.position, localPlayer.transform.position);
-                if (distance < 0.4f)
-                {
-                    // vent.EnterVent() and vent.Use() dont actually put you in the vent for whatever reason so just click the button virtually
-                    HudManager.Instance.ImpostorVentButton.DoClick();
-                    break;
-                }
+                // vent.EnterVent() and vent.Use() dont actually put you in the vent for whatever reason so just click the button virtually
+                HudManager.Instance.ImpostorVentButton.DoClick();
+                ventTarget = null;
             }
         }
-
-        // cooldown so we dont just hop right back in the vent we just exited
-        // can probably be removed if the above commented conditions are implemented
-        if (ventCooldown > 0)
-            ventCooldown--;
 
         bool sabotageActive = false;
         foreach (PlayerTask task in localPlayer.myTasks)
@@ -226,7 +214,26 @@ public partial class NeuroPlugin : BasePlugin
         didKill = true;
         goingForKill = false;
         killTarget = null;
-        UpdatePathToTask(GetFurthestTask());
+
+        // currently neuro will just beeline for the closest vent after a kill
+        // this should be changed to be more situational at some point
+        Vent closestVent = null;
+        float closestDistance = 9999f;
+        foreach (Vent vent in vents)
+        {
+            float distance = Vector2.Distance(vent.transform.position, PlayerControl.LocalPlayer.transform.position);
+            if (distance < closestDistance)
+            {
+                closestVent = vent;
+                closestDistance = distance;
+            }
+        }
+        ventTarget = closestVent;
+        if (ventTarget == null)
+        {
+            Debug.Log("closestVent is null, falling back to doing tasks!");
+            UpdatePathToTask(GetFurthestTask());
+        }
     }
 
     public bool MovePlayer(ref Vector2 direction)
@@ -304,7 +311,6 @@ public partial class NeuroPlugin : BasePlugin
             if (!playerFound)
             {
                 HudManager.Instance.ImpostorVentButton.DoClick();
-                ventCooldown = 60;
                 killTarget = null;
                 yield break;
             }
@@ -323,6 +329,13 @@ public partial class NeuroPlugin : BasePlugin
         vision.MeetingEnd();
     }
 
+    public void UpdatePathToVent()
+    {
+        if (ventTarget == null) return;
+        currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, ventTarget.transform.position);
+        pathIndex = 0;
+    }
+
     public void UpdatePathToPlayer()
     {
         if (killTarget == null) return;
@@ -337,22 +350,21 @@ public partial class NeuroPlugin : BasePlugin
 
         while (true)
         {
-            Debug.Log("EvaulatePath Ran");
             yield return new WaitForSeconds(0.5f);
 
-            foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
+            // if we are attempting to vent, only pathfind to the vent
+            if (ventTarget != null)
             {
-                Debug.Log("" + task.TaskType + " " + task.HasLocation);
+                UpdatePathToVent();
             }
-
             // if we are attempting to kill someone, dont pathfind to tasks
-            if (killTarget == null)
+            else if (killTarget != null)
             {
-                UpdatePathToTask();
+                UpdatePathToPlayer();
             }
             else
             {
-                UpdatePathToPlayer();
+                UpdatePathToTask();
             }
         }
 
