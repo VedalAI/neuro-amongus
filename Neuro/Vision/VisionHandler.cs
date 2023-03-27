@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Neuro.Recording.DataStructures;
 using Neuro.Vision.DataStructures;
 using Reactor.Utilities.Attributes;
@@ -9,7 +8,6 @@ using UnityEngine;
 
 namespace Neuro.Vision;
 
-// TODO: Refactor this entire class
 [RegisterInIl2Cpp]
 public class VisionHandler : MonoBehaviour
 {
@@ -18,11 +16,10 @@ public class VisionHandler : MonoBehaviour
     public Vector2 DirectionToNearestBody { get; set; }
     public readonly Dictionary<byte, PlayerRecord> PlayerRecords = new(); // TODO: Store this data using a monobehaviour on the player
 
+    // TODO: These dictionaries arent cleaned after games
     // TODO: Handle players disconnecting
     private readonly List<DeadBody> deadBodies = new();
-    private readonly Dictionary<byte, PlayerControl> playerControls = new(); // TODO: Use GameData.GetPlayerById
-    private readonly Dictionary<PlayerControl, LastSeenPlayer> playerLocations = new(); // TODO: Don't use PlayerControls as dictionary keys,
-    // TODO#2: These dictionaries arent cleaned after games
+    private readonly Dictionary<byte, LastSeenPlayer> playerLocations = new(); // TODO: Store also this data using a monobehaviour on the player
 
     private float roundStartTime; // in seconds
 
@@ -37,25 +34,13 @@ public class VisionHandler : MonoBehaviour
 
     public void StartTrackingPlayer(PlayerControl player)
     {
-        // TODO: I don't like this
-
-        Il2CppArrayBase<PlayerControl> @base = PlayerControl.AllPlayerControls.ToArray();
-        for (int i = 0; i < @base.Count; i++)
+        foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
-            PlayerControl playerControl = @base[i];
-            if (!playerControls.ContainsKey(playerControl.PlayerId))
-                playerControls.Add(playerControl.PlayerId, playerControl);
-
-            PlayerRecords.Add(playerControl.PlayerId, new PlayerRecord(-1, new MyVector2(0, 0)));
+            PlayerRecords[playerControl.PlayerId] = new PlayerRecord(-1, new MyVector2(0, 0));
+            playerLocations[playerControl.PlayerId] = new LastSeenPlayer("", 0f, false);
         }
 
-        foreach (PlayerControl playerControl in playerControls.Values)
-        {
-            if (playerLocations.ContainsKey(playerControl)) continue;
-            playerLocations.Add(playerControl, new LastSeenPlayer("", 0f, false));
-        }
-
-        Info("Updating playerControls: " + playerControls.Count);
+        Info("Updating playerControls");
     }
 
     public void AddDeadBody(DeadBody body)
@@ -68,31 +53,33 @@ public class VisionHandler : MonoBehaviour
 
     public void ReportFindings()
     {
-        foreach (KeyValuePair<PlayerControl, LastSeenPlayer> playerLocation in playerLocations)
+        foreach ((byte playerId, LastSeenPlayer lastSeen) in playerLocations)
         {
-            if (playerLocation.Key == PlayerControl.LocalPlayer) continue;
-            if (playerLocation.Value.location == "") continue;
-            if (playerLocation.Value.dead)
+            PlayerControl player = GameData.Instance.GetPlayerById(playerId).Object;
+            if (!player || player.AmOwner) continue;
+
+            if (lastSeen.location == "") continue;
+            if (lastSeen.dead)
             {
-                Info(playerLocation.Key.name + " was found dead in " + playerLocation.Value.location + " " + Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time) + " seconds ago.");
+                Info(player.name + " was found dead in " + lastSeen.location + " " + Mathf.Round(Time.timeSinceLevelLoad - lastSeen.time) + " seconds ago.");
                 Info("Witnesses:");
-                foreach (PlayerControl witness in playerLocation.Value.witnesses) Info(witness.name);
+                foreach (PlayerControl witness in lastSeen.witnesses) Info(witness.name);
             }
             else
             {
-                Info(playerLocation.Key.name + " was last seen in " + playerLocation.Value.location + " " + Mathf.Round(Time.timeSinceLevelLoad - playerLocation.Value.time) + " seconds ago.");
+                Info(player.name + " was last seen in " + lastSeen.location + " " + Mathf.Round(Time.timeSinceLevelLoad - lastSeen.time) + " seconds ago.");
 
                 // Report if we saw the player vent right in front of us
-                if (playerLocation.Value.sawVent)
-                    Info("I saw " + playerLocation.Key.name + " vent right in front of me!");
+                if (lastSeen.sawVent)
+                    Info("I saw " + player.name + " vent right in front of me!");
 
                 // Determine how much time the player was visible to Neuro-sama for
-                float gamePercentage = playerLocation.Value.gameTimeVisible / Time.timeSinceLevelLoad;
-                float roundPercentage = playerLocation.Value.roundTimeVisible / (Time.timeSinceLevelLoad - roundStartTime);
-                TimeSpan gameTime = new(0, 0, (int) Math.Floor(playerLocation.Value.gameTimeVisible));
-                TimeSpan roundTime = new(0, 0, (int) Math.Floor(playerLocation.Value.roundTimeVisible));
-                Info($"{playerLocation.Key.name} has spent {gameTime.Minutes} minutes and {gameTime.Seconds} seconds near me this game ({gamePercentage * 100.0f:0.0}% of the game)");
-                Info($"{playerLocation.Key.name} has spent {roundTime.Minutes} minutes and {roundTime.Seconds} seconds near me this round ({roundPercentage * 100.0f:0.0}% of the round)");
+                float gamePercentage = lastSeen.gameTimeVisible / Time.timeSinceLevelLoad;
+                float roundPercentage = lastSeen.roundTimeVisible / (Time.timeSinceLevelLoad - roundStartTime);
+                TimeSpan gameTime = new(0, 0, (int) Math.Floor(lastSeen.gameTimeVisible));
+                TimeSpan roundTime = new(0, 0, (int) Math.Floor(lastSeen.roundTimeVisible));
+                Info($"{player.name} has spent {gameTime.Minutes} minutes and {gameTime.Seconds} seconds near me this game ({gamePercentage * 100.0f:0.0}% of the game)");
+                Info($"{player.name} has spent {roundTime.Minutes} minutes and {roundTime.Seconds} seconds near me this round ({roundPercentage * 100.0f:0.0}% of the round)");
             }
         }
     }
@@ -103,10 +90,11 @@ public class VisionHandler : MonoBehaviour
         roundStartTime = Time.timeSinceLevelLoad;
 
         // Reset our count of how much time per round we've spent near each other player
-        foreach (KeyValuePair<PlayerControl, LastSeenPlayer> playerLocation in playerLocations)
+        foreach ((byte playerId, LastSeenPlayer lastSeen) in playerLocations)
         {
-            if (playerLocation.Key == PlayerControl.LocalPlayer || playerLocation.Value.location == "") continue;
-            playerLocation.Value.roundTimeVisible = 0f;
+            PlayerControl player = GameData.Instance.GetPlayerById(playerId).Object;
+            if (player.AmOwner || lastSeen.location == "") continue;
+            lastSeen.roundTimeVisible = 0f;
         }
 
         deadBodies.Clear();
@@ -117,6 +105,7 @@ public class VisionHandler : MonoBehaviour
         DirectionToNearestBody = Vector2.zero;
         float nearestBodyDistance = Mathf.Infinity;
 
+        // TODO: This logic is probably incorrect
         foreach (DeadBody deadBody in deadBodies)
         {
             float distance = Vector2.Distance(deadBody.transform.position, PlayerControl.LocalPlayer.transform.position);
@@ -133,13 +122,13 @@ public class VisionHandler : MonoBehaviour
 
             if (distance < 3f)
             {
-                PlayerControl playerControl = playerControls[deadBody.ParentId];
-                playerLocations[playerControl].location = GetLocationFromPosition(playerControl.transform.position);
-                if (!playerLocations[playerControl].dead)
+                PlayerControl playerControl = GameData.Instance.GetPlayerById(deadBody.ParentId).Object;
+                playerLocations[playerControl.PlayerId].location = GetLocationFromPosition(playerControl.transform.position);
+                if (!playerLocations[playerControl.PlayerId].dead)
                 {
-                    playerLocations[playerControl].time = Time.timeSinceLevelLoad;
+                    playerLocations[playerControl.PlayerId].time = Time.timeSinceLevelLoad;
                     List<PlayerControl> witnesses = new();
-                    foreach (PlayerControl potentialWitness in playerControls.Values)
+                    foreach (PlayerControl potentialWitness in PlayerControl.AllPlayerControls)
                     {
                         if (PlayerControl.LocalPlayer == potentialWitness) continue;
 
@@ -148,10 +137,10 @@ public class VisionHandler : MonoBehaviour
                         if (Vector2.Distance(potentialWitness.transform.position, deadBody.transform.position) < 3f) witnesses.Add(potentialWitness);
                     }
 
-                    playerLocations[playerControl].witnesses = witnesses.ToArray();
+                    playerLocations[playerControl.PlayerId].witnesses = witnesses.ToArray();
                 }
 
-                playerLocations[playerControl].dead = true;
+                playerLocations[playerControl.PlayerId].dead = true;
 
                 Info(playerControl.name + " is dead in " + GetLocationFromPosition(playerControl.transform.position));
             }
@@ -160,7 +149,7 @@ public class VisionHandler : MonoBehaviour
 
     private void UpdateNearbyPlayersVision()
     {
-        foreach (PlayerControl playerControl in playerControls.Values)
+        foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
             PlayerRecords[playerControl.PlayerId] = new PlayerRecord();
 
@@ -172,7 +161,7 @@ public class VisionHandler : MonoBehaviour
             if (playerControl.inVent)
             {
                 // Check the last place we saw the player
-                LastSeenPlayer previousSighting = playerLocations[playerControl];
+                LastSeenPlayer previousSighting = playerLocations[playerControl.PlayerId];
 
                 // If we were able to see them during our last update (~30 ms ago), and now they're in a vent, we must have seen them enter the vent
                 if (previousSighting.time > Time.timeSinceLevelLoad - 2 * Time.fixedDeltaTime)
@@ -188,11 +177,11 @@ public class VisionHandler : MonoBehaviour
             {
                 if (IsVisible(playerControl.GetTruePosition()))
                 {
-                    playerLocations[playerControl].location = GetLocationFromPosition(playerControl.transform.position);
-                    playerLocations[playerControl].time = Time.timeSinceLevelLoad;
-                    playerLocations[playerControl].dead = false;
-                    playerLocations[playerControl].gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
-                    playerLocations[playerControl].roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
+                    playerLocations[playerControl.PlayerId].location = GetLocationFromPosition(playerControl.transform.position);
+                    playerLocations[playerControl.PlayerId].time = Time.timeSinceLevelLoad;
+                    playerLocations[playerControl.PlayerId].dead = false;
+                    playerLocations[playerControl.PlayerId].gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
+                    playerLocations[playerControl.PlayerId].roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
 
                     float distance = (playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).magnitude;
                     Vector2 direction = (playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
