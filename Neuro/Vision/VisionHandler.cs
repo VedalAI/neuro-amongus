@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Recording.DataStructures;
 using Neuro.Vision.DataStructures;
+using Reactor.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -14,12 +16,14 @@ public class VisionHandler : MonoBehaviour
     public VisionHandler(IntPtr ptr) : base(ptr) { }
 
     public Vector2 DirectionToNearestBody { get; set; }
-    public readonly Dictionary<byte, PlayerRecord> PlayerRecords = new(); // TODO: Store this data using a monobehaviour on the player
+    
+    [HideFromIl2Cpp]
+    public Dictionary<PlayerControl, PlayerRecord> PlayerRecords { get; } = new(Il2CppEqualityComparer<PlayerControl>.Instance);
 
     // TODO: These dictionaries arent cleaned after games
     // TODO: Handle players disconnecting
-    private readonly List<DeadBody> deadBodies = new();
-    private readonly Dictionary<byte, LastSeenPlayer> playerLocations = new(); // TODO: Store also this data using a monobehaviour on the player
+    private readonly List<DeadBody> _deadBodies = new();
+    private readonly Dictionary<PlayerControl, LastSeenPlayer> _playerLocations = new(Il2CppEqualityComparer<PlayerControl>.Instance);
 
     private float roundStartTime; // in seconds
 
@@ -36,8 +40,8 @@ public class VisionHandler : MonoBehaviour
     {
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
-            PlayerRecords[playerControl.PlayerId] = new PlayerRecord(-1, new MyVector2(0, 0));
-            playerLocations[playerControl.PlayerId] = new LastSeenPlayer("", 0f, false);
+            PlayerRecords[playerControl] = new PlayerRecord(-1, new MyVector2(0, 0));
+            _playerLocations[playerControl] = new LastSeenPlayer("", 0f, false);
         }
 
         Info("Updating playerControls");
@@ -45,17 +49,16 @@ public class VisionHandler : MonoBehaviour
 
     public void AddDeadBody(DeadBody body)
     {
-        if (deadBodies.Any(b => b.ParentId == body.ParentId)) return;
+        if (_deadBodies.Any(b => b.ParentId == body.ParentId)) return;
 
         Info($"{GameData.Instance.GetPlayerById(body.ParentId).PlayerName} has been killed");
-        deadBodies.Add(body);
+        _deadBodies.Add(body);
     }
 
     public void ReportFindings()
     {
-        foreach ((byte playerId, LastSeenPlayer lastSeen) in playerLocations)
+        foreach ((PlayerControl player, LastSeenPlayer lastSeen) in _playerLocations)
         {
-            PlayerControl player = GameData.Instance.GetPlayerById(playerId).Object;
             if (!player || player.AmOwner) continue;
 
             if (lastSeen.location == "") continue;
@@ -90,14 +93,13 @@ public class VisionHandler : MonoBehaviour
         roundStartTime = Time.timeSinceLevelLoad;
 
         // Reset our count of how much time per round we've spent near each other player
-        foreach ((byte playerId, LastSeenPlayer lastSeen) in playerLocations)
+        foreach ((PlayerControl player, LastSeenPlayer lastSeen) in _playerLocations)
         {
-            PlayerControl player = GameData.Instance.GetPlayerById(playerId).Object;
             if (player.AmOwner || lastSeen.location == "") continue;
             lastSeen.roundTimeVisible = 0f;
         }
 
-        deadBodies.Clear();
+        _deadBodies.Clear();
     }
 
     private void UpdateDeadBodiesVision() // TODO: Refactor
@@ -106,7 +108,7 @@ public class VisionHandler : MonoBehaviour
         float nearestBodyDistance = Mathf.Infinity;
 
         // TODO: This logic is probably incorrect
-        foreach (DeadBody deadBody in deadBodies)
+        foreach (DeadBody deadBody in _deadBodies)
         {
             float distance = Vector2.Distance(deadBody.transform.position, PlayerControl.LocalPlayer.transform.position);
             if (distance < nearestBodyDistance)
@@ -123,10 +125,10 @@ public class VisionHandler : MonoBehaviour
             if (distance < 3f)
             {
                 PlayerControl playerControl = GameData.Instance.GetPlayerById(deadBody.ParentId).Object;
-                playerLocations[playerControl.PlayerId].location = GetLocationFromPosition(playerControl.transform.position);
-                if (!playerLocations[playerControl.PlayerId].dead)
+                _playerLocations[playerControl].location = GetLocationFromPosition(playerControl.transform.position);
+                if (!_playerLocations[playerControl].dead)
                 {
-                    playerLocations[playerControl.PlayerId].time = Time.timeSinceLevelLoad;
+                    _playerLocations[playerControl].time = Time.timeSinceLevelLoad;
                     List<PlayerControl> witnesses = new();
                     foreach (PlayerControl potentialWitness in PlayerControl.AllPlayerControls)
                     {
@@ -137,10 +139,10 @@ public class VisionHandler : MonoBehaviour
                         if (Vector2.Distance(potentialWitness.transform.position, deadBody.transform.position) < 3f) witnesses.Add(potentialWitness);
                     }
 
-                    playerLocations[playerControl.PlayerId].witnesses = witnesses.ToArray();
+                    _playerLocations[playerControl].witnesses = witnesses.ToArray();
                 }
 
-                playerLocations[playerControl.PlayerId].dead = true;
+                _playerLocations[playerControl].dead = true;
 
                 Info(playerControl.name + " is dead in " + GetLocationFromPosition(playerControl.transform.position));
             }
@@ -151,7 +153,7 @@ public class VisionHandler : MonoBehaviour
     {
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
-            PlayerRecords[playerControl.PlayerId] = new PlayerRecord();
+            PlayerRecords[playerControl] = new PlayerRecord();
 
             if (PlayerControl.LocalPlayer == playerControl) continue;
 
@@ -161,7 +163,7 @@ public class VisionHandler : MonoBehaviour
             if (playerControl.inVent)
             {
                 // Check the last place we saw the player
-                LastSeenPlayer previousSighting = playerLocations[playerControl.PlayerId];
+                LastSeenPlayer previousSighting = _playerLocations[playerControl];
 
                 // If we were able to see them during our last update (~30 ms ago), and now they're in a vent, we must have seen them enter the vent
                 if (previousSighting.time > Time.timeSinceLevelLoad - 2 * Time.fixedDeltaTime)
@@ -177,15 +179,16 @@ public class VisionHandler : MonoBehaviour
             {
                 if (IsVisible(playerControl.GetTruePosition()))
                 {
-                    playerLocations[playerControl.PlayerId].location = GetLocationFromPosition(playerControl.transform.position);
-                    playerLocations[playerControl.PlayerId].time = Time.timeSinceLevelLoad;
-                    playerLocations[playerControl.PlayerId].dead = false;
-                    playerLocations[playerControl.PlayerId].gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
-                    playerLocations[playerControl.PlayerId].roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
+                    LastSeenPlayer lastSeenPlayer = _playerLocations[playerControl];
+                    lastSeenPlayer.location = GetLocationFromPosition(playerControl.transform.position);
+                    lastSeenPlayer.time = Time.timeSinceLevelLoad;
+                    lastSeenPlayer.dead = false;
+                    lastSeenPlayer.gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
+                    lastSeenPlayer.roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
 
                     float distance = (playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).magnitude;
                     Vector2 direction = (playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
-                    PlayerRecords[playerControl.PlayerId] = new PlayerRecord(distance, direction);
+                    PlayerRecords[playerControl] = new PlayerRecord(distance, direction);
 
                     Info(playerControl.name + " is in " + GetLocationFromPosition(playerControl.transform.position));
                 }

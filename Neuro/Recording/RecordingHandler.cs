@@ -36,7 +36,7 @@ public class RecordingHandler : MonoBehaviour
             Vector2.zero,
             NeuroPlugin.Instance.Vision.DirectionToNearestBody,
             GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.isActiveAndEnabled,
-            NeuroPlugin.Instance.Vision.PlayerRecords,
+            NeuroPlugin.Instance.Vision.PlayerRecords.ToDictionary(kv => kv.Key.PlayerId, kv => kv.Value),
             NeuroPlugin.Instance.Movement.LastMoveDirection,
             DidReport,
             DidVent,
