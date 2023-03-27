@@ -13,8 +13,10 @@ public static class Minigame_Begin
 {
     public static void Postfix(Minigame __instance, PlayerTask task)
     {
-        Debug.Log("Started task + " + __instance.name);
+        // ignore the practice mode laptop, which is apparently considered a minigame but has no TaskType
+        if (__instance.name == "TaskAddMinigame(Clone)") return;
 
+        Debug.Log("Started task + " + __instance.name);
         (float min, float max) timeToComplete = Methods.TaskTypeToTimeToCompleteTask(__instance.TaskType);
         float timeToWait = UnityEngine.Random.RandomRange(timeToComplete.min, timeToComplete.max);
 

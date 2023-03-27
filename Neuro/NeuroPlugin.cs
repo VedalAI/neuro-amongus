@@ -44,6 +44,7 @@ public partial class NeuroPlugin : BasePlugin
     public List<Vent> vents = new List<Vent>();
 
     public bool isImpostor = false;
+    public bool goingForKill = false;
     public PlayerControl killTarget = null;
     public int ventCooldown = 0;
 
@@ -117,12 +118,11 @@ public partial class NeuroPlugin : BasePlugin
 
         isImpostor = localPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor;
         // for testing purposes
-        //isImpostor = true;
 
         // in practice area go to the laptop and click "Be_Impostor.exe" to be impostor
-        if (isImpostor && !localPlayer.IsKillTimerEnabled)
+        if (isImpostor && localPlayer.killTimer == 0f)
         {
-            if (killTarget == null)
+            if (killTarget == null && !localPlayer.inVent)
             {
                 PlayerControl potentialKillTarget = null;
 
@@ -133,7 +133,7 @@ public partial class NeuroPlugin : BasePlugin
                     if (player.Key.Data.IsDead) continue;
                     if (player.Key.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor) continue;
 
-                    if (player.Value.time > Time.timeSinceLevelLoad - (60 * vision.lastPlayerUpdateDuration))
+                    if (player.Value.time > Time.timeSinceLevelLoad - (2 * vision.lastPlayerUpdateDuration))
                     {
                         // if there are multiple players in view, avoid trying to kill so we dont give ourselves up
                         if (potentialKillTarget != null)
@@ -148,19 +148,14 @@ public partial class NeuroPlugin : BasePlugin
                 if (potentialKillTarget != null)
                 {
                     killTarget = potentialKillTarget;
-                    localPlayer.StartCoroutine(EvaluatePathToPlayer(killTarget));
                 }
             }
             else
             {
-                float distance = Vector2.Distance(killTarget.transform.position, localPlayer.transform.position);
-                if (distance < 0.8f)
+                if (!goingForKill && HudManager.Instance.KillButton.currentTarget != null)
                 {
-                    // this actually works in practice area which is pretty nice
-                    localPlayer.MurderPlayer(killTarget);
-                    Debug.Log(String.Format("I just killed {0}!", killTarget.Data.PlayerName));
-                    didKill = true;
-                    killTarget = null;
+                    goingForKill = true;
+                    localPlayer.StartCoroutine(MurderTarget());
                 }
             }
         }
@@ -221,6 +216,19 @@ public partial class NeuroPlugin : BasePlugin
         recorder.Frames.Add(frame);
     }
 
+    public IEnumerator MurderTarget()
+    {
+        // wait a random amount of time so we dont just instantly kill them the second we are in range
+        yield return new WaitForSeconds(UnityEngine.Random.RandomRange(0.2f, 0.6f));
+        // this actually works in practice area which is pretty nice
+        PlayerControl.LocalPlayer.MurderPlayer(killTarget);
+        Debug.Log(String.Format("I just killed {0}!", killTarget.Data.PlayerName));
+        didKill = true;
+        goingForKill = false;
+        killTarget = null;
+        UpdatePathToTask(GetFurthestTask());
+    }
+
     public bool MovePlayer(ref Vector2 direction)
     {
         moveDirection = direction;
@@ -262,11 +270,12 @@ public partial class NeuroPlugin : BasePlugin
         // there is a vent.NearbyVents variable, but seems to break randomly
         // so currently we just go to random vent
         Vent current = vents[UnityEngine.Random.RandomRangeInt(0, vents.Count)];
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(UnityEngine.Random.RandomRange(0.8f, 1.2f));
         original.MoveToVent(current);
         while (true)
         {
-            yield return new WaitForSeconds(1.5f);
+            // use a random time between vent moves to make it more realistic
+            yield return new WaitForSeconds(UnityEngine.Random.RandomRange(0.8f, 1.2f));
             bool playerFound = false;
             foreach (KeyValuePair<PlayerControl, Utils.LastSeenPlayer> player in vision.playerLocations)
             {
@@ -278,7 +287,12 @@ public partial class NeuroPlugin : BasePlugin
                 if (player.Value.time > Time.timeSinceLevelLoad - (2 * vision.lastPlayerUpdateDuration))
                 {
                     Debug.Log(String.Format("Spotted {0}, trying a different exit vent...", player.Key.name));
-                    Vent next = vents[UnityEngine.Random.RandomRangeInt(0, vents.Count)];
+                    Vent next;
+                    while (true) {
+                        next = vents[UnityEngine.Random.RandomRangeInt(0, vents.Count)];
+                        if (current == next) continue;
+                        break;
+                    }
                     current.MoveToVent(next);
                     current = next;
                     playerFound = true;
@@ -286,10 +300,12 @@ public partial class NeuroPlugin : BasePlugin
                 }
             }
             // if we dont see anyone, exit the vent we're currently in
+            // also reset the kill target out of the vent to prevent any crossmap targeting
             if (!playerFound)
             {
                 HudManager.Instance.ImpostorVentButton.DoClick();
                 ventCooldown = 60;
+                killTarget = null;
                 yield break;
             }
         }
@@ -307,26 +323,10 @@ public partial class NeuroPlugin : BasePlugin
         vision.MeetingEnd();
     }
 
-    public IEnumerator EvaluatePathToPlayer(PlayerControl player)
+    public void UpdatePathToPlayer()
     {
-        currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, player.transform.position);
-        pathIndex = 0;
-
-        while (!player.Data.IsDead || killTarget != null)
-        {
-            yield return new WaitForSeconds(0.5f);
-
-            UpdatePathToPlayer(player);
-        }
-
-        // after killing the player get the next closest task by restarting the task pathfinding coroutine
-        PlayerControl.LocalPlayer.StartCoroutine(EvaluatePath(PlayerControl.LocalPlayer.myTasks[0].TryCast<NormalPlayerTask>()));
-    }
-
-    public void UpdatePathToPlayer(PlayerControl player)
-    {
-        if (player.Data.IsDead || killTarget == null) return;
-        currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, player.transform.position);
+        if (killTarget == null) return;
+        currentPath = pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, killTarget.transform.position);
         pathIndex = 0;
     }
 
@@ -337,22 +337,39 @@ public partial class NeuroPlugin : BasePlugin
 
         while (true)
         {
+            Debug.Log("EvaulatePath Ran");
             yield return new WaitForSeconds(0.5f);
 
-            // if we are attempting to kill someone, temporarily stop pathfinding to tasks
-            if (killTarget != null)
+            foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
             {
-                yield break;
+                Debug.Log("" + task.TaskType + " " + task.HasLocation);
             }
 
-            UpdatePathToTask();
+            // if we are attempting to kill someone, dont pathfind to tasks
+            if (killTarget == null)
+            {
+                UpdatePathToTask();
+            }
+            else
+            {
+                UpdatePathToPlayer();
+            }
         }
 
     }
 
     public void UpdatePathToTask(PlayerTask task = null)
     {
-        if(task == null) task = PlayerControl.LocalPlayer.myTasks[0];
+        if (task == null)
+        {
+            // as impostor, among us adds a fake task to the top of the list with no position
+            // presumably to display the red text at the top and prevent you from "completing" all your tasks
+            // therefore skip it as it cannot be completed
+            if (isImpostor)
+                task = PlayerControl.LocalPlayer.myTasks[1];
+            else
+                task = PlayerControl.LocalPlayer.myTasks[0];
+        }
 
         PlayerTask nextTask = null;
         if (task.IsComplete)
