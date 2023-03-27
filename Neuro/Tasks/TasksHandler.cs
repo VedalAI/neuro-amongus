@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -12,9 +13,11 @@ public class TasksHandler : MonoBehaviour
     public TasksHandler(IntPtr ptr) : base(ptr) { }
 
     // TODO: Move this to movement class
+    [HideFromIl2Cpp]
     public Vector2[] CurrentPath { get; set; } = Array.Empty<Vector2>();
     public int PathIndex { get; set; } = -1;
 
+    [HideFromIl2Cpp]
     public void UpdatePathToTask(PlayerTask task = null)
     {
         if (!task) task = PlayerControl.LocalPlayer.myTasks.At(0);
@@ -70,6 +73,7 @@ public class TasksHandler : MonoBehaviour
         }
     }
 
+    [HideFromIl2Cpp]
     public IEnumerator UpdatePathToFirstTask(NormalPlayerTask initial)
     {
         CurrentPath = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
@@ -89,6 +93,7 @@ public class TasksHandler : MonoBehaviour
     {
         if (!ShipStatus.Instance) return;
         if (Minigame.Instance) return;
+        if (!PlayerControl.LocalPlayer) return;
 
         foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
         {

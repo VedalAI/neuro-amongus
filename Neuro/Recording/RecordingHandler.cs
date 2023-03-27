@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Recording.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class RecordingHandler : MonoBehaviour
 {
     public RecordingHandler(IntPtr ptr) : base(ptr) { }
 
+    [HideFromIl2Cpp]
     public List<Frame> Frames { get; set; } = new();
 
     // TODO: Maybe there's a better way to store this than to keep random properties in this class
@@ -23,6 +25,7 @@ public class RecordingHandler : MonoBehaviour
     {
         if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
+        if (!PlayerControl.LocalPlayer) return;
 
         // Record values
         Frame frame = new(
