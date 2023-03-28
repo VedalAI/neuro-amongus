@@ -131,15 +131,6 @@ public class TasksHandler : MonoBehaviour
 
     // TODO: Maybe find a better place for this
     [HideFromIl2Cpp]
-    public void UpdatePathToVent()
-    {
-        if (NeuroPlugin.Instance.Impostor.ventTarget == null) return;
-        CurrentPath = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, NeuroPlugin.Instance.Impostor.ventTarget.transform.position);
-        PathIndex = 0;
-    }
-
-    // TODO: Maybe find a better place for this
-    [HideFromIl2Cpp]
     public void UpdatePathToPlayer()
     {
         if (NeuroPlugin.Instance.Impostor.killTarget == null) return;
@@ -157,11 +148,7 @@ public class TasksHandler : MonoBehaviour
         {
             yield return new WaitForSeconds(0.5f);
 
-            // Impostor stuff being here is kinda ugly but its the easiest way to do it rn
-            if (NeuroPlugin.Instance.Impostor.ventTarget != null)
-                UpdatePathToVent();
-
-            else if (NeuroPlugin.Instance.Impostor.killTarget != null)
+            if (NeuroPlugin.Instance.Impostor.killTarget != null)
                 UpdatePathToPlayer();
             
             else

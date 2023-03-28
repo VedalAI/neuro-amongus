@@ -35,7 +35,7 @@ public class RecordingHandler : MonoBehaviour
             PlayerControl.LocalPlayer.killTimer,
             NeuroPlugin.Instance.Movement.DirectionToNearestTask,
             PlayerControl.LocalPlayer.myTasks.ToArray().Any(PlayerTask.TaskIsEmergency),
-            Vector2.zero,
+            NeuroPlugin.Instance.Impostor.DirectionToNearestVent,
             NeuroPlugin.Instance.Vision.DirectionToNearestBody,
             GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.isActiveAndEnabled,
             NeuroPlugin.Instance.Vision.PlayerRecords.ToDictionary(kv => kv.Key.PlayerId, kv => kv.Value),

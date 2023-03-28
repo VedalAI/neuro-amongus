@@ -17,9 +17,12 @@ public class ImpostorHandler : MonoBehaviour
     public bool isImpostor { get; set; } = false;
     public bool goingForKill { get; set; } = false;
     public PlayerControl killTarget { get; set; } = null;
-    public Vent ventTarget { get; set; } = null;
+    public Vent closestVent { get; set; } = null;
     // initalized in ShipStatus_Awake
     public List<Vent> vents = new List<Vent>();
+
+    // TODO: move this + related logic to Vision if necessary
+    public Vector2 DirectionToNearestVent { get; set; } = Vector2.zero;
 
     public void FixedUpdate()
     {
@@ -31,9 +34,33 @@ public class ImpostorHandler : MonoBehaviour
 
         if (isImpostor)
         {
+            UpdateNearestVent();
             GetOrKillTarget();
             AttemptVent();
         }
+    }
+
+    [HideFromIl2Cpp]
+    private void UpdateNearestVent()
+    {
+        Vent closest = null;
+        float closestDistance = 9999f;
+        foreach (Vent vent in vents)
+        {
+            float distance = Vector2.Distance(vent.transform.position, PlayerControl.LocalPlayer.transform.position);
+            if (distance < closestDistance)
+            {
+                closest = vent;
+                closestDistance = distance;
+            }
+        }
+        closestVent = closest;
+        if (closestVent == null)
+        {
+            Warning("Closest vent was null this fixedupdate!");
+            return;
+        }
+        DirectionToNearestVent = (closestVent.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
     }
 
     [HideFromIl2Cpp]
@@ -89,22 +116,7 @@ public class ImpostorHandler : MonoBehaviour
         Info(String.Format("I just killed {0}!", killTarget.Data.PlayerName));
         goingForKill = false;
         killTarget = null;
-
-        // currently neuro will just beeline for the closest vent after a kill
-        // this should be changed to be more situational at some point
-        Vent closestVent = null;
-        float closestDistance = 9999f;
-        foreach (Vent vent in vents)
-        {
-            float distance = Vector2.Distance(vent.transform.position, PlayerControl.LocalPlayer.transform.position);
-            if (distance < closestDistance)
-            {
-                closestVent = vent;
-                closestDistance = distance;
-            }
-        }
-        ventTarget = closestVent;
-        if (ventTarget == null)
+        if (closestVent == null)
         {
             Info("closestVent is null, falling back to doing tasks!");
             NeuroPlugin.Instance.Tasks.UpdatePathToTask(NeuroPlugin.Instance.Tasks.GetFurthestTask());
@@ -114,26 +126,22 @@ public class ImpostorHandler : MonoBehaviour
     [HideFromIl2Cpp]
     private void AttemptVent()
     {
-        // currently will just beeline for the closest vent after a kill
-        // this should be changed to be more situational at some point
-        if (ventTarget != null && !PlayerControl.LocalPlayer.inVent && !PlayerControl.LocalPlayer.walkingToVent)
+        // currently will just enter a vent whenever possible
+        // this should be changed to be more situational
+        if (closestVent != null && !PlayerControl.LocalPlayer.inVent && !PlayerControl.LocalPlayer.walkingToVent)
         {
-            if (HudManager.Instance.ImpostorVentButton.currentTarget == ventTarget)
+            if (HudManager.Instance.ImpostorVentButton.currentTarget == closestVent)
             {
                 // vent.EnterVent() and vent.Use() dont actually put you in the vent for whatever reason so just click the button virtually
                 HudManager.Instance.ImpostorVentButton.DoClick();
-                ventTarget = null;
             }
         }
     }
 
-    [HideFromIl2Cpp]
     public IEnumerator Vent(Vent original)
     {
         Info("I entered a vent!");
-        // there is a vent.NearbyVents variable, but seems to break randomly
-        // so currently we just go to random vent
-        Vent current = vents[UnityEngine.Random.RandomRangeInt(0, vents.Count)];
+        Vent current = original.NearbyVents[UnityEngine.Random.RandomRangeInt(0, original.NearbyVents.Count)];
         yield return new WaitForSeconds(UnityEngine.Random.RandomRange(0.8f, 1.2f));
         original.MoveToVent(current);
         while (true)
@@ -154,7 +162,7 @@ public class ImpostorHandler : MonoBehaviour
                     Vent next;
                     while (true)
                     {
-                        next = vents[UnityEngine.Random.RandomRangeInt(0, vents.Count)];
+                        next = current.NearbyVents[UnityEngine.Random.RandomRangeInt(0, current.NearbyVents.Count)];
                         if (current == next) continue;
                         break;
                     }
@@ -180,7 +188,6 @@ public class ImpostorHandler : MonoBehaviour
     {
         killTarget = null;
         goingForKill = false;
-        ventTarget = null;
     }
 }
 
