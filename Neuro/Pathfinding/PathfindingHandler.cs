@@ -8,7 +8,7 @@ namespace Neuro.Pathfinding;
 
 public class PathfindingHandler
 {
-    private const int GRID_SIZE = 700;
+    private const int GRID_SIZE = 500;
     private const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;
     private const int GRID_UPPER_BOUNDS = GRID_SIZE / 2;
 
