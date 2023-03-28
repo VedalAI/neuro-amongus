@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.2.28" />
+        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.3.28" />
         <PackageReference Include="Reactor" Version="2.1.0" />
         <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.668" Private="false" ExcludeAssets="runtime;native" />
 

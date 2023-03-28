@@ -21,6 +21,10 @@ public class ImpostorHandler : MonoBehaviour
     // initalized in ShipStatus_Awake
     public List<Vent> vents = new List<Vent>();
 
+    // vent cooldown for testing purposes so we dont just instantly jump back into the vent we exited
+    // can be removed once logic is implemented
+    public int ventCooldown { get; set; } = 0;
+
     // TODO: move this + related logic to Vision if necessary
     public Vector2 DirectionToNearestVent { get; set; } = Vector2.zero;
 
@@ -28,6 +32,7 @@ public class ImpostorHandler : MonoBehaviour
     {
         if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
+        if (!PlayerControl.LocalPlayer) return;
 
         // TODO: maybe try and make this only update once
         isImpostor = PlayerControl.LocalPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor;
@@ -37,6 +42,10 @@ public class ImpostorHandler : MonoBehaviour
             UpdateNearestVent();
             GetOrKillTarget();
             AttemptVent();
+            if (ventCooldown > 0)
+            {
+                ventCooldown--;
+            }
         }
     }
 
@@ -116,11 +125,7 @@ public class ImpostorHandler : MonoBehaviour
         Info(String.Format("I just killed {0}!", killTarget.Data.PlayerName));
         goingForKill = false;
         killTarget = null;
-        if (closestVent == null)
-        {
-            Info("closestVent is null, falling back to doing tasks!");
-            NeuroPlugin.Instance.Tasks.UpdatePathToTask(NeuroPlugin.Instance.Tasks.GetFurthestTask());
-        }
+        NeuroPlugin.Instance.Tasks.UpdatePathToTask(NeuroPlugin.Instance.Tasks.GetFurthestTask());
     }
 
     [HideFromIl2Cpp]
@@ -128,7 +133,7 @@ public class ImpostorHandler : MonoBehaviour
     {
         // currently will just enter a vent whenever possible
         // this should be changed to be more situational
-        if (closestVent != null && !PlayerControl.LocalPlayer.inVent && !PlayerControl.LocalPlayer.walkingToVent)
+        if (closestVent != null && ventCooldown == 0 && !PlayerControl.LocalPlayer.inVent && !PlayerControl.LocalPlayer.walkingToVent)
         {
             if (HudManager.Instance.ImpostorVentButton.currentTarget == closestVent)
             {
@@ -141,9 +146,14 @@ public class ImpostorHandler : MonoBehaviour
     public IEnumerator Vent(Vent original)
     {
         Info("I entered a vent!");
-        Vent current = original.NearbyVents[UnityEngine.Random.RandomRangeInt(0, original.NearbyVents.Count)];
+        List<Vent> possibleVents = GetAvailableNearbyVents(original);
+        Vent current = possibleVents[UnityEngine.Random.RandomRangeInt(0, possibleVents.Count)];
         yield return new WaitForSeconds(UnityEngine.Random.RandomRange(0.8f, 1.2f));
-        original.MoveToVent(current);
+        string error;
+        if (!original.TryMoveToVent(current, out error))
+        {
+            Error(String.Format("Failed to move to vent {0}, reason: {1}", current.Id, error));
+        }
         while (true)
         {
             // use a random time between vent moves to make it more realistic
@@ -162,11 +172,15 @@ public class ImpostorHandler : MonoBehaviour
                     Vent next;
                     while (true)
                     {
-                        next = current.NearbyVents[UnityEngine.Random.RandomRangeInt(0, current.NearbyVents.Count)];
+                        possibleVents = GetAvailableNearbyVents(current);
+                        next = possibleVents[UnityEngine.Random.RandomRangeInt(0, possibleVents.Count)];
                         if (current == next) continue;
                         break;
                     }
-                    current.MoveToVent(next);
+                    if (!current.TryMoveToVent(next, out error))
+                    {
+                        Error(String.Format("Failed to move to vent {0}, reason: {1}", next.Id, error));
+                    }
                     current = next;
                     playerFound = true;
                     break;
@@ -178,12 +192,25 @@ public class ImpostorHandler : MonoBehaviour
             {
                 HudManager.Instance.ImpostorVentButton.DoClick();
                 killTarget = null;
+                ventCooldown = 60;
                 yield break;
             }
         }
     }
 
-    [HideFromIl2Cpp]
+    // since some vents can have a variable amount of neighbors, use this helper method to get available ones
+    private List<Vent> GetAvailableNearbyVents(Vent vent)
+    {
+        List<Vent> result = new List<Vent>();
+        if (vent.Left)
+            result.Add(vent.Left);
+        if (vent.Center)
+            result.Add(vent.Center);
+        if (vent.Right)
+            result.Add(vent.Right);
+        return result;
+    }
+
     public void ResetAfterMeeting()
     {
         killTarget = null;
