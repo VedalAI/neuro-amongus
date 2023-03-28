@@ -25,7 +25,7 @@ public class MovementHandler
 
         Vector2 nextWaypoint = handler.CurrentPath[handler.PathIndex];
 
-        while (Vector2.Distance(PlayerControl.LocalPlayer.GetTruePosition(), nextWaypoint) < 0.75f)
+        while (Vector2.Distance(PlayerControl.LocalPlayer.GetTruePosition(), nextWaypoint) < 1f)
         {
             handler.PathIndex++;
             if (handler.PathIndex > handler.CurrentPath.Length - 1)
