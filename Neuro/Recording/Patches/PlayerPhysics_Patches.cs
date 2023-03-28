@@ -11,3 +11,5 @@ public static class PlayerPhysics_RpcEnterVent
         NeuroPlugin.Instance.Recording.DidVent = true;
     }
 }
+
+// TODO: Consider exiting a vent as venting

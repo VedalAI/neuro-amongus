@@ -20,6 +20,8 @@ public class RecordingHandler : MonoBehaviour
     public bool DidReport { get; set; }
     public bool DidVent { get; set; }
     public bool DidKill { get; set; }
+    public bool DidSabotage { get; set; }
+    public bool DidDoors { get; set; }
 
     public void FixedUpdate()
     {
@@ -41,15 +43,14 @@ public class RecordingHandler : MonoBehaviour
             DidReport,
             DidVent,
             DidKill,
-            // TODO: Implement these two
-            false,
-            false
+            DidSabotage,
+            DidDoors
         );
         Frames.Add(frame);
 
         // string frameString = JsonSerializer.Serialize(frame);
         // Info(frameString);
 
-        DidReport = DidVent = DidKill = false;
+        DidReport = DidVent = DidKill = DidSabotage = DidDoors = false;
     }
 }

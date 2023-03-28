@@ -130,6 +130,7 @@ public class TasksHandler : MonoBehaviour
     }
 
     // TODO: Maybe find a better place for this
+    [HideFromIl2Cpp]
     public void UpdatePathToVent()
     {
         if (NeuroPlugin.Instance.Impostor.ventTarget == null) return;
@@ -138,6 +139,7 @@ public class TasksHandler : MonoBehaviour
     }
 
     // TODO: Maybe find a better place for this
+    [HideFromIl2Cpp]
     public void UpdatePathToPlayer()
     {
         if (NeuroPlugin.Instance.Impostor.killTarget == null) return;
