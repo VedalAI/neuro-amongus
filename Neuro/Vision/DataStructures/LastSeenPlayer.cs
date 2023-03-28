@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace Neuro.Vision.DataStructures;
 
-namespace Neuro.Utils;
-
-[Serializable]
 public class LastSeenPlayer
 {
-    public string location;
+    public string location; // TODO: location == "" is used to check various things across the project. this should be changed
     public float time;
     public bool dead;
     public PlayerControl[] witnesses;
