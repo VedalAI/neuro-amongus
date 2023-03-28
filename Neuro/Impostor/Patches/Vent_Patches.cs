@@ -18,12 +18,12 @@ public static class Vent_EnterVent
             return;
         }
 
-        PluginSingleton<NeuroPlugin>.Instance.didVent = true;
+        NeuroPlugin.Instance.Recording.DidVent = true;
     }
 
     public static void Postfix(Vent __instance)
     {
-        PlayerControl.LocalPlayer.StartCoroutine(PluginSingleton<NeuroPlugin>.Instance.Vent(__instance));
+        PlayerControl.LocalPlayer.StartCoroutine(NeuroPlugin.Instance.Impostor.Vent(__instance));
     }
 }
 
@@ -40,6 +40,6 @@ public static class Vent_ExitVent
             return;
         }
 
-        PluginSingleton<NeuroPlugin>.Instance.didVent = true;
+        NeuroPlugin.Instance.Recording.DidVent = true;
     }
 }
