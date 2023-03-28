@@ -9,6 +9,8 @@ public static class Minigame_Begin
     [HarmonyPostfix]
     public static void Postfix(Minigame __instance, PlayerTask task)
     {
+        // ignore the practice mode laptop, which is apparently considered a minigame but has no TaskType
+        if (__instance.name == "TaskAddMinigame(Clone)") return;
         __instance.StartCoroutine(NeuroPlugin.Instance.Minigames.CompleteMinigame(task, __instance));
     }
 }

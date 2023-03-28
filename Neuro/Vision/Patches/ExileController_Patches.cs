@@ -9,5 +9,6 @@ public static class ExileController_WrapUp
     public static void Postfix()
     {
         NeuroPlugin.Instance.Vision.ResetAfterMeeting();
+        NeuroPlugin.Instance.Impostor.ResetAfterMeeting();
     }
 }

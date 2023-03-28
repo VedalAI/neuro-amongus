@@ -247,4 +247,9 @@ public class VisionHandler : MonoBehaviour
         // We're not in an actual room, so say which room we're nearest to
         return nearPrefix + TranslationController.Instance.GetString(closestLocation.RoomId);
     }
+
+    public Dictionary<PlayerControl, LastSeenPlayer> GetPlayerLocations()
+    {
+        return _playerLocations;
+    }
 }
