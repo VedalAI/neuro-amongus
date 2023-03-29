@@ -79,8 +79,8 @@ public class VisionHandler : MonoBehaviour
                 // Determine how much time the player was visible to Neuro-sama for
                 float gamePercentage = lastSeen.gameTimeVisible / Time.timeSinceLevelLoad;
                 float roundPercentage = lastSeen.roundTimeVisible / (Time.timeSinceLevelLoad - roundStartTime);
-                TimeSpan gameTime = new(0, 0, (int) Math.Floor(lastSeen.gameTimeVisible));
-                TimeSpan roundTime = new(0, 0, (int) Math.Floor(lastSeen.roundTimeVisible));
+                TimeSpan gameTime = new(0, 0, (int)Math.Floor(lastSeen.gameTimeVisible));
+                TimeSpan roundTime = new(0, 0, (int)Math.Floor(lastSeen.roundTimeVisible));
                 Info($"{player.name} has spent {gameTime.Minutes} minutes and {gameTime.Seconds} seconds near me this game ({gamePercentage * 100.0f:0.0}% of the game)");
                 Info($"{player.name} has spent {roundTime.Minutes} minutes and {roundTime.Seconds} seconds near me this round ({roundPercentage * 100.0f:0.0}% of the round)");
             }
@@ -182,7 +182,7 @@ public class VisionHandler : MonoBehaviour
             if (Vector2.Distance(otherPlayerPosition, PlayerControl.LocalPlayer.transform.position) < 5f)
             {
                 var otherPlayerTruePosition = playerControl.GetTruePosition();
-                if (IsVisible( localPlayerTruePosition,otherPlayerTruePosition))
+                if (IsVisible(localPlayerTruePosition, otherPlayerTruePosition))
                 {
                     LastSeenPlayer lastSeenPlayer = _playerLocations[playerControl];
                     lastSeenPlayer.location = GetLocationFromPosition(otherPlayerPosition);
@@ -227,7 +227,7 @@ public class VisionHandler : MonoBehaviour
         foreach (PlainShipRoom room in ShipStatus.Instance.AllRooms)
         {
             Collider2D collider = room.roomArea;
-            if (collider.OverlapPoint(position))
+            if (collider is not null && collider.OverlapPoint(position))
             {
                 if (room.RoomId == SystemTypes.Hallway)
                     nearPrefix = "a hallway near "; // keep looking for the nearest room
@@ -236,7 +236,9 @@ public class VisionHandler : MonoBehaviour
             }
             else if (room.RoomId != SystemTypes.Hallway)
             {
-                float distance = Vector2.Distance(position, collider.ClosestPoint(position));
+                float distance = collider is null
+                    ? Mathf.Infinity
+                    : Vector2.Distance(position, collider.ClosestPoint(position));
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
