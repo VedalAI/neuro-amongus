@@ -227,7 +227,7 @@ public class VisionHandler : MonoBehaviour
         foreach (PlainShipRoom room in ShipStatus.Instance.AllRooms)
         {
             Collider2D collider = room.roomArea;
-            if (collider is not null && collider.OverlapPoint(position))
+            if (collider && collider.OverlapPoint(position))
             {
                 if (room.RoomId == SystemTypes.Hallway)
                     nearPrefix = "a hallway near "; // keep looking for the nearest room
@@ -236,9 +236,9 @@ public class VisionHandler : MonoBehaviour
             }
             else if (room.RoomId != SystemTypes.Hallway)
             {
-                float distance = collider is null
-                    ? Mathf.Infinity
-                    : Vector2.Distance(position, collider.ClosestPoint(position));
+                float distance = collider
+                    ? Vector2.Distance(position, collider.ClosestPoint(position))
+                    : Mathf.Infinity;
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
