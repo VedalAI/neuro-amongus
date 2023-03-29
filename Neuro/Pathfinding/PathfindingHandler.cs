@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Il2CppInterop.Runtime;
 using Neuro.Pathfinding.DataStructures;
 using UnityEngine;
 
@@ -128,15 +129,14 @@ public class PathfindingHandler
 
             //Info(point.ToString());
             Collider2D[] cols = Physics2D.OverlapCircleAll(point, 0.25f, LayerMask.GetMask("Ship", "ShortObjects"));
-            List<Collider2D> colsList = cols
-                .Where(col =>
+            int validColsCount = cols.Count(col =>
                     !col.isTrigger
                     && !col.transform.name.Contains("Vent")
                     && !col.transform.name.Contains("Door")
-                    && !col.transform.name.Equals("Collider") // The Mira decontamination doors have the default name for some reason. No other map has colliders with the default name.
-                    ).ToList();
+                    && !col.transform.parent.name.Contains("Door")
+            );
 
-            bool accessible = colsList.Count == 0;
+            bool accessible = validColsCount == 0;
             grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
         }
     }
