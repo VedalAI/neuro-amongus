@@ -10,8 +10,7 @@ public class MapRoom_SabotageReactor
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.DidSabotage = true;
-        NeuroPlugin.Instance.Recording.SabotageUsed = SabotageTypes.Reactor;
+        NeuroPlugin.Instance.Recording.RecordSabotage(SabotageTypes.Reactor);
     }
 }
 
@@ -21,8 +20,7 @@ public class MapRoom_SabotageComms
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.DidSabotage = true;
-        NeuroPlugin.Instance.Recording.SabotageUsed = SabotageTypes.Comms;
+        NeuroPlugin.Instance.Recording.RecordSabotage(SabotageTypes.Comms);
     }
 }
 
@@ -32,8 +30,7 @@ public class MapRoom_SabotageLights
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.DidSabotage = true;
-        NeuroPlugin.Instance.Recording.SabotageUsed = SabotageTypes.Lights;
+        NeuroPlugin.Instance.Recording.RecordSabotage(SabotageTypes.Lights);
     }
 }
 
@@ -43,8 +40,7 @@ public class MapRoom_SabotageOxygen
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.DidSabotage = true;
-        NeuroPlugin.Instance.Recording.SabotageUsed = SabotageTypes.Oxygen;
+        NeuroPlugin.Instance.Recording.RecordSabotage(SabotageTypes.Oxygen);
     }
 }
 
@@ -54,8 +50,7 @@ public class MapRoom_SabotageSeismic
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.DidSabotage = true;
-        NeuroPlugin.Instance.Recording.SabotageUsed = SabotageTypes.Seismic;
+        NeuroPlugin.Instance.Recording.RecordSabotage(SabotageTypes.Seismic);
     }
 }
 
@@ -65,8 +60,7 @@ public class MapRoom_SabotageDoors
     [HarmonyPostfix]
     public static void Postfix(MapRoom __instance)
     {
-        NeuroPlugin.Instance.Recording.DidDoors = true;
-        NeuroPlugin.Instance.Recording.DoorsUsed = ShipStatus.Instance.AllDoors.Where(r => r.Room == __instance.room).ToList();
+        NeuroPlugin.Instance.Recording.RecordDoors(__instance.room);
     }
 }
 

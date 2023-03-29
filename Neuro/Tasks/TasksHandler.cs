@@ -23,12 +23,13 @@ public class TasksHandler : MonoBehaviour
         bool isImpostor = NeuroPlugin.Instance.Impostor.isImpostor;
         if (!task)
         {
-            // as impostor, among us adds a fake task to the front of the list with no position
-            // therefore skip it as it cannot be completed
-            if (isImpostor)
-                task = PlayerControl.LocalPlayer.myTasks.At(1);
-            else
-                task = PlayerControl.LocalPlayer.myTasks.At(0);
+            // skip fake tasks that cannot be completed (for instance, the red text as impostor)
+            foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+            {
+                if (t.TryCast<ImportantTextTask>()) continue;
+                task = t;
+                break;
+            }
         }
 
         PlayerTask nextTask = null;

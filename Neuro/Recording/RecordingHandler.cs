@@ -23,7 +23,7 @@ public class RecordingHandler : MonoBehaviour
     public bool DidSabotage { get; set; }
     public bool DidDoors { get; set; }
     public SabotageTypes SabotageUsed { get; set; }
-    public List<PlainDoor> DoorsUsed { get; set; }
+    public List<PlainDoor> DoorsUsed { get; set; } = new List<PlainDoor>();
 
     public void FixedUpdate()
     {
@@ -61,5 +61,22 @@ public class RecordingHandler : MonoBehaviour
         DidReport = DidVent = DidKill = DidSabotage = DidDoors = false;
         SabotageUsed = SabotageTypes.None;
         DoorsUsed.Clear();
+    }
+
+    public void RecordSabotage(SabotageTypes type)
+    {
+        if (type == SabotageTypes.None)
+        {
+            Error("RecordSabotage SabotageTypes type should not be none.");
+            return;
+        }
+        DidSabotage = true;
+        SabotageUsed = type;
+    }
+
+    public void RecordDoors(SystemTypes room)
+    {
+        DidDoors = true;
+        DoorsUsed = ShipStatus.Instance.AllDoors.Where(r => r.Room == room).ToList();
     }
 }

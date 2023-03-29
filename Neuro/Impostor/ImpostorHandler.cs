@@ -26,7 +26,7 @@ public class ImpostorHandler : MonoBehaviour
     public bool goingForKill { get; set; } = false;
     public PlayerControl killTarget { get; set; } = null;
 
-    public void FixedUpdate()
+    private void FixedUpdate()
     {
         if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
