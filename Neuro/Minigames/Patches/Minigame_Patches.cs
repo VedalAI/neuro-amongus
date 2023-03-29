@@ -9,6 +9,9 @@ public static class Minigame_Begin
     [HarmonyPostfix]
     public static void Postfix(Minigame __instance, PlayerTask task)
     {
-        __instance.StartCoroutine(NeuroPlugin.Instance.Minigames.CompleteMinigame(task, __instance));
+        // If this task is null, assume it is a door. TODO: Are there other instances where the task is null?
+        __instance.StartCoroutine(task is not null
+            ? NeuroPlugin.Instance.Minigames.CompleteMinigame(task, __instance)
+            : NeuroPlugin.Instance.Minigames.CompleteDoorMinigame(__instance));
     }
 }

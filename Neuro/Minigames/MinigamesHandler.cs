@@ -35,6 +35,37 @@ public class MinigamesHandler
         NeuroPlugin.Instance.Tasks.UpdatePathToTask(task);
     }
 
+    public IEnumerator CompleteDoorMinigame(Minigame minigame)
+    {
+        if (minigame.TryCast<DoorBreakerGame>() is { } breakerGame)
+        {
+            yield return new WaitForSeconds(Random.RandomRange(1f, 2.5f));
+
+            foreach (var button in breakerGame.Buttons)
+            {
+                if (button.flipX) breakerGame.FlipSwitch(button);
+            }
+
+            Info($"Opened breaker door {breakerGame.MyDoor.Id}");
+        }
+        else if (minigame.TryCast<DoorCardSwipeGame>() is { } swipeGame)
+        {
+            yield return new WaitForSeconds(GetTimeToComplete(TaskTypes.SwipeCard));
+
+            ShipStatus.Instance.RpcRepairSystem(SystemTypes.Doors, swipeGame.MyDoor.Id | 64);
+            swipeGame.MyDoor.SetDoorway(true);
+            swipeGame.StartCoroutine(swipeGame.CoStartClose(0.4f));
+
+            Info($"Opened swipe door {swipeGame.MyDoor.Id}");
+        }
+        else
+        {
+            Warning($"{minigame.name} was not a {nameof(DoorBreakerGame)} or {nameof(DoorCardSwipeGame)}");
+        }
+
+        minigame.Close();
+    }
+
     private static float GetTimeToComplete(TaskTypes task)
     {
         (float min, float max) = GetMinMaxTimeToComplete(task);
