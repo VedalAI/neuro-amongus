@@ -22,14 +22,9 @@ public class ImpostorHandler : MonoBehaviour
     public Vector2 DirectionToNearestVent { get; set; } = Vector2.zero;
     public List<PlainDoor> NearbyDoors { get; set; } = new List<PlainDoor>();
 
-
-
-
     // member variables used in example methods
     public bool goingForKill { get; set; } = false;
     public PlayerControl killTarget { get; set; } = null;
-
-
 
     public void FixedUpdate()
     {

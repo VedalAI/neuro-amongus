@@ -38,6 +38,7 @@ public class TasksHandler : MonoBehaviour
             PlayerTask targetTask;
 
             // as impostor, getting the furthest task instead of the closest one is good for finding players
+            // also helps trying to do a task right next to someone we killed
             if (isImpostor)
             {
                 targetTask = GetFurthestTask();
@@ -129,15 +130,6 @@ public class TasksHandler : MonoBehaviour
         return furthestTask;
     }
 
-    // TODO: Maybe find a better place for this
-    [HideFromIl2Cpp]
-    public void UpdatePathToPlayer()
-    {
-        if (NeuroPlugin.Instance.Impostor.killTarget == null) return;
-        CurrentPath = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, NeuroPlugin.Instance.Impostor.killTarget.transform.position);
-        PathIndex = 0;
-    }
-
     [HideFromIl2Cpp]
     public IEnumerator UpdatePathToFirstTask(NormalPlayerTask initial)
     {
@@ -148,11 +140,7 @@ public class TasksHandler : MonoBehaviour
         {
             yield return new WaitForSeconds(0.5f);
 
-            if (NeuroPlugin.Instance.Impostor.killTarget != null)
-                UpdatePathToPlayer();
-            
-            else
-                UpdatePathToTask();
+            UpdatePathToTask();
 
             // TODO: Is this while loop purposefully infinite? If so, we should have a stop condition for example when the game ends.
         }
