@@ -6,6 +6,7 @@ using Neuro.Vision.DataStructures;
 using BepInEx.Unity.IL2CPP.Utils;
 using System.Collections;
 using Il2CppInterop.Runtime.Attributes;
+using System.Linq;
 
 namespace Neuro.Impostor;
 
@@ -15,18 +16,18 @@ public class ImpostorHandler : MonoBehaviour
     public ImpostorHandler(IntPtr ptr) : base(ptr) { }
 
     public bool isImpostor { get; set; } = false;
-    public bool goingForKill { get; set; } = false;
-    public PlayerControl killTarget { get; set; } = null;
-    public Vent closestVent { get; set; } = null;
-    // initalized in ShipStatus_Awake
-    public List<Vent> vents = new List<Vent>();
-
-    // vent cooldown for testing purposes so we dont just instantly jump back into the vent we exited
-    // can be removed once logic is implemented
-    public int ventCooldown { get; set; } = 0;
-
+    public Vent ClosestVent { get; set; } = null;
+    public List<Vent> NearbyVents { get; set; } = new List<Vent>();
     // TODO: move this + related logic to Vision if necessary
     public Vector2 DirectionToNearestVent { get; set; } = Vector2.zero;
+
+
+
+    // member variables used in example methods
+    public bool goingForKill { get; set; } = false;
+    public PlayerControl killTarget { get; set; } = null;
+
+
 
     public void FixedUpdate()
     {
@@ -39,40 +40,46 @@ public class ImpostorHandler : MonoBehaviour
 
         if (isImpostor)
         {
-            UpdateNearestVent();
-            GetOrKillTarget();
-            AttemptVent();
-            if (ventCooldown > 0)
-            {
-                ventCooldown--;
-            }
+            UpdateNearbyVents();
+            // GetOrKillTarget();
+            // AttemptVent();
         }
     }
 
     [HideFromIl2Cpp]
-    private void UpdateNearestVent()
+    private void UpdateNearbyVents()
     {
         Vent closest = null;
-        float closestDistance = 9999f;
-        foreach (Vent vent in vents)
+        float closestDistance = 999f;
+        NearbyVents.Clear();
+        foreach (Vent vent in ShipStatus.Instance.AllVents)
         {
             float distance = Vector2.Distance(vent.transform.position, PlayerControl.LocalPlayer.transform.position);
-            if (distance < closestDistance)
+            if (distance < 10f)
             {
-                closest = vent;
-                closestDistance = distance;
+                NearbyVents.Add(vent);
+                // also take the opportunity to get the closest vent
+                if (distance < closestDistance)
+                {
+                    closest = vent;
+                    closestDistance = distance;
+                }
             }
         }
-        closestVent = closest;
-        if (closestVent == null)
+        ClosestVent = closest;
+
+        if (ClosestVent == null)
         {
-            Warning("Closest vent was null this fixedupdate!");
-            return;
+            DirectionToNearestVent = Vector2.zero;
         }
-        DirectionToNearestVent = (closestVent.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
+        else
+        {
+            DirectionToNearestVent = (ClosestVent.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
+        }
+        
     }
 
-    [HideFromIl2Cpp]
+    // example of kill functionality
     private void GetOrKillTarget()
     {
         if (PlayerControl.LocalPlayer.killTimer > 0f) return;
@@ -128,14 +135,15 @@ public class ImpostorHandler : MonoBehaviour
         NeuroPlugin.Instance.Tasks.UpdatePathToTask(NeuroPlugin.Instance.Tasks.GetFurthestTask());
     }
 
+
     [HideFromIl2Cpp]
     private void AttemptVent()
     {
         // currently will just enter a vent whenever possible
         // this should be changed to be more situational
-        if (closestVent != null && ventCooldown == 0 && !PlayerControl.LocalPlayer.inVent && !PlayerControl.LocalPlayer.walkingToVent)
+        if (ClosestVent != null && !PlayerControl.LocalPlayer.inVent && !PlayerControl.LocalPlayer.walkingToVent)
         {
-            if (HudManager.Instance.ImpostorVentButton.currentTarget == closestVent)
+            if (HudManager.Instance.ImpostorVentButton.currentTarget == ClosestVent)
             {
                 // vent.EnterVent() and vent.Use() dont actually put you in the vent for whatever reason so just click the button virtually
                 HudManager.Instance.ImpostorVentButton.DoClick();
@@ -143,6 +151,7 @@ public class ImpostorHandler : MonoBehaviour
         }
     }
 
+    // example of vent functionality
     public IEnumerator Vent(Vent original)
     {
         Info("I entered a vent!");
@@ -192,7 +201,6 @@ public class ImpostorHandler : MonoBehaviour
             {
                 HudManager.Instance.ImpostorVentButton.DoClick();
                 killTarget = null;
-                ventCooldown = 60;
                 yield break;
             }
         }

@@ -19,7 +19,5 @@ public static class ShipStatus_Awake
         arrow.material = new Material(Shader.Find("Sprites/Default"));
         arrow.startColor = Color.blue;
         arrow.endColor = Color.cyan;
-
-        NeuroPlugin.Instance.Impostor.vents = Object.FindObjectsOfType<Vent>().ToList();
     }
 }

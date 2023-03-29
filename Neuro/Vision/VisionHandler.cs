@@ -153,8 +153,8 @@ public class VisionHandler : MonoBehaviour
     {
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
+            
             PlayerRecords[playerControl] = new PlayerRecord();
-
             if (PlayerControl.LocalPlayer == playerControl) continue;
 
             if (playerControl.Data.IsDead) continue;

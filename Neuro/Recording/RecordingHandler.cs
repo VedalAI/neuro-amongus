@@ -22,6 +22,7 @@ public class RecordingHandler : MonoBehaviour
     public bool DidKill { get; set; }
     public bool DidSabotage { get; set; }
     public bool DidDoors { get; set; }
+    public SabotageTypes SabotageUsed { get; set; }
 
     public void FixedUpdate()
     {
@@ -36,14 +37,17 @@ public class RecordingHandler : MonoBehaviour
             NeuroPlugin.Instance.Movement.DirectionToNearestTask,
             PlayerControl.LocalPlayer.myTasks.ToArray().Any(PlayerTask.TaskIsEmergency),
             NeuroPlugin.Instance.Impostor.DirectionToNearestVent,
+            NeuroPlugin.Instance.Impostor.NearbyVents,
             NeuroPlugin.Instance.Vision.DirectionToNearestBody,
             GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.isActiveAndEnabled,
             NeuroPlugin.Instance.Vision.PlayerRecords.ToDictionary(kv => kv.Key.PlayerId, kv => kv.Value),
             NeuroPlugin.Instance.Movement.LastMoveDirection,
             DidReport,
             DidVent,
+            PlayerControl.LocalPlayer.inVent,
             DidKill,
             DidSabotage,
+            SabotageUsed,
             DidDoors
         );
         Frames.Add(frame);
@@ -52,5 +56,6 @@ public class RecordingHandler : MonoBehaviour
         // Info(frameString);
 
         DidReport = DidVent = DidKill = DidSabotage = DidDoors = false;
+        SabotageUsed = SabotageTypes.None;
     }
 }
