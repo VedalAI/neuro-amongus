@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Neuro.Recording.DataStructures;
 
 namespace Neuro.Impostor.Patches;
 
@@ -9,6 +10,7 @@ public class MapRoom_SabotageReactor
     public static void Postfix()
     {
         NeuroPlugin.Instance.Recording.DidSabotage = true;
+        NeuroPlugin.Instance.Recording.SabotageUsed = SabotageTypes.Reactor;
     }
 }
 
@@ -19,6 +21,7 @@ public class MapRoom_SabotageComms
     public static void Postfix()
     {
         NeuroPlugin.Instance.Recording.DidSabotage = true;
+        NeuroPlugin.Instance.Recording.SabotageUsed = SabotageTypes.Comms;
     }
 }
 
@@ -29,6 +32,7 @@ public class MapRoom_SabotageLights
     public static void Postfix()
     {
         NeuroPlugin.Instance.Recording.DidSabotage = true;
+        NeuroPlugin.Instance.Recording.SabotageUsed = SabotageTypes.Lights;
     }
 }
 
@@ -39,6 +43,7 @@ public class MapRoom_SabotageOxygen
     public static void Postfix()
     {
         NeuroPlugin.Instance.Recording.DidSabotage = true;
+        NeuroPlugin.Instance.Recording.SabotageUsed = SabotageTypes.Oxygen;
     }
 }
 
@@ -49,6 +54,7 @@ public class MapRoom_SabotageSeismic
     public static void Postfix()
     {
         NeuroPlugin.Instance.Recording.DidSabotage = true;
+        NeuroPlugin.Instance.Recording.SabotageUsed = SabotageTypes.Seismic;
     }
 }
 
@@ -59,6 +65,7 @@ public class MapRoom_SabotageDoors
     public static void Postfix()
     {
         NeuroPlugin.Instance.Recording.DidDoors = true;
+        // TODO: record doors used
     }
 }
 
