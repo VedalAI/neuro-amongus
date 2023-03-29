@@ -20,6 +20,8 @@ public class ImpostorHandler : MonoBehaviour
     public List<Vent> NearbyVents { get; set; } = new List<Vent>();
     // TODO: move this + related logic to Vision if necessary
     public Vector2 DirectionToNearestVent { get; set; } = Vector2.zero;
+    public List<PlainDoor> NearbyDoors { get; set; } = new List<PlainDoor>();
+
 
 
 
@@ -38,9 +40,11 @@ public class ImpostorHandler : MonoBehaviour
         // TODO: maybe try and make this only update once
         isImpostor = PlayerControl.LocalPlayer.Data.RoleType == AmongUs.GameOptions.RoleTypes.Impostor;
 
+        // TODO: Move UpdateNearbyDoors when implementing maps with doors that non-impostors can use
         if (isImpostor)
         {
             UpdateNearbyVents();
+            UpdateNearbyDoors();
             // GetOrKillTarget();
             // AttemptVent();
         }
@@ -78,6 +82,22 @@ public class ImpostorHandler : MonoBehaviour
         }
         
     }
+
+    [HideFromIl2Cpp]
+    private void UpdateNearbyDoors()
+    {
+        NearbyDoors.Clear();
+        foreach (PlainDoor door in ShipStatus.Instance.AllDoors)
+        {
+            float distance = Vector2.Distance(door.transform.position, PlayerControl.LocalPlayer.transform.position);
+            if (distance < 10f)
+            {
+                NearbyDoors.Add(door);
+            }
+        }
+    }
+
+    /** ----- Stubs below here ----- **/
 
     // example of kill functionality
     private void GetOrKillTarget()

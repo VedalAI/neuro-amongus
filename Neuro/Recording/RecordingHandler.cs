@@ -23,6 +23,7 @@ public class RecordingHandler : MonoBehaviour
     public bool DidSabotage { get; set; }
     public bool DidDoors { get; set; }
     public SabotageTypes SabotageUsed { get; set; }
+    public List<PlainDoor> DoorsUsed { get; set; }
 
     public void FixedUpdate()
     {
@@ -48,7 +49,9 @@ public class RecordingHandler : MonoBehaviour
             DidKill,
             DidSabotage,
             SabotageUsed,
-            DidDoors
+            DidDoors,
+            NeuroPlugin.Instance.Impostor.NearbyDoors,
+            DoorsUsed
         );
         Frames.Add(frame);
 
@@ -57,5 +60,6 @@ public class RecordingHandler : MonoBehaviour
 
         DidReport = DidVent = DidKill = DidSabotage = DidDoors = false;
         SabotageUsed = SabotageTypes.None;
+        DoorsUsed.Clear();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Neuro.Recording.DataStructures;
+using System.Linq;
 
 namespace Neuro.Impostor.Patches;
 
@@ -62,10 +63,10 @@ public class MapRoom_SabotageSeismic
 public class MapRoom_SabotageDoors
 {
     [HarmonyPostfix]
-    public static void Postfix()
+    public static void Postfix(MapRoom __instance)
     {
         NeuroPlugin.Instance.Recording.DidDoors = true;
-        // TODO: record doors used
+        NeuroPlugin.Instance.Recording.DoorsUsed = ShipStatus.Instance.AllDoors.Where(r => r.Room == __instance.room).ToList();
     }
 }
 
