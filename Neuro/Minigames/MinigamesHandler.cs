@@ -76,7 +76,7 @@ public class MinigamesHandler
 
     private static readonly Dictionary<TaskTypes, (float min, float max)> MiniGameTimes = new()
     {
-        {TaskTypes.AlignEngineOutput, (10f, 15f)},
+        {TaskTypes.AlignEngineOutput, (3f, 6f)},
         {TaskTypes.AlignTelescope, (2f, 4f)},
         {TaskTypes.AssembleArtifact, (2f, 4f)},
         {TaskTypes.BuyBeverage, (2f, 4f)},
@@ -90,7 +90,7 @@ public class MinigamesHandler
         {TaskTypes.DevelopPhotos, (10f, 15f)},
         {TaskTypes.DivertPower, (2f, 4f)},
         {TaskTypes.DressMannequin, (2f, 4f)},
-        {TaskTypes.EmptyChute, (10f, 15f)},
+        {TaskTypes.EmptyChute, (5f, 8f)},
         {TaskTypes.EmptyGarbage, (10f, 15f)},
         {TaskTypes.EnterIdCode, (5f, 8f)},
         {TaskTypes.FillCanisters, (2f, 4f)},
@@ -105,7 +105,7 @@ public class MinigamesHandler
         {TaskTypes.PickUpTowels, (2f, 4f)},
         {TaskTypes.PolishRuby, (2f, 4f)},
         {TaskTypes.PrimeShields, (2f, 4f)},
-        {TaskTypes.ProcessData, (2f, 4f)},
+        {TaskTypes.ProcessData, (8f, 9f)},
         {TaskTypes.PutAwayPistols, (2f, 4f)},
         {TaskTypes.PutAwayRifles, (2f, 4f)},
         {TaskTypes.RebootWifi, (10f, 15f)},
@@ -123,10 +123,10 @@ public class MinigamesHandler
         {TaskTypes.StartReactor, (10f, 15f)},
         {TaskTypes.StoreArtifacts, (2f, 4f)},
         {TaskTypes.SubmitScan, (10f, 15f)},
-        {TaskTypes.SwipeCard, (5f, 8f)},
+        {TaskTypes.SwipeCard, (3f, 8f)},
         {TaskTypes.UnlockManifolds, (2f, 4f)},
         {TaskTypes.UnlockSafe, (10f, 15f)},
-        {TaskTypes.UploadData, (5f, 8f)},
+        {TaskTypes.UploadData, (10f, 11f)},
         {TaskTypes.WaterPlants, (10f, 15f)}
     };
 }
