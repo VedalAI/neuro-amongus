@@ -128,25 +128,15 @@ public class PathfindingHandler
 
             //Info(point.ToString());
             Collider2D[] cols = Physics2D.OverlapCircleAll(point, 0.25f, LayerMask.GetMask("Ship", "ShortObjects"));
-            List<Collider2D> colsList = cols.Where(col => !col.isTrigger && !col.transform.name.Contains("Vent") && !col.transform.name.Contains("Door")).ToList();
+            List<Collider2D> colsList = cols
+                .Where(col =>
+                    !col.isTrigger
+                    && !col.transform.name.Contains("Vent")
+                    && !col.transform.name.Contains("Door")
+                    && !col.transform.name.Equals("Collider") // The Mira decontamination doors have the default name for some reason. No other map has colliders with the default name.
+                    ).ToList();
 
             bool accessible = colsList.Count == 0;
-
-            //Info(accessible);
-            if (accessible)
-            {
-                /*GameObject test = new GameObject("Test");
-                    //Info(test.transform);
-                    test.transform.position = (Vector3)point;
-
-                    LineRenderer renderer = test.AddComponent<LineRenderer>();
-                    renderer.SetPosition(0, test.transform.position);
-                    renderer.SetPosition(1, test.transform.position + new Vector3(0, 0.1f, 0));
-                    renderer.widthMultiplier = 0.1f;
-                    renderer.positionCount = 2;
-                    renderer.startColor = Color.red;*/
-            }
-
             grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
         }
     }
