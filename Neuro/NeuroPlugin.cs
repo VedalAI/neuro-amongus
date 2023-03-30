@@ -9,6 +9,7 @@ using Neuro.Movement;
 using Neuro.Pathfinding;
 using Neuro.Recording;
 using Neuro.Tasks;
+using Neuro.Utilities;
 using Neuro.Vision;
 using Reactor;
 using Reactor.Utilities;
@@ -39,5 +40,7 @@ public partial class NeuroPlugin : BasePlugin
         Recording = AddComponent<RecordingHandler>();
         Tasks = AddComponent<TasksHandler>();
         Vision = AddComponent<VisionHandler>();
+
+        ResourceManager.CacheSprite("Cursor");
     }
 }

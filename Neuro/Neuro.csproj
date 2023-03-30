@@ -2,16 +2,17 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <LangVersion>latest</LangVersion>
-        <DebugType>embedded</DebugType>
 
         <VersionPrefix>1.0.0</VersionPrefix>
         <VersionSuffix>dev</VersionSuffix>
         <Description>Mod for recording data for Neuro-sama to play Among Us</Description>
+        <Authors>Vedal</Authors>
+        
+        <DebugType>embedded</DebugType>
         <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<UseCommonOutputDirectory>true</UseCommonOutputDirectory>
-        <Authors>Vedal</Authors>
     </PropertyGroup>
 
     <ItemGroup>

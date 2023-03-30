@@ -130,7 +130,7 @@ public class PathfindingHandler
             Collider2D[] cols = Physics2D.OverlapCircleAll(point, 0.25f, LayerMask.GetMask("Ship", "ShortObjects"));
             int validColsCount = cols.Count(col =>
                     !col.isTrigger
-                    && !col.transform.name.Contains("Vent")
+                    && !col.transform.name.Contains("Vent") // TODO: Get by component type
                     && !col.transform.name.Contains("Door")
                     && !col.transform.parent.name.Contains("Door")
             );
