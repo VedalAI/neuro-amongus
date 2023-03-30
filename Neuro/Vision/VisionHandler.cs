@@ -16,7 +16,7 @@ public class VisionHandler : MonoBehaviour
     public VisionHandler(IntPtr ptr) : base(ptr) { }
 
     public Vector2 DirectionToNearestBody { get; set; }
-    
+
     [HideFromIl2Cpp]
     public Dictionary<PlayerControl, PlayerRecord> PlayerRecords { get; } = new(Il2CppEqualityComparer<PlayerControl>.Instance);
 
@@ -79,8 +79,8 @@ public class VisionHandler : MonoBehaviour
                 // Determine how much time the player was visible to Neuro-sama for
                 float gamePercentage = lastSeen.gameTimeVisible / Time.timeSinceLevelLoad;
                 float roundPercentage = lastSeen.roundTimeVisible / (Time.timeSinceLevelLoad - roundStartTime);
-                TimeSpan gameTime = new(0, 0, (int) Math.Floor(lastSeen.gameTimeVisible));
-                TimeSpan roundTime = new(0, 0, (int) Math.Floor(lastSeen.roundTimeVisible));
+                TimeSpan gameTime = new(0, 0, (int)Math.Floor(lastSeen.gameTimeVisible));
+                TimeSpan roundTime = new(0, 0, (int)Math.Floor(lastSeen.roundTimeVisible));
                 Info($"{player.name} has spent {gameTime.Minutes} minutes and {gameTime.Seconds} seconds near me this game ({gamePercentage * 100.0f:0.0}% of the game)");
                 Info($"{player.name} has spent {roundTime.Minutes} minutes and {roundTime.Seconds} seconds near me this round ({roundPercentage * 100.0f:0.0}% of the round)");
             }
@@ -106,6 +106,7 @@ public class VisionHandler : MonoBehaviour
     {
         DirectionToNearestBody = Vector2.zero;
         float nearestBodyDistance = Mathf.Infinity;
+        Vector2 localPlayerTruePosition = PlayerControl.LocalPlayer.GetTruePosition();
 
         // TODO: This logic is probably incorrect
         foreach (DeadBody deadBody in _deadBodies)
@@ -117,7 +118,7 @@ public class VisionHandler : MonoBehaviour
                 DirectionToNearestBody = (deadBody.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
             }
 
-            if (!IsVisible(deadBody.TruePosition))
+            if (!IsVisible(localPlayerTruePosition, deadBody.TruePosition))
             {
                 continue;
             }
@@ -151,6 +152,8 @@ public class VisionHandler : MonoBehaviour
 
     private void UpdateNearbyPlayersVision() // TODO: Refactor
     {
+        Vector2 localPlayerTruePosition = PlayerControl.LocalPlayer.GetTruePosition();
+
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
             PlayerRecords[playerControl] = new PlayerRecord();
@@ -175,22 +178,23 @@ public class VisionHandler : MonoBehaviour
                 continue; // Do not consider players in vents as recently seen
             }
 
-            if (Vector2.Distance(playerControl.transform.position, PlayerControl.LocalPlayer.transform.position) < 5f)
+            Vector3 otherPlayerPosition = playerControl.transform.position;
+            if (Vector2.Distance(otherPlayerPosition, PlayerControl.LocalPlayer.transform.position) < 5f)
             {
-                if (IsVisible(playerControl.GetTruePosition()))
+                var otherPlayerTruePosition = playerControl.GetTruePosition();
+                if (IsVisible(localPlayerTruePosition, otherPlayerTruePosition))
                 {
                     LastSeenPlayer lastSeenPlayer = _playerLocations[playerControl];
-                    lastSeenPlayer.location = GetLocationFromPosition(playerControl.transform.position);
+                    lastSeenPlayer.location = GetLocationFromPosition(otherPlayerPosition);
                     lastSeenPlayer.time = Time.timeSinceLevelLoad;
                     lastSeenPlayer.dead = false;
                     lastSeenPlayer.gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
                     lastSeenPlayer.roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
 
-                    float distance = (playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).magnitude;
-                    Vector2 direction = (playerControl.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
-                    PlayerRecords[playerControl] = new PlayerRecord(distance, direction);
+                    Vector2 vectorToPlayer = otherPlayerTruePosition - localPlayerTruePosition;
+                    PlayerRecords[playerControl] = new PlayerRecord(vectorToPlayer.magnitude, vectorToPlayer.normalized);
 
-                    Info(playerControl.name + " is in " + GetLocationFromPosition(playerControl.transform.position));
+                    Info(playerControl.name + " is in " + GetLocationFromPosition(otherPlayerPosition));
                 }
                 else
                 {
@@ -200,14 +204,14 @@ public class VisionHandler : MonoBehaviour
         }
     }
 
-    private static bool IsVisible(Vector2 rayEnd)
+    private static bool IsVisible(Vector2 rayStart, Vector2 rayEnd)
     {
         // Raycasting
         // If raycast hits shadow, this usually means that player is not visible
         // So check that there is no shadow
-        int layerShadow = LayerMask.GetMask(new[] { "Shadow" });
-        Vector2 rayStart = PlayerControl.LocalPlayer.GetTruePosition();
-        RaycastHit2D hit = Physics2D.Raycast(rayStart, (rayEnd - rayStart).normalized, (rayEnd - rayStart).magnitude, layerShadow);
+        int layerShadow = LayerMask.GetMask("Shadow");
+        Vector2 ray = rayEnd - rayStart;
+        RaycastHit2D hit = Physics2D.Raycast(rayStart, ray.normalized, ray.magnitude, layerShadow);
         return !hit;
     }
 
@@ -223,7 +227,7 @@ public class VisionHandler : MonoBehaviour
         foreach (PlainShipRoom room in ShipStatus.Instance.AllRooms)
         {
             Collider2D collider = room.roomArea;
-            if (collider.OverlapPoint(position))
+            if (collider && collider.OverlapPoint(position))
             {
                 if (room.RoomId == SystemTypes.Hallway)
                     nearPrefix = "a hallway near "; // keep looking for the nearest room
@@ -232,7 +236,9 @@ public class VisionHandler : MonoBehaviour
             }
             else if (room.RoomId != SystemTypes.Hallway)
             {
-                float distance = Vector2.Distance(position, collider.ClosestPoint(position));
+                float distance = collider
+                    ? Vector2.Distance(position, collider.ClosestPoint(position))
+                    : Mathf.Infinity;
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
