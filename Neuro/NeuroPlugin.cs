@@ -22,7 +22,6 @@ public partial class NeuroPlugin : BasePlugin
 {
     public static NeuroPlugin Instance => PluginSingleton<NeuroPlugin>.Instance;
 
-    public MinigamesHandler Minigames { get; private set; }
     public MovementHandler Movement { get; private set; }
     public PathfindingHandler Pathfinding { get; private set; }
     public RecordingHandler Recording { get; private set; }
@@ -35,7 +34,6 @@ public partial class NeuroPlugin : BasePlugin
 
         // TODO: Maybe reset these when a new game begins.
 
-        Minigames = AddComponent<MinigamesHandler>();
         Movement = new MovementHandler();
         Pathfinding = new PathfindingHandler();
         Recording = AddComponent<RecordingHandler>();

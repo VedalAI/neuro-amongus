@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using BepInEx.Unity.IL2CPP.Utils;
 using Neuro.Minigames.Completion;
+using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Neuro.Minigames;
 
-[RegisterInIl2Cpp]
-public class MinigamesHandler : MonoBehaviour
+public static class MinigameHandler
 {
-    public MinigamesHandler(IntPtr ptr) : base(ptr) { }
-
-    public void CompleteMinigame(Minigame minigame, PlayerTask task)
+    public static void CompleteMinigame(Minigame minigame, PlayerTask task)
     {
         // TODO: Make sure this works with the safe minigame on airship
         // TODO: Make sure this works with the simon says minigame on skeld
 
         if (minigame.TryCast<IDoorMinigame>() is { })
         {
-            this.StartCoroutine(CompleteDoorMinigame(minigame));
+            minigame.StartCoroutine(CompleteDoorMinigame(minigame));
             return;
         }
 
@@ -32,10 +29,10 @@ public class MinigamesHandler : MonoBehaviour
         // - System console minigame
         if (task!?.TryCast<NormalPlayerTask>() is not { } normalPlayerTask) return;
 
-        this.StartCoroutine(CompleteTaskMinigame(minigame, normalPlayerTask));
+        minigame.StartCoroutine(CompleteTaskMinigame(minigame, normalPlayerTask));
     }
 
-    public IEnumerator CompleteTaskMinigame(Minigame minigame, NormalPlayerTask task)
+    private static IEnumerator CompleteTaskMinigame(Minigame minigame, NormalPlayerTask task)
     {
         if (MinigameSolver.CanComplete(task.TaskType))
         {
@@ -70,7 +67,7 @@ public class MinigamesHandler : MonoBehaviour
         NeuroPlugin.Instance.Tasks.UpdatePathToTask(task);
     }
 
-    public IEnumerator CompleteDoorMinigame(Minigame minigame)
+    private static IEnumerator CompleteDoorMinigame(Minigame minigame)
     {
         // TODO: Refactor this
         if (minigame.TryCast<DoorBreakerGame>() is { } breakerGame)

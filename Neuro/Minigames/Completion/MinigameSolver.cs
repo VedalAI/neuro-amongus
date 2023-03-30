@@ -35,40 +35,17 @@ public abstract class MinigameSolver
 
 public abstract class MinigameSolver<T> : MinigameSolver where T : Minigame
 {
-    private T _myMinigame;
-
-    protected T MyMinigame => _myMinigame ? _myMinigame : throw new SolveInterruptedException();
+    protected T MyMinigame { get; private set; }
     protected NormalPlayerTask MyTask { get; private set; }
 
     protected abstract IEnumerator CompleteMinigame();
 
     public override IEnumerator CompleteMinigame(Minigame minigame, NormalPlayerTask task)
     {
-        _myMinigame = minigame.Cast<T>();
+        MyMinigame = minigame.Cast<T>();
         MyTask = task;
 
-        IEnumerator enumerator = CompleteMinigame();
-
         yield return new WaitForSeconds(0.4f);
-
-        while (true)
-        {
-            object current;
-            try
-            {
-                if (enumerator.MoveNext() == false)
-                {
-                    break;
-                }
-                current = enumerator.Current;
-            }
-            catch (SolveInterruptedException)
-            {
-                yield break;
-            }
-            yield return current;
-        }
-
-        while (_myMinigame) yield return null;
+        yield return CompleteMinigame();
     }
 }

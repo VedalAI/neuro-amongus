@@ -8,6 +8,6 @@ public static class Minigame_Begin
     [HarmonyPostfix]
     public static void Postfix(Minigame __instance, PlayerTask task)
     {
-        NeuroPlugin.Instance.Minigames.CompleteMinigame(__instance, task);
+        MinigameHandler.CompleteMinigame(__instance, task);
     }
 }
