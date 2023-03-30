@@ -23,6 +23,11 @@
         <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.0.1" PrivateAssets="all" ExcludeAssets="runtime" />
     </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Include="**\Resources\**" />
+        <EmbeddedResource Remove="**\Resources\**\*.manifest" />
+    </ItemGroup>
+
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(AmongUs)/BepInEx/plugins/" UseSymboliclinksIfPossible="true" />
     </Target>

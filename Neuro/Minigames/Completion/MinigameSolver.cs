@@ -40,7 +40,7 @@ public abstract class MinigameSolver<T> : MinigameSolver where T : Minigame
 
     protected abstract IEnumerator CompleteMinigame();
 
-    public override IEnumerator CompleteMinigame(Minigame minigame, NormalPlayerTask task)
+    public sealed override IEnumerator CompleteMinigame(Minigame minigame, NormalPlayerTask task)
     {
         MyMinigame = minigame.Cast<T>();
         MyTask = task;
