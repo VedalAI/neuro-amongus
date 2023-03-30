@@ -22,7 +22,7 @@ public class TasksHandler : MonoBehaviour
     {
         if (!task) task = PlayerControl.LocalPlayer.myTasks.At(0);
 
-        PlayerTask nextTask = null;
+        PlayerTask nextTask;
         if (task.IsComplete)
         {
             Info("Task is complete, getting next one.");

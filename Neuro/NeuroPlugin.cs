@@ -35,7 +35,7 @@ public partial class NeuroPlugin : BasePlugin
 
         // TODO: Maybe reset these when a new game begins.
 
-        Minigames = new MinigamesHandler();
+        Minigames = AddComponent<MinigamesHandler>();
         Movement = new MovementHandler();
         Pathfinding = new PathfindingHandler();
         Recording = AddComponent<RecordingHandler>();

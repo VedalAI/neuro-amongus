@@ -1,13 +1,40 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using BepInEx.Unity.IL2CPP.Utils;
+using Reactor.Utilities.Attributes;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Neuro.Minigames;
 
-public class MinigamesHandler
+[RegisterInIl2Cpp]
+public class MinigamesHandler : MonoBehaviour
 {
-    public IEnumerator CompleteMinigame(PlayerTask task, Minigame minigame)
+    public MinigamesHandler(IntPtr ptr) : base(ptr) { }
+
+    public void CompleteMinigame(Minigame minigame, PlayerTask task)
+    {
+        // TODO: Make sure this works with the safe minigame on airship
+        // TODO: Make sure this works with the simon says minigame on skeld
+
+        if (minigame.TryCast<IDoorMinigame>() is { })
+        {
+            this.StartCoroutine(CompleteDoorMinigame(minigame));
+            return;
+        }
+
+        // If task is null, then the minigame can be one of the following:
+        // - Door minigame (handled above)
+        // - Spawn in minigame
+        // - Role ability minigame
+        // - System console minigame
+        if (!task) return;
+
+        this.StartCoroutine(CompleteTaskMinigame(minigame, task));
+    }
+
+    public IEnumerator CompleteTaskMinigame(Minigame minigame, PlayerTask task)
     {
         yield return new WaitForSeconds(GetTimeToComplete(task.TaskType));
 
