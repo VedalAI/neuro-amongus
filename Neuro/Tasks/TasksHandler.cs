@@ -52,7 +52,7 @@ public class TasksHandler : MonoBehaviour
             if (targetTask == null)
             {
                 PathIndex = -1;
-                Destroy(GameObject.Find("Arrow")); // TODO: Cache this object or something
+                Destroy(NeuroPlugin.Instance.Movement.Arrow);
                 return;
             }
 

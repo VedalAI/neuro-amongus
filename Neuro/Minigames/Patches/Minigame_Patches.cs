@@ -9,8 +9,12 @@ public static class Minigame_Begin
     [HarmonyPostfix]
     public static void Postfix(Minigame __instance, PlayerTask task)
     {
-        // ignore the practice mode laptop, which is apparently considered a minigame but has no TaskType
-        if (__instance.TryCast<TaskAdderGame>()) return;
-        __instance.StartCoroutine(NeuroPlugin.Instance.Minigames.CompleteMinigame(task, __instance));
+        if (__instance.TryCast<VitalsMinigame>() || __instance.TryCast<SecurityLogGame>() || __instance.TryCast<TaskAdderGame>()
+            || __instance.TryCast<PlanetSurveillanceMinigame>() || __instance.TryCast<SurveillanceMinigame>() || __instance.TryCast<EmergencyMinigame>()) return;
+
+        // If this task is null, assume it is a door.
+        __instance.StartCoroutine(task
+            ? NeuroPlugin.Instance.Minigames.CompleteMinigame(task, __instance)
+            : NeuroPlugin.Instance.Minigames.CompleteDoorMinigame(__instance));
     }
 }
