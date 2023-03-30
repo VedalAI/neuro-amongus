@@ -144,7 +144,7 @@ public class ImpostorHandler : MonoBehaviour
         yield return new WaitForSeconds(UnityEngine.Random.RandomRange(0.2f, 0.6f));
         // this actually works in practice area which is pretty nice
         PlayerControl.LocalPlayer.MurderPlayer(killTarget);
-        Info(String.Format("I just killed {0}!", killTarget.Data.PlayerName));
+        Info($"I just killed {killTarget.Data.PlayerName}!");
         goingForKill = false;
         killTarget = null;
         NeuroPlugin.Instance.Tasks.UpdatePathToTask(NeuroPlugin.Instance.Tasks.GetFurthestTask());
@@ -176,7 +176,7 @@ public class ImpostorHandler : MonoBehaviour
         string error;
         if (!original.TryMoveToVent(current, out error))
         {
-            Error(String.Format("Failed to move to vent {0}, reason: {1}", current.Id, error));
+            Error($"Failed to move to vent {current.Id}, reason: {error}");
         }
         while (true)
         {
@@ -192,7 +192,7 @@ public class ImpostorHandler : MonoBehaviour
                 // if we see a player in our radius, try a different vent
                 if (player.Value.time > Time.timeSinceLevelLoad - (2 * Time.fixedDeltaTime))
                 {
-                    Info(String.Format("Spotted {0}, trying a different exit vent...", player.Key.name));
+                    Info($"Spotted {player.Key.name}, trying a different exit vent...");
                     Vent next;
                     while (true)
                     {
@@ -203,7 +203,7 @@ public class ImpostorHandler : MonoBehaviour
                     }
                     if (!current.TryMoveToVent(next, out error))
                     {
-                        Error(String.Format("Failed to move to vent {0}, reason: {1}", next.Id, error));
+                        Error($"Failed to move to vent {next.Id}, reason: {error}");
                     }
                     current = next;
                     playerFound = true;

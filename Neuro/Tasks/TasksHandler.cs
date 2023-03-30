@@ -83,7 +83,7 @@ public class TasksHandler : MonoBehaviour
         {
             if (!t.IsComplete && t.HasLocation)
             {
-                Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations[0]);
+                Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
                 // Evaluate length of path
                 float distance = 0f;
                 for (int i = 0; i < path.Length - 1; i++)
@@ -112,7 +112,7 @@ public class TasksHandler : MonoBehaviour
         {
             if (!t.IsComplete && t.HasLocation)
             {
-                Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations[0]);
+                Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
                 // Evaluate length of path
                 float distance = 0f;
                 for (int i = 0; i < path.Length - 1; i++)
