@@ -24,6 +24,7 @@ public class VisionHandler : MonoBehaviour
     // TODO: Handle players disconnecting
     private readonly List<DeadBody> _deadBodies = new();
     private readonly Dictionary<PlayerControl, LastSeenPlayer> _playerLocations = new(Il2CppEqualityComparer<PlayerControl>.Instance);
+    public IReadOnlyDictionary<PlayerControl, LastSeenPlayer> PlayerLocations => _playerLocations;
 
     private float roundStartTime; // in seconds
 
@@ -252,10 +253,5 @@ public class VisionHandler : MonoBehaviour
 
         // We're not in an actual room, so say which room we're nearest to
         return nearPrefix + TranslationController.Instance.GetString(closestLocation.RoomId);
-    }
-
-    public IReadOnlyDictionary<PlayerControl, LastSeenPlayer> GetPlayerLocations()
-    {
-        return _playerLocations;
     }
 }

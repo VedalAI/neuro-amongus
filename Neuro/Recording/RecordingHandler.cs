@@ -22,7 +22,7 @@ public class RecordingHandler : MonoBehaviour
     public bool DidKill { get; set; }
     public bool DidSabotage { get; set; }
     public bool DidDoors { get; set; }
-    public SabotageTypes SabotageUsed { get; set; }
+    public SystemTypes SabotageUsed { get; set; }
     public List<PlainDoor> DoorsUsed { get; set; } = new List<PlainDoor>();
 
     public void FixedUpdate()
@@ -57,19 +57,20 @@ public class RecordingHandler : MonoBehaviour
 
         // string frameString = JsonSerializer.Serialize(frame);
         // Info(frameString);
+        ResetFrameData();
+    }
+
+    private void ResetFrameData()
+    {
 
         DidReport = DidVent = DidKill = DidSabotage = DidDoors = false;
-        SabotageUsed = SabotageTypes.None;
+        // TODO: Figure out a default value for this or make nullable!
+        SabotageUsed = SystemTypes.Hallway;
         DoorsUsed.Clear();
     }
 
-    public void RecordSabotage(SabotageTypes type)
+    public void RecordSabotage(SystemTypes type)
     {
-        if (type == SabotageTypes.None)
-        {
-            Error("RecordSabotage SabotageTypes type should not be none.");
-            return;
-        }
         DidSabotage = true;
         SabotageUsed = type;
     }

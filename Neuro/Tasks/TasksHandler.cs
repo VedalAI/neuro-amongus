@@ -20,13 +20,12 @@ public class TasksHandler : MonoBehaviour
     [HideFromIl2Cpp]
     public void UpdatePathToTask(PlayerTask task = null)
     {
-        bool isImpostor = NeuroPlugin.Instance.Impostor.isImpostor;
         if (!task)
         {
             // skip fake tasks that cannot be completed (for instance, the red text as impostor)
             foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
             {
-                if (t.TryCast<ImportantTextTask>()) continue;
+                if (!t.TryCast<NormalPlayerTask>()) continue;
                 task = t;
                 break;
             }
@@ -40,7 +39,7 @@ public class TasksHandler : MonoBehaviour
 
             // as impostor, getting the furthest task instead of the closest one is good for finding players
             // also helps trying to do a task right next to someone we killed
-            if (isImpostor)
+            if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
             {
                 targetTask = GetFurthestTask();
             }

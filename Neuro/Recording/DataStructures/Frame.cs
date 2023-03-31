@@ -18,7 +18,7 @@ public record Frame(
     bool InVent,
     bool Kill,
     bool Sabotage,
-    SabotageTypes SabotageUsed,
+    SystemTypes SabotageUsed,
     bool Doors,
     List<PlainDoor> NearbyDoors,
     List<PlainDoor> DoorsUsed
