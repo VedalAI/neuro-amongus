@@ -42,6 +42,8 @@ public class InGameCursor : MonoBehaviour
         transform.position = transform.position with {x = position.x, y = position.y};
     }
 
+    public void MoveTo(Component target) => MoveTo(target.transform.position);
+
     public void Hide() => MoveTo(new Vector2(-5000, -5000));
 
     public void HideWhen(Func<bool> condition) => this.StartCoroutine(HideWhenCoroutine(condition));

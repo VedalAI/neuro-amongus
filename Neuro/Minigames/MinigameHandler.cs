@@ -1,8 +1,5 @@
 ﻿using System.Collections;
-using BepInEx.Unity.IL2CPP.Utils;
 using Neuro.Minigames.Completion;
-using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Neuro.Minigames;
 
@@ -16,6 +13,9 @@ public static class MinigameHandler
             NeuroPlugin.Instance.Tasks.UpdatePathToTask(task);
             yield break;
         }
+
+        Warning($"Cannot solve minigame of type {minigame.GetIl2CppType().FullName}");
+
 
         /* If we don't know how to handle the minigame, we probably shouldn't touch it at all.
 
