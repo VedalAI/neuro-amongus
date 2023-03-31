@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using HarmonyLib;
 
 namespace Neuro.Minigames.Patches;
 
@@ -8,6 +9,6 @@ public static class Minigame_Begin
     [HarmonyPostfix]
     public static void Postfix(Minigame __instance, PlayerTask task)
     {
-        MinigameHandler.CompleteMinigame(__instance, task);
+        __instance.StartCoroutine(MinigameHandler.TryCompleteMinigame(__instance, task));
     }
 }

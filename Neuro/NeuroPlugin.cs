@@ -1,5 +1,5 @@
 ﻿global using static Reactor.Utilities.Logger<Neuro.NeuroPlugin>;
-
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
@@ -41,6 +41,6 @@ public partial class NeuroPlugin : BasePlugin
         Tasks = AddComponent<TasksHandler>();
         Vision = AddComponent<VisionHandler>();
 
-        ResourceManager.CacheSprite("Cursor");
+        ResourceManager.CacheSprite("Cursor", 130);
     }
 }

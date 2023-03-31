@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using BepInEx.Unity.IL2CPP.Utils;
 using Neuro.Minigames.Completion;
-using Neuro.Utilities;
-using Reactor.Utilities.Attributes;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -11,65 +8,20 @@ namespace Neuro.Minigames;
 
 public static class MinigameHandler
 {
-    public static void CompleteMinigame(Minigame minigame, PlayerTask task)
+    public static IEnumerator TryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
-        // TODO: Make sure this works with the safe minigame on airship
-        // TODO: Make sure this works with the simon says minigame on skeld
-
-        if (minigame.TryCast<IDoorMinigame>() is { })
-        {
-            minigame.StartCoroutine(CompleteDoorMinigame(minigame));
-            return;
-        }
-
-        // If task is null, then the minigame can be one of the following:
-        // - Door minigame (handled above)
-        // - Spawn in minigame
-        // - Role ability minigame
-        // - System console minigame
-        if (task!?.TryCast<NormalPlayerTask>() is not { } normalPlayerTask) return;
-
-        minigame.StartCoroutine(CompleteTaskMinigame(minigame, normalPlayerTask));
-    }
-
-    private static IEnumerator CompleteTaskMinigame(Minigame minigame, NormalPlayerTask task)
-    {
-        if (MinigameSolver.CanComplete(task.TaskType))
+        if (MinigameSolver.CanComplete(minigame))
         {
             yield return MinigameSolver.Complete(minigame, task);
             NeuroPlugin.Instance.Tasks.UpdatePathToTask(task);
             yield break;
         }
 
+        /* If we don't know how to handle the minigame, we probably shouldn't touch it at all.
+
+        // TODO: Everything below this should be removed once we have implemented all minigames and stuff
         yield return new WaitForSeconds(1);
 
-        //task.Complete();
-        if (task.TryCast<NormalPlayerTask>() is { } normalPlayerTask)
-        {
-            normalPlayerTask.NextStep();
-            Info($"Task {normalPlayerTask} is at step {normalPlayerTask.TaskStep}/{normalPlayerTask.MaxStep}");
-
-            // If NextStep() doesn't create an arrow, then this task does not require moving
-            // to a different location and should be completed.
-            if (normalPlayerTask.Arrow == null)
-            {
-                normalPlayerTask.Complete();
-            }
-        }
-        else
-        {
-            Warning("Not Normal Player Task");
-            task.Complete();
-        }
-
-        minigame.Close();
-
-        NeuroPlugin.Instance.Tasks.UpdatePathToTask(task);
-    }
-
-    private static IEnumerator CompleteDoorMinigame(Minigame minigame)
-    {
-        // TODO: Refactor this
         if (minigame.TryCast<DoorBreakerGame>() is { } breakerGame)
         {
             yield return new WaitForSeconds(Random.RandomRange(1f, 2.5f));
@@ -91,11 +43,32 @@ public static class MinigameHandler
 
             Info($"Opened swipe door {swipeGame.MyDoor.Id}");
         }
-        else
+        else if (task)
         {
-            Warning($"{minigame.name} was not a {nameof(DoorBreakerGame)} or {nameof(DoorCardSwipeGame)}");
+            if (task.TryCast<NormalPlayerTask>() is { } normalPlayerTask)
+            {
+                normalPlayerTask.NextStep();
+                Info($"Task {normalPlayerTask} is at step {normalPlayerTask.TaskStep}/{normalPlayerTask.MaxStep}");
+
+                // If NextStep() doesn't create an arrow, then this task does not require moving
+                // to a different location and should be completed.
+                if (normalPlayerTask.Arrow == null)
+                {
+                    normalPlayerTask.Complete();
+                }
+            }
+            else
+            {
+                Warning("Not Normal Player Task");
+                task.Complete();
+            }
         }
+        else yield break;
 
         minigame.Close();
+
+        */
+
+        NeuroPlugin.Instance.Tasks.UpdatePathToTask(task);
     }
 }

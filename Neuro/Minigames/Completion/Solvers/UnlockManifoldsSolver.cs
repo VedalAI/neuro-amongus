@@ -1,16 +1,18 @@
 ﻿using System.Collections;
+using Neuro.Cursor;
 using UnityEngine;
 
 namespace Neuro.Minigames.Completion.Solvers;
 
-[MinigameSolver(TaskTypes.UnlockManifolds)]
-public sealed class UnlockManifoldsSolver : MinigameSolver<UnlockManifoldsMinigame>
+[MinigameSolver(typeof(UnlockManifoldsMinigame))]
+public sealed class UnlockManifoldsSolver : MinigameSolver<UnlockManifoldsMinigame, NormalPlayerTask>
 {
-    protected override IEnumerator CompleteMinigame()
+    public override IEnumerator CompleteMinigame(UnlockManifoldsMinigame minigame, NormalPlayerTask task)
     {
-        while (MyMinigame.buttonCounter < MyMinigame.Buttons.Length)
+        while (minigame.buttonCounter < minigame.Buttons.Length)
         {
-            MyMinigame.HitButton(MyMinigame.buttonCounter);
+            InGameCursor.Instance.MoveTo(minigame.Buttons[minigame.buttonCounter].transform.position);
+            minigame.HitButton(minigame.buttonCounter);
             yield return new WaitForSeconds(0.1f);
         }
     }

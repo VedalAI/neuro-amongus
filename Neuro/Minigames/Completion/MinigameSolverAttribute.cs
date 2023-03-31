@@ -6,10 +6,10 @@ namespace Neuro.Minigames.Completion;
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class MinigameSolverAttribute : Attribute
 {
-    public MinigameSolverAttribute(TaskTypes firstTaskType, params TaskTypes[] otherTaskTypes)
+    public MinigameSolverAttribute(Type firstType, params Type[] otherTypes)
     {
-        TaskTypes = otherTaskTypes.AddToArray(firstTaskType);
+        Types = otherTypes.AddToArray(firstType);
     }
 
-    public readonly TaskTypes[] TaskTypes;
+    public readonly Type[] Types;
 }
