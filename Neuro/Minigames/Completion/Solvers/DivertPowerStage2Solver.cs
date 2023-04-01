@@ -8,8 +8,7 @@ public sealed class DivertPowerStage2Solver : MinigameSolver<AcceptDivertPowerGa
 {
     public override IEnumerator CompleteMinigame(AcceptDivertPowerGame minigame, NormalPlayerTask task)
     {
-        InGameCursor.Instance.SnapTo(minigame.Switch);
+        yield return InGameCursor.Instance.CoMoveTo(minigame.Switch);
         minigame.DoSwitch();
-        yield break;
     }
 }

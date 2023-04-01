@@ -8,8 +8,7 @@ public sealed class ProcessDataSolver : MinigameSolver<ProcessDataMinigame>
 {
     public override IEnumerator CompleteMinigame(ProcessDataMinigame minigame, NormalPlayerTask task)
     {
-        InGameCursor.Instance.SnapTo(minigame.StartButton);
+        yield return InGameCursor.Instance.CoMoveTo(minigame.StartButton);
         minigame.StartStopFill();
-        yield break;
     }
 }

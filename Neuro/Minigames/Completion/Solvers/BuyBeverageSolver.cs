@@ -13,9 +13,11 @@ public sealed class BuyBeverageSolver : MinigameSolver<VendingMinigame>
 
         yield return InGameCursor.Instance.CoMoveTo(uiElements.First(e => e.name.ToLower() == "vending_button" + minigame.targetCode[0]));
         minigame.EnterDigit(minigame.targetCode[0].ToString());
+        yield return Sleep(0.1f);
 
         yield return InGameCursor.Instance.CoMoveTo(uiElements.First(e => e.name.ToLower() == "vending_button" + minigame.targetCode[1]));
         minigame.EnterDigit(minigame.targetCode[1].ToString());
+        yield return Sleep(0.1f);
 
         yield return InGameCursor.Instance.CoMoveTo(uiElements.First(e => e.name.ToLower() == "admin_keypad_check"));
         minigame.AcceptDigits();

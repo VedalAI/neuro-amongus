@@ -40,6 +40,8 @@ public abstract class MinigameSolver
     }
 
     public abstract IEnumerator CompleteMinigame(Minigame minigame, PlayerTask task);
+
+    protected WaitForSeconds Sleep(float seconds) => new(seconds * DELAY_MULTIPLIER);
 }
 
 public abstract class MinigameSolver<TMinigame> : MinigameSolver where TMinigame : Minigame

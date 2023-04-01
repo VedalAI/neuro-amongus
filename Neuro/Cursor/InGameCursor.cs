@@ -73,6 +73,9 @@ public sealed class InGameCursor : MonoBehaviour
     [HideFromIl2Cpp]
     public IEnumerator CoMoveTo(Component target, float speed = 1f) => CoMoveTo(target.transform.position, speed);
 
+    [HideFromIl2Cpp]
+    public IEnumerator CoMoveTo(GameObject target, float speed = 1f) => CoMoveTo(target.transform.position, speed);
+
     public void Hide() => SnapTo(new Vector2(-5000, -5000));
 
     [HideFromIl2Cpp]

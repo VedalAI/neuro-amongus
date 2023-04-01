@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
 using PowerTools;
-using UnityEngine;
 
 namespace Neuro.Minigames.Completion.Solvers;
 

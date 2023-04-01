@@ -13,6 +13,7 @@ public sealed class UnlockManifoldsSolver : MinigameSolver<UnlockManifoldsMiniga
         {
             yield return InGameCursor.Instance.CoMoveTo(minigame.Buttons[minigame.buttonCounter]);
             minigame.HitButton(minigame.buttonCounter);
+            yield return Sleep(0.1f);
         }
     }
 }
