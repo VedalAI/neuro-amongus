@@ -24,9 +24,7 @@ public sealed class ClearAsteroidsSolver : MinigameSolver<WeaponsMinigame>
             {
                 yield return null;
                 continue;
-            };
-
-            Warning("Choosing to shoot asteroid at " + closest.transform.position);
+            }
 
             InGameCursor.Instance.StartFollowing(closest, () => closest.gameObject.active, 0.6f);
             while (InGameCursor.Instance.IsDoingContinuousMovement && InGameCursor.Instance.DistanceToTarget is > 0.5f or -1) yield return null;
