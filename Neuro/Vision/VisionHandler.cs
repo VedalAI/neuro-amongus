@@ -32,6 +32,7 @@ public class VisionHandler : MonoBehaviour
     {
         if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
+        if (!PlayerControl.LocalPlayer) return;
 
         UpdateDeadBodiesVision();
         UpdateNearbyPlayersVision();

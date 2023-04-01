@@ -21,14 +21,15 @@ public class ImpostorHandler : MonoBehaviour
     public Vector2 DirectionToNearestVent { get; set; } = Vector2.zero;
     public List<PlainDoor> NearbyDoors { get; set; } = new List<PlainDoor>();
 
-    // member variables used in example methods
     public bool goingForKill { get; set; } = false;
     public PlayerControl killTarget { get; set; } = null;
+    public bool attemptingVent { get; set; } = false;
 
     private void FixedUpdate()
     {
         if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
+        if (!PlayerControl.LocalPlayer) return;
 
         // TODO: Move UpdateNearbyDoors when implementing maps with doors that non-impostors can use
         if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
@@ -85,17 +86,20 @@ public class ImpostorHandler : MonoBehaviour
                 NearbyDoors.Add(door);
             }
         }
-    }
+    } 
 
-    /** ----- Stubs below here ----- **/
-
-    // example of kill functionality
-    private void GetOrKillTarget()
+    private void GetOrKillTarget(PlayerControl target = null)
     {
         if (PlayerControl.LocalPlayer.killTimer > 0f) return;
 
         if (killTarget == null && !PlayerControl.LocalPlayer.inVent)
         {
+            if (target)
+            {
+                killTarget = target;
+                return;
+            }
+
             PlayerControl potentialKillTarget = null;
 
             foreach ((PlayerControl player, LastSeenPlayer lastSeen) in NeuroPlugin.Instance.Vision.PlayerLocations)
@@ -151,7 +155,7 @@ public class ImpostorHandler : MonoBehaviour
     {
         // currently will just enter a vent whenever possible
         // this should be changed to be more situational
-        if (ClosestVent != null && !PlayerControl.LocalPlayer.inVent && !PlayerControl.LocalPlayer.walkingToVent)
+        if (attemptingVent && ClosestVent != null && !PlayerControl.LocalPlayer.inVent && !PlayerControl.LocalPlayer.walkingToVent)
         {
             if (HudManager.Instance.ImpostorVentButton.currentTarget.Id == ClosestVent.Id)
             {
@@ -161,7 +165,6 @@ public class ImpostorHandler : MonoBehaviour
         }
     }
 
-    // example of vent functionality
     public IEnumerator Vent(Vent original)
     {
         Info("I entered a vent!");
@@ -188,12 +191,7 @@ public class ImpostorHandler : MonoBehaviour
                 if (lastSeen.time > Time.timeSinceLevelLoad - (2 * Time.fixedDeltaTime))
                 {
                     Info($"Spotted {player.name}, trying a different exit vent...");
-                    Vent next;
-                    do
-                    {
-                        possibleVents = GetAvailableNearbyVents(current);
-                        next = possibleVents[UnityEngine.Random.RandomRangeInt(0, possibleVents.Count)];
-                    } while (current == next);
+                    Vent next = GetAvailableNearbyVents(current)[UnityEngine.Random.RandomRangeInt(0, possibleVents.Count)];
                     if (!current.TryMoveToVent(next, out error))
                     {
                         Error($"Failed to move to vent {next.Id}, reason: {error}");
@@ -209,6 +207,7 @@ public class ImpostorHandler : MonoBehaviour
             {
                 HudManager.Instance.ImpostorVentButton.DoClick();
                 killTarget = null;
+                attemptingVent = false;
                 yield break;
             }
         }

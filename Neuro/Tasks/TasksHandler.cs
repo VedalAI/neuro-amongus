@@ -130,6 +130,22 @@ public class TasksHandler : MonoBehaviour
         return furthestTask;
     }
 
+    // TODO: Find a better place for this
+    [HideFromIl2Cpp]
+    public void UpdatePathToKillTarget()
+    {
+        NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, NeuroPlugin.Instance.Impostor.killTarget.transform.position);
+        PathIndex = 0;
+    }
+
+    // TODO: Find a better place for this
+    [HideFromIl2Cpp]
+    public void UpdatePathToVent()
+    {
+        NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, NeuroPlugin.Instance.Impostor.ClosestVent.transform.position);
+        PathIndex = 0;
+    }
+
     [HideFromIl2Cpp]
     public IEnumerator UpdatePathToFirstTask(NormalPlayerTask initial)
     {
@@ -140,7 +156,13 @@ public class TasksHandler : MonoBehaviour
         {
             yield return new WaitForSeconds(0.5f);
 
-            UpdatePathToTask();
+            // TODO: Possibly run multiple coroutines for each handler that deals with pathfinding. Would need a way to block each other's when necessary.
+            if (NeuroPlugin.Instance.Impostor.attemptingVent)
+                UpdatePathToVent();
+            else if (NeuroPlugin.Instance.Impostor.killTarget)
+                UpdatePathToKillTarget();
+            else
+                UpdatePathToTask();
 
             // TODO: Is this while loop purposefully infinite? If so, we should have a stop condition for example when the game ends.
         }

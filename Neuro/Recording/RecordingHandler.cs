@@ -65,7 +65,7 @@ public class RecordingHandler : MonoBehaviour
 
         DidReport = DidVent = DidKill = DidSabotage = DidDoors = false;
         // TODO: Figure out a default value for this or make nullable!
-        SabotageUsed = SystemTypes.Hallway;
+        SabotageUsed = default;
         DoorsUsed.Clear();
     }
 
