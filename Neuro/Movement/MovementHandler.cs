@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Neuro.Movement;
 
-public class MovementHandler
+public sealed class MovementHandler
 {
     public Vector2 LastMoveDirection { get; private set; }
     public Vector2 DirectionToNearestTask { get; private set; }

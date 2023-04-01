@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Neuro.Vision;
 
 [RegisterInIl2Cpp]
-public class VisionHandler : MonoBehaviour
+public sealed class VisionHandler : MonoBehaviour
 {
     public VisionHandler(IntPtr ptr) : base(ptr) { }
 

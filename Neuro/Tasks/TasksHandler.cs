@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Neuro.Tasks;
 
 [RegisterInIl2Cpp]
-public class TasksHandler : MonoBehaviour
+public sealed class TasksHandler : MonoBehaviour
 {
     public TasksHandler(IntPtr ptr) : base(ptr) { }
 
@@ -99,11 +99,12 @@ public class TasksHandler : MonoBehaviour
         {
             if (task.IsComplete || task.Locations == null) continue;
 
-            // TODO: Invoke Console.Use directly
+            // TODO: Invoke Console.Use directly and check if we can open it before trying
             foreach (Vector2 location in task.Locations)
             {
                 if (Vector2.Distance(location, PlayerControl.LocalPlayer.transform.position) < 0.8f)
                 {
+                    // TODO: Check if we should open the task with the MinigameSolver before actually opening it
                     if (task.MinigamePrefab)
                     {
                         Minigame minigame = Instantiate(task.GetMinigamePrefab(), Camera.main!.transform, false);

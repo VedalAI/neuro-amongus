@@ -1,6 +1,6 @@
 ﻿namespace Neuro.Vision.DataStructures;
 
-public class LastSeenPlayer
+public sealed class LastSeenPlayer
 {
     public string location; // TODO: location == "" is used to check various things across the project. this should be changed
     public float time;

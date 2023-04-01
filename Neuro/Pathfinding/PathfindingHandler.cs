@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Neuro.Pathfinding;
 
-public class PathfindingHandler
+public sealed class PathfindingHandler
 {
     private const int GRID_SIZE = 500;
     private const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;

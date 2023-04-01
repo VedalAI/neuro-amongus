@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Neuro.Recording;
 
 [RegisterInIl2Cpp]
-public class RecordingHandler : MonoBehaviour
+public sealed class RecordingHandler : MonoBehaviour
 {
     public RecordingHandler(IntPtr ptr) : base(ptr) { }
 
