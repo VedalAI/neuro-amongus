@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using BepInEx.Unity.IL2CPP.Utils;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -43,8 +44,10 @@ public sealed class InGameCursor : MonoBehaviour
     {
         transform.position = transform.position with {x = position.x, y = position.y};
     }
+
     public void SnapTo(Component target) => SnapTo(target.transform.position);
 
+    [HideFromIl2Cpp]
     public IEnumerator CoMoveTo(Vector2 position, float speed = 1f)
     {
         speed *= SPEED_MULTIPLER;
@@ -66,11 +69,16 @@ public sealed class InGameCursor : MonoBehaviour
             yield return null;
         }
     }
+
+    [HideFromIl2Cpp]
     public IEnumerator CoMoveTo(Component target, float speed = 1f) => CoMoveTo(target.transform.position, speed);
 
     public void Hide() => SnapTo(new Vector2(-5000, -5000));
 
+    [HideFromIl2Cpp]
     public void HideWhen(Func<bool> condition) => this.StartCoroutine(HideWhenCoroutine(condition));
+
+    [HideFromIl2Cpp]
     private IEnumerator HideWhenCoroutine(Func<bool> condition)
     {
         while (!condition()) yield return null;
