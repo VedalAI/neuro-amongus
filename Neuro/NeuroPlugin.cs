@@ -1,10 +1,8 @@
 ﻿global using static Reactor.Utilities.Logger<Neuro.NeuroPlugin>;
-using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
-using Neuro.Minigames;
 using Neuro.Movement;
 using Neuro.Pathfinding;
 using Neuro.Recording;

@@ -11,6 +11,9 @@ namespace Neuro.Minigames.Completion;
 
 public abstract class MinigameSolver
 {
+    // The larger this constant is, the longer the delays are when solving minigames.
+    public const float DELAY_MULTIPLIER = 1;
+
     static MinigameSolver()
     {
         MinigameSolvers = Assembly.GetExecutingAssembly().GetTypes()
@@ -39,14 +42,18 @@ public abstract class MinigameSolver
     public abstract IEnumerator CompleteMinigame(Minigame minigame, PlayerTask task);
 }
 
-public abstract class MinigameSolver<TMinigame, TTask> : MinigameSolver where TMinigame : Minigame where TTask : PlayerTask
+public abstract class MinigameSolver<TMinigame> : MinigameSolver where TMinigame : Minigame
 {
     public sealed override IEnumerator CompleteMinigame(Minigame minigame, PlayerTask task)
-        => CompleteMinigame(minigame.TryCast<TMinigame>(), task.TryCast<TTask>());
+        => CompleteMinigame(minigame.TryCast<TMinigame>(), task.TryCast<NormalPlayerTask>());
 
-    public abstract IEnumerator CompleteMinigame(TMinigame minigame, TTask task);
+    public abstract IEnumerator CompleteMinigame(TMinigame minigame, NormalPlayerTask task);
 }
 
-public abstract class MinigameSolver<TMinigame> : MinigameSolver<TMinigame, NormalPlayerTask> where TMinigame : Minigame
+public abstract class TasklessMinigameSolver<TMinigame> : MinigameSolver where TMinigame : Minigame
 {
+    public sealed override IEnumerator CompleteMinigame(Minigame minigame, PlayerTask _)
+        => CompleteMinigame(minigame.TryCast<TMinigame>());
+
+    public abstract IEnumerator CompleteMinigame(TMinigame minigame);
 }
