@@ -8,7 +8,7 @@ public sealed class UploadDataSolver : MinigameSolver<UploadDataGame>
 {
     public override IEnumerator CompleteMinigame(UploadDataGame minigame, NormalPlayerTask task)
     {
-        InGameCursor.Instance.MoveTo(minigame.Button);
+        InGameCursor.Instance.SnapTo(minigame.Button);
         minigame.Click();
         yield break;
     }

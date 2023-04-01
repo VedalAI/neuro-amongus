@@ -11,9 +11,8 @@ public sealed class UnlockManifoldsSolver : MinigameSolver<UnlockManifoldsMiniga
     {
         while (minigame.buttonCounter < minigame.Buttons.Length)
         {
-            InGameCursor.Instance.MoveTo(minigame.Buttons[minigame.buttonCounter]);
+            yield return InGameCursor.Instance.CoMoveTo(minigame.Buttons[minigame.buttonCounter]);
             minigame.HitButton(minigame.buttonCounter);
-            yield return new WaitForSeconds(0.15f * DELAY_MULTIPLIER);
         }
     }
 }

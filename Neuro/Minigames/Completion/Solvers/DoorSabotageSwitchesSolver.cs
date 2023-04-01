@@ -13,9 +13,8 @@ public sealed class DoorSabotageSwitchesSolver : TasklessMinigameSolver<DoorBrea
         {
             if (button.flipX)
             {
-                InGameCursor.Instance.MoveTo(button.transform.position + new Vector3(0.35f, 0));
+                yield return InGameCursor.Instance.CoMoveTo(button.transform.position + new Vector3(0.35f, 0));
                 minigame.FlipSwitch(button);
-                yield return new WaitForSeconds(0.2f * DELAY_MULTIPLIER);
             }
         }
     }

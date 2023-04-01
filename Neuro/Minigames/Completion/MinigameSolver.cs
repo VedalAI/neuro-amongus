@@ -33,10 +33,10 @@ public abstract class MinigameSolver
 
         MinigameSolver solver = MinigameSolvers[minigame.GetIl2CppType().FullName];
 
+        InGameCursor.Instance.HideWhen(() => !minigame);
+
         yield return new WaitForSeconds(0.4f);
         yield return solver.CompleteMinigame(minigame, task);
-
-        InGameCursor.Instance.HideWhen(() => !minigame);
     }
 
     public abstract IEnumerator CompleteMinigame(Minigame minigame, PlayerTask task);

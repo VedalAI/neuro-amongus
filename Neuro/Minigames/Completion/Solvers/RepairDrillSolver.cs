@@ -15,9 +15,8 @@ public sealed class RepairDrillSolver : MinigameSolver<DrillMinigame>
         {
             SpriteAnim button = minigame.Buttons[buttonIndex];
 
-            InGameCursor.Instance.MoveTo(button);
+            yield return InGameCursor.Instance.CoMoveTo(button);
             minigame.FixButton(button);
-            yield return new WaitForSeconds(0.1f * DELAY_MULTIPLIER);
 
             if (minigame.states[buttonIndex] == minigame.MaxState) buttonIndex++;
         }

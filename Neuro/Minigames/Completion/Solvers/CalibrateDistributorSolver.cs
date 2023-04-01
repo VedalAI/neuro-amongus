@@ -11,9 +11,8 @@ public sealed class CalibrateDistributorSolver : MinigameSolver<SweepMinigame>
     {
         while (minigame.spinnerIdx < minigame.Gauges.Length)
         {
-            InGameCursor.Instance.MoveTo(minigame.ControllerSelectable.At(minigame.spinnerIdx));
+            yield return InGameCursor.Instance.CoMoveTo(minigame.ControllerSelectable.At(minigame.spinnerIdx));
             if (minigame.CalcXPerc() is > 6 and < 13) minigame.HitButton(minigame.spinnerIdx);
-            yield return null;
         }
     }
 }

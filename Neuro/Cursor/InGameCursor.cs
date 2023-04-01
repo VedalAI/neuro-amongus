@@ -10,6 +10,8 @@ namespace Neuro.Cursor;
 [RegisterInIl2Cpp]
 public sealed class InGameCursor : MonoBehaviour
 {
+    public const float SPEED_MULTIPLER = 15;
+
     public static InGameCursor Instance { get; private set; }
 
     public InGameCursor(IntPtr ptr) : base(ptr) { }
@@ -37,14 +39,36 @@ public sealed class InGameCursor : MonoBehaviour
         renderer.sprite = ResourceManager.GetCachedSprite("Cursor");
     }
 
-    public void MoveTo(Vector2 position)
+    public void SnapTo(Vector2 position)
     {
         transform.position = transform.position with {x = position.x, y = position.y};
     }
+    public void SnapTo(Component target) => SnapTo(target.transform.position);
 
-    public void MoveTo(Component target) => MoveTo(target.transform.position);
+    public IEnumerator CoMoveTo(Vector2 position, float speed = 1f)
+    {
+        speed *= SPEED_MULTIPLER;
 
-    public void Hide() => MoveTo(new Vector2(-5000, -5000));
+        Vector2 originalPosition = transform.position;
+
+        if (originalPosition.x < -4000)
+        {
+            SnapTo(position);
+            yield break;
+        }
+
+        float distance = (position - originalPosition).magnitude;
+        float time = distance / speed;
+
+        for (float t = 0; t < time; t += Time.deltaTime)
+        {
+            SnapTo(Vector2.Lerp(originalPosition, position, t / time));
+            yield return null;
+        }
+    }
+    public IEnumerator CoMoveTo(Component target, float speed = 1f) => CoMoveTo(target.transform.position, speed);
+
+    public void Hide() => SnapTo(new Vector2(-5000, -5000));
 
     public void HideWhen(Func<bool> condition) => this.StartCoroutine(HideWhenCoroutine(condition));
     private IEnumerator HideWhenCoroutine(Func<bool> condition)
