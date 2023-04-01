@@ -131,11 +131,12 @@ public class PathfindingHandler
             //Info(point.ToString());
             Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, LayerMask.GetMask("Ship", "ShortObjects"));
             int validColsCount = cols.Count(col =>
-                    !col.isTrigger
-                    && !col.transform.name.Contains("Vent")
-                    && !col.transform.name.Contains("Door")
-                    && !col.transform.parent.name.Contains("Door")
+                !col.isTrigger
+                && !col.GetComponentInParent<Vent>()
+                && !col.GetComponentInParent<SomeKindaDoor>()
             );
+
+            // TODO: Add edge case for Airship ladders
 
             bool accessible = validColsCount == 0;
             grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
@@ -274,7 +275,7 @@ public class PathfindingHandler
         }
 
         Vector2[] waypoints = path.Select(p => p.worldPosition).ToArray();
-        Array.Reverse(waypoints);
+        new Span<Vector2>(waypoints).Reverse();
 
         return waypoints;
     }
