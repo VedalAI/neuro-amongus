@@ -18,6 +18,13 @@ public sealed class InGameCursor : MonoBehaviour
     public InGameCursor(IntPtr ptr) : base(ptr) { }
 
     private SpriteRenderer renderer;
+    private bool isInMovingCoroutine;
+    private Transform followTarget;
+    private Func<bool> followWhileCondition;
+    private float followSpeed;
+
+    public bool IsDoingContinuousMovement => followTarget || isInMovingCoroutine;
+    public bool IsHidden => transform.position.x < -4000;
 
     private void Awake()
     {
@@ -40,34 +47,68 @@ public sealed class InGameCursor : MonoBehaviour
         renderer.sprite = ResourceManager.GetCachedSprite("Cursor");
     }
 
-    public void SnapTo(Vector2 position)
+    private void Update()
     {
+        Warning(transform.position);
+
+        if (!followTarget) return;
+
+        float speed = followSpeed * SPEED_MULTIPLER;
+
+        transform.position = (Vector3) Vector2.MoveTowards(transform.position, followTarget.position, speed * Time.deltaTime) with {z = transform.position.z};
+        if (!followWhileCondition?.Invoke() ?? true)
+        {
+            followTarget = null;
+        }
+    }
+
+    public void StopMovement()
+    {
+        followTarget = null;
+        isInMovingCoroutine = false;
+    }
+
+    public void SnapTo(Vector2 position, bool stopMovement = true)
+    {
+        if (stopMovement) StopMovement();
         transform.position = transform.position with {x = position.x, y = position.y};
     }
 
-    public void SnapTo(Component target) => SnapTo(target.transform.position);
+    public void SnapTo(Component target, bool stopMovement = true) => SnapTo(target.transform.position, stopMovement);
+
+    public void SnapToCenter(bool stopMovement = true) => SnapTo(transform.parent.position, stopMovement);
 
     [HideFromIl2Cpp]
     public IEnumerator CoMoveTo(Vector2 position, float speed = 1f)
     {
+        StopMovement();
+
         speed *= SPEED_MULTIPLER;
 
+        // if (IsHidden)
+        // {
+        //     SnapTo(position);
+        //     yield break;
+        // }
+
+        if (IsHidden) SnapToCenter();
+        yield return null;
+
+        isInMovingCoroutine = true;
+
         Vector2 originalPosition = transform.position;
-
-        if (originalPosition.x < -4000)
-        {
-            SnapTo(position);
-            yield break;
-        }
-
         float distance = (position - originalPosition).magnitude;
         float time = distance / speed;
 
         for (float t = 0; t < time; t += Time.deltaTime)
         {
-            SnapTo(Vector2.Lerp(originalPosition, position, t / time));
+            if (!isInMovingCoroutine) yield break;
+
+            SnapTo(Vector2.Lerp(originalPosition, position, t / time), false);
             yield return null;
         }
+
+        SnapTo(position);
     }
 
     [HideFromIl2Cpp]
@@ -80,6 +121,18 @@ public sealed class InGameCursor : MonoBehaviour
 
     [HideFromIl2Cpp]
     public void HideWhen(Func<bool> condition) => this.StartCoroutine(HideWhenCoroutine(condition));
+
+    public void StartFollowing(Component target, Func<bool> whileCondition = null, float speed = 1f)
+    {
+        StopMovement();
+        followTarget = target.transform;
+        followWhileCondition = whileCondition ?? (() => true);
+        followSpeed = speed;
+
+        if (IsHidden) SnapToCenter();
+    }
+
+    public void StartFollowing(GameObject target, Func<bool> whileCondition = null, float speed = 1f) => StartFollowing(target.transform, whileCondition, speed);
 
     [HideFromIl2Cpp]
     private IEnumerator HideWhenCoroutine(Func<bool> condition)
