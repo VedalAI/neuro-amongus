@@ -1,9 +1,6 @@
 ﻿using System.Collections;
 using System.Linq;
-using HarmonyLib;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Neuro.Cursor;
-using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Minigames.Completion.Solvers;
