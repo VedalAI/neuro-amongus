@@ -17,14 +17,16 @@ public sealed class InGameCursor : MonoBehaviour
 
     public InGameCursor(IntPtr ptr) : base(ptr) { }
 
-    private SpriteRenderer renderer;
-    private bool isInMovingCoroutine;
-    private Transform followTarget;
-    private Func<bool> followWhileCondition;
-    private float followSpeed;
+    private SpriteRenderer _renderer;
+    private bool _isInMovingCoroutine;
+    private Transform _followTarget;
+    private Func<bool> _followCondition;
+    private float _followSpeed;
 
-    public bool IsDoingContinuousMovement => followTarget || isInMovingCoroutine;
+    public Vector2 Position => transform.position;
+    public bool IsDoingContinuousMovement => _followTarget || _isInMovingCoroutine;
     public bool IsHidden => transform.position.x < -4000;
+    public float DistanceToTarget => _followTarget ? (Position - (Vector2) _followTarget.position).magnitude : -1;
 
     private void Awake()
     {
@@ -43,29 +45,28 @@ public sealed class InGameCursor : MonoBehaviour
         transform.localPosition = new Vector3(0f, 0f, -650);
         Hide();
 
-        renderer = gameObject.AddComponent<SpriteRenderer>();
-        renderer.sprite = ResourceManager.GetCachedSprite("Cursor");
+        _renderer = gameObject.AddComponent<SpriteRenderer>();
+        _renderer.sprite = ResourceManager.GetCachedSprite("Cursor");
     }
 
     private void Update()
     {
-        Warning(transform.position);
+        if (!_followTarget) return;
 
-        if (!followTarget) return;
+        float speed = _followSpeed * SPEED_MULTIPLER;
 
-        float speed = followSpeed * SPEED_MULTIPLER;
+        transform.position = (Vector3) Vector2.MoveTowards(Position, _followTarget.position, speed * Time.deltaTime) with {z = transform.position.z};
 
-        transform.position = (Vector3) Vector2.MoveTowards(transform.position, followTarget.position, speed * Time.deltaTime) with {z = transform.position.z};
-        if (!followWhileCondition?.Invoke() ?? true)
+        if (!_followCondition())
         {
-            followTarget = null;
+            StopMovement();
         }
     }
 
     public void StopMovement()
     {
-        followTarget = null;
-        isInMovingCoroutine = false;
+        _followTarget = null;
+        _isInMovingCoroutine = false;
     }
 
     public void SnapTo(Vector2 position, bool stopMovement = true)
@@ -79,7 +80,7 @@ public sealed class InGameCursor : MonoBehaviour
     public void SnapToCenter(bool stopMovement = true) => SnapTo(transform.parent.position, stopMovement);
 
     [HideFromIl2Cpp]
-    public IEnumerator CoMoveTo(Vector2 position, float speed = 1f)
+    public IEnumerator CoMoveTo(Vector2 targetPosition, float speed = 1f)
     {
         StopMovement();
 
@@ -94,21 +95,21 @@ public sealed class InGameCursor : MonoBehaviour
         if (IsHidden) SnapToCenter();
         yield return null;
 
-        isInMovingCoroutine = true;
+        _isInMovingCoroutine = true;
 
-        Vector2 originalPosition = transform.position;
-        float distance = (position - originalPosition).magnitude;
+        Vector2 originalPosition = Position;
+        float distance = (targetPosition - originalPosition).magnitude;
         float time = distance / speed;
 
         for (float t = 0; t < time; t += Time.deltaTime)
         {
-            if (!isInMovingCoroutine) yield break;
+            if (!_isInMovingCoroutine) yield break;
 
-            SnapTo(Vector2.Lerp(originalPosition, position, t / time), false);
+            SnapTo(Vector2.Lerp(originalPosition, targetPosition, t / time), false);
             yield return null;
         }
 
-        SnapTo(position);
+        SnapTo(targetPosition);
     }
 
     [HideFromIl2Cpp]
@@ -125,9 +126,9 @@ public sealed class InGameCursor : MonoBehaviour
     public void StartFollowing(Component target, Func<bool> whileCondition = null, float speed = 1f)
     {
         StopMovement();
-        followTarget = target.transform;
-        followWhileCondition = whileCondition ?? (() => true);
-        followSpeed = speed;
+        _followTarget = target.transform;
+        _followCondition = whileCondition ?? (() => true);
+        _followSpeed = speed;
 
         if (IsHidden) SnapToCenter();
     }
