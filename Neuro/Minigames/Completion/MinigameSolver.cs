@@ -37,6 +37,10 @@ public abstract class MinigameSolver
 
         yield return new WaitForSeconds(0.4f);
         yield return solver.CompleteMinigame(minigame, task);
+
+        // By this point we expect the solver to have completed the minigame,
+        // which means that it will close and this coroutine will not execute
+        // any code below.
     }
 
     public abstract IEnumerator CompleteMinigame(Minigame minigame, PlayerTask task);

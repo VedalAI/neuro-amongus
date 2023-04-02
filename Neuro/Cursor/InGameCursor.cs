@@ -123,6 +123,7 @@ public sealed class InGameCursor : MonoBehaviour
     [HideFromIl2Cpp]
     public void HideWhen(Func<bool> condition) => this.StartCoroutine(HideWhenCoroutine(condition));
 
+    [HideFromIl2Cpp]
     public void StartFollowing(Component target, Func<bool> whileCondition = null, float speed = 1f)
     {
         StopMovement();
@@ -133,6 +134,7 @@ public sealed class InGameCursor : MonoBehaviour
         if (IsHidden) SnapToCenter();
     }
 
+    [HideFromIl2Cpp]
     public void StartFollowing(GameObject target, Func<bool> whileCondition = null, float speed = 1f) => StartFollowing(target.transform, whileCondition, speed);
 
     [HideFromIl2Cpp]
