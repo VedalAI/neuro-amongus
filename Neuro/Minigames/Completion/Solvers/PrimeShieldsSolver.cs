@@ -10,7 +10,8 @@ public sealed class PrimeShieldsSolver : MinigameSolver<ShieldMinigame>
     {
         for (int i = 0; i < minigame.Shields.Count; i++)
         {
-            if (minigame.Shields[i].color == minigame.OffColor)
+            byte b = (byte)(1 << i);
+            if ((minigame.shields & b) == 0)
             {
                 yield return InGameCursor.Instance.CoMoveTo(minigame.Shields[i].transform.position);
                 minigame.ToggleShield(i);

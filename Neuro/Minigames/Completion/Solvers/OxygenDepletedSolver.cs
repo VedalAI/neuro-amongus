@@ -11,6 +11,8 @@ public sealed class OxygenDepletedSolver : MinigameSolver<KeypadGame>
 {
     public override IEnumerator CompleteMinigame(KeypadGame minigame, NormalPlayerTask task)
     {
+        // Important TODO: Fix this. Currently only works on one of the keypads and incorrectly marks completions
+
         int[] numbers = Array.ConvertAll(minigame.oxyTask.targetNumber.ToString().ToCharArray(), x => (int)char.GetNumericValue(x));
         UiElement[] buttons = minigame.ControllerSelectable.ToArray();
         foreach (int number in numbers)

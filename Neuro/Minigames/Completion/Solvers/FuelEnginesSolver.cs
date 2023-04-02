@@ -15,6 +15,6 @@ public sealed class FuelEnginesSolver : MinigameSolver<RefuelStage>
         minigame.Refuel();
         while (!minigame.complete)
             yield return new WaitForFixedUpdate();
-        minigame.Close();
+        yield return minigame.CoStartClose(0.2f);
     }
 }
