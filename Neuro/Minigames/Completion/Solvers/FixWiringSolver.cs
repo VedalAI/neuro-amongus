@@ -17,7 +17,7 @@ public sealed class FixWiringSolver : MinigameSolver<WireMinigame>
             WireNode right = minigame.RightNodes.First(x => x.WireId == minigame.ExpectedWires[i]);
             yield return InGameCursor.Instance.CoMoveTo(right.transform.position);
             left.ConnectRight(right);
-            // TODO: Make the wire actually folow the cursor. Should eliminate the need to do this
+            // TODO: Make the wire actually follow the cursor. Should eliminate the need to do this
             minigame.ActualWires[i] = minigame.ExpectedWires[i];
             minigame.UpdateLights();
         }
