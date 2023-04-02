@@ -16,5 +16,3 @@ public sealed class ReplaceWaterJugSolver : MinigameSolver<WaterStage>
         yield return minigame.CoStartClose(0.2f);
     }
 }
-
-
