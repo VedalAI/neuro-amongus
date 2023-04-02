@@ -8,8 +8,9 @@ namespace Neuro.Pathfinding;
 
 public class PathfindingHandler
 {
-    private const int GRID_DENSITY = 6; // TODO: Make this a float to allow fine-tuning individual maps
-    private const int GRID_SIZE = 100 * GRID_DENSITY;
+    private const float GRID_DENSITY = 6f; // TODO: Fine-tune individual maps to optimize performance
+    private const int GRID_BASE_WIDTH = 100;
+    private const int GRID_SIZE = (int)(GRID_BASE_WIDTH * GRID_DENSITY);
     private const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;
     private const int GRID_UPPER_BOUNDS = GRID_SIZE / 2;
 
@@ -121,12 +122,12 @@ public class PathfindingHandler
     {
         grid = new Node[GRID_SIZE, GRID_SIZE];
 
-        const float NODE_RADIUS = 1f / GRID_DENSITY;
+        const float NODE_RADIUS = 1 / GRID_DENSITY;
 
         for (int x = GRID_LOWER_BOUNDS; x < GRID_UPPER_BOUNDS; x++)
         for (int y = GRID_LOWER_BOUNDS; y < GRID_UPPER_BOUNDS; y++)
         {
-            Vector2 point = new(x / (float)GRID_DENSITY, y / (float)GRID_DENSITY);
+            Vector2 point = new(x / GRID_DENSITY, y / GRID_DENSITY);
 
             //Info(point.ToString());
             Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, LayerMask.GetMask("Ship", "ShortObjects"));
