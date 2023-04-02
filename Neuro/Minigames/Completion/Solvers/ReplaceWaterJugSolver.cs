@@ -11,8 +11,9 @@ public sealed class ReplaceWaterJugSolver : MinigameSolver<WaterStage>
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.waterButton);
         minigame.Refuel();
-        while (!minigame.complete)
-            yield return new WaitForFixedUpdate();
-        yield return minigame.CoStartClose(0.2f);
+
+        while (!minigame.complete) yield return new WaitForFixedUpdate();
+
+        yield return minigame.CoStartClose(0.5f);
     }
 }
