@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Completion.Solvers;
 
 [MinigameSolver(typeof(DoorBreakerGame))]
-public sealed class DoorSabotageSwitchesSolver : TasklessMinigameSolver<DoorBreakerGame>
+public sealed class DoorSabotagePolusSolver : TasklessMinigameSolver<DoorBreakerGame>
 {
     public override IEnumerator CompleteMinigame(DoorBreakerGame minigame)
     {
