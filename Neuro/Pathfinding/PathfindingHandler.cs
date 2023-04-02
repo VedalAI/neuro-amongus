@@ -8,7 +8,9 @@ namespace Neuro.Pathfinding;
 
 public class PathfindingHandler
 {
-    private const int GRID_SIZE = 500;
+    private const float GRID_DENSITY = 6f; // TODO: Fine-tune individual maps to optimize performance
+    private const int GRID_BASE_WIDTH = 100;
+    private const int GRID_SIZE = (int)(GRID_BASE_WIDTH * GRID_DENSITY);
     private const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;
     private const int GRID_UPPER_BOUNDS = GRID_SIZE / 2;
 
@@ -16,7 +18,6 @@ public class PathfindingHandler
 
     public void Initialize()
     {
-        // TODO: Fix inaccessible areas on Airship
         GenerateNodeGrid();
 
         FloodFill(ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius);
@@ -58,7 +59,7 @@ public class PathfindingHandler
 
         Info($"startNode: {startNode.worldPosition} targetNode: {targetNode.worldPosition}");
 
-        if (startNode is not {accessible: true} || targetNode is not {accessible: true}) return Array.Empty<Vector2>();
+        if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<Vector2>();
 
         Heap<Node> openSet = new(GRID_SIZE * GRID_SIZE);
         HashSet<Node> closedSet = new();
@@ -121,19 +122,22 @@ public class PathfindingHandler
     {
         grid = new Node[GRID_SIZE, GRID_SIZE];
 
+        const float NODE_RADIUS = 1 / GRID_DENSITY;
+
         for (int x = GRID_LOWER_BOUNDS; x < GRID_UPPER_BOUNDS; x++)
         for (int y = GRID_LOWER_BOUNDS; y < GRID_UPPER_BOUNDS; y++)
         {
-            Vector2 point = new(x / 4f, y / 4f);
+            Vector2 point = new(x / GRID_DENSITY, y / GRID_DENSITY);
 
             //Info(point.ToString());
-            Collider2D[] cols = Physics2D.OverlapCircleAll(point, 0.25f, LayerMask.GetMask("Ship", "ShortObjects"));
+            Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, LayerMask.GetMask("Ship", "ShortObjects"));
             int validColsCount = cols.Count(col =>
-                    !col.isTrigger
-                    && !col.transform.name.Contains("Vent")
-                    && !col.transform.name.Contains("Door")
-                    && !col.transform.parent.name.Contains("Door")
+                !col.isTrigger
+                && !col.GetComponentInParent<Vent>()
+                && !col.GetComponentInParent<SomeKindaDoor>()
             );
+
+            // TODO: Add edge case for Airship ladders
 
             bool accessible = validColsCount == 0;
             grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
@@ -191,12 +195,12 @@ public class PathfindingHandler
 
     private Node NodeFromWorldPoint(Vector2 position)
     {
-        position *= 4;
-        float percentX = Mathf.Clamp(position.x, GRID_LOWER_BOUNDS, GRID_UPPER_BOUNDS);
-        float percentY = Mathf.Clamp(position.y, GRID_LOWER_BOUNDS, GRID_UPPER_BOUNDS);
+        position *= GRID_DENSITY;
+        float clampedX = Mathf.Clamp(position.x, GRID_LOWER_BOUNDS, GRID_UPPER_BOUNDS);
+        float clampedY = Mathf.Clamp(position.y, GRID_LOWER_BOUNDS, GRID_UPPER_BOUNDS);
 
-        int xIndex = Mathf.RoundToInt(percentX + GRID_UPPER_BOUNDS);
-        int yIndex = Mathf.RoundToInt(percentY + GRID_UPPER_BOUNDS);
+        int xIndex = Mathf.RoundToInt(clampedX + GRID_UPPER_BOUNDS);
+        int yIndex = Mathf.RoundToInt(clampedY + GRID_UPPER_BOUNDS);
 
         return grid[xIndex, yIndex];
     }
@@ -272,7 +276,7 @@ public class PathfindingHandler
         }
 
         Vector2[] waypoints = path.Select(p => p.worldPosition).ToArray();
-        Array.Reverse(waypoints);
+        new Span<Vector2>(waypoints).Reverse();
 
         return waypoints;
     }
