@@ -26,17 +26,18 @@ public sealed class DebugWindow : MonoBehaviour
     public static DebugWindow Instance { get; set; }
 
     private DebugTab _selectedTab;
-    private bool _enabled;
+    private bool _enabled = true;
     private readonly DragWindow _window;
 
     public DebugWindow(IntPtr ptr) : base(ptr)
     {
-        _window = new DragWindow(new Rect(20, 20, 100, 100), "Debug", BuildWindow);
+        _window = new DragWindow(new Rect(20, 20, 100, 100), "Debug (F1)", BuildWindow);
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F1)) _enabled = !_enabled;
+        if (_tabs.Count == 0) _enabled = false;
     }
 
     private void OnGUI()

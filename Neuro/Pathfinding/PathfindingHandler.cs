@@ -6,10 +6,11 @@ using UnityEngine;
 
 namespace Neuro.Pathfinding;
 
-public class PathfindingHandler
+public sealed class PathfindingHandler
 {
     private const float GRID_DENSITY = 6f; // TODO: Fine-tune individual maps to optimize performance
     private const int GRID_BASE_WIDTH = 100;
+
     private const int GRID_SIZE = (int)(GRID_BASE_WIDTH * GRID_DENSITY);
     private const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;
     private const int GRID_UPPER_BOUNDS = GRID_SIZE / 2;
@@ -132,9 +133,9 @@ public class PathfindingHandler
             //Info(point.ToString());
             Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, LayerMask.GetMask("Ship", "ShortObjects"));
             int validColsCount = cols.Count(col =>
-                !col.isTrigger
-                && !col.GetComponentInParent<Vent>()
-                && !col.GetComponentInParent<SomeKindaDoor>()
+                !col.isTrigger &&
+                !col.GetComponentInParent<Vent>() &&
+                !col.GetComponentInParent<SomeKindaDoor>()
             );
 
             // TODO: Add edge case for Airship ladders

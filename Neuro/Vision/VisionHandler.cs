@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Neuro.Vision;
 
 [RegisterInIl2Cpp]
-public class VisionHandler : MonoBehaviour
+public sealed class VisionHandler : MonoBehaviour
 {
     public VisionHandler(IntPtr ptr) : base(ptr) { }
 
@@ -31,6 +31,7 @@ public class VisionHandler : MonoBehaviour
     {
         if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
+        // TODO: if (Minigame.Instance) return;
 
         UpdateDeadBodiesVision();
         UpdateNearbyPlayersVision();

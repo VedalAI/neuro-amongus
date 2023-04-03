@@ -3,7 +3,7 @@
 namespace Neuro.Movement.Patches;
 
 [HarmonyPatch(typeof(UseButton), nameof(UseButton.SetTarget))]
-public class UseButton_SetTarget
+public static class UseButton_SetTarget
 {
     [HarmonyPrefix]
     public static void Prefix(IUsable target)
