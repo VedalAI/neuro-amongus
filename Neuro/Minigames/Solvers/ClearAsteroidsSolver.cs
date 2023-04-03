@@ -9,7 +9,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(WeaponsMinigame))]
 public sealed class ClearAsteroidsSolver : MinigameSolver<WeaponsMinigame>
 {
-    public override IEnumerator CompleteMinigame(WeaponsMinigame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(WeaponsMinigame minigame, NormalPlayerTask task)
     {
         InGameCursor.Instance.SnapToCenter();
         minigame.BackgroundCol.bounds.Expand(-50);

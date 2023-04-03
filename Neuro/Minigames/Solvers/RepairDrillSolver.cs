@@ -7,7 +7,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(DrillMinigame))]
 public sealed class RepairDrillSolver : MinigameSolver<DrillMinigame>
 {
-    public override IEnumerator CompleteMinigame(DrillMinigame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(DrillMinigame minigame, NormalPlayerTask task)
     {
         int buttonIndex = 0;
         while (buttonIndex < minigame.Buttons.Length)

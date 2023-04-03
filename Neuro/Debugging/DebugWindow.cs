@@ -23,8 +23,6 @@ public sealed class DebugWindow : MonoBehaviour
 
     private static readonly List<DebugTab> _tabs;
 
-    public static DebugWindow Instance { get; set; }
-
     private DebugTab _selectedTab;
     private bool _enabled = true;
     private readonly DragWindow _window;

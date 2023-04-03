@@ -7,7 +7,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(WaterStage))]
 public sealed class ReplaceWaterJugSolver : MinigameSolver<WaterStage>
 {
-    public override IEnumerator CompleteMinigame(WaterStage minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(WaterStage minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.waterButton);
         minigame.Refuel();

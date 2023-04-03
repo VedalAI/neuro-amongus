@@ -8,7 +8,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(EmptyGarbageMinigame))]
 public sealed class EmptyGarbageMainStageSolver : MinigameSolver<EmptyGarbageMinigame>
 {
-    public override IEnumerator CompleteMinigame(EmptyGarbageMinigame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(EmptyGarbageMinigame minigame, NormalPlayerTask task)
     {
         InGameCursor.Instance.StartFollowing(minigame.Handle);
 

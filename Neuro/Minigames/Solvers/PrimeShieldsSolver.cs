@@ -6,7 +6,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(ShieldMinigame))]
 public sealed class PrimeShieldsSolver : MinigameSolver<ShieldMinigame>
 {
-    public override IEnumerator CompleteMinigame(ShieldMinigame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(ShieldMinigame minigame, NormalPlayerTask task)
     {
         for (int i = 0; i < minigame.Shields.Count; i++)
         {

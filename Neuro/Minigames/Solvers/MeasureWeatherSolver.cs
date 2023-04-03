@@ -6,7 +6,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(WeatherMinigame))]
 public sealed class MeasureWeatherSolver : MinigameSolver<WeatherMinigame>
 {
-    public override IEnumerator CompleteMinigame(WeatherMinigame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(WeatherMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.StartButton);
         minigame.StartStopFill();

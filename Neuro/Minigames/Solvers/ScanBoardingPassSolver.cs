@@ -7,7 +7,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(BoardPassGame))]
 public sealed class ScanBoardingPassSolver : MinigameSolver<BoardPassGame>
 {
-    public override IEnumerator CompleteMinigame(BoardPassGame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(BoardPassGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.pullButton);
         yield return minigame.CoPullPass();

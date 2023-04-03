@@ -7,7 +7,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(DoorBreakerGame))]
 public sealed class DoorSabotagePolusSolver : TasklessMinigameSolver<DoorBreakerGame>
 {
-    public override IEnumerator CompleteMinigame(DoorBreakerGame minigame)
+    protected override IEnumerator CompleteMinigame(DoorBreakerGame minigame)
     {
         foreach (SpriteRenderer button in minigame.Buttons)
         {
