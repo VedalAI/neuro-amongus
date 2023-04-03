@@ -3,6 +3,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using Neuro.Debugging;
 using Neuro.Movement;
 using Neuro.Pathfinding;
 using Neuro.Recording;
@@ -32,6 +33,8 @@ public partial class NeuroPlugin : BasePlugin
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
 
         // TODO: Maybe reset these when a new game begins.
+
+        AddComponent<DebugWindow>();
 
         Movement = new MovementHandler();
         Pathfinding = new PathfindingHandler();
