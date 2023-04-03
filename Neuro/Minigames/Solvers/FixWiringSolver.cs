@@ -13,14 +13,10 @@ public sealed class FixWiringSolver : MinigameSolver<WireMinigame>
         {
             Wire left = minigame.LeftNodes[i];
             yield return InGameCursor.Instance.CoMoveTo(left);
-            minigame.prevSelectedWireIndex = i;
+            InGameCursor.Instance.IsMouseDown = true;
             WireNode right = minigame.RightNodes.First(x => x.WireId == minigame.ExpectedWires[i]);
             yield return InGameCursor.Instance.CoMoveTo(right);
-            left.ConnectRight(right);
-            // TODO: Make the wire actually follow the cursor. Should eliminate the need to do this
-            minigame.ActualWires[i] = minigame.ExpectedWires[i];
-            minigame.UpdateLights();
+            InGameCursor.Instance.IsMouseDown = false;
         }
-        minigame.CheckTask();
     }
 }

@@ -25,6 +25,7 @@ public sealed class InGameCursor : MonoBehaviour
 
     public Vector2 Position => transform.position;
     public bool IsDoingContinuousMovement => _followTarget || _isInMovingCoroutine;
+    public bool IsMouseDown = false;
     public bool IsHidden => transform.position.x < -4000;
     public float DistanceToTarget => _followTarget ? (Position - (Vector2) _followTarget.position).magnitude : -1;
 
