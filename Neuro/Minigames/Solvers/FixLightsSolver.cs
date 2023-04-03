@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Linq;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Completion.Solvers;
 
@@ -8,14 +10,23 @@ public sealed class FixLightsSolver : MinigameSolver<SwitchMinigame>
 {
     public override IEnumerator CompleteMinigame(SwitchMinigame minigame, NormalPlayerTask task)
     {
-        for (int i = 0; i < minigame.switches.Count; i++)
+        InGameCursor.Instance.SnapToCenter();
+        SwitchSystem switchSystem = minigame.ship.Systems[SystemTypes.Electrical].TryCast<SwitchSystem>();
+        while (switchSystem.IsActive)
         {
-            if (minigame.lights[i].color == minigame.OffColor)
+            var firstOff = minigame.lights
+                .Select((light, index) => new { light, index })
+                .First(x => x.light.color == minigame.OffColor);
+
+            if (!firstOff.light)
             {
-                yield return InGameCursor.Instance.CoMoveTo(minigame.switches[i]);
-                minigame.FlipSwitch(i);
-                yield return Sleep(0.1f);
+                yield return new WaitForFixedUpdate();
+                continue;
             }
+
+            yield return InGameCursor.Instance.CoMoveTo(minigame.switches[firstOff.index]);
+            minigame.FlipSwitch(firstOff.index);
+            yield return Sleep(0.1f);
         }
     }
 }
