@@ -2,7 +2,7 @@
 using System.Linq;
 using Neuro.Cursor;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(VendingMinigame))]
 public sealed class BuyBeverageSolver : MinigameSolver<VendingMinigame>

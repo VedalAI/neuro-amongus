@@ -2,7 +2,7 @@
 using Neuro.Cursor;
 using PowerTools;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(DrillMinigame))]
 public sealed class RepairDrillSolver : MinigameSolver<DrillMinigame>

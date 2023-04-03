@@ -2,7 +2,7 @@
 using Neuro.Cursor;
 using UnityEngine;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(BoardPassGame))]
 public sealed class ScanBoardingPassSolver : MinigameSolver<BoardPassGame>

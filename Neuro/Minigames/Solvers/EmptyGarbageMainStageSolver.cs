@@ -3,7 +3,7 @@ using System.Linq;
 using Neuro.Cursor;
 using UnityEngine;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(EmptyGarbageMinigame))]
 public sealed class EmptyGarbageMainStageSolver : MinigameSolver<EmptyGarbageMinigame>

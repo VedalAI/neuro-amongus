@@ -2,7 +2,7 @@
 using Neuro.Cursor;
 using Neuro.Utilities;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SweepMinigame))]
 public sealed class CalibrateDistributorSolver : MinigameSolver<SweepMinigame>

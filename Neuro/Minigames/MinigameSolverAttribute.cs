@@ -1,7 +1,7 @@
 ﻿using System;
 using HarmonyLib;
 
-namespace Neuro.Minigames.Completion;
+namespace Neuro.Minigames;
 
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class MinigameSolverAttribute : Attribute
