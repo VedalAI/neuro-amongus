@@ -1,8 +1,8 @@
-﻿using Neuro.Cursor;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
+using Neuro.Cursor;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WireMinigame))]
 public sealed class FixWiringSolver : MinigameSolver<WireMinigame>
