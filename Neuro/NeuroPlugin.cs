@@ -4,6 +4,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using Neuro.Debugging;
 using Neuro.Minigames;
 using Neuro.Movement;
 using Neuro.Pathfinding;
@@ -22,6 +23,7 @@ public partial class NeuroPlugin : BasePlugin
 {
     public static NeuroPlugin Instance => PluginSingleton<NeuroPlugin>.Instance;
 
+    public DebugWindowBehaviour DebugWindowBehaviour { get; private set; }
     public MinigamesHandler Minigames { get; private set; }
     public MovementHandler Movement { get; private set; }
     public PathfindingHandler Pathfinding { get; private set; }
@@ -35,6 +37,7 @@ public partial class NeuroPlugin : BasePlugin
 
         // TODO: Maybe reset these when a new game begins.
 
+        DebugWindowBehaviour = AddComponent<DebugWindowBehaviour>();
         Minigames = new MinigamesHandler();
         Movement = new MovementHandler();
         Pathfinding = new PathfindingHandler();
