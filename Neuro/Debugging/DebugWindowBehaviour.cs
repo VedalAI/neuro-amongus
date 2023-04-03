@@ -8,46 +8,17 @@ namespace Neuro.Debugging;
 [RegisterInIl2Cpp]
 public sealed class DebugWindowBehaviour : MonoBehaviour
 {
-    private struct Tab
-    {
-        public string Name { get; }
-        public Action BuildTabAction { get; }
-        public Func<bool> ShouldShow { get; }
-
-        public Tab(string name, Action buildTabAction, Func<bool> shouldShow)
-        {
-            Name = name;
-            BuildTabAction = buildTabAction;
-            ShouldShow = shouldShow;
-        }
-
-        public Tab(string name, Action buildTabAction) : this(name, buildTabAction, () => true)
-        {
-        }
-    }
-
     public DebugWindowBehaviour(IntPtr ptr) : base(ptr) { }
 
     private bool _enabled;
-    private readonly List<Tab> _tabs = new();
     private int _activeTab;
     private Rect _rect = new(20, 20, 100, 100);
-
-    public void RegisterTab(string tabName, Action buildTabAction)
-    {
-        _tabs.Add(new Tab(tabName, buildTabAction));
-    }
-
-    public void RegisterTab(string tabName, Action buildTabAction, Func<bool> shouldShow)
-    {
-        _tabs.Add(new Tab(tabName, buildTabAction, shouldShow));
-    }
 
     private void DrawWindow()
     {
         GUI.DragWindow(new Rect(0, 0, 10000, 20));
 
-        if (_tabs.Count == 0) return;
+        if (DebugWindow.Tabs.Count == 0) return;
 
         try
         {
@@ -58,14 +29,14 @@ public sealed class DebugWindowBehaviour : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < _tabs.Count; i++)
+        for (int i = 0; i < DebugWindow.Tabs.Count; i++)
         {
-            Tab currentTab = _tabs[i];
-            if (!currentTab.ShouldShow.Invoke())
+            DebugWindow currentTab = DebugWindow.Tabs[i];
+            if (!currentTab.ShouldShow())
             {
                 if (_activeTab == i)
                 {
-                    _activeTab = (_activeTab + 1) % _tabs.Count;
+                    _activeTab = (_activeTab + 1) % DebugWindow.Tabs.Count;
                 }
                 continue;
             }
@@ -73,8 +44,17 @@ public sealed class DebugWindowBehaviour : MonoBehaviour
         }
         GUILayout.EndHorizontal();
         GUILayout.Space(5f);
-        _tabs[_activeTab].BuildTabAction?.Invoke();
+
+        if (_activeTab == 0 && !DebugWindow.Tabs[_activeTab].ShouldShow())
+        {
+            GUILayout.Label("Empty... just like my heart :(", GUILayout.Width(180));
+        }
+        else
+        {
+            DebugWindow.Tabs[_activeTab].BuildWindow();
+        }
     }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F1)) _enabled = !_enabled;
@@ -83,7 +63,8 @@ public sealed class DebugWindowBehaviour : MonoBehaviour
     private void OnGUI()
     {
         if (!_enabled) return;
-        _rect.height = _rect.width = 20;
+        _rect.height = 20;
+        _rect.width = 100;
         _rect = GUILayout.Window(0, _rect, new Action<int>(_ => DrawWindow()), "Debug Window");
 
         if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) && _rect.Contains(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y)))

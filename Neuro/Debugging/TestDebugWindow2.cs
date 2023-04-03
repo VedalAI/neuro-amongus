@@ -4,21 +4,19 @@ using Object = UnityEngine.Object;
 
 namespace Neuro.Debugging;
 
-public sealed class MainDebugWindow : IDebugWindow
+[DebugWindow]
+public sealed class TestDebugWindow2 : DebugWindow
 {
-    public void RegisterTabs(DebugWindowBehaviour behaviour)
-    {
-        behaviour.RegisterTab("Tasks", BuildTasksWindow, ShouldShowTasksWindow);
-    }
+    public override string Name => "Another test";
 
-    private static bool ShouldShowTasksWindow()
+    public override bool ShouldShow()
     {
         return PlayerControl.LocalPlayer && TutorialManager.InstanceExists;
     }
 
-    private static void BuildTasksWindow()
+    public override void BuildWindow()
     {
-        if (GUILayout.Button("Open Task Picker"))
+        if (GUILayout.Button("Something else"))
         {
             Minigame minigamePrefab = ShipStatus.Instance.GetComponentsInChildren<SystemConsole>().First(c => c.FreeplayOnly).MinigamePrefab;
             PlayerControl.LocalPlayer.NetTransform.Halt();
