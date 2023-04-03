@@ -1,14 +1,14 @@
 ﻿global using static Reactor.Utilities.Logger<Neuro.NeuroPlugin>;
-
 using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
-using Neuro.Minigames;
+using Neuro.Debugging;
 using Neuro.Movement;
 using Neuro.Pathfinding;
 using Neuro.Recording;
 using Neuro.Tasks;
+using Neuro.Utilities;
 using Neuro.Vision;
 using Neuro.Impostor;
 using Reactor;
@@ -23,7 +23,6 @@ public partial class NeuroPlugin : BasePlugin
 {
     public static NeuroPlugin Instance => PluginSingleton<NeuroPlugin>.Instance;
 
-    public MinigamesHandler Minigames { get; private set; }
     public MovementHandler Movement { get; private set; }
     public PathfindingHandler Pathfinding { get; private set; }
     public RecordingHandler Recording { get; private set; }
@@ -37,12 +36,15 @@ public partial class NeuroPlugin : BasePlugin
 
         // TODO: Maybe reset these when a new game begins.
 
-        Minigames = new MinigamesHandler();
+        AddComponent<DebugWindow>();
+
         Movement = new MovementHandler();
         Pathfinding = new PathfindingHandler();
         Recording = AddComponent<RecordingHandler>();
         Tasks = AddComponent<TasksHandler>();
         Vision = AddComponent<VisionHandler>();
         Impostor = AddComponent<ImpostorHandler>();
+
+        ResourceManager.CacheSprite("Cursor", 130);
     }
 }
