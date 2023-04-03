@@ -1,15 +1,13 @@
-﻿
-
-using Neuro.Cursor;
-using System;
+﻿using System;
 using System.Collections;
+using Neuro.Cursor;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(KeypadGame))]
-public sealed class OxygenDepletedSolver : MinigameSolver<KeypadGame>
+public sealed class OxygenDepletedSolver : TasklessMinigameSolver<KeypadGame>
 {
-    protected override IEnumerator CompleteMinigame(KeypadGame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(KeypadGame minigame)
     {
         // Important TODO: Fix this. Currently only works on one of the keypads and incorrectly marks completions
 

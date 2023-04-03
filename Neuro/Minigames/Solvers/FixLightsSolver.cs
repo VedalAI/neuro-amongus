@@ -3,29 +3,28 @@ using System.Linq;
 using Neuro.Cursor;
 using UnityEngine;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SwitchMinigame))]
-public sealed class FixLightsSolver : MinigameSolver<SwitchMinigame>
+public sealed class FixLightsSolver : TasklessMinigameSolver<SwitchMinigame>
 {
-    protected override IEnumerator CompleteMinigame(SwitchMinigame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(SwitchMinigame minigame)
     {
-        InGameCursor.Instance.SnapToCenter();
-        SwitchSystem switchSystem = minigame.ship.Systems[SystemTypes.Electrical].TryCast<SwitchSystem>();
+        SwitchSystem switchSystem = minigame.ship.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
         while (switchSystem.IsActive)
         {
-            var firstOff = minigame.lights
-                .Select((light, index) => new { light, index })
-                .First(x => x.light.color == minigame.OffColor);
+            (SpriteRenderer firstLight, int firstIndex) = minigame.lights
+                .Select((light, index) => (light, index))
+                .FirstOrDefault(t => t.light.color == minigame.OffColor);
 
-            if (!firstOff.light)
+            if (!firstLight)
             {
                 yield return new WaitForFixedUpdate();
                 continue;
             }
 
-            yield return InGameCursor.Instance.CoMoveTo(minigame.switches[firstOff.index]);
-            minigame.FlipSwitch(firstOff.index);
+            yield return InGameCursor.Instance.CoMoveTo(minigame.switches[firstIndex]);
+            minigame.FlipSwitch(firstIndex);
             yield return Sleep(0.1f);
         }
     }
