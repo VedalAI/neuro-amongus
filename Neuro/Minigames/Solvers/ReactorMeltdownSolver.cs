@@ -6,7 +6,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(ReactorMinigame))]
 public sealed class ReactorMeltdownSolver : TasklessMinigameSolver<ReactorMinigame>
 {
-    public override IEnumerator CompleteMinigame(ReactorMinigame minigame)
+    protected override IEnumerator CompleteMinigame(ReactorMinigame minigame)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.hand);
         minigame.ButtonDown();

@@ -8,7 +8,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(CardSlideGame))]
 public sealed class SwipeCardSolver : MinigameSolver<CardSlideGame>
 {
-    public override IEnumerator CompleteMinigame(CardSlideGame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(CardSlideGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.col);
         yield return Sleep(0.1f);

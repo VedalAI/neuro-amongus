@@ -7,7 +7,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(WaterPlantsGame))]
 public sealed class WaterPlantsSolver : MinigameSolver<WaterPlantsGame>
 {
-    public override IEnumerator CompleteMinigame(WaterPlantsGame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(WaterPlantsGame minigame, NormalPlayerTask task)
     {
         if (task.taskStep == 0) yield return CompleteStage1(minigame);
         else if (task.taskStep == 1) yield return CompleteStage2(minigame);

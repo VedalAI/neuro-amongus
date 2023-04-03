@@ -7,7 +7,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(VendingMinigame))]
 public sealed class BuyBeverageSolver : MinigameSolver<VendingMinigame>
 {
-    public override IEnumerator CompleteMinigame(VendingMinigame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(VendingMinigame minigame, NormalPlayerTask task)
     {
         UiElement[] uiElements = minigame.ControllerSelectable.ToArray();
 

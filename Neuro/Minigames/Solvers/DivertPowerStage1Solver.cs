@@ -7,7 +7,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(DivertPowerMinigame))]
 public sealed class DivertPowerStage1Solver : MinigameSolver<DivertPowerMinigame>
 {
-    public override IEnumerator CompleteMinigame(DivertPowerMinigame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(DivertPowerMinigame minigame, NormalPlayerTask task)
     {
         Collider2D slider = minigame.Sliders[minigame.sliderId];
         Vector2 position;

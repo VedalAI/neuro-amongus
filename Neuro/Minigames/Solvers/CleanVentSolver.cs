@@ -7,7 +7,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(VentCleaningMinigame))]
 public sealed class CleanVentSolver : MinigameSolver<VentCleaningMinigame>
 {
-    public override IEnumerator CompleteMinigame(VentCleaningMinigame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(VentCleaningMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.ventLidClosed);
         yield return minigame.CoOpenVent();
