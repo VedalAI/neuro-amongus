@@ -3,6 +3,6 @@
 namespace Neuro.Debugging;
 
 [AttributeUsage(AttributeTargets.Class)]
-public sealed class DebugWindowAttribute : Attribute
+public sealed class DebugTabAttribute : Attribute
 {
 }
