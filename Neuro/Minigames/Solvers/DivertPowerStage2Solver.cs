@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(AcceptDivertPowerGame))]
 public sealed class DivertPowerStage2Solver : MinigameSolver<AcceptDivertPowerGame>

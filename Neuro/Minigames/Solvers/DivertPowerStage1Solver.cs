@@ -2,7 +2,7 @@
 using Neuro.Cursor;
 using UnityEngine;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(DivertPowerMinigame))]
 public sealed class DivertPowerStage1Solver : MinigameSolver<DivertPowerMinigame>

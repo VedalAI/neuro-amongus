@@ -1,8 +1,8 @@
-﻿using Neuro.Cursor;
-using System.Collections;
+﻿using System.Collections;
+using Neuro.Cursor;
 using UnityEngine;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WaterStage))]
 public sealed class ReplaceWaterJugSolver : MinigameSolver<WaterStage>

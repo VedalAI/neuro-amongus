@@ -2,7 +2,7 @@
 using Neuro.Cursor;
 using Neuro.Utilities;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(VentCleaningMinigame))]
 public sealed class CleanVentSolver : MinigameSolver<VentCleaningMinigame>

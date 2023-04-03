@@ -4,7 +4,7 @@ using Neuro.Cursor;
 using Neuro.Utilities;
 using UnityEngine;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WeaponsMinigame))]
 public sealed class ClearAsteroidsSolver : MinigameSolver<WeaponsMinigame>

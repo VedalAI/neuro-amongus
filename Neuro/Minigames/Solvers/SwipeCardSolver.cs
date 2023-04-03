@@ -3,7 +3,7 @@ using Neuro.Cursor;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
 
-namespace Neuro.Minigames.Completion.Solvers;
+namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(CardSlideGame))]
 public sealed class SwipeCardSolver : MinigameSolver<CardSlideGame>
