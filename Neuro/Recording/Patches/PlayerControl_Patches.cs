@@ -8,8 +8,8 @@ public static class PlayerControl_CmdCheckMurder
     [HarmonyPostfix]
     public static void Postfix()
     {
-        // Info("CmdCheckMurder");
-        NeuroPlugin.Instance.Recording.DidKill = true;
+        if (!Recorder.Instance) return;
+        Recorder.Instance.DidKill = true;
     }
 }
 
@@ -19,7 +19,7 @@ public static class PlayerControl_CmdReportDeadBody
     [HarmonyPostfix]
     public static void Postfix()
     {
-        // Info("CmdReportDeadBody");
-        NeuroPlugin.Instance.Recording.DidReport = true;
+        if (!Recorder.Instance) return;
+        Recorder.Instance.DidReport = true;
     }
 }

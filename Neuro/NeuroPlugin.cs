@@ -24,7 +24,6 @@ public partial class NeuroPlugin : BasePlugin
 
     public MovementHandler Movement { get; private set; }
     public PathfindingHandler Pathfinding { get; private set; }
-    public RecordingHandler Recording { get; private set; }
     public TasksHandler Tasks { get; private set; }
     public VisionHandler Vision { get; private set; }
 
@@ -35,10 +34,11 @@ public partial class NeuroPlugin : BasePlugin
         // TODO: Maybe reset these when a new game begins.
 
         AddComponent<DebugWindow>();
+        // AddComponent<Recorder>();
+
 
         Movement = new MovementHandler();
         Pathfinding = new PathfindingHandler();
-        Recording = AddComponent<RecordingHandler>();
         Tasks = AddComponent<TasksHandler>();
         Vision = AddComponent<VisionHandler>();
 

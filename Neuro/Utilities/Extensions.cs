@@ -28,10 +28,7 @@ public static class Extensions
     {
         foreach (object obj in collection)
         {
-            if (obj is not Il2CppObjectBase il2cppObject)
-            {
-                throw new ArgumentException("OfIl2CppType may only be used for collections of Il2Cpp objects.", nameof(collection));
-            }
+            if (obj is not Il2CppObjectBase il2cppObject) continue;
 
             T newObj = il2cppObject.TryCast<T>();
             if (newObj != null) yield return newObj;

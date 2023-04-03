@@ -8,6 +8,7 @@ public static class PlayerPhysics_RpcEnterVent
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.DidVent = true;
+        if (!Recorder.Instance) return;
+        Recorder.Instance.DidVent = true;
     }
 }

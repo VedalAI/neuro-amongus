@@ -9,9 +9,11 @@ using UnityEngine;
 namespace Neuro.Recording;
 
 [RegisterInIl2Cpp]
-public sealed class RecordingHandler : MonoBehaviour
+public sealed class Recorder : MonoBehaviour
 {
-    public RecordingHandler(IntPtr ptr) : base(ptr) { }
+    public static Recorder Instance { get; private set; }
+
+    public Recorder(IntPtr ptr) : base(ptr) { }
 
     [HideFromIl2Cpp]
     public List<Frame> Frames { get; set; } = new();
@@ -21,8 +23,22 @@ public sealed class RecordingHandler : MonoBehaviour
     public bool DidVent { get; set; }
     public bool DidKill { get; set; }
 
-    public void FixedUpdate()
+    private void Awake()
     {
+        if (Instance)
+        {
+            Warning("Tried to create an instance of InGameCursor when it already exists");
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+    }
+
+    private void FixedUpdate()
+    {
+        // TODO: Figure out how to actually do this properly
+
         if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
         if (!PlayerControl.LocalPlayer) return;
