@@ -8,7 +8,7 @@ namespace Neuro.Minigames.Completion.Solvers;
 [MinigameSolver(typeof(SwitchMinigame))]
 public sealed class FixLightsSolver : MinigameSolver<SwitchMinigame>
 {
-    public override IEnumerator CompleteMinigame(SwitchMinigame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(SwitchMinigame minigame, NormalPlayerTask task)
     {
         InGameCursor.Instance.SnapToCenter();
         SwitchSystem switchSystem = minigame.ship.Systems[SystemTypes.Electrical].TryCast<SwitchSystem>();

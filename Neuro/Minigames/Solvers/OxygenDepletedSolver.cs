@@ -9,7 +9,7 @@ namespace Neuro.Minigames.Completion.Solvers;
 [MinigameSolver(typeof(KeypadGame))]
 public sealed class OxygenDepletedSolver : MinigameSolver<KeypadGame>
 {
-    public override IEnumerator CompleteMinigame(KeypadGame minigame, NormalPlayerTask task)
+    protected override IEnumerator CompleteMinigame(KeypadGame minigame, NormalPlayerTask task)
     {
         // Important TODO: Fix this. Currently only works on one of the keypads and incorrectly marks completions
 
