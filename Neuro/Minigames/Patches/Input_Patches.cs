@@ -27,7 +27,7 @@ public static class Input_GetMouseButton_Patches
     {
         if (!ShipStatus.Instance) return;
 
-        if (button == 0 && InGameCursor.Instance.IsMouseDown)
+        if (button == 0 && InGameCursor.Instance.IsLeftButtonPressed)
         {
             __result = true;
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using BepInEx.Unity.IL2CPP.Utils;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -18,15 +17,22 @@ public sealed class InGameCursor : MonoBehaviour
     public InGameCursor(IntPtr ptr) : base(ptr) { }
 
     private SpriteRenderer _renderer;
+
     private bool _isInMovingCoroutine;
+
     private Transform _followTarget;
     private Func<bool> _followCondition;
     private float _followSpeed;
 
+    private GameObject _clickLock;
+    private Func<bool> _clickCondition;
+
+    private Func<bool> _hideCondition;
+
     public Vector2 Position => transform.position;
     public bool IsDoingContinuousMovement => _followTarget || _isInMovingCoroutine;
-    public bool IsMouseDown = false;
     public bool IsHidden => transform.position.x < -4000;
+    public bool IsLeftButtonPressed => _clickLock;
     public float DistanceToTarget => _followTarget ? (Position - (Vector2) _followTarget.position).magnitude : -1;
 
     private void Awake()
@@ -52,15 +58,29 @@ public sealed class InGameCursor : MonoBehaviour
 
     private void Update()
     {
-        if (!_followTarget) return;
-
-        float speed = _followSpeed * SPEED_MULTIPLER;
-
-        transform.position = (Vector3) Vector2.MoveTowards(Position, _followTarget.position, speed * Time.deltaTime) with {z = transform.position.z};
-
-        if (!_followCondition())
+        if (_followTarget)
         {
-            StopMovement();
+            float speed = _followSpeed * SPEED_MULTIPLER;
+
+            transform.position = (Vector3) Vector2.MoveTowards(Position, _followTarget.position, speed * Time.deltaTime) with {z = transform.position.z};
+
+            if (!_followCondition())
+            {
+                StopMovement();
+            }
+        }
+
+        if (_clickLock)
+        {
+            if (!_clickCondition())
+            {
+                StopHolding();
+            }
+        }
+
+        if (_hideCondition != null && _hideCondition())
+        {
+            Hide();
         }
     }
 
@@ -119,10 +139,18 @@ public sealed class InGameCursor : MonoBehaviour
     [HideFromIl2Cpp]
     public IEnumerator CoMoveTo(GameObject target, float speed = 1f) => CoMoveTo(target.transform.position, speed);
 
-    public void Hide() => SnapTo(new Vector2(-5000, -5000));
+    public void Hide()
+    {
+        _hideCondition = null;
+        StopHolding();
+        SnapTo(new Vector2(-5000, -5000));
+    }
 
     [HideFromIl2Cpp]
-    public void HideWhen(Func<bool> condition) => this.StartCoroutine(HideWhenCoroutine(condition));
+    public void HideWhen(Func<bool> condition)
+    {
+        _hideCondition = condition;
+    }
 
     [HideFromIl2Cpp]
     public void StartFollowing(Component target, Func<bool> whileCondition = null, float speed = 1f)
@@ -139,9 +167,17 @@ public sealed class InGameCursor : MonoBehaviour
     public void StartFollowing(GameObject target, Func<bool> whileCondition = null, float speed = 1f) => StartFollowing(target.transform, whileCondition, speed);
 
     [HideFromIl2Cpp]
-    private IEnumerator HideWhenCoroutine(Func<bool> condition)
+    public void StartHoldingLMB(GameObject @lock, Func<bool> whileCondition = null)
     {
-        while (!condition()) yield return null;
-        Hide();
+        _clickLock = @lock;
+        _clickCondition = whileCondition ?? (() => true);
+    }
+
+    [HideFromIl2Cpp]
+    public void StartHoldingLMB(Component @lock, Func<bool> whileCondition = null) => StartHoldingLMB(@lock.gameObject, whileCondition);
+
+    public void StopHolding()
+    {
+        _clickLock = null;
     }
 }
