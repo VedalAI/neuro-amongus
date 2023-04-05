@@ -1,8 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
-using Neuro.Cursor;
 
-namespace Neuro.Minigames.Patches;
+namespace Neuro.Cursor.Patches;
 
 [HarmonyPatch(typeof(Input), nameof(Input.mousePosition), MethodType.Getter)]
 public static class Input_MousePosition_Patches
