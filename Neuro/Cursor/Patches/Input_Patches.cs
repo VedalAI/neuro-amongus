@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Neuro.Cursor.Patches;
 
 [HarmonyPatch(typeof(Input), nameof(Input.mousePosition), MethodType.Getter)]
-public static class Input_MousePosition_Patches
+public static class Input_get_mousePosition
 {
     [HarmonyPostfix]
     public static void Postfix(ref Vector3 __result)
@@ -19,7 +19,7 @@ public static class Input_MousePosition_Patches
 }
 
 [HarmonyPatch(typeof(Input), nameof(Input.GetMouseButton))]
-public static class Input_GetMouseButton_Patches
+public static class Input_GetMouseButton
 {
     [HarmonyPostfix]
     public static void Postfix(ref bool __result, int button)
