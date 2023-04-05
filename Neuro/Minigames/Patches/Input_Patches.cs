@@ -7,29 +7,29 @@ namespace Neuro.Minigames.Patches;
 [HarmonyPatch(typeof(Input), nameof(Input.mousePosition), MethodType.Getter)]
 public static class Input_MousePosition_Patches
 {
-    [HarmonyPrefix]
-    public static bool Prefix(ref Vector3 __result)
+    [HarmonyPostfix]
+    public static void Postfix(ref Vector3 __result)
     {
-        if (ShipStatus.Instance && !InGameCursor.Instance.IsHidden)
+        if (!ShipStatus.Instance) return;
+
+        if (!InGameCursor.Instance.IsHidden)
         {
-            __result = Camera.main.WorldToScreenPoint(InGameCursor.Instance.Position);
-            return false;
+            __result = Camera.main!.WorldToScreenPoint(InGameCursor.Instance.Position);
         }
-        return true;
     }
 }
 
 [HarmonyPatch(typeof(Input), nameof(Input.GetMouseButton))]
 public static class Input_GetMouseButton_Patches
 {
-    [HarmonyPrefix]
-    public static bool Prefix(int button, ref bool __result)
+    [HarmonyPostfix]
+    public static void Postfix(ref bool __result, int button)
     {
-        if (button == 0 && ShipStatus.Instance && InGameCursor.Instance.IsMouseDown)
+        if (!ShipStatus.Instance) return;
+
+        if (button == 0 && InGameCursor.Instance.IsMouseDown)
         {
             __result = true;
-            return false;
         }
-        return true;
     }
 }
