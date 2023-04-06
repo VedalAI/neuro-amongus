@@ -71,7 +71,7 @@ public class ImpostorHandler : MonoBehaviour
         {
             DirectionToNearestVent = (ClosestVent.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
         }
-        
+
     }
 
     [HideFromIl2Cpp]
@@ -86,7 +86,7 @@ public class ImpostorHandler : MonoBehaviour
                 NearbyDoors.Add(door);
             }
         }
-    } 
+    }
 
     private void GetOrKillTarget(PlayerControl target = null)
     {
@@ -165,7 +165,7 @@ public class ImpostorHandler : MonoBehaviour
         }
     }
 
-    public IEnumerator Vent(Vent original)
+    public IEnumerator CoStartVentOut(Vent original)
     {
         Info("I entered a vent!");
         List<Vent> possibleVents = GetAvailableNearbyVents(original);
@@ -222,4 +222,3 @@ public class ImpostorHandler : MonoBehaviour
         goingForKill = false;
     }
 }
-

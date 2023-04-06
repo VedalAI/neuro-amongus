@@ -9,6 +9,6 @@ public static class PlayerPhysics_RpcEnterVent
     [HarmonyPostfix]
     public static void Postfix()
     {
-        PlayerControl.LocalPlayer.StartCoroutine(NeuroPlugin.Instance.Impostor.Vent(NeuroPlugin.Instance.Impostor.ClosestVent));
+        PlayerControl.LocalPlayer.StartCoroutine(NeuroPlugin.Instance.Impostor.CoStartVentOut(NeuroPlugin.Instance.Impostor.ClosestVent));
     }
 }
