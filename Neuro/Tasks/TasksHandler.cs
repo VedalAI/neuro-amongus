@@ -20,43 +20,42 @@ public sealed class TasksHandler : MonoBehaviour
     [HideFromIl2Cpp]
     public void UpdatePathToTask(PlayerTask task = null)
     {
-        if (!task) task = PlayerControl.LocalPlayer.myTasks.At(0);
+        if (!task)
+        {
+            // skip fake tasks that cannot be completed (for instance, the red text as impostor)
+            foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+            {
+                if (!t.TryCast<NormalPlayerTask>()) continue;
+                task = t;
+                break;
+            }
+        }
 
         PlayerTask nextTask;
         if (task.IsComplete)
         {
             Info("Task is complete, getting next one.");
-            PlayerTask closestTask = null;
-            float closestDistance = Mathf.Infinity;
+            PlayerTask targetTask;
 
-            foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+            // as impostor, getting the furthest task instead of the closest one is good for finding players
+            // also helps trying to do a task right next to someone we killed
+            if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
             {
-                if (!t.IsComplete && t.HasLocation)
-                {
-                    Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
-                    // Evaluate length of path
-                    float distance = 0f;
-                    for (int i = 0; i < path.Length - 1; i++)
-                    {
-                        distance += Vector2.Distance(path[i], path[i + 1]);
-                    }
-
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestTask = t;
-                    }
-                }
+                targetTask = GetFurthestTask();
+            }
+            else
+            {
+                targetTask = GetClosestTask();
             }
 
-            if (closestTask == null)
+            if (targetTask == null)
             {
                 PathIndex = -1;
                 Destroy(NeuroPlugin.Instance.Movement.Arrow);
                 return;
             }
 
-            nextTask = closestTask;
+            nextTask = targetTask;
         }
         else
         {
@@ -74,6 +73,80 @@ public sealed class TasksHandler : MonoBehaviour
     }
 
     [HideFromIl2Cpp]
+    public PlayerTask GetClosestTask()
+    {
+        PlayerTask closestTask = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+        {
+            if (!t.IsComplete && t.HasLocation)
+            {
+                Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
+                // Evaluate length of path
+                float distance = 0f;
+                for (int i = 0; i < path.Length - 1; i++)
+                {
+                    distance += Vector2.Distance(path[i], path[i + 1]);
+                }
+
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestTask = t;
+                }
+            }
+        }
+
+        return closestTask;
+    }
+
+    [HideFromIl2Cpp]
+    public PlayerTask GetFurthestTask()
+    {
+        PlayerTask furthestTask = null;
+        float furthestDistance = 0f;
+
+        foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+        {
+            if (!t.IsComplete && t.HasLocation)
+            {
+                Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
+                // Evaluate length of path
+                float distance = 0f;
+                for (int i = 0; i < path.Length - 1; i++)
+                {
+                    distance += Vector2.Distance(path[i], path[i + 1]);
+                }
+
+                if (distance > furthestDistance)
+                {
+                    furthestDistance = distance;
+                    furthestTask = t;
+                }
+            }
+        }
+
+        return furthestTask;
+    }
+
+    // TODO: Find a better place for this
+    [HideFromIl2Cpp]
+    public void UpdatePathToKillTarget()
+    {
+        NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, NeuroPlugin.Instance.Impostor.killTarget.transform.position);
+        PathIndex = 0;
+    }
+
+    // TODO: Find a better place for this
+    [HideFromIl2Cpp]
+    public void UpdatePathToVent()
+    {
+        NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, NeuroPlugin.Instance.Impostor.ClosestVent.transform.position);
+        PathIndex = 0;
+    }
+
+    [HideFromIl2Cpp]
     public IEnumerator UpdatePathToFirstTask(NormalPlayerTask initial)
     {
         CurrentPath = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
@@ -83,7 +156,13 @@ public sealed class TasksHandler : MonoBehaviour
         {
             yield return new WaitForSeconds(0.5f);
 
-            UpdatePathToTask();
+            // TODO: Possibly run multiple coroutines for each handler that deals with pathfinding. Would need a way to block each other's when necessary.
+            if (NeuroPlugin.Instance.Impostor.attemptingVent)
+                UpdatePathToVent();
+            else if (NeuroPlugin.Instance.Impostor.killTarget)
+                UpdatePathToKillTarget();
+            else
+                UpdatePathToTask();
 
             // TODO: Is this while loop purposefully infinite? If so, we should have a stop condition for example when the game ends.
         }
