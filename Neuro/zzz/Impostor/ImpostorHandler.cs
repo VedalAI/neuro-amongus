@@ -171,8 +171,7 @@ public class ImpostorHandler : MonoBehaviour
         List<Vent> possibleVents = GetAvailableNearbyVents(original);
         Vent current = possibleVents[UnityEngine.Random.RandomRangeInt(0, possibleVents.Count)];
         yield return new WaitForSeconds(UnityEngine.Random.RandomRange(0.8f, 1.2f));
-        string error;
-        if (!original.TryMoveToVent(current, out error))
+        if (!original.TryMoveToVent(current, out string error))
         {
             Error($"Failed to move to vent {current.Id}, reason: {error}");
         }

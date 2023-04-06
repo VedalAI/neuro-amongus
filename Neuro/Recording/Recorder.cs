@@ -31,7 +31,7 @@ public sealed class Recorder : MonoBehaviour
     {
         if (Instance)
         {
-            Warning("Tried to create an instance of InGameCursor when it already exists");
+            Warning("Tried to create an instance of Recorder when it already exists");
             Destroy(this);
             return;
         }
@@ -78,9 +78,7 @@ public sealed class Recorder : MonoBehaviour
 
     private void ResetFrameData()
     {
-
         DidReport = DidVent = DidKill = DidSabotage = DidDoors = false;
-        // TODO: Figure out a default value for this or make nullable!
         SabotageUsed = default;
         DoorsUsed.Clear();
     }

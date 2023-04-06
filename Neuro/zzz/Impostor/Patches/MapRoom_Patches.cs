@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Neuro.Recording;
 
 namespace Neuro.Impostor.Patches;
 
@@ -8,7 +9,7 @@ public class MapRoom_SabotageReactor
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.RecordSabotage(SystemTypes.Reactor);
+        Recorder.Instance.RecordSabotage(SystemTypes.Reactor);
     }
 }
 
@@ -18,7 +19,7 @@ public class MapRoom_SabotageComms
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.RecordSabotage(SystemTypes.Comms);
+        Recorder.Instance.RecordSabotage(SystemTypes.Comms);
     }
 }
 
@@ -28,7 +29,7 @@ public class MapRoom_SabotageLights
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.RecordSabotage(SystemTypes.Electrical);
+        Recorder.Instance.RecordSabotage(SystemTypes.Electrical);
     }
 }
 
@@ -38,7 +39,7 @@ public class MapRoom_SabotageOxygen
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.RecordSabotage(SystemTypes.LifeSupp);
+        Recorder.Instance.RecordSabotage(SystemTypes.LifeSupp);
     }
 }
 
@@ -48,7 +49,7 @@ public class MapRoom_SabotageSeismic
     [HarmonyPostfix]
     public static void Postfix()
     {
-        NeuroPlugin.Instance.Recording.RecordSabotage(SystemTypes.Laboratory);
+        Recorder.Instance.RecordSabotage(SystemTypes.Laboratory);
     }
 }
 
@@ -58,7 +59,6 @@ public class MapRoom_SabotageDoors
     [HarmonyPostfix]
     public static void Postfix(MapRoom __instance)
     {
-        NeuroPlugin.Instance.Recording.RecordDoors(__instance.room);
+        Recorder.Instance.RecordDoors(__instance.room);
     }
 }
-

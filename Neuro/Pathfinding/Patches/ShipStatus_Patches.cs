@@ -6,8 +6,8 @@ namespace Neuro.Pathfinding.Patches;
 public static class ShipStatus_Awake
 {
     [HarmonyPostfix]
-    public static void Postfix()
+    public static void Postfix(ShipStatus __instance)
     {
-        NeuroPlugin.Instance.Pathfinding.Initialize();
+        __instance.gameObject.AddComponent<PathfindingHandler>();
     }
 }

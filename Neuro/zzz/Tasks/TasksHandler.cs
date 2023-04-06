@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Il2CppInterop.Runtime.Attributes;
+using Neuro.Pathfinding;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -65,7 +66,7 @@ public sealed class TasksHandler : MonoBehaviour
         if (nextTask != null)
         {
             // Info("Next task isn't null");
-            CurrentPath = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
+            CurrentPath = PathfindingHandler.Instance.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
             PathIndex = 0;
 
             //pathfinding.DrawPath(currentPath);
@@ -82,7 +83,7 @@ public sealed class TasksHandler : MonoBehaviour
         {
             if (!t.IsComplete && t.HasLocation)
             {
-                Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
+                Vector2[] path = PathfindingHandler.Instance.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
                 // Evaluate length of path
                 float distance = 0f;
                 for (int i = 0; i < path.Length - 1; i++)
@@ -111,7 +112,7 @@ public sealed class TasksHandler : MonoBehaviour
         {
             if (!t.IsComplete && t.HasLocation)
             {
-                Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
+                Vector2[] path = PathfindingHandler.Instance.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
                 // Evaluate length of path
                 float distance = 0f;
                 for (int i = 0; i < path.Length - 1; i++)
@@ -134,7 +135,7 @@ public sealed class TasksHandler : MonoBehaviour
     [HideFromIl2Cpp]
     public void UpdatePathToKillTarget()
     {
-        NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, NeuroPlugin.Instance.Impostor.killTarget.transform.position);
+        PathfindingHandler.Instance.FindPath(PlayerControl.LocalPlayer.transform.position, NeuroPlugin.Instance.Impostor.killTarget.transform.position);
         PathIndex = 0;
     }
 
@@ -142,14 +143,14 @@ public sealed class TasksHandler : MonoBehaviour
     [HideFromIl2Cpp]
     public void UpdatePathToVent()
     {
-        NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, NeuroPlugin.Instance.Impostor.ClosestVent.transform.position);
+        PathfindingHandler.Instance.FindPath(PlayerControl.LocalPlayer.transform.position, NeuroPlugin.Instance.Impostor.ClosestVent.transform.position);
         PathIndex = 0;
     }
 
     [HideFromIl2Cpp]
     public IEnumerator UpdatePathToFirstTask(NormalPlayerTask initial)
     {
-        CurrentPath = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
+        CurrentPath = PathfindingHandler.Instance.FindPath(PlayerControl.LocalPlayer.transform.position, initial.Locations.At(0));
         PathIndex = 0;
 
         while (true)
