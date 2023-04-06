@@ -8,13 +8,18 @@ public record Frame(
     MyVector2 DirectionToNearestTask,
     bool IsEmergencyTask,
     MyVector2 DirectionToNearestVent,
+    List<Vent> NearbyVents,
     MyVector2 DirectionToNearestBody,
     bool CanReport,
     Dictionary<byte, PlayerRecord> PlayerRecords,
     MyVector2 Direction,
     bool Report,
     bool Vent,
+    bool InVent,
     bool Kill,
     bool Sabotage,
-    bool Doors
+    SystemTypes SabotageUsed,
+    bool Doors,
+    List<PlainDoor> NearbyDoors,
+    List<PlainDoor> DoorsUsed
 );

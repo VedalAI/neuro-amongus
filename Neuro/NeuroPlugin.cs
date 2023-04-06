@@ -10,6 +10,7 @@ using Neuro.Recording;
 using Neuro.Tasks;
 using Neuro.Utilities;
 using Neuro.Vision;
+using Neuro.Impostor;
 using Reactor;
 using Reactor.Utilities;
 
@@ -26,6 +27,7 @@ public partial class NeuroPlugin : BasePlugin
     public PathfindingHandler Pathfinding { get; private set; }
     public TasksHandler Tasks { get; private set; }
     public VisionHandler Vision { get; private set; }
+    public ImpostorHandler Impostor { get; private set; }
 
     public override void Load()
     {
@@ -41,6 +43,7 @@ public partial class NeuroPlugin : BasePlugin
         Pathfinding = new PathfindingHandler();
         Tasks = AddComponent<TasksHandler>();
         Vision = AddComponent<VisionHandler>();
+        Impostor = AddComponent<ImpostorHandler>();
 
         ResourceManager.CacheSprite("Cursor", 130);
     }

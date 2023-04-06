@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
+using BepInEx.Unity.IL2CPP.Utils;
 
-namespace Neuro.Recording.Patches;
+namespace Neuro.Impostor.Patches;
 
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.RpcEnterVent))]
 public static class PlayerPhysics_RpcEnterVent
@@ -8,9 +9,6 @@ public static class PlayerPhysics_RpcEnterVent
     [HarmonyPostfix]
     public static void Postfix()
     {
-        if (!Recorder.Instance) return;
-        Recorder.Instance.DidVent = true;
+        PlayerControl.LocalPlayer.StartCoroutine(NeuroPlugin.Instance.Impostor.CoStartVentOut(NeuroPlugin.Instance.Impostor.ClosestVent));
     }
 }
-
-// TODO: Consider exiting a vent as venting

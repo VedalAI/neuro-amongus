@@ -24,12 +24,14 @@ public sealed class VisionHandler : MonoBehaviour
     // TODO: Handle players disconnecting
     private readonly List<DeadBody> _deadBodies = new();
     private readonly Dictionary<PlayerControl, LastSeenPlayer> _playerLocations = new(Il2CppEqualityComparer<PlayerControl>.Instance);
+    public IReadOnlyDictionary<PlayerControl, LastSeenPlayer> PlayerLocations => _playerLocations;
 
     private float roundStartTime; // in seconds
 
     public void FixedUpdate()
     {
         if (!ShipStatus.Instance) return;
+        if (!PlayerControl.LocalPlayer) return;
         if (MeetingHud.Instance) return;
         // TODO: if (Minigame.Instance) return;
 
@@ -157,8 +159,8 @@ public sealed class VisionHandler : MonoBehaviour
 
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
+            
             PlayerRecords[playerControl] = new PlayerRecord();
-
             if (PlayerControl.LocalPlayer == playerControl) continue;
 
             if (playerControl.Data.IsDead) continue;
