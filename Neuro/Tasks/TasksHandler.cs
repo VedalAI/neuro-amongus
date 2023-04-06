@@ -178,7 +178,10 @@ public sealed class TasksHandler : MonoBehaviour
         {
             if (task.IsComplete || task.Locations == null) continue;
 
-            // TODO: Invoke Console.Use directly and check if we can open it before trying
+            // TODO: HOLY FUCK DON'T UNCOMMENT THIS THIS IS BROKEN AF
+            // INVOKE CONSOLE.USE DIRECTLY PLEEEEEEASE
+
+            /*// TODO: Invoke Console.Use directly and check if we can open it before trying
             foreach (Vector2 location in task.Locations)
             {
                 if (Vector2.Distance(location, PlayerControl.LocalPlayer.transform.position) < 0.8f)
@@ -192,7 +195,7 @@ public sealed class TasksHandler : MonoBehaviour
                         minigame.Begin(task);
                     }
                 }
-            }
+            }*/
         }
     }
 }
