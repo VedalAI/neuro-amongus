@@ -27,7 +27,7 @@ public class ChartCourseSolver : MinigameSolver<CourseMinigame>
                 yield break;
             }
             yield return InGameCursor.Instance.CoMoveTo(worldPos, 0.33f);
-            yield return new WaitForSeconds(0.1f);
+            yield return Sleep(0.1f);
         }
     }
 }
