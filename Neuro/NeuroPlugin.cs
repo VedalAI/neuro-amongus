@@ -10,6 +10,7 @@ using Neuro.Tasks;
 using Neuro.Utilities;
 using Neuro.Vision;
 using Neuro.Impostor;
+using Neuro.Communcation;
 using Reactor;
 using Reactor.Utilities;
 
