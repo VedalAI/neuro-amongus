@@ -11,8 +11,6 @@ namespace Neuro.Cursor;
 [RegisterInIl2Cpp]
 public sealed class InGameCursor : MonoBehaviour
 {
-    public const float SPEED_MULTIPLER = 15;
-
     public static InGameCursor Instance { get; private set; }
 
     public InGameCursor(IntPtr ptr) : base(ptr) { }
@@ -61,7 +59,7 @@ public sealed class InGameCursor : MonoBehaviour
     {
         if (_followTarget)
         {
-            float speed = _followSpeed * SPEED_MULTIPLER;
+            float speed = _followSpeed * 15;
 
             transform.position = (Vector3) Vector2.MoveTowards(Position, _followTarget.position, speed * Time.deltaTime) with {z = transform.position.z};
 
@@ -106,7 +104,7 @@ public sealed class InGameCursor : MonoBehaviour
     {
         StopMovement();
 
-        speed *= SPEED_MULTIPLER;
+        speed *= 15; // Do not change this, it will break some tasks like Swipe Card
 
         // if (IsHidden)
         // {

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -15,9 +16,8 @@ public sealed class PrimeShieldsSolver : MinigameSolver<ShieldMinigame>
             {
                 yield return InGameCursor.Instance.CoMoveTo(minigame.Shields[i].transform.position);
                 minigame.ToggleShield(i);
-                yield return Sleep(0.1f);
+                yield return new WaitForSeconds(0.1f);
             }
         }
     }
 }
-

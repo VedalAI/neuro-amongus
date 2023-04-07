@@ -15,8 +15,7 @@ public sealed class RecordTemperatureSolver : MinigameSolver<TempMinigame>
         do
         {
             minigame.ChangeNumber(direction);
-            yield return Sleep(0.1f);
+            yield return new WaitForSeconds(0.1f);
         } while (minigame.logValue != minigame.readingValue);
     }
 }
-

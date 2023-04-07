@@ -25,7 +25,7 @@ public sealed class FixLightsSolver : TasklessMinigameSolver<SwitchMinigame>
 
             yield return InGameCursor.Instance.CoMoveTo(minigame.switches[firstIndex]);
             minigame.FlipSwitch(firstIndex);
-            yield return Sleep(0.1f);
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }

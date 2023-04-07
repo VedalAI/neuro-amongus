@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -9,8 +10,6 @@ public sealed class OxygenDepletedSolver : TasklessMinigameSolver<KeypadGame>
 {
     protected override IEnumerator CompleteMinigame(KeypadGame minigame)
     {
-        // Important TODO: Fix this. Currently only works on one of the keypads and incorrectly marks completions
-
         int[] numbers = Array.ConvertAll(minigame.oxyTask.targetNumber.ToString().ToCharArray(), x => (int)char.GetNumericValue(x));
         UiElement[] buttons = minigame.ControllerSelectable.ToArray();
         foreach (int number in numbers)
@@ -21,7 +20,7 @@ public sealed class OxygenDepletedSolver : TasklessMinigameSolver<KeypadGame>
             else
                 yield return InGameCursor.Instance.CoMoveTo(buttons[number - 1]);
             minigame.ClickNumber(number);
-            yield return Sleep(0.2f);
+            yield return new WaitForSeconds(0.2f);
         }
         yield return InGameCursor.Instance.CoMoveTo(minigame.AcceptButton);
         minigame.Enter();

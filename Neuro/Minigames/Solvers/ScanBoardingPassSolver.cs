@@ -16,7 +16,7 @@ public sealed class ScanBoardingPassSolver : MinigameSolver<BoardPassGame>
         yield return InGameCursor.Instance.CoMoveTo(minigame.pass);
         InGameCursor.Instance.StartFollowing(minigame.pass);
 
-        yield return Sleep(0.1f);
+        yield return new WaitForSeconds(0.1f);
 
         Vector3 originalPosition = minigame.pass.transform.localPosition;
         for (float t = 0; t < 0.2f; t += Time.deltaTime)

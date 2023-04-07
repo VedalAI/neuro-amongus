@@ -30,7 +30,7 @@ public sealed class MinigameDebugTab : DebugTab
         {
             StringBuilder builder = new();
             task.AppendTaskText(builder);
-            if (GUILayout.Button(builder.ToString()))
+            if (GUILayout.Button(builder.ToString().Replace("</color>", "").Trim()))
             {
                 Console console = ShipStatus.Instance.AllConsoles.First(task.ValidConsole);
 
