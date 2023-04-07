@@ -33,57 +33,9 @@ public class ImpostorHandler : MonoBehaviour
         // TODO: Move UpdateNearbyDoors when implementing maps with doors that non-impostors can use
         if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
         {
-            UpdateNearbyVents();
-            UpdateNearbyDoors();
+
             // GetOrKillTarget();
             // AttemptVent();
-        }
-    }
-
-    [HideFromIl2Cpp]
-    private void UpdateNearbyVents()
-    {
-        Vent closest = null;
-        float closestDistance = 999f;
-        NearbyVents.Clear();
-        foreach (Vent vent in ShipStatus.Instance.AllVents)
-        {
-            float distance = Vector2.Distance(vent.transform.position, PlayerControl.LocalPlayer.transform.position);
-            if (distance < 10f)
-            {
-                NearbyVents.Add(vent);
-                // also take the opportunity to get the closest vent
-                if (distance < closestDistance)
-                {
-                    closest = vent;
-                    closestDistance = distance;
-                }
-            }
-        }
-        ClosestVent = closest;
-
-        if (ClosestVent == null)
-        {
-            DirectionToNearestVent = Vector2.zero;
-        }
-        else
-        {
-            DirectionToNearestVent = (ClosestVent.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
-        }
-
-    }
-
-    [HideFromIl2Cpp]
-    private void UpdateNearbyDoors()
-    {
-        NearbyDoors.Clear();
-        foreach (PlainDoor door in ShipStatus.Instance.AllDoors)
-        {
-            float distance = Vector2.Distance(door.transform.position, PlayerControl.LocalPlayer.transform.position);
-            if (distance < 10f)
-            {
-                NearbyDoors.Add(door);
-            }
         }
     }
 
