@@ -31,6 +31,8 @@ public sealed class CommunicationHandler : MonoBehaviour
         if (MeetingHud.Instance) return;
         if (Minigame.Instance) return;
         if (!PlayerControl.LocalPlayer) return;
+        // TODO: maybe warn if we aren't connected, but this is just to save my console
+        if (!socket.Connected) return;
 
         if (socket.Available > 0)
         {
