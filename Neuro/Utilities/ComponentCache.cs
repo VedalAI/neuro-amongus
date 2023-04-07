@@ -9,17 +9,12 @@ namespace Neuro.Utilities;
 /// <typeparam name="T"></typeparam>
 public static class ComponentCache<T> where T : Component
 {
-    public static UnstableList<T> Cached { get; } = new();
+    public static SelfUnstableList<T> Cached { get; } = new();
 
-    public static UnstableList<T> FindObjects()
+    public static SelfUnstableList<T> FetchObjects()
     {
         Cached.Clear();
-
-        foreach (T comp in GameObject.FindObjectsOfType<T>(true))
-        {
-            Cached.Add(comp, comp);
-        }
-
+        Cached.AddRange(GameObject.FindObjectsOfType<T>(true));
         return Cached;
     }
 }

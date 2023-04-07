@@ -72,6 +72,11 @@ public class UnstableDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue
         return _list.RemoveFirst(item => _equalityComparer.Equals(key, item.key));
     }
 
+    public void Clear()
+    {
+        _list.Clear();
+    }
+
     public bool ContainsKey(TKey key)
     {
         foreach ((TKey otherKey, _) in _list)

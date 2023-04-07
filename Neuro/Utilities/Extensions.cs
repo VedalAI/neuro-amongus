@@ -34,4 +34,9 @@ public static class Extensions
             if (newObj != null) yield return newObj;
         }
     }
+
+    public static bool IsPlayingExitVentAnimation(this PlayerAnimations animations)
+    {
+        return animations.Animator.GetCurrentAnimation() == animations.group.ExitVentAnim;
+    }
 }

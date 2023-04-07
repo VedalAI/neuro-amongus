@@ -23,7 +23,6 @@ public partial class NeuroPlugin : BasePlugin
 
     public MovementHandler Movement { get; private set; }
     public TasksHandler Tasks { get; private set; }
-    public VisionHandler Vision { get; private set; }
     public ImpostorHandler Impostor { get; private set; }
 
     public override void Load()
@@ -35,10 +34,8 @@ public partial class NeuroPlugin : BasePlugin
         AddComponent<DebugWindow>();
         // AddComponent<Recorder>();
 
-
         Movement = new MovementHandler();
         Tasks = AddComponent<TasksHandler>();
-        Vision = AddComponent<VisionHandler>();
         Impostor = AddComponent<ImpostorHandler>();
 
         ResourceManager.CacheSprite("Cursor", 130);

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Recording.DataStructures;
-using Neuro.Vision.DataStructures;
 using Reactor.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -11,7 +10,7 @@ using UnityEngine;
 namespace Neuro.Vision;
 
 [RegisterInIl2Cpp]
-public sealed class VisionHandler : MonoBehaviour
+public sealed class OldVisionHandler : MonoBehaviour
 {
     public VisionHandler(IntPtr ptr) : base(ptr) { }
 
@@ -28,17 +27,6 @@ public sealed class VisionHandler : MonoBehaviour
 
     private float roundStartTime; // in seconds
 
-    public void FixedUpdate()
-    {
-        if (!ShipStatus.Instance) return;
-        if (!PlayerControl.LocalPlayer) return;
-        if (MeetingHud.Instance) return;
-        // TODO: if (Minigame.Instance) return;
-
-        UpdateDeadBodiesVision();
-        UpdateNearbyPlayersVision();
-    }
-
     public void StartTrackingPlayer(PlayerControl player)
     {
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
@@ -48,14 +36,6 @@ public sealed class VisionHandler : MonoBehaviour
         }
 
         Info("Updating playerControls");
-    }
-
-    public void AddDeadBody(DeadBody body)
-    {
-        if (_deadBodies.Any(b => b.ParentId == body.ParentId)) return;
-
-        Info($"{GameData.Instance.GetPlayerById(body.ParentId).PlayerName} has been killed");
-        _deadBodies.Add(body);
     }
 
     public void ReportFindings()
@@ -101,159 +81,5 @@ public sealed class VisionHandler : MonoBehaviour
             if (player.AmOwner || lastSeen.location == "") continue;
             lastSeen.roundTimeVisible = 0f;
         }
-
-        _deadBodies.Clear();
-    }
-
-    private void UpdateDeadBodiesVision() // TODO: Refactor
-    {
-        DirectionToNearestBody = Vector2.zero;
-        float nearestBodyDistance = Mathf.Infinity;
-        Vector2 localPlayerTruePosition = PlayerControl.LocalPlayer.GetTruePosition();
-
-        // TODO: This logic is probably incorrect
-        foreach (DeadBody deadBody in _deadBodies)
-        {
-            float distance = Vector2.Distance(deadBody.transform.position, PlayerControl.LocalPlayer.transform.position);
-            if (distance < nearestBodyDistance)
-            {
-                nearestBodyDistance = distance;
-                DirectionToNearestBody = (deadBody.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
-            }
-
-            if (!IsVisible(localPlayerTruePosition, deadBody.TruePosition))
-            {
-                continue;
-            }
-
-            if (distance < 3f)
-            {
-                PlayerControl playerControl = GameData.Instance.GetPlayerById(deadBody.ParentId).Object;
-                _playerLocations[playerControl].location = GetLocationFromPosition(playerControl.transform.position);
-                if (!_playerLocations[playerControl].dead)
-                {
-                    _playerLocations[playerControl].time = Time.timeSinceLevelLoad;
-                    List<PlayerControl> witnesses = new();
-                    foreach (PlayerControl potentialWitness in PlayerControl.AllPlayerControls)
-                    {
-                        if (PlayerControl.LocalPlayer == potentialWitness) continue;
-
-                        if (potentialWitness.inVent || potentialWitness.Data.IsDead) continue;
-
-                        if (Vector2.Distance(potentialWitness.transform.position, deadBody.transform.position) < 3f) witnesses.Add(potentialWitness);
-                    }
-
-                    _playerLocations[playerControl].witnesses = witnesses.ToArray();
-                }
-
-                _playerLocations[playerControl].dead = true;
-
-                Info(playerControl.name + " is dead in " + GetLocationFromPosition(playerControl.transform.position));
-            }
-        }
-    }
-
-    private void UpdateNearbyPlayersVision() // TODO: Refactor
-    {
-        Vector2 localPlayerTruePosition = PlayerControl.LocalPlayer.GetTruePosition();
-
-        foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
-        {
-            
-            PlayerRecords[playerControl] = new PlayerRecord();
-            if (PlayerControl.LocalPlayer == playerControl) continue;
-
-            if (playerControl.Data.IsDead) continue;
-
-            // Watch for players venting right in front of us
-            if (playerControl.inVent)
-            {
-                // Check the last place we saw the player
-                LastSeenPlayer previousSighting = _playerLocations[playerControl];
-
-                // If we were able to see them during our last update (~30 ms ago), and now they're in a vent, we must have seen them enter the vent
-                if (previousSighting.time > Time.timeSinceLevelLoad - 2 * Time.fixedDeltaTime)
-                {
-                    previousSighting.sawVent = true; // Remember that we saw this player vent
-                    Info(playerControl.name + " vented right in front of me!");
-                }
-
-                continue; // Do not consider players in vents as recently seen
-            }
-
-            Vector3 otherPlayerPosition = playerControl.transform.position;
-            if (Vector2.Distance(otherPlayerPosition, PlayerControl.LocalPlayer.transform.position) < 5f)
-            {
-                var otherPlayerTruePosition = playerControl.GetTruePosition();
-                if (IsVisible(localPlayerTruePosition, otherPlayerTruePosition))
-                {
-                    LastSeenPlayer lastSeenPlayer = _playerLocations[playerControl];
-                    lastSeenPlayer.location = GetLocationFromPosition(otherPlayerPosition);
-                    lastSeenPlayer.time = Time.timeSinceLevelLoad;
-                    lastSeenPlayer.dead = false;
-                    lastSeenPlayer.gameTimeVisible += Time.fixedDeltaTime; // Keep track of total time we've been able to see this player
-                    lastSeenPlayer.roundTimeVisible += Time.fixedDeltaTime; // Keep track of time this round we've been able to see this player
-
-                    Vector2 vectorToPlayer = otherPlayerTruePosition - localPlayerTruePosition;
-                    PlayerRecords[playerControl] = new PlayerRecord(vectorToPlayer.magnitude, vectorToPlayer.normalized);
-
-                    Info(playerControl.name + " is in " + GetLocationFromPosition(otherPlayerPosition));
-                }
-                else
-                {
-                    Info($"{playerControl.Data.PlayerName} is close, but out of sight");
-                }
-            }
-        }
-    }
-
-    private static bool IsVisible(Vector2 rayStart, Vector2 rayEnd)
-    {
-        // Raycasting
-        // If raycast hits shadow, this usually means that player is not visible
-        // So check that there is no shadow
-        int layerShadow = LayerMask.GetMask("Shadow");
-        Vector2 ray = rayEnd - rayStart;
-        RaycastHit2D hit = Physics2D.Raycast(rayStart, ray.normalized, ray.magnitude, layerShadow);
-        return !hit;
-    }
-
-    private static string GetLocationFromPosition(Vector2 position)
-    {
-        float closestDistance = Mathf.Infinity;
-        PlainShipRoom closestLocation = null;
-        string nearPrefix = "outside near "; // If we're not in any rooms/hallways, we're "outside"
-
-        if (!ShipStatus.Instance) // In case this is called from the lobby
-            return "the lobby";
-
-        foreach (PlainShipRoom room in ShipStatus.Instance.AllRooms)
-        {
-            Collider2D collider = room.roomArea;
-            if (collider && collider.OverlapPoint(position))
-            {
-                if (room.RoomId == SystemTypes.Hallway)
-                    nearPrefix = "a hallway near "; // keep looking for the nearest room
-                else
-                    return TranslationController.Instance.GetString(room.RoomId); // If we're inside a proper room, ignore the nearPrefix
-            }
-            else if (room.RoomId != SystemTypes.Hallway)
-            {
-                float distance = collider
-                    ? Vector2.Distance(position, collider.ClosestPoint(position))
-                    : Mathf.Infinity;
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestLocation = room;
-                }
-            }
-        }
-
-        if (!closestLocation)
-            return "";
-
-        // We're not in an actual room, so say which room we're nearest to
-        return nearPrefix + TranslationController.Instance.GetString(closestLocation.RoomId);
     }
 }
