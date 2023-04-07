@@ -59,6 +59,13 @@ public sealed class Recorder : MonoBehaviour
         if (_fixedUpdateCalls < 9) return;
         _fixedUpdateCalls = 0;
 
+        // For each task, give the relative direction to nearest node plus total distance
+        // TODO: Record all of the tasks
+        // TODO: Record 11th task as emergency
+        // TODO: Record fellow impostors
+        // TODO: Record localplayer velocity
+        // TODO: Raycast for obstacles
+
         // Record values
         Frame frame = new(
             PlayerControl.LocalPlayer.Data.Role.IsImpostor,
