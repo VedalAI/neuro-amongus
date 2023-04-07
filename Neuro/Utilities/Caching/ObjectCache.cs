@@ -1,43 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-namespace Neuro.Utilities;
+namespace Neuro.Utilities.Caching;
 
-/// <summary>
-/// Caches all components of type T in the scene (including disabled ones)
-/// </summary>
-/// <typeparam name="T"></typeparam>
-public sealed class ComponentCache<T> : IList<T>, IList, IReadOnlyList<T> where T : Component
+public abstract class ObjectCache<T> : IList<T>, IList, IReadOnlyList<T>
 {
-    public static ComponentCache<T> Cached { get; } = new();
+    protected readonly List<T> _list = new();
 
-    public static ComponentCache<T> FindObjects()
-    {
-        Cached._list.Clear();
-        Cached._list.AddRange(GameObject.FindObjectsOfType<T>(true));
-        return Cached;
-    }
-
-    private void CleanupList()
-    {
-        for (int i = _list.Count - 1; i >= 0; i--)
-        {
-            if (!_list[i])
-            {
-                _list.RemoveAt(i);
-            }
-        }
-    }
+    protected abstract void CleanupList();
 
     #region Interface implementation
-
-    private readonly List<T> _list = new();
-
-    private ComponentCache()
-    {
-    }
 
     public int Count
     {
