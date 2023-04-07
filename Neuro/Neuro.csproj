@@ -27,6 +27,18 @@
     <ItemGroup>
         <EmbeddedResource Include="**\Resources\**" />
         <EmbeddedResource Remove="**\Resources\**\*.manifest" />
+        <EmbeddedResource Remove="zzz\**" />
+        <EmbeddedResource Remove="Map\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="zzz\**" />
+      <Compile Remove="Map\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="zzz\**" />
+      <None Remove="Map\**" />
     </ItemGroup>
 
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

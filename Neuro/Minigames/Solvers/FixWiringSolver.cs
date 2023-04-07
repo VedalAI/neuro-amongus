@@ -17,7 +17,7 @@ public sealed class FixWiringSolver : MinigameSolver<WireMinigame>
 
             WireNode right = minigame.RightNodes.First(x => x.WireId == minigame.ExpectedWires[i]);
             yield return InGameCursor.Instance.CoMoveTo(right);
-            InGameCursor.Instance.StopHolding();
+            InGameCursor.Instance.StopHoldingLMB();
         }
     }
 }

@@ -75,7 +75,7 @@ public sealed class InGameCursor : MonoBehaviour
         {
             if (!_clickCondition())
             {
-                StopHolding();
+                StopHoldingLMB();
             }
         }
 
@@ -143,7 +143,7 @@ public sealed class InGameCursor : MonoBehaviour
     public void Hide()
     {
         _hideCondition = null;
-        StopHolding();
+        StopHoldingLMB();
         SnapTo(new Vector2(-5000, -5000));
     }
 
@@ -177,7 +177,16 @@ public sealed class InGameCursor : MonoBehaviour
     [HideFromIl2Cpp]
     public void StartHoldingLMB(Component @lock, Func<bool> whileCondition = null) => StartHoldingLMB(@lock.gameObject, whileCondition);
 
-    public void StopHolding()
+    [HideFromIl2Cpp]
+    public IEnumerator CoPressLMB()
+    {
+        StartHoldingLMB(HudManager.Instance);
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
+        StopHoldingLMB();
+    }
+
+    public void StopHoldingLMB()
     {
         _clickLock = null;
     }

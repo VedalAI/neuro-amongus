@@ -13,7 +13,7 @@ namespace Neuro.Pathfinding;
 [RegisterInIl2Cpp]
 public sealed class PathfindingHandler : MonoBehaviour
 {
-    private const float GRID_DENSITY = 6f; // TODO: Fine-tune individual maps to optimize performance
+    private const float GRID_DENSITY = 5f; // TODO: Fine-tune individual maps to optimize performance
     private const int GRID_BASE_WIDTH = 100;
 
     private const int GRID_SIZE = (int)(GRID_BASE_WIDTH * GRID_DENSITY);
@@ -26,7 +26,7 @@ public sealed class PathfindingHandler : MonoBehaviour
     {
     }
 
-    private Node[,] grid;
+    private Node[,] _grid;
 
     private void Awake()
     {
@@ -46,7 +46,7 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     private void GenerateNodeGrid()
     {
-        grid = new Node[GRID_SIZE, GRID_SIZE];
+        _grid = new Node[GRID_SIZE, GRID_SIZE];
 
         const float NODE_RADIUS = 1 / GRID_DENSITY;
 
@@ -65,7 +65,7 @@ public sealed class PathfindingHandler : MonoBehaviour
             // TODO: Add edge case for Airship ladders
 
             bool accessible = validColsCount == 0;
-            grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
+            _grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
         }
     }
 
@@ -154,7 +154,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         }
 
         // Set all nodes not in closed set to inaccessible
-        foreach (Node node in grid)
+        foreach (Node node in _grid)
         {
             if (!closedSet.Contains(node)) node.accessible = false;
         }
@@ -169,7 +169,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         int xIndex = Mathf.RoundToInt(clampedX + GRID_UPPER_BOUNDS);
         int yIndex = Mathf.RoundToInt(clampedY + GRID_UPPER_BOUNDS);
 
-        return grid[xIndex, yIndex];
+        return _grid[xIndex, yIndex];
     }
 
     private Node FindClosestNode(Vector2 position)
@@ -226,7 +226,7 @@ public sealed class PathfindingHandler : MonoBehaviour
             int checkX = node.gridX + x;
             int checkY = node.gridY + y;
 
-            if (checkX is >= 0 and < GRID_SIZE && checkY is >= 0 and < GRID_SIZE) neighbours.Add(grid[checkX, checkY]);
+            if (checkX is >= 0 and < GRID_SIZE && checkY is >= 0 and < GRID_SIZE) neighbours.Add(_grid[checkX, checkY]);
         }
 
         return neighbours;
@@ -253,7 +253,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         int dstX = Mathf.Abs(a.gridX - b.gridX);
         int dstY = Mathf.Abs(a.gridY - b.gridY);
 
-        return 14 * dstY + 10 * Math.Abs(dstX - dstY); // TODO: 14 magic number?
+        return 14 * dstY + 10 * Math.Abs(dstX - dstY);
     }
 
     [EventHandler(EventTypes.GameStarted)]

@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Neuro.Vision.DeadBodies;
 
 namespace Neuro.Events.Patches;
 
