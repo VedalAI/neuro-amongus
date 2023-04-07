@@ -31,7 +31,6 @@
 
     <ItemGroup>
       <Folder Include="zzz" />
-      <Folder Include="zzz\Vision\DataStructures\" />
     </ItemGroup>
 
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

@@ -38,7 +38,7 @@ public sealed class PlayerControlVisionHandler : MonoBehaviour
 
             if (!Data.TryGetValue(playerControl, out PlayerControlVisionData visionData))
             {
-                visionData = Data[playerControl] = playerControl.gameObject.AddComponent<PlayerControlVisionData>();
+                visionData = Data[playerControl] = PlayerControlVisionData.Create();
             }
 
             visionData.UpdateVisible(playerControl);
@@ -47,6 +47,9 @@ public sealed class PlayerControlVisionHandler : MonoBehaviour
 
     public void ResetAfterMeeting()
     {
-        Data.Clear();
+        foreach (PlayerControlVisionData visionData in Data.Values)
+        {
+            visionData.ResetAfterMeeting();
+        }
     }
 }

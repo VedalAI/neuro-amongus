@@ -1,10 +1,9 @@
-﻿using System;
-using Neuro.Utilities;
-using Reactor.Utilities.Attributes;
+﻿using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Vision.Players;
 
+// TODO: ReportFindings was removed
 public sealed class PlayerControlVisionData
 {
     public Vector2 LastSeenPosition { get; private set; }
@@ -17,10 +16,9 @@ public sealed class PlayerControlVisionData
     {
     }
 
-    public static PlayerControlVisionData Create(PlayerControl owner)
+    public static PlayerControlVisionData Create()
     {
-        PlayerControlVisionData data = new();
-        return data;
+        return new PlayerControlVisionData();
     }
 
     public void UpdateVisible(PlayerControl owner)
