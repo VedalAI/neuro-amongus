@@ -4,29 +4,25 @@ using System.Collections.Generic;
 using System.Linq;
 using Object = UnityEngine.Object;
 
-namespace Neuro.Utilities;
+namespace Neuro.Utilities.Collections;
 
-public sealed class UnstableSet<T> : IReadOnlyCollection<T>
+public class UnstableList<T> : IReadOnlyList<T>
 {
     private readonly List<(Object anchor, T item)> _list = new();
-    private readonly IEqualityComparer<T> _equalityComparer;
 
-    public UnstableSet()
+    public int Count
     {
-        _equalityComparer = EqualityComparer<T>.Default;
+        get
+        {
+            CleanupList();
+            return _list.Count;
+        }
     }
-
-    public UnstableSet(IEqualityComparer<T> equalityComparer)
-    {
-        _equalityComparer = equalityComparer;
-    }
-
-    public int Count => _list.Count;
 
     public void Add(Object anchor, T item)
     {
         _list.Add((anchor, item));
-        CleanupSet();
+        CleanupList();
     }
 
     public void Clear()
@@ -34,13 +30,13 @@ public sealed class UnstableSet<T> : IReadOnlyCollection<T>
         _list.Clear();
     }
 
-    public bool Contains(T item)
+    public bool Contains(T item, IEqualityComparer<T> equalityComparer)
     {
-        CleanupSet();
+        CleanupList();
 
         foreach ((_, T otherItem) in _list)
         {
-            if (_equalityComparer.Equals(item, otherItem))
+            if (equalityComparer.Equals(item, otherItem))
             {
                 return true;
             }
@@ -49,14 +45,20 @@ public sealed class UnstableSet<T> : IReadOnlyCollection<T>
         return false;
     }
 
-    public bool Remove(T item)
+    public bool Contains(T item) => Contains(item, EqualityComparer<T>.Default);
+
+    public bool Remove(T item, IEqualityComparer<T> equalityComparer) => RemoveFirst(otherItem => equalityComparer.Equals(item, otherItem));
+
+    public bool Remove(T item) => Remove(item, EqualityComparer<T>.Default);
+
+    public bool RemoveFirst(Predicate<T> match)
     {
-        CleanupSet();
+        CleanupList();
 
         for (int i = 0; i < _list.Count; i++)
         {
             (_, T otherItem) = _list[i];
-            if (_equalityComparer.Equals(item, otherItem))
+            if (match(otherItem))
             {
                 _list.RemoveAt(i);
                 return true;
@@ -67,18 +69,19 @@ public sealed class UnstableSet<T> : IReadOnlyCollection<T>
 
     public int RemoveAll(Predicate<T> match)
     {
-        CleanupSet();
+        CleanupList();
         return _list.RemoveAll(t => match(t.item));
     }
 
     public T[] ToArray()
     {
+        CleanupList();
         return _list.Select(t => t.item).ToArray();
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-        CleanupSet();
+        CleanupList();
 
         foreach ((_, T item) in _list)
         {
@@ -88,7 +91,9 @@ public sealed class UnstableSet<T> : IReadOnlyCollection<T>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    private void CleanupSet()
+    T IReadOnlyList<T>.this[int index] => throw new NotSupportedException();
+
+    private void CleanupList()
     {
         for (int i = _list.Count - 1; i >= 0; i--)
         {

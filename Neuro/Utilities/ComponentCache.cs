@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Neuro.Utilities.Collections;
+using UnityEngine;
 
 namespace Neuro.Utilities;
 
@@ -8,9 +9,9 @@ namespace Neuro.Utilities;
 /// <typeparam name="T"></typeparam>
 public static class ComponentCache<T> where T : Component
 {
-    public static UnstableSet<T> Cached { get; } = new();
+    public static UnstableList<T> Cached { get; } = new();
 
-    public static UnstableSet<T> FindObjects()
+    public static UnstableList<T> FindObjects()
     {
         Cached.Clear();
 
