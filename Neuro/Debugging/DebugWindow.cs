@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.ImGui;
 using UnityEngine;
@@ -80,7 +81,7 @@ public sealed class DebugWindow : MonoBehaviour
 
             if (_selectedTab is { IsEnabled: true })
             {
-                GUILayout.Label(string.Empty, GUI.skin.horizontalSlider); // This creates a divider
+                GUILayoutUtils.Divider();
                 _selectedTab?.BuildUI();
             }
 
