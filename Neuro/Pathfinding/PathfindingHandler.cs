@@ -8,7 +8,7 @@ namespace Neuro.Pathfinding;
 
 public sealed class PathfindingHandler
 {
-    private const float GRID_DENSITY = 6f; // TODO: Fine-tune individual maps to optimize performance
+    private const float GRID_DENSITY = 4.5f; // TODO: Fine-tune individual maps to optimize performance
     private const int GRID_BASE_WIDTH = 100;
 
     private const int GRID_SIZE = (int)(GRID_BASE_WIDTH * GRID_DENSITY);
@@ -125,12 +125,36 @@ public sealed class PathfindingHandler
 
         const float NODE_RADIUS = 1 / GRID_DENSITY;
 
+        const float OFFSET = 1 / 5f; // Must be less than 1 / 4f or it will flood fill through walls
+        Vector2[] offsetCoords =
+        {
+            new(-OFFSET, -OFFSET), new(0, -OFFSET), new(OFFSET, -OFFSET),
+            new(-OFFSET, 0), Vector2.zero, new(OFFSET, 0),
+            new(-OFFSET, OFFSET), new(0, OFFSET), new(OFFSET, OFFSET)
+        };
+
         for (int x = GRID_LOWER_BOUNDS; x < GRID_UPPER_BOUNDS; x++)
         for (int y = GRID_LOWER_BOUNDS; y < GRID_UPPER_BOUNDS; y++)
         {
-            Vector2 point = new(x / GRID_DENSITY, y / GRID_DENSITY);
+            Vector2 point = Vector2.zero;
+            bool accessible = false;
+            for (int i = 0; i < 9; i++)
+            {
+                var b = (i * 4 + 5) % 9; // Noncontinuous linear index through the array
+                if (IsAccessible(x + offsetCoords[b].x, y + offsetCoords[b].y, out point))
+                {
+                    accessible = true;
+                    break;
+                }
+            }
 
-            //Info(point.ToString());
+            grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
+        }
+
+        bool IsAccessible(float x, float y, out Vector2 point)
+        {
+            point = new Vector2(x / GRID_DENSITY, y / GRID_DENSITY);
+
             Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, LayerMask.GetMask("Ship", "ShortObjects"));
             int validColsCount = cols.Count(col =>
                 !col.isTrigger &&
@@ -140,8 +164,7 @@ public sealed class PathfindingHandler
 
             // TODO: Add edge case for Airship ladders
 
-            bool accessible = validColsCount == 0;
-            grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
+            return validColsCount == 0;
         }
     }
 
