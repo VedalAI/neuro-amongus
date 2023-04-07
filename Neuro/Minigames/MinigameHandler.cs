@@ -6,6 +6,7 @@ using System.Reflection;
 using Il2CppInterop.Runtime;
 using Neuro.Cursor;
 using UnityEngine;
+using BepInEx.Unity.IL2CPP.Utils;
 
 namespace Neuro.Minigames;
 
@@ -23,7 +24,17 @@ public static class MinigameHandler
 
     private static readonly Dictionary<string, MinigameSolver> MinigameSolvers;
 
-    public static IEnumerator TryCompleteMinigame(Minigame minigame, PlayerTask task)
+    public static void TryCompleteMinigame(Minigame minigame, PlayerTask task)
+    {
+        GameObject coroutineObject = new("Minigame Solver");
+        coroutineObject.transform.parent = minigame.transform;
+
+        // DivertPowerMetagame doesn't run any logic by itself
+        MonoBehaviour coroutineBehaviour = coroutineObject.AddComponent<DivertPowerMetagame>();
+        coroutineBehaviour.StartCoroutine(CoTryCompleteMinigame(minigame, task));
+    }
+
+    private static IEnumerator CoTryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
         if (!MinigameSolvers.TryGetValue(minigame.GetIl2CppType().FullName, out MinigameSolver solver))
         {
