@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
-using Neuro.Vision.Players;
+using Neuro.Vision.DeadBodies;
 
-namespace Neuro.Vision.DeadBodies.Patches;
+namespace Neuro.Events.Patches;
 
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Awake))]
 public static class ShipStatus_Awake
@@ -9,6 +9,6 @@ public static class ShipStatus_Awake
     [HarmonyPostfix]
     public static void Postfix(ShipStatus __instance)
     {
-        __instance.gameObject.AddComponent<DeadBodyVisionHandler>();
+        EventHandler.InvokeEvent(EventTypes.GameStarted);
     }
 }

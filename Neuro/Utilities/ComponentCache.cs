@@ -9,9 +9,9 @@ namespace Neuro.Utilities;
 /// <typeparam name="T"></typeparam>
 public static class ComponentCache<T> where T : Component
 {
-    public static SelfUnstableList<T> Cached { get; } = new();
+    public static UnstableList<T> Cached { get; } = new();
 
-    public static SelfUnstableList<T> FetchObjects()
+    public static UnstableList<T> FetchObjects()
     {
         Cached.Clear();
         Cached.AddRange(GameObject.FindObjectsOfType<T>(true));

@@ -1,4 +1,5 @@
 ﻿using System;
+using Neuro.Events;
 using Neuro.Utilities;
 using Neuro.Utilities.Collections;
 using Reactor.Utilities.Attributes;
@@ -13,7 +14,7 @@ public sealed class PlayerControlVisionHandler : MonoBehaviour
 
     public PlayerControlVisionHandler(IntPtr ptr) : base(ptr) { }
 
-    public SelfUnstableDictionary<PlayerControl, PlayerControlVisionData> Data { get; } = new();
+    public UnstableDictionary<PlayerControl, PlayerControlVisionData> Data { get; } = new();
 
     private void Awake()
     {
@@ -45,11 +46,18 @@ public sealed class PlayerControlVisionHandler : MonoBehaviour
         }
     }
 
+    [EventHandler(EventTypes.MeetingEnded)]
     public void ResetAfterMeeting()
     {
         foreach (PlayerControlVisionData visionData in Data.Values)
         {
             visionData.ResetAfterMeeting();
         }
+    }
+
+    [EventHandler(EventTypes.GameStarted)]
+    public static void OnGameStarted()
+    {
+        ShipStatus.Instance.gameObject.AddComponent<PlayerControlVisionHandler>();
     }
 }

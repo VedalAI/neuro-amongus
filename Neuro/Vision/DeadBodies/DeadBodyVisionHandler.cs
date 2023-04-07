@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
+using EventHandler = Neuro.Events.EventHandler;
 
 namespace Neuro.Vision.DeadBodies;
 
@@ -27,6 +29,7 @@ public sealed class DeadBodyVisionHandler : MonoBehaviour
         }
 
         Instance = this;
+        EventHandler.Register(this);
     }
 
     private void FixedUpdate()
@@ -54,8 +57,15 @@ public sealed class DeadBodyVisionHandler : MonoBehaviour
         }
     }
 
+    [EventHandler(EventTypes.MeetingEnded)]
     public void ResetAfterMeeting()
     {
         Data.Clear();
+    }
+
+    [EventHandler(EventTypes.GameStarted)]
+    public static void OnGameStarted()
+    {
+        ShipStatus.Instance.gameObject.AddComponent<DeadBodyVisionHandler>();
     }
 }

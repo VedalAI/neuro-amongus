@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -251,5 +252,11 @@ public sealed class PathfindingHandler : MonoBehaviour
         int dstY = Mathf.Abs(a.gridY - b.gridY);
 
         return 14 * dstY + 10 * Math.Abs(dstX - dstY); // TODO: 14 magic number?
+    }
+
+    [EventHandler(EventTypes.GameStarted)]
+    public static void OnGameStarted()
+    {
+        ShipStatus.Instance.gameObject.AddComponent<PathfindingHandler>();
     }
 }

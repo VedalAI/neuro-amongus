@@ -8,7 +8,7 @@ public sealed class DeadBodyVisionData
     public byte ParentId { get; init; }
     public Vector2 LastSeenPosition { get; init; }
     public float FirstSeenTime { get; init; }
-    public SelfUnstableList<PlayerControl> NearbyPlayers { get; } = new();
+    public UnstableList<PlayerControl> NearbyPlayers { get; } = new();
 
     private DeadBodyVisionData(byte parentId, Vector2 lastSeenPosition, float firstSeenTime)
     {
