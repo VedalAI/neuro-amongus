@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Il2CppInterop.Runtime.Attributes;
@@ -25,11 +27,18 @@ public sealed class RecordingHandler : MonoBehaviour
     public SystemTypes SabotageUsed { get; set; }
     public List<PlainDoor> DoorsUsed { get; set; } = new List<PlainDoor>();
 
+    int count = 0;
+
     public void FixedUpdate()
     {
         if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
+        if (Minigame.Instance) return;
         if (!PlayerControl.LocalPlayer) return;
+
+        count++;
+        if (count != 9) return;
+        count = 0;
 
         // Record values
         Frame frame = new(
@@ -55,8 +64,8 @@ public sealed class RecordingHandler : MonoBehaviour
         );
         Frames.Add(frame);
 
-        // string frameString = JsonSerializer.Serialize(frame);
-        // Info(frameString);
+        /*string frameString = JsonSerializer.Serialize(frame);
+        Info(frameString);*/
         ResetFrameData();
     }
 
@@ -79,5 +88,12 @@ public sealed class RecordingHandler : MonoBehaviour
     {
         DidDoors = true;
         DoorsUsed = ShipStatus.Instance.AllDoors.Where(r => r.Room == room).ToList();
+    }
+
+    public void WriteData()
+    {
+        string frameString = JsonSerializer.Serialize(Frames);
+        File.WriteAllText(Path.Combine(BepInEx.Paths.PluginPath, "output.json"), frameString);
+        Info(Path.Combine(BepInEx.Paths.PluginPath, "output.json"));
     }
 }
