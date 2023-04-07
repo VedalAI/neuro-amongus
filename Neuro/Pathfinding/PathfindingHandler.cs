@@ -140,7 +140,7 @@ public sealed class PathfindingHandler
             bool accessible = false;
             for (int i = 0; i < 9; i++)
             {
-                var b = (i * 4 + 5) % 9; // Noncontinuous linear index through the array
+                var b = (i * 4 + 4) % 9; // Noncontinuous linear index through the array
                 if (IsAccessible(x + offsetCoords[b].x, y + offsetCoords[b].y, out point))
                 {
                     accessible = true;
