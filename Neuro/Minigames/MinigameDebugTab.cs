@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Il2CppSystem.Text;
 using Neuro.Debugging;
 using Neuro.Utilities;
 using UnityEngine;
@@ -9,6 +10,8 @@ namespace Neuro.Minigames;
 public sealed class MinigameDebugTab : DebugTab
 {
     public override string Name => "Tasks";
+
+    public override bool IsEnabled => ShipStatus.Instance && PlayerControl.LocalPlayer && PlayerControl.LocalPlayer.myTasks != null;
 
     public override void BuildUI()
     {
@@ -21,11 +24,15 @@ public sealed class MinigameDebugTab : DebugTab
             minigame.Begin(null);
         }
 
+        GUILayoutUtils.Divider();
+
         foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>().Where(t => !t.IsComplete))
         {
-            if (GUILayout.Button(TranslationController.Instance.GetString(task.TaskType)))
+            StringBuilder builder = new();
+            task.AppendTaskText(builder);
+            if (GUILayout.Button(builder.ToString()))
             {
-                Console console = ShipStatus.Instance.AllConsoles.First(c => c.FindTask(PlayerControl.LocalPlayer).Id == task.Id);
+                Console console = ShipStatus.Instance.AllConsoles.First(task.ValidConsole);
 
                 Minigame minigame = Object.Instantiate(task.GetMinigamePrefab(), Camera.main!.transform, false);
                 minigame.transform.localPosition = new Vector3(0f, 0f, -50f);

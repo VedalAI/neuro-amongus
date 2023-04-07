@@ -42,6 +42,11 @@ public sealed class DebugWindow : MonoBehaviour
         {
             GUILayout.BeginVertical();
 
+            if (DebugTabAttribute.Tabs.Count <= 1)
+            {
+                GUILayout.Label(" ", GUILayout.Height(1), GUILayout.Width(75));
+            }
+
             GUILayout.BeginHorizontal();
 
             foreach (DebugTab tab in DebugTabAttribute.Tabs)
