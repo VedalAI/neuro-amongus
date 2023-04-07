@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
+using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 using Gizmos = Neuro.Utilities.Gizmos;
@@ -31,12 +32,13 @@ public sealed class PathfindingHandler : MonoBehaviour
     {
         if (Instance)
         {
-            Warning("Tried to create an instance of PathfindingHandler when it already exists");
+            LogUtils.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
 
         Instance = this;
+        EventManager.RegisterHandler(this);
 
         GenerateNodeGrid();
         FloodFill(ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius);

@@ -40,7 +40,7 @@ public sealed class InGameCursor : MonoBehaviour
     {
         if (Instance)
         {
-            Warning("Tried to create an instance of InGameCursor when it already exists");
+            LogUtils.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

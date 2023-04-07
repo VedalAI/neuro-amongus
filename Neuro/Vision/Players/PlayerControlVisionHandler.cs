@@ -26,6 +26,7 @@ public sealed class PlayerControlVisionHandler : MonoBehaviour
         }
 
         Instance = this;
+        EventManager.RegisterHandler(this);
     }
 
     private void FixedUpdate()

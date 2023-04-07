@@ -7,8 +7,8 @@ namespace Neuro.Events.Patches;
 public static class ShipStatus_Awake
 {
     [HarmonyPostfix]
-    public static void Postfix(ShipStatus __instance)
+    public static void Postfix()
     {
-        EventHandler.InvokeEvent(EventTypes.GameStarted);
+        EventManager.InvokeEvent(EventTypes.GameStarted);
     }
 }

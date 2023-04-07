@@ -3,5 +3,6 @@
 public enum EventTypes
 {
     GameStarted,
+    MeetingStarted,
     MeetingEnded
 }

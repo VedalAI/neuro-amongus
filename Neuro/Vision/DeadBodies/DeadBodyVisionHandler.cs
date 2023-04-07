@@ -4,7 +4,6 @@ using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
-using EventHandler = Neuro.Events.EventHandler;
 
 namespace Neuro.Vision.DeadBodies;
 
@@ -29,7 +28,7 @@ public sealed class DeadBodyVisionHandler : MonoBehaviour
         }
 
         Instance = this;
-        EventHandler.Register(this);
+        EventManager.RegisterHandler(this);
     }
 
     private void FixedUpdate()

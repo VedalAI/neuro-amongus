@@ -8,6 +8,6 @@ public static class ExileController_WrapUp
     [HarmonyPostfix]
     public static void Postfix()
     {
-        EventHandler.InvokeEvent(EventTypes.MeetingEnded);
+        EventManager.InvokeEvent(EventTypes.MeetingEnded);
     }
 }

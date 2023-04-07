@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace Neuro.Events;
 
-public static class EventHandler
+public static class EventManager
 {
     public static UnstableList<Object> HandlerInstances { get; } = new();
 
-    public static void Register<T>(T target) where T : Object
+    public static void RegisterHandler<T>(T target) where T : Object
     {
         HandlerInstances.Add(target);
     }

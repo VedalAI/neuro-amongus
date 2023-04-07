@@ -29,10 +29,6 @@
         <EmbeddedResource Remove="**\Resources\**\*.manifest" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="zzz" />
-    </ItemGroup>
-
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(AmongUs)/BepInEx/plugins/" UseSymboliclinksIfPossible="true" />
     </Target>

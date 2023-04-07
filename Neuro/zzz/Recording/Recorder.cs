@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Il2CppInterop.Runtime.Attributes;
+using Neuro.Events;
 using Neuro.Recording.DataStructures;
+using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -27,16 +31,19 @@ public sealed class Recorder : MonoBehaviour
     public SystemTypes SabotageUsed { get; set; }
     public List<PlainDoor> DoorsUsed { get; set; } = new List<PlainDoor>();
 
+    private int _fixedUpdateCalls = 0;
+
     private void Awake()
     {
         if (Instance)
         {
-            Warning("Tried to create an instance of Recorder when it already exists");
+            LogUtils.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
 
         Instance = this;
+        EventManager.RegisterHandler(this);
     }
 
     private void FixedUpdate()
@@ -45,7 +52,12 @@ public sealed class Recorder : MonoBehaviour
 
         if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
+        if (Minigame.Instance) return;
         if (!PlayerControl.LocalPlayer) return;
+
+        _fixedUpdateCalls++;
+        if (_fixedUpdateCalls < 9) return;
+        _fixedUpdateCalls = 0;
 
         // Record values
         Frame frame = new(
@@ -93,5 +105,13 @@ public sealed class Recorder : MonoBehaviour
     {
         DidDoors = true;
         DoorsUsed = ShipStatus.Instance.AllDoors.Where(r => r.Room == room).ToList();
+    }
+
+    [EventHandler(EventTypes.MeetingStarted)]
+    public void WriteData()
+    {
+        string frameString = JsonSerializer.Serialize(Frames);
+        File.WriteAllText(Path.Combine(BepInEx.Paths.PluginPath, "output.json"), frameString);
+        Info(Path.Combine(BepInEx.Paths.PluginPath, "output.json"));
     }
 }

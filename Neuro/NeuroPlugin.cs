@@ -3,6 +3,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using Neuro.Communcation;
 using Neuro.Debugging;
 using Neuro.Movement;
 using Neuro.Tasks;
@@ -24,6 +25,7 @@ public partial class NeuroPlugin : BasePlugin
     public MovementHandler Movement { get; private set; }
     public TasksHandler Tasks { get; private set; }
     public ImpostorHandler Impostor { get; private set; }
+    public CommunicationHandler Communication { get; private set; }
 
     public override void Load()
     {
@@ -37,6 +39,7 @@ public partial class NeuroPlugin : BasePlugin
         Movement = new MovementHandler();
         Tasks = AddComponent<TasksHandler>();
         Impostor = AddComponent<ImpostorHandler>();
+        Communication = AddComponent<CommunicationHandler>();
 
         ResourceManager.CacheSprite("Cursor", 130);
     }
