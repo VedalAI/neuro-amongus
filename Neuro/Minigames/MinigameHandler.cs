@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Il2CppInterop.Runtime;
+﻿using System.Collections;
+using BepInEx.Unity.IL2CPP.Utils;
 using Neuro.Cursor;
 using UnityEngine;
 
@@ -11,7 +7,17 @@ namespace Neuro.Minigames;
 
 public static class MinigameHandler
 {
-    public static IEnumerator TryCompleteMinigame(Minigame minigame, PlayerTask task)
+    public static void TryCompleteMinigame(Minigame minigame, PlayerTask task)
+    {
+        GameObject coroutineObject = new("Minigame Solver");
+        coroutineObject.transform.parent = minigame.transform;
+
+        // DivertPowerMetagame doesn't run any logic by itself
+        MonoBehaviour coroutineBehaviour = coroutineObject.AddComponent<DivertPowerMetagame>();
+        coroutineBehaviour.StartCoroutine(CoTryCompleteMinigame(minigame, task));
+    }
+
+    private static IEnumerator CoTryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
         if (!MinigameSolverAttribute.MinigameSolvers.TryGetValue(minigame.GetIl2CppType().FullName, out MinigameSolver solver))
         {
