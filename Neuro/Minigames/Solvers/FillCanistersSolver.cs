@@ -12,16 +12,14 @@ public class FillCanistersSolver : MinigameSolver<FillCanistersGame>
         // this minigame also uses localPositions so convert them into world space
         while (!task.IsComplete)
         {
-            yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(minigame.Canister.transform.localPosition));
+            yield return InGameCursor.Instance.CoMoveTo(minigame.Canister);
             InGameCursor.Instance.StartHoldingLMB(minigame.Canister);
             yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(minigame.CanisterSnapPosition));
             InGameCursor.Instance.StopHoldingLMB();
             while (minigame.Canister.Gauge.Value < minigame.Canister.Gauge.MaxValue)
                 yield return null;
             // pulling away the canister only requires a click
-            InGameCursor.Instance.StartHoldingLMB(minigame.Canister);
-            yield return new WaitForSeconds(0.1f);
-            InGameCursor.Instance.StopHoldingLMB();
+            yield return InGameCursor.Instance.CoPressLMB();
             // wait for the next canister to appear
             yield return new WaitForSeconds(0.5f);
         }

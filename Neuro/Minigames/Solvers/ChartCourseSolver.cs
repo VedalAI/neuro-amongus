@@ -11,7 +11,7 @@ public class ChartCourseSolver : MinigameSolver<CourseMinigame>
     {
         // for some reason this minigame uses localPositions for everything so we have to convert them into world positions
 
-        yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(minigame.Ship.transform.localPosition));
+        yield return InGameCursor.Instance.CoMoveTo(minigame.Ship);
         InGameCursor.Instance.StartHoldingLMB(minigame.Ship);
         for (int i = 0; i < minigame.NumPoints; i++)
         {
@@ -21,7 +21,7 @@ public class ChartCourseSolver : MinigameSolver<CourseMinigame>
             {
                 // minigame requires you to move the mouse slightly past the final point
                 // so we handle that here
-                worldPos += new Vector3(0.1f, 0.1f, 0f);
+                worldPos += new Vector3(0.2f, 0.2f, 0f);
                 yield return InGameCursor.Instance.CoMoveTo(worldPos, 0.33f);
                 InGameCursor.Instance.StopHoldingLMB();
                 yield break;

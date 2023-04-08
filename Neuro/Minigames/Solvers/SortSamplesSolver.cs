@@ -9,6 +9,10 @@ public class SortSamplesSolver : MinigameSolver<SortMinigame>
 {
     protected override IEnumerator CompleteMinigame(SortMinigame minigame, NormalPlayerTask task)
     {
+        bool secondPlant, secondAnimal, secondMineral;
+        secondPlant = secondAnimal = secondMineral = false;
+        Vector3 left = new(-0.5f, 0f);
+        Vector3 right = new(0.5f, 0f);
         foreach (SortGameObject obj in minigame.Objects)
         {
             yield return InGameCursor.Instance.CoMoveTo(obj);
@@ -16,13 +20,16 @@ public class SortSamplesSolver : MinigameSolver<SortMinigame>
             switch (obj.MyType)
             {
                 case SortGameObject.ObjType.Plant:
-                    yield return InGameCursor.Instance.CoMoveTo(minigame.PlantBox);
+                    yield return InGameCursor.Instance.CoMoveTo(minigame.PlantBox.transform.position + (secondPlant ? right : left));
+                    secondPlant = true;
                     break;
                 case SortGameObject.ObjType.Animal:
-                    yield return InGameCursor.Instance.CoMoveTo(minigame.AnimalBox);
+                    yield return InGameCursor.Instance.CoMoveTo(minigame.AnimalBox.transform.position + (secondAnimal ? right : left));
+                    secondAnimal = true;
                     break;
                 case SortGameObject.ObjType.Mineral:
-                    yield return InGameCursor.Instance.CoMoveTo(minigame.MineralBox);
+                    yield return InGameCursor.Instance.CoMoveTo(minigame.MineralBox.transform.position + (secondMineral ? right : left));
+                    secondMineral = true;
                     break;
             }
             InGameCursor.Instance.StopHoldingLMB();

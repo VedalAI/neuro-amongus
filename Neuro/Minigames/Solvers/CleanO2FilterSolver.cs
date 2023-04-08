@@ -15,8 +15,9 @@ public class CleanO2FilterSolver : MinigameSolver<LeafMinigame>
         Collider2D lastLeaf = null;
         while (!task.IsComplete)
         {
+            Collider2D _lastLeafCopy = lastLeaf;
             Collider2D leaf = minigame.Leaves
-                .Where(l => l && l.enabled && l.gameObject.active && l != lastLeaf 
+                .Where(l => l && l.enabled && l.gameObject.active && l != _lastLeafCopy
                     && Vector3.Distance(l.transform.position, exit) > 4f)  
                 .MaxBy(l => (InGameCursor.Instance.Position - (Vector2)l.transform.position).magnitude);
 

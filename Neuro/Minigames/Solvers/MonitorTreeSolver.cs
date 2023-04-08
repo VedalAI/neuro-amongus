@@ -13,7 +13,13 @@ public class MonitorTreeSolver : MinigameSolver<MonitorOxyMinigame>
         {
             yield return InGameCursor.Instance.CoMoveTo(minigame.Sliders[i], 0.5f);
             InGameCursor.Instance.StartHoldingLMB(minigame.Sliders[i]);
-            yield return InGameCursor.Instance.CoMoveTo(minigame.Targets[i].bounds.center, 0.5f);
+            // gotta deal with the crappy hitbox positioning again
+            Vector2 direction = minigame.Sliders[i].transform.localPosition.y > minigame.Targets[i].transform.localPosition.y ? new Vector2(0f, -0.2f) : new Vector2(0f, 0.2f);
+            while (Mathf.Abs(minigame.Sliders[i].transform.localPosition.y - minigame.Targets[i].transform.localPosition.y) > 0.1f)
+            {
+                yield return InGameCursor.Instance.CoMoveTo(InGameCursor.Instance.Position + direction, 2);
+                yield return null;
+            }
             InGameCursor.Instance.StopHoldingLMB();
             yield return new WaitForSeconds(0.1f);
         }
