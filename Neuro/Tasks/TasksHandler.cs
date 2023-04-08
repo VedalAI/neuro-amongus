@@ -179,9 +179,7 @@ public sealed class TasksHandler : MonoBehaviour
         {
             if (tasky.IsComplete || tasky.Locations == null) continue;
 
-            Il2CppSystem.Collections.Generic.List<Console> list = tasky.FindConsoles();
-
-            foreach (Console con in list) {
+            foreach (Console con in tasky.FindConsoles()) {
                 var currentDistance = Vector2.Distance(con.transform.position, PlayerControl.LocalPlayer.transform.position);
 
                 if (currentDistance < con.usableDistance)
