@@ -21,46 +21,29 @@ public sealed class TasksHandler : MonoBehaviour
     [HideFromIl2Cpp]
     public void UpdatePathToTask(PlayerTask task = null)
     {
-        if (!task)
-        {
-            // skip fake tasks that cannot be completed (for instance, the red text as impostor)
-            foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
-            {
-                if (!t.TryCast<NormalPlayerTask>()) continue;
-                task = t;
-                break;
-            }
-        }
-
         PlayerTask nextTask;
-        if (task.IsComplete)
-        {
-            Info("Task is complete, getting next one.");
-            PlayerTask targetTask;
 
+        if (task) {
+            nextTask = task;
+        } else {
             // as impostor, getting the furthest task instead of the closest one is good for finding players
             // also helps trying to do a task right next to someone we killed
             if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
             {
-                targetTask = GetFurthestTask();
+                nextTask = GetFurthestTask();
             }
             else
             {
-                targetTask = GetClosestTask();
+                nextTask = GetClosestTask();
             }
-
-            if (targetTask == null)
-            {
-                PathIndex = -1;
-                Destroy(NeuroPlugin.Instance.Movement.Arrow);
-                return;
-            }
-
-            nextTask = targetTask;
         }
-        else
+
+        
+        if (nextTask == null)
         {
-            nextTask = task;
+            PathIndex = -1;
+            Destroy(NeuroPlugin.Instance.Movement.Arrow);
+            return;
         }
 
         if (nextTask != null)
@@ -76,15 +59,30 @@ public sealed class TasksHandler : MonoBehaviour
     [HideFromIl2Cpp]
     public PlayerTask GetClosestTask()
     {
-        List<PlayerTask> tasks = new();
+        List<PlayerTask> validTasks = new();
+        List<Vector2> taskLocations = new();
+
         foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks) 
         {
             if (!t.IsComplete && t.HasLocation)
-            {
-                tasks.Add(t);
+            {   
+                validTasks.Add(t);
+                taskLocations.Add(t.Locations.At(0));
             }
         }
-        return NeuroPlugin.Instance.Pathfinding.FindClosestTask(PlayerControl.LocalPlayer.transform.position, tasks);
+
+        if (validTasks.Count == 1) {
+            return validTasks[0];
+        }
+
+        int idx = NeuroPlugin.Instance.Pathfinding.FindClosestTarget(PlayerControl.LocalPlayer.transform.position, taskLocations);
+        if (idx == -1) {
+            Info("No closest task found");
+            return null;
+        }
+
+        Info("Found closest task: " + validTasks[idx].TaskType);
+        return validTasks[idx];
     }
 
     [HideFromIl2Cpp]
