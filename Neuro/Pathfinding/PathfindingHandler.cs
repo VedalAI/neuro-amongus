@@ -9,10 +9,11 @@ namespace Neuro.Pathfinding;
 
 public sealed class PathfindingHandler
 {
-    internal float gridDensity = 5f; // TODO: Fine-tune individual maps to optimize performance
-    internal int gridBaseWidth = 100;
+    // TODO: Reset these in an un-initialize function
+    internal float gridDensity = 0;
+    internal int gridBaseWidth = 0;
 
-    private int _gridSize = 0;
+    internal int gridSize = 0;
     private int _gridLowerBounds = 0;
     private int _gridUpperBounds = 0;
 
@@ -23,17 +24,38 @@ public sealed class PathfindingHandler
 
     public void Initialize()
     {
+        InitializeFields();
+
+        GenerateNodeGrid();
+        FloodFill(ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius);
+    }
+
+    private void InitializeFields()
+    {
         if (!_nodeVisualPointParent) _nodeVisualPointParent = new GameObject("Node Visual Point Parent");
         if (!_taskVisualPointParent) _taskVisualPointParent = new GameObject("Task Visual Point Parent");
         if (_nodeVisualPointParent.transform.childCount > 0) _nodeVisualPointParent.transform.DestroyChildren();
         if (_taskVisualPointParent.transform.childCount > 0) _taskVisualPointParent.transform.DestroyChildren();
 
-        _gridSize = (int)(gridBaseWidth * gridDensity);
-        _gridLowerBounds = _gridSize / -2;
-        _gridUpperBounds = _gridSize / 2;
+        if (gridDensity == 0)
+        {
+            if (ShipStatus.Instance.TryCast<MiraShipStatus>()) gridDensity = 4.404010295867919921875f; // Magic number for Mira
+            else if (ShipStatus.Instance.TryCast<PolusShipStatus>()) gridDensity = 4.5252170562744140625f; // Magic number for Polus
+            else if (ShipStatus.Instance.TryCast<AirshipStatus>()) gridDensity = 4.333333f; // Magic number for Airship
+            else gridDensity = 4.34f; // Magic number for The Skeld. Don't ask me why I can't TryCast<SkeldShipStatus>()
+        }
 
-        GenerateNodeGrid();
-        FloodFill(ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius);
+        if (gridBaseWidth == 0)
+        {
+            if (ShipStatus.Instance.TryCast<MiraShipStatus>()) gridBaseWidth = 80; // Min width for Mira
+            else if (ShipStatus.Instance.TryCast<PolusShipStatus>()) gridBaseWidth = 96; // Min width for Polus
+            else if (ShipStatus.Instance.TryCast<AirshipStatus>()) gridBaseWidth = 100; // Min width for Airship. Needs verification after ladders
+            else gridBaseWidth = 59; // Min width for Skeld
+        }
+
+        gridSize = (int)(gridBaseWidth * gridDensity);
+        _gridLowerBounds = gridSize / -2;
+        _gridUpperBounds = gridSize / 2;
     }
 
     public Vector2[] FindPath(Vector2 start, Vector2 target)
@@ -80,7 +102,7 @@ public sealed class PathfindingHandler
 
         if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<Vector2>();
 
-        Heap<Node> openSet = new(_gridSize * _gridSize);
+        Heap<Node> openSet = new(gridSize * gridSize);
         HashSet<Node> closedSet = new();
 
         openSet.Add(startNode);
@@ -139,7 +161,7 @@ public sealed class PathfindingHandler
 
     private void GenerateNodeGrid()
     {
-        _grid = new Node[_gridSize, _gridSize];
+        _grid = new Node[gridSize, gridSize];
 
         float nodeRadius = 1 / gridDensity;
 
@@ -307,7 +329,7 @@ public sealed class PathfindingHandler
             int checkX = node.gridX + x;
             int checkY = node.gridY + y;
 
-            if (checkX >= 0 && checkX < _gridSize && checkY >= 0 && checkY < _gridSize) neighbours.Add(_grid[checkX, checkY]);
+            if (checkX >= 0 && checkX < gridSize && checkY >= 0 && checkY < gridSize) neighbours.Add(_grid[checkX, checkY]);
         }
 
         return neighbours;
