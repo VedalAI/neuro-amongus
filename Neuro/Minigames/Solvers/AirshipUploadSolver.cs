@@ -9,9 +9,9 @@ public sealed class AirshipUploadSolver : MinigameSolver<AirshipUploadGame>
     protected override IEnumerator CompleteMinigame(AirshipUploadGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Phone);
-        minigame.phoneGrabbed = true;
+        InGameCursor.Instance.StartHoldingLMB(task);
 
         yield return InGameCursor.Instance.CoMoveTo(minigame.Hotspot);
-        minigame.phoneGrabbed = false;
+        InGameCursor.Instance.StopHolding();
     }
 }
