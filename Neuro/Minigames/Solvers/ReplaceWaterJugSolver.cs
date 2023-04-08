@@ -10,12 +10,6 @@ public sealed class ReplaceWaterJugSolver : MinigameSolver<WaterStage>
     protected override IEnumerator CompleteMinigame(WaterStage minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.waterButton);
-        minigame.Refuel();
-
-        while (!minigame.complete) yield return new WaitForFixedUpdate();
-
-        yield return minigame.CoStartClose(0.5f);
+        InGameCursor.Instance.StartHoldingLMB(minigame);
     }
 }
-
-

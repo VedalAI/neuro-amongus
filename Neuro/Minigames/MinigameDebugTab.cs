@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text.RegularExpressions;
 using Il2CppSystem.Text;
 using Neuro.Debugging;
 using Neuro.Utilities;
@@ -9,6 +10,8 @@ namespace Neuro.Minigames;
 [DebugTab]
 public sealed class MinigameDebugTab : DebugTab
 {
+    private static readonly Regex _colorRegex = new(@"<\/?color(?:=#\w+?)?>", RegexOptions.Compiled);
+
     public override string Name => "Tasks";
 
     public override bool IsEnabled => ShipStatus.Instance && PlayerControl.LocalPlayer && PlayerControl.LocalPlayer.myTasks != null;
@@ -30,7 +33,7 @@ public sealed class MinigameDebugTab : DebugTab
         {
             StringBuilder builder = new();
             task.AppendTaskText(builder);
-            if (GUILayout.Button(builder.ToString().Replace("</color>", "").Trim()))
+            if (GUILayout.Button(_colorRegex.Replace(builder.ToString(), "").Trim()))
             {
                 Console console = ShipStatus.Instance.AllConsoles.First(task.ValidConsole);
 
