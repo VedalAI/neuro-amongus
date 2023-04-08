@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -75,30 +76,15 @@ public sealed class TasksHandler : MonoBehaviour
     [HideFromIl2Cpp]
     public PlayerTask GetClosestTask()
     {
-        PlayerTask closestTask = null;
-        float closestDistance = Mathf.Infinity;
-
-        foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks)
+        List<PlayerTask> tasks = new();
+        foreach (PlayerTask t in PlayerControl.LocalPlayer.myTasks) 
         {
             if (!t.IsComplete && t.HasLocation)
             {
-                Vector2[] path = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, t.Locations.At(0));
-                // Evaluate length of path
-                float distance = 0f;
-                for (int i = 0; i < path.Length - 1; i++)
-                {
-                    distance += Vector2.Distance(path[i], path[i + 1]);
-                }
-
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestTask = t;
-                }
+                tasks.Add(t);
             }
         }
-
-        return closestTask;
+        return NeuroPlugin.Instance.Pathfinding.FindClosestTask(PlayerControl.LocalPlayer.transform.position, tasks);
     }
 
     [HideFromIl2Cpp]

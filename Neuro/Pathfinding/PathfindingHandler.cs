@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Neuro.Pathfinding.DataStructures;
+using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Pathfinding;
@@ -117,6 +118,41 @@ public sealed class PathfindingHandler
 
         Warning("Failed to find path");
         return Array.Empty<Vector2>();
+    }
+
+    public PlayerTask FindClosestTask(Vector2 start, List<PlayerTask> tasks) {
+        Node startingNode = FindClosestNode(start);
+
+        List<Node> taskNodes = new();
+        foreach (PlayerTask t in tasks) 
+        {
+            taskNodes.Add(FindClosestNode(t.Locations.At(0)));
+        }
+
+        // Flood fill
+        List<Node> openSet = new();
+        HashSet<Node> closedSet = new();
+        openSet.Add(startingNode);
+        while (openSet.Count > 0)
+        {
+            Node node = openSet[0];
+
+            if (taskNodes.Contains(node)) {
+                return tasks[taskNodes.IndexOf(node)];
+            }
+
+            openSet.Remove(node);
+            closedSet.Add(node);
+
+            foreach (Node neighbour in GetNeighbours(node))
+            {
+                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
+                if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
+
+                neighbour.parent = node;
+            }
+        }
+        return null;
     }
 
     private void GenerateNodeGrid()
