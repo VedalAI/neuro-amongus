@@ -10,7 +10,7 @@ public static class Gizmos
 
     public static void CreateNodeVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.red, 0.1f);
 
-    public static void CreateTaskVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.blue, 0.3f);
+    public static void CreateDestinationVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.blue, 0.3f);
 
     public static void DrawPath(Vector2[] path)
     {

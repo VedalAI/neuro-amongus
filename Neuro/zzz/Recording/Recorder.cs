@@ -37,7 +37,7 @@ public sealed class Recorder : MonoBehaviour
     {
         if (Instance)
         {
-            LogUtils.WarnDoubleSingletonInstance();
+            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

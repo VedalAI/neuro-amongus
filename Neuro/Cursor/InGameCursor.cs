@@ -38,7 +38,7 @@ public sealed class InGameCursor : MonoBehaviour
     {
         if (Instance)
         {
-            LogUtils.WarnDoubleSingletonInstance();
+            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

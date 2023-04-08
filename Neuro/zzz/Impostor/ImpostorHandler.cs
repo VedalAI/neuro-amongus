@@ -14,10 +14,6 @@ public class ImpostorHandler : MonoBehaviour
 {
     public ImpostorHandler(IntPtr ptr) : base(ptr) { }
 
-    public Vent ClosestVent { get; set; } = null;
-    public List<Vent> NearbyVents { get; set; } = new List<Vent>();
-    // TODO: move this + related logic to Vision if necessary
-    public Vector2 DirectionToNearestVent { get; set; } = Vector2.zero;
     public List<PlainDoor> NearbyDoors { get; set; } = new List<PlainDoor>();
 
     public bool goingForKill { get; set; } = false;

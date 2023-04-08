@@ -6,7 +6,7 @@
         <VersionPrefix>1.0.0</VersionPrefix>
         <VersionSuffix>dev</VersionSuffix>
         <Description>Mod for recording data for Neuro-sama to play Among Us</Description>
-        <Authors>Vedal</Authors>
+        <Authors>VedalAI</Authors>
         
         <DebugType>embedded</DebugType>
         <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
@@ -17,28 +17,14 @@
 
     <ItemGroup>
         <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.3.28" />
+        <PackageReference Include="BepInEx.AutoPlugin" Version="1.1.0" />
+        <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.0.1" />
+        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.668" />
         <PackageReference Include="Reactor" Version="2.1.0" />
-        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.668" Private="false" ExcludeAssets="runtime;native" />
-
-        <PackageReference Include="BepInEx.AutoPlugin" Version="1.1.0" PrivateAssets="all" />
-        <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.0.1" PrivateAssets="all" ExcludeAssets="runtime" />
     </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Include="**\Resources\**" />
-        <EmbeddedResource Remove="**\Resources\**\*.manifest" />
-        <EmbeddedResource Remove="zzz\**" />
-        <EmbeddedResource Remove="Map\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="zzz\**" />
-      <Compile Remove="Map\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="zzz\**" />
-      <None Remove="Map\**" />
     </ItemGroup>
 
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

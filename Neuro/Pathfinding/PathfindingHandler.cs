@@ -32,7 +32,7 @@ public sealed class PathfindingHandler : MonoBehaviour
     {
         if (Instance)
         {
-            LogUtils.WarnDoubleSingletonInstance();
+            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
@@ -69,16 +69,58 @@ public sealed class PathfindingHandler : MonoBehaviour
         }
     }
 
+    private void FloodFill(Vector2 accessiblePosition)
+    {
+        Node startingNode = NodeFromWorldPoint(accessiblePosition);
+
+        List<Node> openSet = new();
+        HashSet<Node> closedSet = new();
+        openSet.Add(startingNode);
+
+        while (openSet.Count > 0)
+        {
+            Node node = openSet[0];
+            openSet.Remove(node);
+            closedSet.Add(node);
+
+            foreach (Node neighbour in GetNeighbours(node))
+            {
+                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
+                if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
+
+                neighbour.parent = node;
+            }
+        }
+
+        foreach (Node node in closedSet.ToList())
+        {
+            Gizmos.CreateNodeVisualPoint(node.worldPosition);
+        }
+
+        // Set all nodes not in closed set to inaccessible
+        foreach (Node node in _grid)
+        {
+            if (!closedSet.Contains(node)) node.accessible = false;
+        }
+    }
+
+    private readonly Dictionary<(Vector2 start, Vector2 target), Vector2[]> _cachedPaths = new();
+
     public Vector2[] FindPath(Vector2 start, Vector2 target)
     {
+        if (_cachedPaths.TryGetValue((start, target), out Vector2[] cachedPath))
+        {
+            return cachedPath.ToArray();
+        }
+
         bool pathSuccess = false;
 
         Node startNode = FindClosestNode(start);
         Node targetNode = FindClosestNode(target);
 
-        Gizmos.CreateTaskVisualPoint(targetNode.worldPosition);
-
         if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<Vector2>();
+
+        Gizmos.CreateDestinationVisualPoint(targetNode.worldPosition);
 
         Heap<Node> openSet = new(GRID_SIZE * GRID_SIZE);
         HashSet<Node> closedSet = new();
@@ -118,46 +160,37 @@ public sealed class PathfindingHandler : MonoBehaviour
 
         if (pathSuccess)
         {
-            return RetracePath(startNode, targetNode);
+            Vector2[] path = RetracePath(startNode, targetNode);
+            _cachedPaths[(start, target)] = path;
+            return path.ToArray();
         }
 
         Warning("Failed to find path");
         return Array.Empty<Vector2>();
     }
 
-    private void FloodFill(Vector2 accessiblePosition)
+    public float CalculateTotalDistance(Vector2 start, Vector2 target)
     {
-        Node startingNode = NodeFromWorldPoint(accessiblePosition);
+        Vector2[] path = FindPath(start, target);
+        if (path.Length == 0) return -1;
 
-        List<Node> openSet = new();
-        HashSet<Node> closedSet = new();
-        openSet.Add(startingNode);
-
-        while (openSet.Count > 0)
+        float distance = 0f;
+        for (int i = 0; i < path.Length - 1; i++)
         {
-            Node node = openSet[0];
-            openSet.Remove(node);
-            closedSet.Add(node);
-
-            foreach (Node neighbour in GetNeighbours(node))
-            {
-                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
-                if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
-
-                neighbour.parent = node;
-            }
+            distance += Vector2.Distance(path[i], path[i + 1]);
         }
 
-        foreach (Node node in closedSet.ToList())
-        {
-            Gizmos.CreateNodeVisualPoint(node.worldPosition);
-        }
+        return distance;
+    }
 
-        // Set all nodes not in closed set to inaccessible
-        foreach (Node node in _grid)
-        {
-            if (!closedSet.Contains(node)) node.accessible = false;
-        }
+    public Vector2 CalculateOffsetToFirstNode(Vector2 start, Vector2 target)
+    {
+        Vector2[] path = FindPath(start, target);
+        if (path.Length == 0) return Vector2.zero;
+
+        Vector2 firstNode = path[0];
+
+        return firstNode - start;
     }
 
     private Node NodeFromWorldPoint(Vector2 position)

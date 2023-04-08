@@ -71,7 +71,7 @@ public sealed class DebugWindow : MonoBehaviour
 
             if (_selectedTab is { IsEnabled: true })
             {
-                GUILayoutUtils.Divider();
+                NeuroUtilities.GUILayoutDivider();
                 _selectedTab?.BuildUI();
             }
 

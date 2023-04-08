@@ -22,7 +22,7 @@ public sealed class DeadBodyVisionHandler : MonoBehaviour
     {
         if (Instance)
         {
-            LogUtils.WarnDoubleSingletonInstance();
+            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

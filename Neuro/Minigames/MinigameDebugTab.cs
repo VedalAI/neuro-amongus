@@ -27,7 +27,7 @@ public sealed class MinigameDebugTab : DebugTab
             minigame.Begin(null);
         }
 
-        GUILayoutUtils.Divider();
+        NeuroUtilities.GUILayoutDivider();
 
         foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>().Where(t => !t.IsComplete))
         {

@@ -20,7 +20,7 @@ public sealed class PlayerControlVisionHandler : MonoBehaviour
     {
         if (Instance)
         {
-            LogUtils.WarnDoubleSingletonInstance();
+            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

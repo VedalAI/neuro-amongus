@@ -1,28 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
+using Neuro.Communication.AmongUsAI.DataStructures;
 using Neuro.Events;
+using Neuro.Pathfinding;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
-namespace Neuro.Map;
+namespace Neuro.Communication.AmongUsAI;
 
 [RegisterInIl2Cpp]
-public sealed class MapDataHandler : MonoBehaviour
+public sealed class MapDataRecorder : MonoBehaviour
 {
-    public static MapDataHandler Instance { get; private set; }
+    public static MapDataRecorder Instance { get; private set; }
 
-    public MapDataHandler(IntPtr ptr) : base(ptr)
+    public MapDataRecorder(IntPtr ptr) : base(ptr)
     {
     }
 
-    public List<PlainDoor> NearbyDoors { get; } = new();
+    public DoorData[] NearbyDoors { get; } = new DoorData[3];
+    public VentData[] NearbyVents { get; } = new VentData[3];
 
     private void Awake()
     {
         if (Instance)
         {
-            LogUtils.WarnDoubleSingletonInstance();
+            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
@@ -41,14 +44,10 @@ public sealed class MapDataHandler : MonoBehaviour
 
     private void UpdateNearbyDoors()
     {
-        NearbyDoors.Clear();
-        foreach (PlainDoor door in ShipStatus.Instance.AllDoors)
+        PlainDoor[] nearbyDoors = ShipStatus.Instance.AllDoors.OrderBy(Closest).Take(3).ToArray();
+        for (int i = 0; i < 3; i++)
         {
-            float distance = Vector2.Distance(door.transform.position, PlayerControl.LocalPlayer.GetTruePosition());
-            if (distance < 10f)
-            {
-                NearbyDoors.Add(door);
-            }
+            NearbyDoors[i] = nearbyDoors.ElementAtOrDefault(i) is { } door ? DoorData.Create(door) : DoorData.Absent;
         }
     }
 
@@ -84,9 +83,14 @@ public sealed class MapDataHandler : MonoBehaviour
 
     }
 
+    private float Closest(PlainDoor door)
+    {
+        return PathfindingHandler.Instance.CalculateTotalDistance(PlayerControl.LocalPlayer.GetTruePosition(), door.transform.position);
+    }
+
     [EventHandler(EventTypes.GameStarted)]
     public static void OnGameStarted()
     {
-        ShipStatus.Instance.gameObject.AddComponent<MapDataHandler>();
+        ShipStatus.Instance.gameObject.AddComponent<MapDataRecorder>();
     }
 }
