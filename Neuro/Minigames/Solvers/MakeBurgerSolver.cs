@@ -21,13 +21,8 @@ public class MakeBurgerSolver : MinigameSolver<BurgerMinigame>
 
             BurgerTopping target = minigame.Toppings
                 .Where(t => !minigame.burger.Contains(t))
-                .FirstOrDefault(t => t.ToppingType == topping);
+                .First(t => t.ToppingType == topping);
 
-            if (!target)
-            {
-                Error("Failed to find any valid toppings for type " + topping);
-                yield break;
-            }
 
             yield return InGameCursor.Instance.CoMoveTo(target);
             InGameCursor.Instance.StartHoldingLMB(target);

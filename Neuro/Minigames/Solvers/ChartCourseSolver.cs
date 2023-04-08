@@ -13,7 +13,8 @@ public class ChartCourseSolver : MinigameSolver<CourseMinigame>
 
         yield return InGameCursor.Instance.CoMoveTo(minigame.Ship);
         InGameCursor.Instance.StartHoldingLMB(minigame.Ship);
-        for (int i = 0; i < minigame.NumPoints; i++)
+        int start = (int)minigame.Converter.GetFloat(minigame.MyNormTask.Data);
+        for (int i = start; i < minigame.NumPoints; i++)
         {
             Vector3 point = minigame.PathPoints[i];
             Vector3 worldPos = minigame.transform.TransformPoint(point);

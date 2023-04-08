@@ -44,7 +44,6 @@ public class DevelopPhotosSolver : MinigameSolver<PhotosMinigame>
             yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(position));
             InGameCursor.Instance.StopHoldingLMB();
             yield return new WaitForSeconds(0.1f);
-
         }
     }
 }
