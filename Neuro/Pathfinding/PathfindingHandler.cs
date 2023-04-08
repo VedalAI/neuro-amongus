@@ -8,7 +8,7 @@ namespace Neuro.Pathfinding;
 
 public sealed class PathfindingHandler
 {
-    private const float GRID_DENSITY = 4.5f; // TODO: Fine-tune individual maps to optimize performance
+    private const float GRID_DENSITY = 5f; // TODO: Fine-tune individual maps to optimize performance
     private const int GRID_BASE_WIDTH = 100;
 
     private const int GRID_SIZE = (int)(GRID_BASE_WIDTH * GRID_DENSITY);
