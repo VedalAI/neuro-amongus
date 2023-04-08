@@ -35,6 +35,8 @@ public sealed class MinigameDebugTab : DebugTab
             task.AppendTaskText(builder);
             if (GUILayout.Button(_colorRegex.Replace(builder.ToString(), "").Trim()))
             {
+                if (Minigame.Instance) Minigame.Instance.ForceClose();
+
                 Console console = ShipStatus.Instance.AllConsoles.First(task.ValidConsole);
 
                 Minigame minigame = Object.Instantiate(task.GetMinigamePrefab(), Camera.main!.transform, false);
