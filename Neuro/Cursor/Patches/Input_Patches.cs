@@ -24,11 +24,11 @@ public static class Input_GetMouseButton
     [HarmonyPostfix]
     public static void Postfix(ref bool __result, int button)
     {
-        if (!ShipStatus.Instance) return;
+        if (!ShipStatus.Instance || button != 0) return;
 
-        if (button == 0 && InGameCursor.Instance.IsLeftButtonPressed)
+        if (!InGameCursor.Instance.IsHidden)
         {
-            __result = true;
+            __result = InGameCursor.Instance.IsLeftButtonPressed;
         }
     }
 }
