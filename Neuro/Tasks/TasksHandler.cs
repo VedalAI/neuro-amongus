@@ -68,7 +68,7 @@ public sealed class TasksHandler : MonoBehaviour
             CurrentPath = NeuroPlugin.Instance.Pathfinding.FindPath(PlayerControl.LocalPlayer.transform.position, nextTask.Locations.At(0));
             PathIndex = 0;
 
-            //pathfinding.DrawPath(currentPath);
+            // NeuroPlugin.Instance.Pathfinding.DrawPath(CurrentPath);
         }
     }
 

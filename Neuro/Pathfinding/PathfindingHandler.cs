@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Neuro.Pathfinding.DataStructures;
+using Reactor.Utilities.Extensions;
 using UnityEngine;
 
 namespace Neuro.Pathfinding;
@@ -16,9 +17,17 @@ public sealed class PathfindingHandler
     private int _gridUpperBounds = 0;
 
     private Node[,] _grid;
+    private GameObject _nodeVisualPointParent;
+    private GameObject _taskVisualPointParent;
+    private GameObject _pathToTask;
 
     public void Initialize()
     {
+        if (!_nodeVisualPointParent) _nodeVisualPointParent = new GameObject("Node Visual Point Parent");
+        if (!_taskVisualPointParent) _taskVisualPointParent = new GameObject("Task Visual Point Parent");
+        if (_nodeVisualPointParent.transform.childCount > 0) _nodeVisualPointParent.transform.DestroyChildren();
+        if (_taskVisualPointParent.transform.childCount > 0) _taskVisualPointParent.transform.DestroyChildren();
+
         _gridSize = (int)(gridBaseWidth * gridDensity);
         _gridLowerBounds = _gridSize / -2;
         _gridUpperBounds = _gridSize / 2;
@@ -53,6 +62,7 @@ public sealed class PathfindingHandler
         {
             transform =
             {
+                parent = _taskVisualPointParent.transform,
                 position = targetNodePosition
             }
         };
@@ -209,6 +219,7 @@ public sealed class PathfindingHandler
             {
                 transform =
                 {
+                    parent = _nodeVisualPointParent.transform,
                     position = nodePosition
                 }
             };
@@ -318,24 +329,22 @@ public sealed class PathfindingHandler
         return waypoints;
     }
 
-    private void DrawPath(Vector2[] path)
+    public void DrawPath(Vector2[] path)
     {
-        // TODO: Cache old path instead of destroying it by name
-        GameObject.Destroy(GameObject.Find("Neuro Path"));
-        GameObject test = new("Neuro Path");
-        //Info(test.transform);
-        test.transform.position = PlayerControl.LocalPlayer.transform.position;
+        if (_pathToTask) _pathToTask.Destroy();
+        _pathToTask = new GameObject("Neuro Path") { transform = { position = PlayerControl.LocalPlayer.transform.position } };
 
-        LineRenderer renderer = test.AddComponent<LineRenderer>();
+        LineRenderer renderer = _pathToTask.AddComponent<LineRenderer>();
         renderer.positionCount = path.Length;
         for (int i = 0; i < path.Length; i++)
         {
-            Info(path[i].ToString());
             renderer.SetPosition(i, path[i]);
         }
 
-        renderer.widthMultiplier = 0.2f;
+        renderer.widthMultiplier = 0.15f;
+        renderer.material = new Material(Shader.Find("Sprites/Outline"));
         renderer.startColor = Color.blue;
+        renderer.endColor = Color.green;
     }
 
     private static int GetDistance(Node a, Node b)
