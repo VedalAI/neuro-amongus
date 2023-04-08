@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Il2CppInterop.Runtime;
+﻿using System.Collections;
+using BepInEx.Unity.IL2CPP.Utils;
 using Neuro.Cursor;
 using UnityEngine;
 using BepInEx.Unity.IL2CPP.Utils;
@@ -12,18 +8,6 @@ namespace Neuro.Minigames;
 
 public static class MinigameHandler
 {
-    static MinigameHandler()
-    {
-        MinigameSolvers = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => t.GetCustomAttribute<MinigameSolverAttribute>() is { })
-            .Where(t => t.IsAssignableTo(typeof(MinigameSolver)))
-            .Select(solverType => (solverType.GetCustomAttribute<MinigameSolverAttribute>()!.Types, solverType))
-            .SelectMany(t => t.Types.Select(type => (type, Activator.CreateInstance(t.solverType))))
-            .ToDictionary(t => Il2CppType.From(t.type).FullName, t => (MinigameSolver) t.Item2);
-    }
-
-    private static readonly Dictionary<string, MinigameSolver> MinigameSolvers;
-
     public static void TryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
         GameObject coroutineObject = new("Minigame Solver");
@@ -33,10 +17,10 @@ public static class MinigameHandler
         MonoBehaviour coroutineBehaviour = coroutineObject.AddComponent<DivertPowerMetagame>();
         coroutineBehaviour.StartCoroutine(CoTryCompleteMinigame(minigame, task));
     }
-
+    
     private static IEnumerator CoTryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
-        if (!MinigameSolvers.TryGetValue(minigame.GetIl2CppType().FullName, out MinigameSolver solver))
+        if (!MinigameSolverAttribute.MinigameSolvers.TryGetValue(minigame.GetIl2CppType().FullName, out MinigameSolver solver))
         {
             Warning($"Cannot solve minigame of type {minigame.GetIl2CppType().FullName}");
             yield break;

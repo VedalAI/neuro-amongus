@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -12,7 +13,7 @@ public sealed class UnlockManifoldsSolver : MinigameSolver<UnlockManifoldsMiniga
         {
             yield return InGameCursor.Instance.CoMoveTo(minigame.Buttons[minigame.buttonCounter]);
             minigame.HitButton(minigame.buttonCounter);
-            yield return Sleep(0.2f);
+            yield return new WaitForSeconds(0.2f);
         }
     }
 }

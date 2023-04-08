@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
 using Neuro.Utilities;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -16,7 +17,7 @@ public sealed class CleanVentSolver : MinigameSolver<VentCleaningMinigame>
         {
             yield return InGameCursor.Instance.CoMoveTo(dirt);
             minigame.CleanUp(dirt);
-            yield return Sleep(0.1f);
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.ImGui;
 using UnityEngine;
@@ -11,18 +9,6 @@ namespace Neuro.Debugging;
 [RegisterInIl2Cpp]
 public sealed class DebugWindow : MonoBehaviour
 {
-    static DebugWindow()
-    {
-        _tabs = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => t.GetCustomAttribute<DebugTabAttribute>() is { })
-            .Where(t => t.IsAssignableTo(typeof(DebugTab)))
-            .Select(Activator.CreateInstance)
-            .OfType<DebugTab>()
-            .ToList();
-    }
-
-    private static readonly List<DebugTab> _tabs;
-
     private DebugTab _selectedTab;
     private bool _enabled = true;
     private readonly DragWindow _window;
@@ -35,7 +21,7 @@ public sealed class DebugWindow : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F1)) _enabled = !_enabled;
-        if (_tabs.Count == 0) _enabled = false;
+        if (DebugTabAttribute.Tabs.Count == 0) _enabled = false;
     }
 
     private void OnGUI()
@@ -56,9 +42,14 @@ public sealed class DebugWindow : MonoBehaviour
         {
             GUILayout.BeginVertical();
 
+            if (DebugTabAttribute.Tabs.Count <= 1)
+            {
+                GUILayout.Label(" ", GUILayout.Height(1), GUILayout.Width(75));
+            }
+
             GUILayout.BeginHorizontal();
 
-            foreach (DebugTab tab in _tabs)
+            foreach (DebugTab tab in DebugTabAttribute.Tabs)
             {
                 bool tabHidden = !tab.IsEnabled;
                 if (tabHidden)
@@ -80,7 +71,7 @@ public sealed class DebugWindow : MonoBehaviour
 
             if (_selectedTab is { IsEnabled: true })
             {
-                GUILayout.Label(string.Empty, GUI.skin.horizontalSlider); // This creates a divider
+                GUILayoutUtils.Divider();
                 _selectedTab?.BuildUI();
             }
 
