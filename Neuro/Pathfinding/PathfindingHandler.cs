@@ -8,19 +8,22 @@ namespace Neuro.Pathfinding;
 
 public sealed class PathfindingHandler
 {
-    private const float GRID_DENSITY = 5f; // TODO: Fine-tune individual maps to optimize performance
-    private const int GRID_BASE_WIDTH = 100;
+    internal float gridDensity = 5f; // TODO: Fine-tune individual maps to optimize performance
+    internal int gridBaseWidth = 100;
 
-    private const int GRID_SIZE = (int)(GRID_BASE_WIDTH * GRID_DENSITY);
-    private const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;
-    private const int GRID_UPPER_BOUNDS = GRID_SIZE / 2;
+    private int _gridSize = 0;
+    private int _gridLowerBounds = 0;
+    private int _gridUpperBounds = 0;
 
-    private Node[,] grid;
+    private Node[,] _grid;
 
     public void Initialize()
     {
-        GenerateNodeGrid();
+        _gridSize = (int)(gridBaseWidth * gridDensity);
+        _gridLowerBounds = _gridSize / -2;
+        _gridUpperBounds = _gridSize / 2;
 
+        GenerateNodeGrid();
         FloodFill(ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius);
     }
 
@@ -44,14 +47,19 @@ public sealed class PathfindingHandler
         Info("End Node");
         Node targetNode = FindClosestNode(target);
 
-        GameObject endNodeObj = new("Task Visual Point");
+        Vector3 targetNodePosition = targetNode.worldPosition;
 
-        Vector3 position = targetNode.worldPosition;
-        endNodeObj.transform.position = position;
+        GameObject endNodeObj = new("Task Visual Point")
+        {
+            transform =
+            {
+                position = targetNodePosition
+            }
+        };
 
         LineRenderer renderer2 = endNodeObj.AddComponent<LineRenderer>();
-        renderer2.SetPosition(0, position);
-        renderer2.SetPosition(1, position + new Vector3(0f, 0.3f, 0));
+        renderer2.SetPosition(0, targetNodePosition);
+        renderer2.SetPosition(1, targetNodePosition + new Vector3(0f, 0.3f, 0));
         renderer2.widthMultiplier = 0.3f;
         renderer2.positionCount = 2;
         renderer2.material = new Material(Shader.Find("Unlit/MaskShader"));
@@ -62,7 +70,7 @@ public sealed class PathfindingHandler
 
         if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<Vector2>();
 
-        Heap<Node> openSet = new(GRID_SIZE * GRID_SIZE);
+        Heap<Node> openSet = new(_gridSize * _gridSize);
         HashSet<Node> closedSet = new();
 
         openSet.Add(startNode);
@@ -121,9 +129,9 @@ public sealed class PathfindingHandler
 
     private void GenerateNodeGrid()
     {
-        grid = new Node[GRID_SIZE, GRID_SIZE];
+        _grid = new Node[_gridSize, _gridSize];
 
-        const float NODE_RADIUS = 1 / GRID_DENSITY;
+        float nodeRadius = 1 / gridDensity;
 
         const float OFFSET = 1 / 5f; // Must be less than 1 / 4f or it will flood fill through walls
         Vector2[] offsetCoords =
@@ -133,8 +141,8 @@ public sealed class PathfindingHandler
             new(-OFFSET, OFFSET), new(0, OFFSET), new(OFFSET, OFFSET)
         };
 
-        for (int x = GRID_LOWER_BOUNDS; x < GRID_UPPER_BOUNDS; x++)
-        for (int y = GRID_LOWER_BOUNDS; y < GRID_UPPER_BOUNDS; y++)
+        for (int x = _gridLowerBounds; x < _gridUpperBounds; x++)
+        for (int y = _gridLowerBounds; y < _gridUpperBounds; y++)
         {
             Vector2 point = Vector2.zero;
             bool accessible = false;
@@ -148,14 +156,14 @@ public sealed class PathfindingHandler
                 }
             }
 
-            grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
+            _grid[x + _gridUpperBounds, y + _gridUpperBounds] = new Node(accessible, point, x + _gridUpperBounds, y + _gridUpperBounds);
         }
 
         bool IsAccessible(float x, float y, out Vector2 point)
         {
-            point = new Vector2(x / GRID_DENSITY, y / GRID_DENSITY);
+            point = new Vector2(x / gridDensity, y / gridDensity);
 
-            Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, LayerMask.GetMask("Ship", "ShortObjects"));
+            Collider2D[] cols = Physics2D.OverlapCircleAll(point, nodeRadius, LayerMask.GetMask("Ship", "ShortObjects"));
             int validColsCount = cols.Count(col =>
                 !col.isTrigger &&
                 !col.GetComponentInParent<Vent>() &&
@@ -195,14 +203,19 @@ public sealed class PathfindingHandler
         Material nodeMaterial = new(Shader.Find("Unlit/MaskShader"));
         foreach (Node node in closedSet.ToList())
         {
-            GameObject nodeVisualPoint = new("Node Visual Point");
+            Vector3 nodePosition = node.worldPosition;
 
-            Vector3 position = node.worldPosition;
-            nodeVisualPoint.transform.position = position;
+            GameObject nodeVisualPoint = new("Node Visual Point")
+            {
+                transform =
+                {
+                    position = nodePosition
+                }
+            };
 
             LineRenderer renderer = nodeVisualPoint.AddComponent<LineRenderer>();
-            renderer.SetPosition(0, position);
-            renderer.SetPosition(1, position + new Vector3(0, 0.1f, 0));
+            renderer.SetPosition(0, nodePosition);
+            renderer.SetPosition(1, nodePosition + new Vector3(0, 0.1f, 0));
             renderer.widthMultiplier = 0.1f;
             renderer.positionCount = 2;
             renderer.material = nodeMaterial;
@@ -211,7 +224,7 @@ public sealed class PathfindingHandler
         }
 
         // Set all nodes not in closed set to inaccessible
-        foreach (Node node in grid)
+        foreach (Node node in _grid)
         {
             if (!closedSet.Contains(node)) node.accessible = false;
         }
@@ -219,14 +232,14 @@ public sealed class PathfindingHandler
 
     private Node NodeFromWorldPoint(Vector2 position)
     {
-        position *= GRID_DENSITY;
-        float clampedX = Mathf.Clamp(position.x, GRID_LOWER_BOUNDS, GRID_UPPER_BOUNDS);
-        float clampedY = Mathf.Clamp(position.y, GRID_LOWER_BOUNDS, GRID_UPPER_BOUNDS);
+        position *= gridDensity;
+        float clampedX = Mathf.Clamp(position.x, _gridLowerBounds, _gridUpperBounds);
+        float clampedY = Mathf.Clamp(position.y, _gridLowerBounds, _gridUpperBounds);
 
-        int xIndex = Mathf.RoundToInt(clampedX + GRID_UPPER_BOUNDS);
-        int yIndex = Mathf.RoundToInt(clampedY + GRID_UPPER_BOUNDS);
+        int xIndex = Mathf.RoundToInt(clampedX + _gridUpperBounds);
+        int yIndex = Mathf.RoundToInt(clampedY + _gridUpperBounds);
 
-        return grid[xIndex, yIndex];
+        return _grid[xIndex, yIndex];
     }
 
     private Node FindClosestNode(Vector2 position)
@@ -283,7 +296,7 @@ public sealed class PathfindingHandler
             int checkX = node.gridX + x;
             int checkY = node.gridY + y;
 
-            if (checkX is >= 0 and < GRID_SIZE && checkY is >= 0 and < GRID_SIZE) neighbours.Add(grid[checkX, checkY]);
+            if (checkX >= 0 && checkX < _gridSize && checkY >= 0 && checkY < _gridSize) neighbours.Add(_grid[checkX, checkY]);
         }
 
         return neighbours;
