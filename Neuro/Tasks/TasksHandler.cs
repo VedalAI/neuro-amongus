@@ -184,12 +184,10 @@ public sealed class TasksHandler : MonoBehaviour
             foreach (Console con in list) {
                 var currentDistance = Vector2.Distance(con.transform.position, PlayerControl.LocalPlayer.transform.position);
 
-                if (currentDistance < con.usableDistance && !con.name.Contains("Vent"))
+                if (currentDistance < con.usableDistance)
                 {
                     // Info("We found " + con.name + " with distance " + con.usableDistance + " " + currentDistance);
-                    bool couldUse;
-                    bool canUse;
-                    con.CanUse(PlayerControl.LocalPlayer.Data, out canUse, out couldUse);
+                    con.CanUse(PlayerControl.LocalPlayer.Data, out bool canUse,out _);
                     if (canUse)
                     {
                         con.Use();
@@ -197,8 +195,6 @@ public sealed class TasksHandler : MonoBehaviour
                     }
                 }
             }
-
         }
-          
     }
 }
