@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -12,7 +13,7 @@ public class RunDiagnosticsSolver : MinigameSolver<DiagnosticGame>
         {
             yield return InGameCursor.Instance.CoMoveTo(minigame.StartButton);
             minigame.StartDiagnostic();
-            yield return Sleep(0.5f);
+            yield return new WaitForSeconds(0.5f);
             minigame.Close();
         }
         else if (task.TimerStarted == NormalPlayerTask.TimerState.Finished)
@@ -23,7 +24,7 @@ public class RunDiagnosticsSolver : MinigameSolver<DiagnosticGame>
         }
         else
         {
-            yield return Sleep(0.5f);
+            yield return new WaitForSeconds(0.5f);
             minigame.Close();
         }
     }

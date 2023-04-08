@@ -41,7 +41,7 @@ public class PolishRubySolver : MinigameSolver<PolishRubyGame>
                         minigame.Sparkles[b.index].enabled = true;
                     }
                 }
-                yield return Sleep(0.1f);
+                yield return new WaitForSeconds(0.1f);
             }
         }
         minigame.MyNormTask.NextStep();

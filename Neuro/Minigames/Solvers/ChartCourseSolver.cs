@@ -23,11 +23,11 @@ public class ChartCourseSolver : MinigameSolver<CourseMinigame>
                 // so we handle that here
                 worldPos += new Vector3(0.1f, 0.1f, 0f);
                 yield return InGameCursor.Instance.CoMoveTo(worldPos, 0.33f);
-                InGameCursor.Instance.StopHolding();
+                InGameCursor.Instance.StopHoldingLMB();
                 yield break;
             }
             yield return InGameCursor.Instance.CoMoveTo(worldPos, 0.33f);
-            yield return Sleep(0.1f);
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }

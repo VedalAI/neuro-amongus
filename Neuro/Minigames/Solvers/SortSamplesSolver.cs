@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -24,8 +25,8 @@ public class SortSamplesSolver : MinigameSolver<SortMinigame>
                     yield return InGameCursor.Instance.CoMoveTo(minigame.MineralBox);
                     break;
             }
-            InGameCursor.Instance.StopHolding();
-            yield return Sleep(0.1f);
+            InGameCursor.Instance.StopHoldingLMB();
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }

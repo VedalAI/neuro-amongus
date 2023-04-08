@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -9,7 +10,7 @@ public class MakeBurgerSolver : MinigameSolver<BurgerMinigame>
 {
     protected override IEnumerator CompleteMinigame(BurgerMinigame minigame, NormalPlayerTask task)
     {
-        yield return Sleep(1.5f);
+        yield return new WaitForSeconds(1.5f);
         minigame.TogglePaper();
 
         foreach (BurgerToppingTypes topping in minigame.ExpectedToppings)
@@ -31,8 +32,8 @@ public class MakeBurgerSolver : MinigameSolver<BurgerMinigame>
             yield return InGameCursor.Instance.CoMoveTo(target);
             InGameCursor.Instance.StartHoldingLMB(target);
             yield return InGameCursor.Instance.CoMoveTo(minigame.burger.Peek());
-            InGameCursor.Instance.StopHolding();
-            yield return Sleep(0.2f);
+            InGameCursor.Instance.StopHoldingLMB();
+            yield return new WaitForSeconds(0.2f);
         }
     }
 }

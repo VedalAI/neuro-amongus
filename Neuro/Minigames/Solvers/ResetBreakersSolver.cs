@@ -17,12 +17,12 @@ public class ResetBreakersSolver : MinigameSolver<ElecLeverGame>
             InGameCursor.Instance.StartHoldingLMB(minigame.Handle);
             Vector3 down = minigame.transform.TransformPoint(minigame.Handle.transform.localPosition + new Vector3(0f, -3f, 0f));
             yield return InGameCursor.Instance.CoMoveTo(down);
-            yield return Sleep(0.1f);
-            InGameCursor.Instance.StopHolding();
+            yield return new WaitForSeconds(0.1f);
+            InGameCursor.Instance.StopHoldingLMB();
         }
         else
         {
-            yield return Sleep(0.5f);
+            yield return new WaitForSeconds(0.5f);
             minigame.Close();
         }
     }

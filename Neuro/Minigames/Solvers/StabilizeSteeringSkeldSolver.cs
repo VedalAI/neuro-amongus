@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -10,7 +11,7 @@ public class StabilizeSteeringSkeldSolver : MinigameSolver<NavigationMinigame>
     {
         InGameCursor.Instance.SnapToCenter();
         InGameCursor.Instance.StartHoldingLMB(minigame.CrossHairImage);
-        yield return Sleep(0.5f);
-        InGameCursor.Instance.StopHolding();
+        yield return new WaitForSeconds(0.5f);
+        InGameCursor.Instance.StopHoldingLMB();
     }
 }

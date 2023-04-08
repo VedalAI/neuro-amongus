@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -14,15 +15,15 @@ public class FillCanistersSolver : MinigameSolver<FillCanistersGame>
             yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(minigame.Canister.transform.localPosition));
             InGameCursor.Instance.StartHoldingLMB(minigame.Canister);
             yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(minigame.CanisterSnapPosition));
-            InGameCursor.Instance.StopHolding();
+            InGameCursor.Instance.StopHoldingLMB();
             while (minigame.Canister.Gauge.Value < minigame.Canister.Gauge.MaxValue)
                 yield return null;
             // pulling away the canister only requires a click
             InGameCursor.Instance.StartHoldingLMB(minigame.Canister);
-            yield return Sleep(0.1f);
-            InGameCursor.Instance.StopHolding();
+            yield return new WaitForSeconds(0.1f);
+            InGameCursor.Instance.StopHoldingLMB();
             // wait for the next canister to appear
-            yield return Sleep(0.5f);
+            yield return new WaitForSeconds(0.5f);
         }
     }
 }

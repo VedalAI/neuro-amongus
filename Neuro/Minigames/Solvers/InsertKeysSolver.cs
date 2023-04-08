@@ -12,8 +12,8 @@ public class InsertKeysSolver : MinigameSolver<KeyMinigame>
         yield return InGameCursor.Instance.CoMoveTo(minigame.key);
         InGameCursor.Instance.StartHoldingLMB(minigame.key);
         yield return InGameCursor.Instance.CoMoveTo(minigame.Slots[minigame.targetSlotId]);
-        InGameCursor.Instance.StopHolding();
-        yield return Sleep(0.1f);
+        InGameCursor.Instance.StopHoldingLMB();
+        yield return new WaitForSeconds(0.1f);
         InGameCursor.Instance.StartHoldingLMB(minigame.key);
         for (float t = 0; t < 0.5f; t += Time.deltaTime) 
         {
@@ -25,6 +25,6 @@ public class InsertKeysSolver : MinigameSolver<KeyMinigame>
             minigame.key.transform.localEulerAngles = currentAngles;
             yield return null;
         }
-        InGameCursor.Instance.StopHolding();
+        InGameCursor.Instance.StopHoldingLMB();
     }
 }

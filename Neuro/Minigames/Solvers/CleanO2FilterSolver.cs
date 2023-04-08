@@ -31,8 +31,8 @@ public class CleanO2FilterSolver : MinigameSolver<LeafMinigame>
             yield return InGameCursor.Instance.CoMoveTo(leaf);
             InGameCursor.Instance.StartHoldingLMB(leaf);
             yield return InGameCursor.Instance.CoMoveTo(exit);
-            InGameCursor.Instance.StopHolding();
-            yield return Sleep(0.1f);
+            InGameCursor.Instance.StopHoldingLMB();
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }

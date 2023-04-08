@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -13,7 +14,7 @@ public class EnterIdCodeSolver : MinigameSolver<EnterCodeMinigame>
         minigame.ShowCard();
 
         // the cardOut bool gets set immediately so give some time for it to appear
-        yield return Sleep(1.2f);
+        yield return new WaitForSeconds(1.2f);
         int[] numbers = Array.ConvertAll(minigame.targetNumber.ToString().ToCharArray(), x => (int)char.GetNumericValue(x));
         UiElement[] buttons = minigame.ControllerSelectable.ToArray();
         foreach (int number in numbers)
@@ -24,10 +25,10 @@ public class EnterIdCodeSolver : MinigameSolver<EnterCodeMinigame>
             else
                 yield return InGameCursor.Instance.CoMoveTo(buttons[number - 1]);
             minigame.EnterDigit(number);
-            yield return Sleep(0.2f);
+            yield return new WaitForSeconds(0.2f);
         }
         yield return InGameCursor.Instance.CoMoveTo(buttons[11]);
-        
+
         minigame.AcceptDigits();
     }
 }

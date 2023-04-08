@@ -15,11 +15,11 @@ public class CleanToiletSolver : MinigameSolver<ToiletMinigame>
         while (!task.IsComplete)
         {
             yield return InGameCursor.Instance.CoMoveTo(minigame.Plunger.transform.position + new Vector3(0f, 1f, 0f), 2);
-            yield return Sleep(0.05f);
+            yield return new WaitForSeconds(0.05f);
             yield return InGameCursor.Instance.CoMoveTo(minigame.Plunger.transform.position + new Vector3(0f, -1f, 0f), 2);
-            yield return Sleep(0.05f);
+            yield return new WaitForSeconds(0.05f);
         }
 
-        InGameCursor.Instance.StopHolding();
+        InGameCursor.Instance.StopHoldingLMB();
     }
 }

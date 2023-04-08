@@ -19,7 +19,7 @@ public class RebootWifiSolver : MinigameSolver<WifiGame>
                 minigame.Slider.UpdateValue();
                 yield return null;
             }
-            yield return Sleep(0.5f);
+            yield return new WaitForSeconds(0.5f);
             minigame.Close();
         }
         else if (task.TimerStarted == NormalPlayerTask.TimerState.Finished)
@@ -35,7 +35,7 @@ public class RebootWifiSolver : MinigameSolver<WifiGame>
         }
         else
         {
-            yield return Sleep(0.5f);
+            yield return new WaitForSeconds(0.5f);
             minigame.Close();
         }
     }

@@ -2,7 +2,6 @@
 using BepInEx.Unity.IL2CPP.Utils;
 using Neuro.Cursor;
 using UnityEngine;
-using BepInEx.Unity.IL2CPP.Utils;
 
 namespace Neuro.Minigames;
 
@@ -17,7 +16,7 @@ public static class MinigameHandler
         MonoBehaviour coroutineBehaviour = coroutineObject.AddComponent<DivertPowerMetagame>();
         coroutineBehaviour.StartCoroutine(CoTryCompleteMinigame(minigame, task));
     }
-    
+
     private static IEnumerator CoTryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
         if (!MinigameSolverAttribute.MinigameSolvers.TryGetValue(minigame.GetIl2CppType().FullName, out MinigameSolver solver))

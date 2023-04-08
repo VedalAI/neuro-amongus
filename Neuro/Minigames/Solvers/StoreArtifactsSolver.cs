@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -13,8 +14,8 @@ public class StoreArtifactsSolver : MinigameSolver<SpecimenGame>
             yield return InGameCursor.Instance.CoMoveTo(minigame.Specimens[i], 0.75f);
             InGameCursor.Instance.StartHoldingLMB(minigame.Specimens[i]);
             yield return InGameCursor.Instance.CoMoveTo(minigame.Slots[i], 0.75f);
-            yield return Sleep(0.1f);
-            InGameCursor.Instance.StopHolding();
+            yield return new WaitForSeconds(0.1f);
+            InGameCursor.Instance.StopHoldingLMB();
         }
     }
 }
