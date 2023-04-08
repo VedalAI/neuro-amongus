@@ -8,7 +8,9 @@ public class StabilizeSteeringSkeldSolver : MinigameSolver<NavigationMinigame>
 {
     protected override IEnumerator CompleteMinigame(NavigationMinigame minigame, NormalPlayerTask task)
     {
-        InGameCursor.Instance.SnapToCenter();
-        yield return InGameCursor.Instance.CoPressLMB();
+        InGameCursor.Instance.SnapTo(minigame.CrossHairImage);
+        InGameCursor.Instance.StartHoldingLMB(minigame.CrossHairImage);
+        yield return InGameCursor.Instance.CoMoveToCenter(0.75f);
+        InGameCursor.Instance.StopHoldingLMB();
     }
 }
