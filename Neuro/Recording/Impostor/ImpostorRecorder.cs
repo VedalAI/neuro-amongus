@@ -18,8 +18,8 @@ public sealed class ImpostorRecorder : MonoBehaviour, ISerializable
     }
 
     public bool DidKill { get; private set; }
-    public int SabotageUsed { get; private set; }
-    public int DoorsUsed { get; private set; }
+    public int SabotageUsed { get; private set; } = -1;
+    public int DoorsUsed { get; private set; } = -1;
 
     public void Serialize(BinaryWriter writer)
     {
