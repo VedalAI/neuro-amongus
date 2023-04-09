@@ -31,6 +31,8 @@ public partial class NeuroPlugin : BasePlugin
     public VisionHandler Vision { get; private set; }
     public ImpostorHandler Impostor { get; private set; }
     public CommunicationHandler Communication { get; private set; }
+    public bool AIEnabled { get; private set; } = false;
+
 
     public override void Load()
     {
@@ -46,7 +48,10 @@ public partial class NeuroPlugin : BasePlugin
         Tasks = AddComponent<TasksHandler>();
         Vision = AddComponent<VisionHandler>();
         Impostor = AddComponent<ImpostorHandler>();
-        Communication = AddComponent<CommunicationHandler>();
+        if (AIEnabled)
+        {
+            Communication = AddComponent<CommunicationHandler>();
+        }
 
         ResourceManager.CacheSprite("Cursor", 130);
     }
