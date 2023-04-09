@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace Neuro.Recording.Patches;
+namespace Neuro.Recording.LocalPlayer.Patches;
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckMurder))]
 public static class PlayerControl_CmdCheckMurder
@@ -8,8 +8,7 @@ public static class PlayerControl_CmdCheckMurder
     [HarmonyPostfix]
     public static void Postfix()
     {
-        if (!Recorder.Instance) return;
-        Recorder.Instance.DidKill = true;
+        LocalPlayerRecorder.Instance.RecordKill();
     }
 }
 
@@ -19,7 +18,6 @@ public static class PlayerControl_CmdReportDeadBody
     [HarmonyPostfix]
     public static void Postfix()
     {
-        if (!Recorder.Instance) return;
-        Recorder.Instance.DidReport = true;
+        LocalPlayerRecorder.Instance.RecordReport();
     }
 }

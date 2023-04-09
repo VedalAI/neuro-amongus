@@ -26,7 +26,6 @@ public class ImpostorHandler : MonoBehaviour
         if (MeetingHud.Instance) return;
         if (!PlayerControl.LocalPlayer) return;
 
-        // TODO: Move UpdateNearbyDoors when implementing maps with doors that non-impostors can use
         if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
         {
 
