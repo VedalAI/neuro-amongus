@@ -9,8 +9,9 @@ namespace Neuro.Pathfinding;
 
 public sealed class PathfindingHandler
 {
-    // TODO: Reset these in an un-initialize function
+    internal bool overrideGridDensity = false;
     internal float gridDensity = 0;
+    internal bool overrideGridBaseWidth = false;
     internal int gridBaseWidth = 0;
 
     internal int gridSize = 0;
@@ -37,7 +38,7 @@ public sealed class PathfindingHandler
         if (_nodeVisualPointParent.transform.childCount > 0) _nodeVisualPointParent.transform.DestroyChildren();
         if (_taskVisualPointParent.transform.childCount > 0) _taskVisualPointParent.transform.DestroyChildren();
 
-        if (gridDensity == 0)
+        if (!overrideGridDensity)
         {
             if (ShipStatus.Instance.TryCast<MiraShipStatus>()) gridDensity = 4.404010295867919921875f; // Magic number for Mira
             else if (ShipStatus.Instance.TryCast<PolusShipStatus>()) gridDensity = 4.5252170562744140625f; // Magic number for Polus
@@ -45,7 +46,7 @@ public sealed class PathfindingHandler
             else gridDensity = 4.34f; // Magic number for The Skeld. Don't ask me why I can't TryCast<SkeldShipStatus>()
         }
 
-        if (gridBaseWidth == 0)
+        if (!overrideGridBaseWidth)
         {
             if (ShipStatus.Instance.TryCast<MiraShipStatus>()) gridBaseWidth = 80; // Min width for Mira
             else if (ShipStatus.Instance.TryCast<PolusShipStatus>()) gridBaseWidth = 96; // Min width for Polus

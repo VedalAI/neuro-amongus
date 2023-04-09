@@ -6,8 +6,6 @@ namespace Neuro.Pathfinding;
 [DebugTab]
 public sealed class PathfindingDebugTab : DebugTab
 {
-    private bool _densityOverride = false;
-    private bool _baseWidthOverride = false;
     public override string Name => "Pathfinding";
 
     public override void BuildUI()
@@ -24,13 +22,13 @@ public sealed class PathfindingDebugTab : DebugTab
         GUILayout.Label($"Size: {NeuroPlugin.Instance.Pathfinding.gridSize}");
 
         GUILayout.Label($"Density: {NeuroPlugin.Instance.Pathfinding.gridDensity:F6}");
-        _densityOverride = GUILayout.Toggle(_densityOverride, "Override");
-        if (_densityOverride)
+        NeuroPlugin.Instance.Pathfinding.overrideGridDensity = GUILayout.Toggle(NeuroPlugin.Instance.Pathfinding.overrideGridDensity, "Override");
+        if (NeuroPlugin.Instance.Pathfinding.overrideGridDensity)
             NeuroPlugin.Instance.Pathfinding.gridDensity = GUILayout.HorizontalSlider(NeuroPlugin.Instance.Pathfinding.gridDensity, 3, 7);
 
         GUILayout.Label($"Base Width: {NeuroPlugin.Instance.Pathfinding.gridBaseWidth}");
-        _baseWidthOverride = GUILayout.Toggle(_baseWidthOverride, "Override");
-        if (_baseWidthOverride)
+        NeuroPlugin.Instance.Pathfinding.overrideGridBaseWidth = GUILayout.Toggle(NeuroPlugin.Instance.Pathfinding.overrideGridBaseWidth, "Override");
+        if (NeuroPlugin.Instance.Pathfinding.overrideGridBaseWidth)
             NeuroPlugin.Instance.Pathfinding.gridBaseWidth = (int)GUILayout.HorizontalSlider(NeuroPlugin.Instance.Pathfinding.gridBaseWidth, 55, 150);
     }
 }
