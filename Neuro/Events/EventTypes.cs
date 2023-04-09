@@ -3,6 +3,7 @@
 public enum EventTypes
 {
     GameStarted,
-    MeetingStarted,
-    MeetingEnded
+    MeetingStarted, // TODO: Remove unused
+    MeetingEnded,
+    PlayerDied
 }

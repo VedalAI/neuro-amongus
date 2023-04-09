@@ -65,8 +65,8 @@ public sealed class MovementHandler : MonoBehaviour, IDeserializable
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    public static void OnGameStarted()
+    public static void OnGameStarted(ShipStatus shipStatus)
     {
-        ShipStatus.Instance.gameObject.AddComponent<MovementHandler>();
+        shipStatus.gameObject.AddComponent<MovementHandler>();
     }
 }

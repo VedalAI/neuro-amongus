@@ -11,11 +11,11 @@ using UnityEngine;
 namespace Neuro.Recording.Map;
 
 [RegisterInIl2Cpp]
-public sealed class MapDataRecorder : MonoBehaviour, ISerializable
+public sealed class MapRecorder : MonoBehaviour, ISerializable
 {
-    public static MapDataRecorder Instance { get; private set; }
+    public static MapRecorder Instance { get; private set; }
 
-    public MapDataRecorder(IntPtr ptr) : base(ptr)
+    public MapRecorder(IntPtr ptr) : base(ptr)
     {
     }
 
@@ -56,7 +56,7 @@ public sealed class MapDataRecorder : MonoBehaviour, ISerializable
         PlainDoor[] nearbyDoors = ShipStatus.Instance.AllDoors.OrderBy(Closest).Take(3).ToArray();
         for (int i = 0; i < 3; i++)
         {
-            s_NearbyDoors[i] = nearbyDoors.ElementAtOrDefault(i) is { } door ? DoorData.Create(door) : DoorData.Absent;
+            s_NearbyDoors[i] = nearbyDoors.ElementAtOrDefault(i) is { } door ? DoorData.Create(door) : default;
         }
     }
 
@@ -65,7 +65,7 @@ public sealed class MapDataRecorder : MonoBehaviour, ISerializable
         Vent[] nearbyVents = ShipStatus.Instance.AllVents.OrderBy(Closest).Take(3).ToArray();
         for (int i = 0; i < 3; i++)
         {
-            s_NearbyVents[i] = nearbyVents.ElementAtOrDefault(i) is { } vent ? VentData.Create(vent) : VentData.Absent;
+            s_NearbyVents[i] = nearbyVents.ElementAtOrDefault(i) is { } vent ? VentData.Create(vent) : default;
         }
     }
 
@@ -80,8 +80,8 @@ public sealed class MapDataRecorder : MonoBehaviour, ISerializable
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
+    private static void OnGameStarted(ShipStatus shipStatus)
     {
-        ShipStatus.Instance.gameObject.AddComponent<MapDataRecorder>();
+        shipStatus.gameObject.AddComponent<MapRecorder>();
     }
 }

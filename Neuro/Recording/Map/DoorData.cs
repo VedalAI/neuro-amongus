@@ -5,7 +5,7 @@ namespace Neuro.Recording.Map;
 
 public readonly struct DoorData : ISerializable
 {
-    public PositionData Position { get; init; } = PositionData.Absent;
+    public PositionData Position { get; init; } = default;
     public bool IsOpen { get; init; } = true;
 
     public DoorData(PositionData position, bool isOpen)
@@ -19,8 +19,6 @@ public readonly struct DoorData : ISerializable
         Position.Serialize(writer);
         writer.Write(IsOpen);
     }
-
-    public static readonly DoorData Absent = new();
 
     public static DoorData Create(PlainDoor door)
     {

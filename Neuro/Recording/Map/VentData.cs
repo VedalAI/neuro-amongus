@@ -23,8 +23,6 @@ public readonly struct VentData : ISerializable
             ConnectingVents[i].Serialize(writer);
     }
 
-    public static readonly VentData Absent = new();
-
     public static VentData Create(Vent vent)
     {
         return new VentData

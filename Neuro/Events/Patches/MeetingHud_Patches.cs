@@ -6,8 +6,8 @@ namespace Neuro.Events.Patches;
 public static class MeetingHud_Start
 {
     [HarmonyPostfix]
-    public static void Postfix()
+    public static void Postfix(MeetingHud __instance)
     {
-        EventManager.InvokeEvent(EventTypes.MeetingStarted);
+        EventManager.InvokeEvent(EventTypes.MeetingStarted, __instance);
     }
 }

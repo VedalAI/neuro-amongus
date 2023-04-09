@@ -24,8 +24,6 @@ public readonly struct PositionData : ISerializable
         writer.Write(NextNodePosition);
     }
 
-    public static readonly PositionData Absent = new();
-
     public static PositionData Create(PositionProvider position, IdentifierProvider pathfindingIdentifier)
     {
         return new PositionData

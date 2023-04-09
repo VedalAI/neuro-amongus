@@ -80,8 +80,8 @@ public sealed class InteractionsHandler : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
+    private static void OnGameStarted(ShipStatus shipStatus)
     {
-        ShipStatus.Instance.gameObject.AddComponent<InteractionsHandler>();
+        shipStatus.gameObject.AddComponent<InteractionsHandler>();
     }
 }
