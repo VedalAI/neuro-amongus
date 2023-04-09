@@ -5,12 +5,11 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SortMinigame))]
-public class SortSamplesSolver : MinigameSolver<SortMinigame>
+public class SortSamplesSolver : TaskMinigameSolver<SortMinigame>
 {
     protected override IEnumerator CompleteMinigame(SortMinigame minigame, NormalPlayerTask task)
     {
-        bool secondPlant, secondAnimal, secondMineral;
-        secondPlant = secondAnimal = secondMineral = false;
+        bool secondPlant = false, secondAnimal = false, secondMineral = false;
         Vector3 left = new(-0.5f, 0f);
         Vector3 right = new(0.5f, 0f);
         foreach (SortGameObject obj in minigame.Objects)

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(RewindTapeMinigame))]
-public class RewindTapesSolver : MinigameSolver<RewindTapeMinigame>
+public class RewindTapesSolver : TaskMinigameSolver<RewindTapeMinigame>
 {
     protected override IEnumerator CompleteMinigame(RewindTapeMinigame minigame, NormalPlayerTask task)
     {
@@ -15,7 +15,7 @@ public class RewindTapesSolver : MinigameSolver<RewindTapeMinigame>
             minigame.Rewind();
             yield return InGameCursor.Instance.CoMoveTo(minigame.PlayButton);
 
-            // overshoot a little when rewinding to make it a bit more realistic 
+            // overshoot a little when rewinding to make it a bit more realistic
             while (minigame.currentTime - minigame.targetTime > -5f)
                 yield return null;
         }
@@ -25,7 +25,7 @@ public class RewindTapesSolver : MinigameSolver<RewindTapeMinigame>
             minigame.FastForward();
             yield return InGameCursor.Instance.CoMoveTo(minigame.PlayButton);
 
-            // stop a bit before the target time to make it a bit more realistic 
+            // stop a bit before the target time to make it a bit more realistic
             while (Mathf.Abs(minigame.targetTime - minigame.currentTime) > 5f)
                 yield return null;
         }

@@ -5,14 +5,14 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(AlignGame))]
-public class AlignEngineOutputSolver : MinigameSolver<AlignGame>
+public class AlignEngineOutputSolver : TaskMinigameSolver<AlignGame>
 {
     protected override IEnumerator CompleteMinigame(AlignGame minigame, NormalPlayerTask task)
     {
         Collider2D slider = minigame.col;
         yield return InGameCursor.Instance.CoMoveTo(slider);
 
-        for (float t = 0; t < 1f; t += Time.deltaTime) { 
+        for (float t = 0; t < 1f; t += Time.deltaTime) {
             InGameCursor.Instance.SnapTo(slider);
 
             // taken from AlignGame.Update()

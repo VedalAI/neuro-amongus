@@ -3,7 +3,7 @@
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(ShowerMinigame))]
-public class DecontaminateSolver : MinigameSolver<ShowerMinigame>
+public class DecontaminateSolver : TaskMinigameSolver<ShowerMinigame>
 {
     protected override IEnumerator CompleteMinigame(ShowerMinigame minigame, NormalPlayerTask task)
     {

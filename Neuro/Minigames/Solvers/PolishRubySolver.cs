@@ -6,12 +6,12 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(PolishRubyGame))]
-public class PolishRubySolver : MinigameSolver<PolishRubyGame>
+public class PolishRubySolver : TaskMinigameSolver<PolishRubyGame>
 {
     protected override IEnumerator CompleteMinigame(PolishRubyGame minigame, NormalPlayerTask task)
     {
         var buttons = minigame.Buttons
-            .Select((PassiveButton button, int index) => (button, index))
+            .Select((button, index) => (button, index))
             .Where(b => b.button.isActiveAndEnabled)
             .ToArray();
 

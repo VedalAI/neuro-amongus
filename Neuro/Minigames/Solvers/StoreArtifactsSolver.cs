@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SpecimenGame))]
-public class StoreArtifactsSolver : MinigameSolver<SpecimenGame>
+public class StoreArtifactsSolver : TaskMinigameSolver<SpecimenGame>
 {
     // TODO: prevent unusual behaviour since the array and how they appear on screen are different
     protected override IEnumerator CompleteMinigame(SpecimenGame minigame, NormalPlayerTask task)

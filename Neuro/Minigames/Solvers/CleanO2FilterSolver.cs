@@ -6,7 +6,7 @@ using System.Linq;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(LeafMinigame))]
-public class CleanO2FilterSolver : MinigameSolver<LeafMinigame>
+public class CleanO2FilterSolver : TaskMinigameSolver<LeafMinigame>
 {
     protected override IEnumerator CompleteMinigame(LeafMinigame minigame, NormalPlayerTask task)
     {
@@ -18,7 +18,7 @@ public class CleanO2FilterSolver : MinigameSolver<LeafMinigame>
             Collider2D _lastLeafCopy = lastLeaf;
             Collider2D leaf = minigame.Leaves
                 .Where(l => l && l.enabled && l.gameObject.active && l != _lastLeafCopy
-                    && Vector3.Distance(l.transform.position, exit) > 4f)  
+                    && Vector3.Distance(l.transform.position, exit) > 4f)
                 .MaxBy(l => (InGameCursor.Instance.Position - (Vector2)l.transform.position).magnitude);
 
             if (!leaf)

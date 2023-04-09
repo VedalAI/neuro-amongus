@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(MonitorOxyMinigame))]
-public class MonitorTreeSolver : MinigameSolver<MonitorOxyMinigame>
+public class MonitorTreeSolver : TaskMinigameSolver<MonitorOxyMinigame>
 {
     protected override IEnumerator CompleteMinigame(MonitorOxyMinigame minigame, NormalPlayerTask task)
     {

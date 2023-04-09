@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(DressUpMinigame))]
-public class DressMannequinSolver : MinigameSolver<DressUpMinigame>
+public class DressMannequinSolver : TaskMinigameSolver<DressUpMinigame>
 {
     protected override IEnumerator CompleteMinigame(DressUpMinigame minigame, NormalPlayerTask task)
     {

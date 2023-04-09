@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(KeyMinigame))]
-public class InsertKeysSolver : MinigameSolver<KeyMinigame>
+public class InsertKeysSolver : TaskMinigameSolver<KeyMinigame>
 {
     protected override IEnumerator CompleteMinigame(KeyMinigame minigame, NormalPlayerTask task)
     {
@@ -15,7 +15,7 @@ public class InsertKeysSolver : MinigameSolver<KeyMinigame>
         InGameCursor.Instance.StopHoldingLMB();
         yield return new WaitForSeconds(0.1f);
         InGameCursor.Instance.StartHoldingLMB(minigame.key);
-        for (float t = 0; t < 0.5f; t += Time.deltaTime) 
+        for (float t = 0; t < 0.5f; t += Time.deltaTime)
         {
             minigame.prevHadInput = true;
             // TODO: make the cursor follow the topside of the key (its bounds are massive)

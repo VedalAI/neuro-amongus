@@ -4,7 +4,7 @@ using Neuro.Cursor;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(NavigationMinigame))]
-public class StabilizeSteeringSkeldSolver : MinigameSolver<NavigationMinigame>
+public class StabilizeSteeringSkeldSolver : TaskMinigameSolver<NavigationMinigame>
 {
     protected override IEnumerator CompleteMinigame(NavigationMinigame minigame, NormalPlayerTask task)
     {

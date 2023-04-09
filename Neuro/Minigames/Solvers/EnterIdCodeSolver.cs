@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Neuro.Cursor;
@@ -9,7 +8,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(EnterCodeMinigame))]
-public class EnterIdCodeSolver : MinigameSolver<EnterCodeMinigame>
+public class EnterIdCodeSolver : TaskMinigameSolver<EnterCodeMinigame>
 {
     protected override IEnumerator CompleteMinigame(EnterCodeMinigame minigame, NormalPlayerTask task)
     {
