@@ -71,12 +71,12 @@ public sealed class MapDataRecorder : MonoBehaviour, ISerializable
 
     private float Closest(PlainDoor door)
     {
-        return PathfindingHandler.Instance.CalculateTotalDistance(PlayerControl.LocalPlayer, door, door);
+        return PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, door, door);
     }
 
     private float Closest(Vent vent)
     {
-        return PathfindingHandler.Instance.CalculateTotalDistance(PlayerControl.LocalPlayer, vent, vent);
+        return PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, vent, vent);
     }
 
     [EventHandler(EventTypes.GameStarted)]

@@ -10,18 +10,18 @@ namespace Neuro.Recording;
 public readonly struct PositionData : ISerializable
 {
     public float TotalDistance { get; init; } = -1;
-    public Vector2 OffsetToNextNode { get; init; } = Vector2.zero;
+    public Vector2 NextNodePosition { get; init; } = Vector2.zero;
 
-    public PositionData(float totalDistance, Vector2 offsetToNextNode)
+    public PositionData(float totalDistance, Vector2 nextNodePosition)
     {
         TotalDistance = totalDistance;
-        OffsetToNextNode = offsetToNextNode;
+        NextNodePosition = nextNodePosition;
     }
 
     public void Serialize(BinaryWriter writer)
     {
         writer.Write(TotalDistance);
-        writer.Write(OffsetToNextNode);
+        writer.Write(NextNodePosition);
     }
 
     public static readonly PositionData Absent = new();
@@ -30,8 +30,8 @@ public readonly struct PositionData : ISerializable
     {
         return new PositionData
         {
-            TotalDistance = PathfindingHandler.Instance.CalculateTotalDistance(PlayerControl.LocalPlayer, position, pathfindingIdentifier),
-            OffsetToNextNode = PathfindingHandler.Instance.CalculateOffsetToFirstNode(PlayerControl.LocalPlayer, position, pathfindingIdentifier)
+            TotalDistance = PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, position, pathfindingIdentifier),
+            NextNodePosition = PathfindingHandler.Instance.GetFirstNodeInPath(PlayerControl.LocalPlayer, position, pathfindingIdentifier)
         };
     }
 }

@@ -6,14 +6,13 @@ using System.Threading;
 using Il2CppInterop.Runtime;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities.DataStructures;
-using Reactor.Utilities.Attributes;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
 
 namespace Neuro.Pathfinding;
 
-[RegisterInIl2Cpp]
-public sealed class PathfindingThread : Il2CppSystem.Object
+// TODO: [BUG] Sometimes when very close to an object, the distance will be returned as -1
+public sealed class PathfindingThread
 {
     private readonly ConcurrentQueue<string> _queue = new();
     private readonly ConcurrentDictionary<string, (MyVector2 start, MyVector2 target)> _requests = new();
@@ -104,7 +103,6 @@ public sealed class PathfindingThread : Il2CppSystem.Object
                 }
             }
         }
-        // ReSharper disable once FunctionNeverReturns
     }
 
     private void FloodFill(MyVector2 accessiblePosition)

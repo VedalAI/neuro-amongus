@@ -75,7 +75,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         return grid;
     }
 
-    public float CalculateTotalDistance(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
+    public float GetPathLength(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
         if (string.IsNullOrEmpty(identifier)) return float.MaxValue;
 
@@ -85,7 +85,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         return length;
     }
 
-    public Vector2 CalculateOffsetToFirstNode(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
+    public Vector2 GetFirstNodeInPath(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
         if (string.IsNullOrEmpty(identifier)) return default;
 
@@ -94,9 +94,7 @@ public sealed class PathfindingHandler : MonoBehaviour
 
         if (path.Length == 0) return Vector2.zero;
 
-        Vector2 firstNode = path[0];
-
-        return firstNode - start;
+        return path[0];
     }
 
     [EventHandler(EventTypes.GameStarted)]

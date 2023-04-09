@@ -17,13 +17,13 @@ public sealed class PathfindingDebugTab : DebugTab
         foreach (PlainDoor door in ShipStatus.Instance.AllDoors)
         {
             IdentifierProvider identifier = door;
-            GUILayout.Label($"{identifier}: {PathfindingHandler.Instance.CalculateTotalDistance(PlayerControl.LocalPlayer, door, identifier)}", GUILayout.Width(175));
+            GUILayout.Label($"{identifier}: {PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, door, identifier)}", GUILayout.Width(175));
         }
 
         foreach (Vent vent in ShipStatus.Instance.AllVents.OrderBy(v => v.Id))
         {
             IdentifierProvider identifier = vent;
-            GUILayout.Label($"{identifier}: {PathfindingHandler.Instance.CalculateTotalDistance(PlayerControl.LocalPlayer, vent, identifier)}", GUILayout.Width(175));
+            GUILayout.Label($"{identifier}: {PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, vent, identifier)}", GUILayout.Width(175));
         }
     }
 }
