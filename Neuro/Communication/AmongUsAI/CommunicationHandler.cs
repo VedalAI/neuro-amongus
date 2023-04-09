@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Neuro.Recording;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -36,7 +38,7 @@ public sealed class CommunicationHandler : MonoBehaviour
             string response = Encoding.UTF8.GetString(_buffer, 0, received);
             Info(response);
 
-            // TODO: Deserialize data
+            // TODO: Deserialize data (good luck)
 
             // Frame frame = JsonSerializer.Deserialize<Frame>(response);
             // Info(frame);
@@ -47,8 +49,11 @@ public sealed class CommunicationHandler : MonoBehaviour
 
         if (_hasGotResponse)
         {
-            // TODO: Serialize data for sending over socket
-            // _socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize<Frame>(NeuroPlugin.Instance.Recording.Frames.Last())));
+            using MemoryStream memoryStream = new();
+            using BinaryWriter binaryWriter = new(memoryStream);
+            Recorder.Instance.Serialize(binaryWriter);
+            _socket.Send(memoryStream.ToArray());
+
             _hasGotResponse = false;
         }
     }

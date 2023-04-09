@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Neuro.Communication.AmongUsAI;
 using Neuro.Events;
 using Neuro.Recording.DeadBodies;
@@ -15,13 +16,16 @@ namespace Neuro.Recording;
 
 // TODO: ReportFindings was removed, we need to implement separate communication with language model
 [RegisterInIl2Cpp]
-public sealed class Recorder : MonoBehaviour
+public sealed class Recorder : MonoBehaviour, ISerializable
 {
     public static Recorder Instance { get; private set; }
 
     public Recorder(IntPtr ptr) : base(ptr) { }
 
     private List<ISerializable> _recorders = new();
+    private int _fixedUpdateCalls = 0;
+    private FileStream _fileStream;
+    private BinaryWriter _fileWriter;
 
     private void Awake()
     {
@@ -33,7 +37,6 @@ public sealed class Recorder : MonoBehaviour
         }
 
         Instance = this;
-        // EventManager.RegisterHandler(this);
     }
 
     private void Start()
@@ -46,9 +49,10 @@ public sealed class Recorder : MonoBehaviour
             MapRecorder.Instance,
             OtherPlayersRecorder.Instance
         };
-    }
 
-    private int _fixedUpdateCalls = 0;
+        _fileStream = new FileStream(Path.Combine(BepInEx.Paths.PluginPath, "recording.gymbag"), FileMode.CreateNew);
+        _fileWriter = new BinaryWriter(_fileStream);
+    }
 
     private void FixedUpdate()
     {
@@ -66,17 +70,22 @@ public sealed class Recorder : MonoBehaviour
         if (_fixedUpdateCalls < 9) return;
         _fixedUpdateCalls = 0;
 
-        // TODO: Serialize data for writing to file
+        Serialize(_fileWriter);
     }
 
-    /*[EventHandler(EventTypes.MeetingStarted)]
-    public void WriteData()
+    private void OnDestroy()
     {
-        // If uncommenting this also uncomment EventManager.RegisterHandler(this); in Awake
-        string frameString = JsonSerializer.Serialize(Frames);
-        File.WriteAllText(Path.Combine(BepInEx.Paths.PluginPath, "output.json"), frameString);
-        Info(Path.Combine(BepInEx.Paths.PluginPath, "output.json"));
-    }*/
+        _fileWriter.Dispose();
+        _fileStream.Dispose();
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        foreach (ISerializable recorder in _recorders)
+        {
+            recorder.Serialize(_fileWriter);
+        }
+    }
 
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted(ShipStatus shipStatus)
