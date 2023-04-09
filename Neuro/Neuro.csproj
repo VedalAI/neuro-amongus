@@ -24,8 +24,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="zzz_excluded\**" />
         <EmbeddedResource Include="**\Resources\**" />
+        <Compile Remove="zzz_excluded\**" />
     </ItemGroup>
 
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

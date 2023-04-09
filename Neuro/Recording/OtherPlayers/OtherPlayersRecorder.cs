@@ -17,7 +17,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour, ISerializable
 
     public OtherPlayersRecorder(IntPtr ptr) : base(ptr) { }
 
-    private AnchoredUnstableDictionary<byte, OtherPlayerData> LastSeen { get; } = new();
+    public AnchoredUnstableDictionary<byte, OtherPlayerData> LastSeen { get; } = new();
 
     public void Serialize(BinaryWriter writer)
     {

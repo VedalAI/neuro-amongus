@@ -17,17 +17,15 @@ public sealed class LocalPlayerRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    private bool DidReport { get; set; }
-    private bool DidVent { get; set; }
-    private bool DidKill { get; set; }
+    public bool DidReport { get; private set; }
+    public bool DidVent { get; private set; }
 
     public void Serialize(BinaryWriter writer)
     {
         writer.Write(DidReport);
         writer.Write(DidVent);
-        writer.Write(DidKill);
 
-        DidReport = DidVent = DidKill = false;
+        DidReport = DidVent = false;
     }
 
     private void Awake()
@@ -44,7 +42,6 @@ public sealed class LocalPlayerRecorder : MonoBehaviour, ISerializable
 
     public void RecordReport() => DidReport = true;
     public void RecordVent() => DidVent = true;
-    public void RecordKill() => DidKill = true;
 
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted(ShipStatus shipStatus)

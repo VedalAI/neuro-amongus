@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Neuro.Minigames;
 
 [DebugTab]
-public sealed class MinigameDebugTab : DebugTab
+public sealed class TasksDebugTab : DebugTab
 {
     private static readonly Regex _colorRegex = new(@"<\/?color(?:=#\w+?)?>", RegexOptions.Compiled);
 

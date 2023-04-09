@@ -19,7 +19,7 @@ public sealed class DeadBodiesRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    private Dictionary<byte, DeadBodyData> SeenBodies { get; } = new();
+    public Dictionary<byte, DeadBodyData> SeenBodies { get; } = new();
 
     public void Serialize(BinaryWriter writer)
     {

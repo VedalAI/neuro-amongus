@@ -20,8 +20,8 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    private List<DoorData> NearbyDoors { get; } = new();
-    private List<VentData> NearbyVents { get; } = new();
+    public List<DoorData> NearbyDoors { get; } = new();
+    public List<VentData> NearbyVents { get; } = new();
 
     public void Serialize(BinaryWriter writer)
     {

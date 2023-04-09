@@ -17,14 +17,17 @@ public sealed class ImpostorRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    public int SabotageUsed { get; set; }
-    public int DoorsUsed { get; set; }
+    public bool DidKill { get; private set; }
+    public int SabotageUsed { get; private set; }
+    public int DoorsUsed { get; private set; }
 
     public void Serialize(BinaryWriter writer)
     {
+        writer.Write(DidKill);
         writer.Write(SabotageUsed);
         writer.Write(DoorsUsed);
 
+        DidKill = false;
         SabotageUsed = DoorsUsed = -1;
     }
 
@@ -40,15 +43,9 @@ public sealed class ImpostorRecorder : MonoBehaviour, ISerializable
         Instance = this;
     }
 
-    public void RecordSabotage(SystemTypes type)
-    {
-        SabotageUsed = (int) type;
-    }
-
-    public void RecordDoors(SystemTypes room)
-    {
-        DoorsUsed = (int) room;
-    }
+    public void RecordKill() => DidKill = true;
+    public void RecordSabotage(SystemTypes type) => SabotageUsed = (int) type;
+    public void RecordDoors(SystemTypes room) => DoorsUsed = (int) room;
 
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted(ShipStatus shipStatus)

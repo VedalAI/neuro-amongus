@@ -2,16 +2,6 @@
 
 namespace Neuro.Recording.LocalPlayer.Patches;
 
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckMurder))]
-public static class PlayerControl_CmdCheckMurder
-{
-    [HarmonyPostfix]
-    public static void Postfix()
-    {
-        LocalPlayerRecorder.Instance.RecordKill();
-    }
-}
-
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdReportDeadBody))]
 public static class PlayerControl_CmdReportDeadBody
 {

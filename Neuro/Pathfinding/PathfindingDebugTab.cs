@@ -10,7 +10,7 @@ public sealed class PathfindingDebugTab : DebugTab
 {
     public override string Name => "Pathfinding";
 
-    public override bool IsEnabled => ShipStatus.Instance && PathfindingHandler.Instance;
+    public override bool IsEnabled => PathfindingHandler.Instance;
 
     public override void BuildUI()
     {

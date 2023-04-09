@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Neuro.Recording.OtherPlayers;
 
-// TODO: ReportFindings was removed
 public readonly struct OtherPlayerData : ISerializable
 {
     private int Id { get; init; }
