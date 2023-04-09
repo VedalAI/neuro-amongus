@@ -78,22 +78,12 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public float CalculateTotalDistance(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
-        if (NeuroUtilities.IsMemoized(out float memoized, new object[] {start, target, identifier})) return memoized;
-
         if (string.IsNullOrEmpty(identifier)) return float.MaxValue;
 
         _thread.RequestPath(start, target, identifier);
-        if (!_thread.TryGetPath(identifier, out MyVector2[] path)) return -1;
+        if (!_thread.TryGetPath(identifier, out _, out float length)) return -1;
 
-        if (path.Length == 0) return -1;
-
-        float distance = 0f;
-        for (int i = 0; i < path.Length - 1; i++)
-        {
-            distance += MyVector2.Distance(path[i], path[i + 1]);
-        }
-
-        return NeuroUtilities.Memoize(distance, new object[] {start, target, identifier});
+        return length;
     }
 
     public Vector2 CalculateOffsetToFirstNode(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
@@ -101,7 +91,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         if (string.IsNullOrEmpty(identifier)) return default;
 
         _thread.RequestPath(start, target, identifier);
-        if (!_thread.TryGetPath(identifier, out MyVector2[] path)) return Vector2.zero;
+        if (!_thread.TryGetPath(identifier, out MyVector2[] path, out _)) return Vector2.zero;
 
         if (path.Length == 0) return Vector2.zero;
 

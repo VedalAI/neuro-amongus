@@ -22,7 +22,7 @@ public sealed class PathfindingThread : Il2CppSystem.Object
 {
     private readonly Queue<string> _queue = new();
     private readonly Dictionary<string, (MyVector2 start, MyVector2 target)> _requests = new();
-    private readonly Dictionary<string, (MyVector2 start, MyVector2 target, MyVector2[] path)> _results = new();
+    private readonly Dictionary<string, (MyVector2 start, MyVector2 target, MyVector2[] path, float length)> _results = new();
 
     private readonly Node[,] _grid;
     private readonly Thread _thread;
@@ -63,7 +63,7 @@ public sealed class PathfindingThread : Il2CppSystem.Object
 
     public void RequestPath(MyVector2 start, MyVector2 target, string identifier)
     {
-        if (_results.TryGetValue(identifier, out (MyVector2 start, MyVector2 target, MyVector2[] path) result) &&
+        if (_results.TryGetValue(identifier, out (MyVector2 start, MyVector2 target, MyVector2[], float) result) &&
             result.start == start && result.target == target)
             return;
 
@@ -72,10 +72,11 @@ public sealed class PathfindingThread : Il2CppSystem.Object
         _requests[identifier] = (start, target);
     }
 
-    public bool TryGetPath(string identifier, out MyVector2[] path)
+    public bool TryGetPath(string identifier, out MyVector2[] path, out float length)
     {
-        bool tried = _results.TryGetValue(identifier, out (MyVector2 start, MyVector2 target, MyVector2[] path) result);
+        bool tried = _results.TryGetValue(identifier, out (MyVector2, MyVector2, MyVector2[] path, float length) result);
         path = result.path;
+        length = result.length;
         return tried;
     }
 
@@ -91,7 +92,9 @@ public sealed class PathfindingThread : Il2CppSystem.Object
                     string identifier = _queue.Dequeue();
                     if (!_requests.TryGetValue(identifier, out (MyVector2 start, MyVector2 target) vec)) continue;
                     _requests.Remove(identifier);
-                    _results[identifier] = (vec.start, vec.target, FindPath(vec.start, vec.target));
+
+                    MyVector2[] path = FindPath(vec.start, vec.target);
+                    _results[identifier] = (vec.start, vec.target, path, CalculateLength(path));
 
                     Thread.Yield();
                     CheckForStop();
@@ -187,12 +190,12 @@ public sealed class PathfindingThread : Il2CppSystem.Object
             {
                 if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
 
-                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
+                int newMovementCostToNeighbour = currentNode.gCost + GetDistanceCost(currentNode, neighbour);
 
                 if (newMovementCostToNeighbour >= neighbour.gCost && openSet.Contains(neighbour)) continue;
 
                 neighbour.gCost = newMovementCostToNeighbour;
-                neighbour.hCost = GetDistance(neighbour, targetNode);
+                neighbour.hCost = GetDistanceCost(neighbour, targetNode);
                 neighbour.parent = currentNode;
 
                 if (!openSet.Contains(neighbour))
@@ -209,6 +212,19 @@ public sealed class PathfindingThread : Il2CppSystem.Object
 
         Warning("Failed to find path");
         return Array.Empty<MyVector2>();
+    }
+
+    private float CalculateLength(MyVector2[] path)
+    {
+        if (path.Length == 0) return -1;
+
+        float length = 0f;
+        for (int i = 0; i < path.Length - 1; i++)
+        {
+            length += MyVector2.Distance(path[i], path[i + 1]);
+        }
+
+        return length;
     }
 
     private Node FindClosestNode(MyVector2 position)
@@ -299,7 +315,7 @@ public sealed class PathfindingThread : Il2CppSystem.Object
         return waypoints;
     }
 
-    private static int GetDistance(Node a, Node b)
+    private static int GetDistanceCost(Node a, Node b)
     {
         int dstX = Math.Abs(a.gridX - b.gridX);
         int dstY = Math.Abs(a.gridY - b.gridY);
