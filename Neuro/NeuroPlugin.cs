@@ -18,7 +18,6 @@ public partial class NeuroPlugin : BasePlugin
     public static NeuroPlugin Instance => PluginSingleton<NeuroPlugin>.Instance;
 
     // public MovementHandler Movement { get; private set; }
-    // public TasksHandler Tasks { get; private set; }
     // public ImpostorHandler Impostor { get; private set; }
     // public CommunicationHandler Communication { get; private set; }
 
@@ -26,13 +25,10 @@ public partial class NeuroPlugin : BasePlugin
     {
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
 
-        // TODO: Maybe reset these when a new game begins.
-
         AddComponent<DebugWindow>();
         // AddComponent<Recorder>();
 
         // Movement = new MovementHandler();
-        // Tasks = AddComponent<TasksHandler>();
         // Impostor = AddComponent<ImpostorHandler>();
         // Communication = AddComponent<CommunicationHandler>();
 

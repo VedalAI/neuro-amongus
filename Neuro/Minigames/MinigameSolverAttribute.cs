@@ -12,8 +12,8 @@ public sealed class MinigameSolverAttribute : Attribute
 {
     static MinigameSolverAttribute()
     {
-        MinigameSolvers = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => t.GetCustomAttribute<MinigameSolverAttribute>() is { })
+        MinigameSolvers = AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())
+            .Where(t => t.GetCustomAttribute<MinigameSolverAttribute>() is not null)
             .Where(t => t.IsAssignableTo(typeof(MinigameSolver)))
             .Select(solverType => (solverType.GetCustomAttribute<MinigameSolverAttribute>()!.Types, solverType))
             .SelectMany(t => t.Types.Select(type => (type, Activator.CreateInstance(t.solverType))))

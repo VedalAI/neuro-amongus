@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(VentCleaningMinigame))]
-public sealed class CleanVentSolver : MinigameSolver<VentCleaningMinigame>
+public sealed class CleanVentMinigameSolver : TaskMinigameSolver<VentCleaningMinigame>
 {
     protected override IEnumerator CompleteMinigame(VentCleaningMinigame minigame, NormalPlayerTask task)
     {

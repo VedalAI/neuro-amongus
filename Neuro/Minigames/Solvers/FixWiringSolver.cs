@@ -5,7 +5,7 @@ using Neuro.Cursor;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WireMinigame))]
-public sealed class FixWiringSolver : MinigameSolver<WireMinigame>
+public sealed class FixWiringSolver : TaskMinigameSolver<WireMinigame>
 {
     protected override IEnumerator CompleteMinigame(WireMinigame minigame, NormalPlayerTask task)
     {

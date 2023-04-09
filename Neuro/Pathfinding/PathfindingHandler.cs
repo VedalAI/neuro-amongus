@@ -1,24 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
+using Neuro.Utilities.Convertors;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
-using Gizmos = Neuro.Utilities.Gizmos;
 
 namespace Neuro.Pathfinding;
 
 [RegisterInIl2Cpp]
 public sealed class PathfindingHandler : MonoBehaviour
 {
-    private const float GRID_DENSITY = 5f; // TODO: Fine-tune individual maps to optimize performance
-    private const int GRID_BASE_WIDTH = 100;
+    public const float GRID_DENSITY = 5f;
+    public const int GRID_BASE_WIDTH = 100;
 
-    private const int GRID_SIZE = (int)(GRID_BASE_WIDTH * GRID_DENSITY);
-    private const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;
-    private const int GRID_UPPER_BOUNDS = GRID_SIZE / 2;
+    public const int GRID_SIZE = (int)(GRID_BASE_WIDTH * GRID_DENSITY);
+    public const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;
+    public const int GRID_UPPER_BOUNDS = GRID_SIZE / 2;
 
     public static PathfindingHandler Instance { get; private set; }
 
@@ -26,27 +25,31 @@ public sealed class PathfindingHandler : MonoBehaviour
     {
     }
 
-    private Node[,] _grid;
+    private PathfindingThread _thread;
 
     private void Awake()
     {
         if (Instance)
         {
-            LogUtils.WarnDoubleSingletonInstance();
+            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
 
         Instance = this;
-        EventManager.RegisterHandler(this);
 
-        GenerateNodeGrid();
-        FloodFill(ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius);
+        _thread = new PathfindingThread(GenerateNodeGrid(), ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius);
+        _thread.Start();
     }
 
-    private void GenerateNodeGrid()
+    private void OnDestroy()
     {
-        _grid = new Node[GRID_SIZE, GRID_SIZE];
+        _thread.Stop();
+    }
+
+    private Node[,] GenerateNodeGrid()
+    {
+        Node[,] grid = new Node[GRID_SIZE, GRID_SIZE];
 
         const float NODE_RADIUS = 1 / GRID_DENSITY;
 
@@ -65,200 +68,37 @@ public sealed class PathfindingHandler : MonoBehaviour
             // TODO: Add edge case for Airship ladders
 
             bool accessible = validColsCount == 0;
-            _grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
+            grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
         }
+
+        return grid;
     }
 
-    public Vector2[] FindPath(Vector2 start, Vector2 target)
+    public float GetPathLength(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
-        bool pathSuccess = false;
+        if (string.IsNullOrEmpty(identifier)) return float.MaxValue;
 
-        Node startNode = FindClosestNode(start);
-        Node targetNode = FindClosestNode(target);
+        _thread.RequestPath(start, target, identifier);
+        if (!_thread.TryGetPath(identifier, out _, out float length)) return -1;
 
-        Gizmos.CreateTaskVisualPoint(targetNode.worldPosition);
-
-        if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<Vector2>();
-
-        Heap<Node> openSet = new(GRID_SIZE * GRID_SIZE);
-        HashSet<Node> closedSet = new();
-
-        openSet.Add(startNode);
-
-        while (openSet.Count > 0)
-        {
-            Node currentNode = openSet.RemoveFirst();
-
-            closedSet.Add(currentNode);
-
-            if (currentNode == targetNode)
-            {
-                pathSuccess = true;
-                break;
-            }
-
-            foreach (Node neighbour in GetNeighbours(currentNode))
-            {
-                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
-
-                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
-
-                if (newMovementCostToNeighbour >= neighbour.gCost && openSet.Contains(neighbour)) continue;
-
-                neighbour.gCost = newMovementCostToNeighbour;
-                neighbour.hCost = GetDistance(neighbour, targetNode);
-                neighbour.parent = currentNode;
-
-                if (!openSet.Contains(neighbour))
-                    openSet.Add(neighbour);
-                else
-                    openSet.UpdateItem(neighbour);
-            }
-        }
-
-        if (pathSuccess)
-        {
-            return RetracePath(startNode, targetNode);
-        }
-
-        Warning("Failed to find path");
-        return Array.Empty<Vector2>();
+        return length;
     }
 
-    private void FloodFill(Vector2 accessiblePosition)
+    public Vector2 GetFirstNodeInPath(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
-        Node startingNode = NodeFromWorldPoint(accessiblePosition);
+        if (string.IsNullOrEmpty(identifier)) return default;
 
-        List<Node> openSet = new();
-        HashSet<Node> closedSet = new();
-        openSet.Add(startingNode);
+        _thread.RequestPath(start, target, identifier);
+        if (!_thread.TryGetPath(identifier, out Vector2[] path, out _)) return Vector2.zero;
 
-        while (openSet.Count > 0)
-        {
-            Node node = openSet[0];
-            openSet.Remove(node);
-            closedSet.Add(node);
+        if (path.Length == 0) return Vector2.zero;
 
-            foreach (Node neighbour in GetNeighbours(node))
-            {
-                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
-                if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
-
-                neighbour.parent = node;
-            }
-        }
-
-        foreach (Node node in closedSet.ToList())
-        {
-            Gizmos.CreateNodeVisualPoint(node.worldPosition);
-        }
-
-        // Set all nodes not in closed set to inaccessible
-        foreach (Node node in _grid)
-        {
-            if (!closedSet.Contains(node)) node.accessible = false;
-        }
-    }
-
-    private Node NodeFromWorldPoint(Vector2 position)
-    {
-        position *= GRID_DENSITY;
-        float clampedX = Mathf.Clamp(position.x, GRID_LOWER_BOUNDS, GRID_UPPER_BOUNDS);
-        float clampedY = Mathf.Clamp(position.y, GRID_LOWER_BOUNDS, GRID_UPPER_BOUNDS);
-
-        int xIndex = Mathf.RoundToInt(clampedX + GRID_UPPER_BOUNDS);
-        int yIndex = Mathf.RoundToInt(clampedY + GRID_UPPER_BOUNDS);
-
-        return _grid[xIndex, yIndex];
-    }
-
-    private Node FindClosestNode(Vector2 position)
-    {
-        Node closestNode = NodeFromWorldPoint(position);
-
-        Queue<Node> queue = new();
-        List<Node> nodes = new();
-        queue.Enqueue(closestNode);
-        nodes.Add(closestNode);
-
-        while (!closestNode.accessible)
-        {
-            closestNode = queue.Dequeue();
-            float closestDistance = Mathf.Infinity;
-            Node closestNeighbour = null;
-            foreach (Node neighbour in GetNeighbours(closestNode))
-            {
-                if (neighbour.accessible)
-                {
-                    float distance = Vector2.Distance(position, neighbour.worldPosition);
-                    if (distance < closestDistance)
-                    {
-                        closestNeighbour = neighbour;
-                        closestDistance = distance;
-                    }
-                }
-                else
-                {
-                    if (!nodes.Contains(neighbour))
-                    {
-                        queue.Enqueue(neighbour);
-                        nodes.Add(neighbour);
-                    }
-                }
-            }
-
-            if (closestNeighbour != null) closestNode = closestNeighbour;
-        }
-
-        return closestNode;
-    }
-
-    private List<Node> GetNeighbours(Node node)
-    {
-        List<Node> neighbours = new();
-
-        for (int x = -1; x <= 1; x++)
-        for (int y = -1; y <= 1; y++)
-        {
-            if (x == 0 && y == 0)
-                continue;
-
-            int checkX = node.gridX + x;
-            int checkY = node.gridY + y;
-
-            if (checkX is >= 0 and < GRID_SIZE && checkY is >= 0 and < GRID_SIZE) neighbours.Add(_grid[checkX, checkY]);
-        }
-
-        return neighbours;
-    }
-
-    private Vector2[] RetracePath(Node startNode, Node endNode)
-    {
-        List<Node> path = new();
-        Node currentNode = endNode;
-        while (currentNode != startNode)
-        {
-            path.Add(currentNode);
-            currentNode = currentNode.parent;
-        }
-
-        Vector2[] waypoints = path.Select(p => p.worldPosition).ToArray();
-        new Span<Vector2>(waypoints).Reverse();
-
-        return waypoints;
-    }
-
-    private static int GetDistance(Node a, Node b)
-    {
-        int dstX = Mathf.Abs(a.gridX - b.gridX);
-        int dstY = Mathf.Abs(a.gridY - b.gridY);
-
-        return 14 * dstY + 10 * Math.Abs(dstX - dstY);
+        return path[0];
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    public static void OnGameStarted()
+    private static void OnGameStarted(ShipStatus shipStatus)
     {
-        ShipStatus.Instance.gameObject.AddComponent<PathfindingHandler>();
+        shipStatus.gameObject.AddComponent<PathfindingHandler>();
     }
 }

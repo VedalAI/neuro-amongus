@@ -5,7 +5,7 @@ using Neuro.Utilities;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SweepMinigame))]
-public sealed class CalibrateDistributorSolver : MinigameSolver<SweepMinigame>
+public sealed class CalibrateDistributorMinigameSolver : TaskMinigameSolver<SweepMinigame>
 {
     protected override IEnumerator CompleteMinigame(SweepMinigame minigame, NormalPlayerTask task)
     {

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(RefuelStage))]
-public sealed class FuelEnginesSolver : MinigameSolver<RefuelStage>
+public sealed class FuelEnginesSolver : TaskMinigameSolver<RefuelStage>
 {
     protected override IEnumerator CompleteMinigame(RefuelStage minigame, NormalPlayerTask task)
     {

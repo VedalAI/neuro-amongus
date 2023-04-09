@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(CardSlideGame))]
-public sealed class SwipeCardSolver : MinigameSolver<CardSlideGame>
+public sealed class SwipeCardSolver : TaskMinigameSolver<CardSlideGame>
 {
     protected override IEnumerator CompleteMinigame(CardSlideGame minigame, NormalPlayerTask task)
     {

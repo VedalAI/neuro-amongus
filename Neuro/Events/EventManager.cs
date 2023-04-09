@@ -14,13 +14,13 @@ public static class EventManager
         HandlerInstances.Add(target);
     }
 
-    public static void InvokeEvent(EventTypes eventType)
+    public static void InvokeEvent(EventTypes eventType, params object[] args)
     {
         if (EventHandlerAttribute.StaticEvents.TryGetValue(eventType, out List<MethodInfo> staticEvents))
         {
             foreach (MethodInfo eventHandler in staticEvents)
             {
-                eventHandler.Invoke(null, null);
+                eventHandler.Invoke(null, args);
             }
         }
 
@@ -32,7 +32,7 @@ public static class EventManager
                 {
                     if (obj.GetType() == eventHandler.DeclaringType)
                     {
-                        eventHandler.Invoke(obj, null);
+                        eventHandler.Invoke(obj, args);
                     }
                 }
             }

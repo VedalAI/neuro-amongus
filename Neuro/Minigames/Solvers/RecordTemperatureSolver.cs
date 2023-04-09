@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(TempMinigame))]
-public sealed class RecordTemperatureSolver : MinigameSolver<TempMinigame>
+public sealed class RecordTemperatureSolver : TaskMinigameSolver<TempMinigame>
 {
     protected override IEnumerator CompleteMinigame(TempMinigame minigame, NormalPlayerTask task)
     {

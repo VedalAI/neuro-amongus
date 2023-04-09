@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WeaponsMinigame))]
-public sealed class ClearAsteroidsSolver : MinigameSolver<WeaponsMinigame>
+public sealed class ClearAsteroidsMinigameSolver : TaskMinigameSolver<WeaponsMinigame>
 {
     protected override IEnumerator CompleteMinigame(WeaponsMinigame minigame, NormalPlayerTask task)
     {

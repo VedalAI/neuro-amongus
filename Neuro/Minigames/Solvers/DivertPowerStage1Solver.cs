@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(DivertPowerMinigame))]
-public sealed class DivertPowerStage1Solver : MinigameSolver<DivertPowerMinigame>
+public sealed class DivertPowerStage1MinigameSolver : TaskMinigameSolver<DivertPowerMinigame>
 {
     protected override IEnumerator CompleteMinigame(DivertPowerMinigame minigame, NormalPlayerTask task)
     {
