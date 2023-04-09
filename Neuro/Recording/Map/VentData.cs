@@ -6,8 +6,8 @@ namespace Neuro.Recording.Map;
 
 public readonly struct VentData : ISerializable
 {
-    public PositionData Position { get; init; }
-    public PositionData[] ConnectingVents { get; init; }
+    private PositionData Position { get; init; }
+    private PositionData[] ConnectingVents { get; init; }
 
     public VentData(PositionData position, PositionData[] connectingVents)
     {
@@ -18,9 +18,8 @@ public readonly struct VentData : ISerializable
     public void Serialize(BinaryWriter writer)
     {
         Position.Serialize(writer);
-
         for (int i = 0; i < 3; i++)
-            ConnectingVents[i].Serialize(writer);
+            ConnectingVents.ElementAtOrDefault(i).Serialize(writer);
     }
 
     public static VentData Create(Vent vent)

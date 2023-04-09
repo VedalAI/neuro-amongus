@@ -5,8 +5,8 @@ namespace Neuro.Recording.Map;
 
 public readonly struct DoorData : ISerializable
 {
-    public PositionData Position { get; init; } = default;
-    public bool IsOpen { get; init; } = true;
+    private PositionData Position { get; init; } = default;
+    private bool IsOpen { get; init; } = true;
 
     public DoorData(PositionData position, bool isOpen)
     {

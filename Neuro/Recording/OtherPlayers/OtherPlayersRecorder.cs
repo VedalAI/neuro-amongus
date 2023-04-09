@@ -7,7 +7,6 @@ using Neuro.Utilities.Collections;
 using Neuro.Vision;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
-using Object = System.Object;
 
 namespace Neuro.Recording.OtherPlayers;
 
@@ -18,16 +17,14 @@ public sealed class OtherPlayersRecorder : MonoBehaviour, ISerializable
 
     public OtherPlayersRecorder(IntPtr ptr) : base(ptr) { }
 
-    public AnchoredUnstableDictionary<byte, OtherPlayerData> Data { get; } = new();
+    private AnchoredUnstableDictionary<byte, OtherPlayerData> LastSeen { get; } = new();
 
     public void Serialize(BinaryWriter writer)
     {
-        for (byte i = 0; i < 15; i++)
+        writer.Write(LastSeen.Count);
+        foreach (OtherPlayerData player in LastSeen.Values)
         {
-            if (PlayerControl.LocalPlayer.PlayerId == i) continue;
-
-            if (!Data.TryGetValue(i, out OtherPlayerData data)) data = default;
-            data.Serialize(writer);
+            player.Serialize(writer);
         }
     }
 
@@ -53,23 +50,23 @@ public sealed class OtherPlayersRecorder : MonoBehaviour, ISerializable
             if (playerControl.AmOwner || playerControl.Data.IsDead) continue;
             if (!Visibility.IsVisible(playerControl)) continue;
 
-            if (!Data.TryGetValue(playerControl.PlayerId, out OtherPlayerData visionData))
+            if (!LastSeen.TryGetValue(playerControl.PlayerId, out OtherPlayerData visionData))
             {
                 visionData = OtherPlayerData.Create(playerControl);
             }
 
-            Data[playerControl, playerControl.PlayerId] = visionData;
+            LastSeen[playerControl, playerControl.PlayerId] = visionData;
         }
     }
 
     [EventHandler(EventTypes.MeetingEnded)]
     public void ResetAfterMeeting()
     {
-        foreach (byte id in Data.Keys)
+        foreach (byte id in LastSeen.Keys)
         {
             PlayerControl player = GameData.Instance.GetPlayerById(id).Object;
-            if (!player || player.Data.IsDead) Data.Remove(id);
-            Data[player, id] = Data[id].ResetAfterMeeting();
+            if (!player || player.Data.IsDead) LastSeen.Remove(id);
+            LastSeen[player, id] = LastSeen[id].ResetAfterMeeting();
         }
     }
 

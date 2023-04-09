@@ -8,14 +8,16 @@ namespace Neuro.Recording.OtherPlayers;
 // TODO: ReportFindings was removed
 public readonly struct OtherPlayerData : ISerializable
 {
-    public Vector2 LastSeenPosition { get; init; }
-    public float LastSeenTime { get; init; }
-    public bool SawVent { get; init; }
-    public float RoundTimeVisible { get; init; }
-    public float GameTimeVisible { get; init; }
+    private int Id { get; init; }
+    private Vector2 LastSeenPosition { get; init; }
+    private float LastSeenTime { get; init; }
+    private int SawVent { get; init; }
+    private float RoundTimeVisible { get; init; }
+    private float GameTimeVisible { get; init; }
 
-    public OtherPlayerData(Vector2 lastSeenPosition, float lastSeenTime, bool sawVent, float roundTimeVisible, float gameTimeVisible)
+    public OtherPlayerData(int id, Vector2 lastSeenPosition, float lastSeenTime, int sawVent, float roundTimeVisible, float gameTimeVisible)
     {
+        Id = id;
         LastSeenPosition = lastSeenPosition;
         LastSeenTime = lastSeenTime;
         SawVent = sawVent;
@@ -25,6 +27,7 @@ public readonly struct OtherPlayerData : ISerializable
 
     public void Serialize(BinaryWriter writer)
     {
+        writer.Write(Id);
         writer.Write(LastSeenPosition);
         writer.Write(LastSeenTime);
         writer.Write(SawVent);
@@ -36,9 +39,10 @@ public readonly struct OtherPlayerData : ISerializable
     {
         return new OtherPlayerData
         {
+            Id = player.PlayerId,
             LastSeenPosition = player.GetTruePosition(),
             LastSeenTime = Time.fixedTime,
-            SawVent = false,
+            SawVent = 0,
             RoundTimeVisible = 0,
             GameTimeVisible = 0
         };
@@ -50,7 +54,7 @@ public readonly struct OtherPlayerData : ISerializable
 
         if (owner.MyPhysics.Animations.IsPlayingEnterVentAnimation() || owner.MyPhysics.Animations.IsPlayingExitVentAnimation())
         {
-            result = result with {SawVent = true};
+            result = result with {SawVent = SawVent + 1};
         }
 
         if (owner.inVent) return result;
@@ -70,7 +74,7 @@ public readonly struct OtherPlayerData : ISerializable
     {
         return this with
         {
-            SawVent = false,
+            SawVent = 0,
             RoundTimeVisible = 0
         };
     }

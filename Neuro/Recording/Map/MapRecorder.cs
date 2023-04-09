@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Neuro.Communication.AmongUsAI;
@@ -19,16 +20,18 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    private DoorData[] s_NearbyDoors { get; } = new DoorData[3];
-    private VentData[] s_NearbyVents { get; } = new VentData[3];
+    private List<DoorData> NearbyDoors { get; } = new();
+    private List<VentData> NearbyVents { get; } = new();
 
     public void Serialize(BinaryWriter writer)
     {
-        for (int i = 0; i < 3; i++)
-            s_NearbyDoors[i].Serialize(writer);
+        writer.Write(NearbyDoors.Count);
+        foreach (DoorData door in NearbyDoors)
+            door.Serialize(writer);
 
-        for (int i = 0; i < 3; i++)
-            s_NearbyVents[i].Serialize(writer);
+        writer.Write(NearbyVents.Count);
+        foreach (VentData vent in NearbyVents)
+            vent.Serialize(writer);
     }
 
     private void Awake()
@@ -53,19 +56,19 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
 
     private void UpdateNearbyDoors()
     {
-        PlainDoor[] nearbyDoors = ShipStatus.Instance.AllDoors.OrderBy(Closest).Take(3).ToArray();
-        for (int i = 0; i < 3; i++)
+        NearbyDoors.Clear();
+        foreach (PlainDoor door in ShipStatus.Instance.AllDoors.OrderBy(Closest).Take(3))
         {
-            s_NearbyDoors[i] = nearbyDoors.ElementAtOrDefault(i) is { } door ? DoorData.Create(door) : default;
+            NearbyDoors.Add(DoorData.Create(door));
         }
     }
 
     private void UpdateNearbyVents()
     {
-        Vent[] nearbyVents = ShipStatus.Instance.AllVents.OrderBy(Closest).Take(3).ToArray();
-        for (int i = 0; i < 3; i++)
+        NearbyVents.Clear();
+        foreach (Vent vent in ShipStatus.Instance.AllVents.OrderBy(Closest).Take(3))
         {
-            s_NearbyVents[i] = nearbyVents.ElementAtOrDefault(i) is { } vent ? VentData.Create(vent) : default;
+            NearbyVents.Add(VentData.Create(vent));
         }
     }
 
