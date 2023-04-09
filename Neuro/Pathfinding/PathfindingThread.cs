@@ -17,6 +17,8 @@ using Thread = System.Threading.Thread;
 
 namespace Neuro.Pathfinding;
 
+// TODO: Figure out: Are we using System threads or Il2Cpp threads?
+// TODO: Figure out: Are we using or avoiding Unity methods?
 [RegisterInIl2Cpp]
 public sealed class PathfindingThread : Il2CppSystem.Object
 {
@@ -86,7 +88,6 @@ public sealed class PathfindingThread : Il2CppSystem.Object
         {
             try
             {
-                System.Console.WriteLine($"Running pathfinding with {_requests.Count} requests");
                 while (_requests.Count > 0)
                 {
                     string identifier = _queue.Dequeue();

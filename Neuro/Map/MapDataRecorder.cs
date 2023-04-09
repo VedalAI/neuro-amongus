@@ -1,16 +1,18 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
-using Neuro.Communication.AmongUsAI.DataStructures;
+using Neuro.Communication.AmongUsAI;
 using Neuro.Events;
+using Neuro.Map.DataStructures;
 using Neuro.Pathfinding;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
-namespace Neuro.Communication.AmongUsAI;
+namespace Neuro.Map;
 
 [RegisterInIl2Cpp]
-public sealed class MapDataRecorder : MonoBehaviour
+public sealed class MapDataRecorder : MonoBehaviour, ISerializable
 {
     public static MapDataRecorder Instance { get; private set; }
 
@@ -20,6 +22,15 @@ public sealed class MapDataRecorder : MonoBehaviour
 
     public DoorData[] NearbyDoors { get; } = new DoorData[3];
     public VentData[] NearbyVents { get; } = new VentData[3];
+
+    public void Serialize(BinaryWriter writer)
+    {
+        for (int i = 0; i < 3; i++)
+            NearbyDoors[i].Serialize(writer);
+
+        for (int i = 0; i < 3; i++)
+            NearbyVents[i].Serialize(writer);
+    }
 
     private void Awake()
     {
@@ -71,7 +82,7 @@ public sealed class MapDataRecorder : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    public static void OnGameStarted()
+    private static void OnGameStarted()
     {
         ShipStatus.Instance.gameObject.AddComponent<MapDataRecorder>();
     }

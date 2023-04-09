@@ -57,7 +57,7 @@ public sealed class PlayerControlVisionHandler : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    public static void OnGameStarted()
+    private static void OnGameStarted()
     {
         ShipStatus.Instance.gameObject.AddComponent<PlayerControlVisionHandler>();
     }

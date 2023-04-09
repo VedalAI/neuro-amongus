@@ -5,7 +5,13 @@ namespace Neuro.Utilities;
 
 public static class Gizmos
 {
-    private static readonly Material _nodeMaterial = new(Shader.Find("Unlit/MaskShader"));
+    static Gizmos()
+    {
+        _nodeMaterial = new Material(Shader.Find("Unlit/MaskShader"));
+        _nodeMaterial.DontDestroy();
+    }
+
+    private static readonly Material _nodeMaterial;
     private static GameObject _previousPath;
 
     public static void CreateNodeVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.red, 0.1f);

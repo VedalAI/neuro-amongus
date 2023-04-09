@@ -1,6 +1,9 @@
-﻿namespace Neuro.Communication.AmongUsAI.DataStructures;
+﻿using System.IO;
+using Neuro.Communication.AmongUsAI;
 
-public readonly struct DoorData
+namespace Neuro.Map.DataStructures;
+
+public readonly struct DoorData : ISerializable
 {
     public PositionData Position { get; init; } = PositionData.Absent;
     public bool IsOpen { get; init; } = true;
@@ -9,6 +12,12 @@ public readonly struct DoorData
     {
         Position = position;
         IsOpen = isOpen;
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        Position.Serialize(writer);
+        writer.Write(IsOpen);
     }
 
     public static readonly DoorData Absent = new();

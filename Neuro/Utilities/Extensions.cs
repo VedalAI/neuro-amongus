@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using Il2CppInterop.Runtime.InteropTypes;
+using UnityEngine;
 
 namespace Neuro.Utilities;
 
@@ -38,5 +40,11 @@ public static class Extensions
     public static bool IsPlayingExitVentAnimation(this PlayerAnimations animations)
     {
         return animations.Animator.GetCurrentAnimation() == animations.group.ExitVentAnim;
+    }
+
+    public static void Write(this BinaryWriter writer, Vector2 vector)
+    {
+        writer.Write(vector.x);
+        writer.Write(vector.y);
     }
 }

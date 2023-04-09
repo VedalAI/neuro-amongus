@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using Neuro.Communication.AmongUsAI;
 
-namespace Neuro.Communication.AmongUsAI.DataStructures;
+namespace Neuro.Map.DataStructures;
 
-public readonly struct VentData
+public readonly struct VentData : ISerializable
 {
     public PositionData Position { get; init; }
     public PositionData[] ConnectingVents { get; init; }
@@ -11,6 +13,14 @@ public readonly struct VentData
     {
         Position = position;
         ConnectingVents = connectingVents;
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        Position.Serialize(writer);
+
+        for (int i = 0; i < 3; i++)
+            ConnectingVents[i].Serialize(writer);
     }
 
     public static readonly VentData Absent = new();

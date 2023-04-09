@@ -63,7 +63,7 @@ public sealed class DeadBodyVisionHandler : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    public static void OnGameStarted()
+    private static void OnGameStarted()
     {
         ShipStatus.Instance.gameObject.AddComponent<DeadBodyVisionHandler>();
     }
