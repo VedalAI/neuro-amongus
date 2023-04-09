@@ -6,8 +6,8 @@ namespace Neuro.Recording.Map;
 
 public readonly struct VentData : ISerializable
 {
-    private PositionData Position { get; init; }
-    private PositionData[] ConnectingVents { get; init; }
+    public PositionData Position { get; init; }
+    public PositionData[] ConnectingVents { get; init; }
 
     public VentData(PositionData position, PositionData[] connectingVents)
     {

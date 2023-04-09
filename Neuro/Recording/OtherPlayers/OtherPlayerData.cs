@@ -7,12 +7,12 @@ namespace Neuro.Recording.OtherPlayers;
 
 public readonly struct OtherPlayerData : ISerializable
 {
-    private int Id { get; init; }
-    private Vector2 LastSeenPosition { get; init; }
-    private float LastSeenTime { get; init; }
-    private int SawVent { get; init; }
-    private float RoundTimeVisible { get; init; }
-    private float GameTimeVisible { get; init; }
+    public int Id { get; init; }
+    public Vector2 LastSeenPosition { get; init; }
+    public float LastSeenTime { get; init; }
+    public int SawVent { get; init; }
+    public float RoundTimeVisible { get; init; }
+    public float GameTimeVisible { get; init; }
 
     public OtherPlayerData(int id, Vector2 lastSeenPosition, float lastSeenTime, int sawVent, float roundTimeVisible, float gameTimeVisible)
     {

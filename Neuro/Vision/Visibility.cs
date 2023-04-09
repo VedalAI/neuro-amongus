@@ -7,6 +7,7 @@ public static class Visibility
 {
     private static readonly int _shadowLayer = LayerMask.GetMask("Shadow");
 
+    // TODO: This is definitely not working!
     private static bool IsVisible(Vector2 rayStart, Vector2 rayEnd)
     {
         Vector2 ray = rayEnd - rayStart;

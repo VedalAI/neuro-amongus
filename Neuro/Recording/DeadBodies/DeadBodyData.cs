@@ -10,10 +10,10 @@ namespace Neuro.Recording.DeadBodies;
 
 public readonly struct DeadBodyData : ISerializable
 {
-    private byte ParentId { get; init; }
-    private Vector2 LastSeenPosition { get; init; }
-    private float FirstSeenTime { get; init; }
-    private int[] NearbyPlayers { get; init; }
+    public byte ParentId { get; init; }
+    public Vector2 LastSeenPosition { get; init; }
+    public float FirstSeenTime { get; init; }
+    public int[] NearbyPlayers { get; init; }
 
     private DeadBodyData(byte parentId, Vector2 lastSeenPosition, float firstSeenTime, int[] nearbyPlayers)
     {

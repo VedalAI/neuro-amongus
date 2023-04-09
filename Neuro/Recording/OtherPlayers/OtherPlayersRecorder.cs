@@ -43,7 +43,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour, ISerializable
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance) return;
+        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
 
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
@@ -55,7 +55,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour, ISerializable
                 visionData = OtherPlayerData.Create(playerControl);
             }
 
-            LastSeen[playerControl, playerControl.PlayerId] = visionData;
+            LastSeen[playerControl, playerControl.PlayerId] = visionData.UpdateVisible(playerControl);
         }
     }
 
