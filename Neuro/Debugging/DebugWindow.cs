@@ -13,6 +13,10 @@ public sealed class DebugWindow : MonoBehaviour
     private bool _enabled = true;
     private readonly DragWindow _window;
 
+    private int _frameCount;
+    private float _fpsUpdateTime;
+    private float _fps;
+
     public DebugWindow(IntPtr ptr) : base(ptr)
     {
         _window = new DragWindow(new Rect(20, 20, 100, 100), "Debug (F1)", BuildWindow);
@@ -20,6 +24,15 @@ public sealed class DebugWindow : MonoBehaviour
 
     private void Update()
     {
+        _frameCount++;
+        _fpsUpdateTime += Time.deltaTime;
+        if (_fpsUpdateTime > 0.25f)
+        {
+            _fps = _frameCount / _fpsUpdateTime;
+            _frameCount = 0;
+            _fpsUpdateTime -= 0.25f;
+        }
+
         if (Input.GetKeyDown(KeyCode.F1)) _enabled = !_enabled;
         if (DebugTabAttribute.Tabs.Count == 0) _enabled = false;
     }
@@ -42,10 +55,7 @@ public sealed class DebugWindow : MonoBehaviour
         {
             GUILayout.BeginVertical();
 
-            if (DebugTabAttribute.Tabs.Count <= 1)
-            {
-                GUILayout.Label(" ", GUILayout.Height(1), GUILayout.Width(75));
-            }
+            GUILayout.Label($"FPS: {_fps:F2}", GUILayout.Width(75));
 
             GUILayout.BeginHorizontal();
 
