@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Neuro.Communication.AmongUsAI.DataStructures;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities.DataStructures;
 using Reactor.Utilities.Attributes;
@@ -79,9 +78,9 @@ public sealed class PathfindingThread : Il2CppSystem.Object
                 while (_requests.Count > 0)
                 {
                     string identifier = _queue.Dequeue();
-                    (MyVector2 start, MyVector2 target) = _requests[identifier];
-                    _results[identifier] = (start, target, FindPath(start, target));
+                    if (!_requests.TryGetValue(identifier, out (MyVector2 start, MyVector2 target) vec)) continue;
                     _requests.Remove(identifier);
+                    _results[identifier] = (vec.start, vec.target, FindPath(vec.start, vec.target));
 
                     Thread.Yield();
                     CheckForStop();

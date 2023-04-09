@@ -5,9 +5,9 @@ public readonly struct DoorData
     public PositionData Position { get; init; } = PositionData.Absent;
     public bool IsOpen { get; init; } = true;
 
-    public DoorData(PositionData positionData, bool isOpen)
+    public DoorData(PositionData position, bool isOpen)
     {
-        Position = positionData;
+        Position = position;
         IsOpen = isOpen;
     }
 

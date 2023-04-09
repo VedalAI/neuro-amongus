@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Neuro.Communication.AmongUsAI.DataStructures;
 using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
@@ -80,6 +79,8 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public float CalculateTotalDistance(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
+        if (string.IsNullOrEmpty(identifier)) return float.MaxValue;
+
         _thread.RequestPath(start, target, identifier);
         if (!_thread.TryGetPath(identifier, out MyVector2[] path)) return -1;
 
@@ -96,6 +97,8 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public Vector2 CalculateOffsetToFirstNode(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
+        if (string.IsNullOrEmpty(identifier)) return default;
+
         _thread.RequestPath(start, target, identifier);
         if (!_thread.TryGetPath(identifier, out MyVector2[] path)) return Vector2.zero;
 
