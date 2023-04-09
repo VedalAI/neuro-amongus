@@ -1,7 +1,7 @@
-﻿using Neuro.Communication.AmongUsAI.DataStructures;
+﻿using Neuro.Utilities.DataStructures;
 using UnityEngine;
 
-namespace Neuro.Utilities;
+namespace Neuro.Utilities.Convertors;
 
 public struct PositionProvider
 {

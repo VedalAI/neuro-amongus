@@ -1,4 +1,5 @@
 ﻿using Neuro.Communication.AmongUsAI.DataStructures;
+using Neuro.Utilities.DataStructures;
 
 namespace Neuro.Pathfinding.DataStructures;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Neuro.Pathfinding;
+namespace Neuro.Utilities.Convertors;
 
 public readonly struct IdentifierProvider
 {

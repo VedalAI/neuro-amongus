@@ -4,6 +4,8 @@ using Neuro.Communication.AmongUsAI.DataStructures;
 using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
+using Neuro.Utilities.Convertors;
+using Neuro.Utilities.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 

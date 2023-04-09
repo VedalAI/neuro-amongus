@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Neuro.Communication.AmongUsAI.DataStructures;
+namespace Neuro.Utilities.DataStructures;
 
 public readonly record struct MyVector2(float x, float y)
 {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Neuro.Communication.AmongUsAI.DataStructures;
 using Neuro.Pathfinding.DataStructures;
+using Neuro.Utilities.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 using Thread = Il2CppSystem.Threading.Thread;
