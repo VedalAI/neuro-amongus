@@ -1,5 +1,4 @@
-﻿using Neuro.Utilities.DataStructures;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Neuro.Utilities.Convertors;
 
@@ -44,6 +43,4 @@ public struct PositionProvider
     }
 
     public static implicit operator Vector2(PositionProvider provider) => provider.Position;
-
-    public static implicit operator MyVector2(PositionProvider provider) => provider.Position;
 }

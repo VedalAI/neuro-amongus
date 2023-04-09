@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using Il2CppInterop.Runtime;
 using Neuro.Pathfinding.DataStructures;
-using Neuro.Utilities.DataStructures;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
 
@@ -15,13 +14,13 @@ namespace Neuro.Pathfinding;
 public sealed class PathfindingThread
 {
     private readonly ConcurrentQueue<string> _queue = new();
-    private readonly ConcurrentDictionary<string, (MyVector2 start, MyVector2 target)> _requests = new();
-    private readonly ConcurrentDictionary<string, (MyVector2 start, MyVector2 target, MyVector2[] path, float length)> _results = new();
+    private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target)> _requests = new();
+    private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target, Vector2[] path, float length)> _results = new();
 
     private readonly Node[,] _grid;
     private readonly Thread _thread;
 
-    public PathfindingThread(Node[,] grid, MyVector2 accessiblePosition)
+    public PathfindingThread(Node[,] grid, Vector2 accessiblePosition)
     {
         _grid = grid;
         FloodFill(accessiblePosition);
@@ -45,9 +44,9 @@ public sealed class PathfindingThread
         }
     }
 
-    public void RequestPath(MyVector2 start, MyVector2 target, string identifier)
+    public void RequestPath(Vector2 start, Vector2 target, string identifier)
     {
-        if (_results.TryGetValue(identifier, out (MyVector2 start, MyVector2 target, MyVector2[], float) result) &&
+        if (_results.TryGetValue(identifier, out (Vector2 start, Vector2 target, Vector2[], float) result) &&
             result.start == start && result.target == target)
             return;
 
@@ -56,9 +55,9 @@ public sealed class PathfindingThread
         _requests[identifier] = (start, target);
     }
 
-    public bool TryGetPath(string identifier, out MyVector2[] path, out float length)
+    public bool TryGetPath(string identifier, out Vector2[] path, out float length)
     {
-        bool tried = _results.TryGetValue(identifier, out (MyVector2, MyVector2, MyVector2[] path, float length) result);
+        bool tried = _results.TryGetValue(identifier, out (Vector2, Vector2, Vector2[] path, float length) result);
         path = result.path;
         length = result.length;
         return tried;
@@ -75,10 +74,10 @@ public sealed class PathfindingThread
                 while (!_queue.IsEmpty)
                 {
                     if (!_queue.TryDequeue(out string identifier)) continue;
-                    if (!_requests.TryGetValue(identifier, out (MyVector2 start, MyVector2 target) vec)) continue;
+                    if (!_requests.TryGetValue(identifier, out (Vector2 start, Vector2 target) vec)) continue;
                     _requests.TryRemove(identifier, out _);
 
-                    MyVector2[] path = FindPath(vec.start, vec.target);
+                    Vector2[] path = FindPath(vec.start, vec.target);
                     _results[identifier] = (vec.start, vec.target, path, CalculateLength(path));
 
                     Thread.Yield();
@@ -105,7 +104,7 @@ public sealed class PathfindingThread
         }
     }
 
-    private void FloodFill(MyVector2 accessiblePosition)
+    private void FloodFill(Vector2 accessiblePosition)
     {
         Node startingNode = NodeFromWorldPoint(accessiblePosition);
 
@@ -140,7 +139,7 @@ public sealed class PathfindingThread
         }
     }
 
-    private MyVector2[] FindPath(MyVector2 start, MyVector2 target)
+    private Vector2[] FindPath(Vector2 start, Vector2 target)
     {
         bool pathSuccess = false;
 
@@ -148,7 +147,7 @@ public sealed class PathfindingThread
         Node targetNode = FindClosestNode(target);
 
 
-        if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<MyVector2>();
+        if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<Vector2>();
 
         Heap<Node> openSet = new(PathfindingHandler.GRID_SIZE * PathfindingHandler.GRID_SIZE);
         HashSet<Node> closedSet = new();
@@ -192,23 +191,23 @@ public sealed class PathfindingThread
         }
 
         Warning("Failed to find path");
-        return Array.Empty<MyVector2>();
+        return Array.Empty<Vector2>();
     }
 
-    private float CalculateLength(MyVector2[] path)
+    private float CalculateLength(Vector2[] path)
     {
         if (path.Length == 0) return -1;
 
         float length = 0f;
         for (int i = 0; i < path.Length - 1; i++)
         {
-            length += MyVector2.Distance(path[i], path[i + 1]);
+            length += Vector2.Distance(path[i], path[i + 1]);
         }
 
         return length;
     }
 
-    private Node FindClosestNode(MyVector2 position)
+    private Node FindClosestNode(Vector2 position)
     {
         Node closestNode = NodeFromWorldPoint(position);
 
@@ -226,7 +225,7 @@ public sealed class PathfindingThread
             {
                 if (neighbour.accessible)
                 {
-                    float distance = MyVector2.Distance(position, neighbour.worldPosition);
+                    float distance = Vector2.Distance(position, neighbour.worldPosition);
                     if (distance < closestDistance)
                     {
                         closestNeighbour = neighbour;
@@ -249,7 +248,7 @@ public sealed class PathfindingThread
         return closestNode;
     }
 
-    private Node NodeFromWorldPoint(MyVector2 position)
+    private Node NodeFromWorldPoint(Vector2 position)
     {
         position *= PathfindingHandler.GRID_DENSITY;
         float clampedX = Math.Clamp(position.x, PathfindingHandler.GRID_LOWER_BOUNDS, PathfindingHandler.GRID_UPPER_BOUNDS);
@@ -280,7 +279,7 @@ public sealed class PathfindingThread
         return neighbours;
     }
 
-    private static MyVector2[] RetracePath(Node startNode, Node endNode)
+    private static Vector2[] RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new();
         Node currentNode = endNode;
@@ -290,8 +289,8 @@ public sealed class PathfindingThread
             currentNode = currentNode.parent;
         }
 
-        MyVector2[] waypoints = path.Select(p => p.worldPosition).ToArray();
-        new Span<MyVector2>(waypoints).Reverse();
+        Vector2[] waypoints = path.Select(p => p.worldPosition).ToArray();
+        new Span<Vector2>(waypoints).Reverse();
 
         return waypoints;
     }

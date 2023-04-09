@@ -4,7 +4,6 @@ using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
 using Neuro.Utilities.Convertors;
-using Neuro.Utilities.DataStructures;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -90,7 +89,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         if (string.IsNullOrEmpty(identifier)) return default;
 
         _thread.RequestPath(start, target, identifier);
-        if (!_thread.TryGetPath(identifier, out MyVector2[] path, out _)) return Vector2.zero;
+        if (!_thread.TryGetPath(identifier, out Vector2[] path, out _)) return Vector2.zero;
 
         if (path.Length == 0) return Vector2.zero;
 
