@@ -174,28 +174,25 @@ public sealed class TasksHandler : MonoBehaviour
         if (Minigame.Instance) return;
         if (!PlayerControl.LocalPlayer) return;
 
-        foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
+        //Open anything nearby, speedrun.
+        foreach (var tasky in PlayerControl.LocalPlayer.myTasks)
         {
-            if (task.IsComplete || task.Locations == null) continue;
+            if (tasky.IsComplete || tasky.Locations == null) continue;
 
-            // TODO: HOLY FUCK DON'T UNCOMMENT THIS THIS IS BROKEN AF
-            // INVOKE CONSOLE.USE DIRECTLY PLEEEEEEASE
+            foreach (Console con in tasky.FindConsoles()) {
+                var currentDistance = Vector2.Distance(con.transform.position, PlayerControl.LocalPlayer.transform.position);
 
-            /*// TODO: Invoke Console.Use directly and check if we can open it before trying
-            foreach (Vector2 location in task.Locations)
-            {
-                if (Vector2.Distance(location, PlayerControl.LocalPlayer.transform.position) < 0.8f)
+                if (currentDistance < con.usableDistance)
                 {
-                    // TODO: Check if we should open the task with the MinigameSolver before actually opening it
-                    if (task.MinigamePrefab)
+                    // Info("We found " + con.name + " with distance " + con.usableDistance + " " + currentDistance);
+                    con.CanUse(PlayerControl.LocalPlayer.Data, out bool canUse,out _);
+                    if (canUse)
                     {
-                        Minigame minigame = Instantiate(task.GetMinigamePrefab(), Camera.main!.transform, false);
-                        minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
-                        // minigame.Console = FindObjectOfType<Console>(); // TODO: What the fuck is this
-                        minigame.Begin(task);
+                        con.Use();
+                        Info("Using task console: " + con.name);
                     }
                 }
-            }*/
+            }
         }
     }
 }
