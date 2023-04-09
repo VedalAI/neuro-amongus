@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(KeypadGame))]
-public sealed class OxygenDepletedSolver : TasklessMinigameSolver<KeypadGame>
+public sealed class OxygenDepletedSolver : SabotageMinigameSolver<KeypadGame>
 {
-    protected override IEnumerator CompleteMinigame(KeypadGame minigame)
+    protected override IEnumerator CompleteMinigame(KeypadGame minigame, SabotageTask task)
     {
         int[] numbers = Array.ConvertAll(minigame.oxyTask.targetNumber.ToString().ToCharArray(), x => (int)char.GetNumericValue(x));
         UiElement[] buttons = minigame.ControllerSelectable.ToArray();

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Neuro.Vision;
+namespace Neuro.zzz.Vision;
 
 public static class Location
 {

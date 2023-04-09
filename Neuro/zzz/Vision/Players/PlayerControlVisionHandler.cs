@@ -2,10 +2,11 @@
 using Neuro.Events;
 using Neuro.Utilities;
 using Neuro.Utilities.Collections;
+using Neuro.Vision;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
-namespace Neuro.Vision.Players;
+namespace Neuro.zzz.Vision.Players;
 
 [RegisterInIl2Cpp]
 public sealed class PlayerControlVisionHandler : MonoBehaviour

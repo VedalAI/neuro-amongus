@@ -1,7 +1,7 @@
 ﻿using Neuro.Utilities;
 using UnityEngine;
 
-namespace Neuro.Vision.Players;
+namespace Neuro.zzz.Vision.Players;
 
 // TODO: ReportFindings was removed
 public sealed class PlayerControlVisionData

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(VendingMinigame))]
-public sealed class BuyBeverageSolver : MinigameSolver<VendingMinigame>
+public sealed class BuyBeverageMinigameSolver : TaskMinigameSolver<VendingMinigame>
 {
     protected override IEnumerator CompleteMinigame(VendingMinigame minigame, NormalPlayerTask task)
     {

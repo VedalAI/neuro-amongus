@@ -17,13 +17,21 @@ public static class MinigameHandler
         coroutineBehaviour.StartCoroutine(CoTryCompleteMinigame(minigame, task));
     }
 
-    private static IEnumerator CoTryCompleteMinigame(Minigame minigame, PlayerTask task)
+    public static MinigameSolver GetMinigameSolver(Minigame minigame)
     {
         if (!MinigameSolverAttribute.MinigameSolvers.TryGetValue(minigame.GetIl2CppType().FullName, out MinigameSolver solver))
         {
             Warning($"Cannot solve minigame of type {minigame.GetIl2CppType().FullName}");
-            yield break;
+            return null;
         }
+
+        return solver;
+    }
+
+    private static IEnumerator CoTryCompleteMinigame(Minigame minigame, PlayerTask task)
+    {
+        MinigameSolver solver = GetMinigameSolver(minigame);
+        if (solver == null) yield break;
 
         InGameCursor.Instance.HideWhen(() => !minigame);
 

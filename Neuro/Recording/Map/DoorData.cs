@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Neuro.Communication.AmongUsAI;
 
-namespace Neuro.Map.DataStructures;
+namespace Neuro.Recording.Map;
 
 public readonly struct DoorData : ISerializable
 {

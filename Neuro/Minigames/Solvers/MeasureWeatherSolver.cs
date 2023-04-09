@@ -4,7 +4,7 @@ using Neuro.Cursor;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WeatherMinigame))]
-public sealed class MeasureWeatherSolver : MinigameSolver<WeatherMinigame>
+public sealed class MeasureWeatherSolver : TaskMinigameSolver<WeatherMinigame>
 {
     protected override IEnumerator CompleteMinigame(WeatherMinigame minigame, NormalPlayerTask task)
     {

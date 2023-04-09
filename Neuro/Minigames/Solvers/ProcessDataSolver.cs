@@ -4,7 +4,7 @@ using Neuro.Cursor;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(ProcessDataMinigame))]
-public sealed class ProcessDataSolver : MinigameSolver<ProcessDataMinigame>
+public sealed class ProcessDataSolver : TaskMinigameSolver<ProcessDataMinigame>
 {
     protected override IEnumerator CompleteMinigame(ProcessDataMinigame minigame, NormalPlayerTask task)
     {

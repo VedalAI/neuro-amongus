@@ -13,12 +13,19 @@ public readonly struct IdentifierProvider
 
     public static implicit operator IdentifierProvider(PlainDoor door)
     {
-        if (!ShipStatus.Instance) return default;
+        if (!door || !ShipStatus.Instance) return default;
 
         int index = ShipStatus.Instance.AllDoors.IndexOf(new Func<PlainDoor, bool>(d => d.GetInstanceID() == door.GetInstanceID()));
         if (index == -1) return default;
 
         return new IdentifierProvider($"PlainDoor_{index}");
+    }
+
+    public static implicit operator IdentifierProvider(PlayerControl playerControl)
+    {
+        if (!playerControl) return default;
+
+        return new IdentifierProvider($"PlayerControl_{playerControl.PlayerId}");
     }
 
     public static implicit operator IdentifierProvider(Vent vent)

@@ -3,13 +3,12 @@ using System.IO;
 using System.Linq;
 using Neuro.Communication.AmongUsAI;
 using Neuro.Events;
-using Neuro.Map.DataStructures;
 using Neuro.Pathfinding;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
-namespace Neuro.Map;
+namespace Neuro.Recording.Map;
 
 [RegisterInIl2Cpp]
 public sealed class MapDataRecorder : MonoBehaviour, ISerializable

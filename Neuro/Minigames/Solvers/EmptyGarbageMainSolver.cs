@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(EmptyGarbageMinigame))]
-public sealed class EmptyGarbageMainStageSolver : MinigameSolver<EmptyGarbageMinigame>
+public sealed class EmptyGarbageMainSolver : TaskMinigameSolver<EmptyGarbageMinigame>
 {
     protected override IEnumerator CompleteMinigame(EmptyGarbageMinigame minigame, NormalPlayerTask task)
     {

@@ -5,7 +5,7 @@ using Neuro.Utilities;
 using Neuro.Utilities.Convertors;
 using UnityEngine;
 
-namespace Neuro.Map.DataStructures;
+namespace Neuro.Recording;
 
 public readonly struct PositionData : ISerializable
 {

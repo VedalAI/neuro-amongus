@@ -1,7 +1,8 @@
 ﻿using Neuro.Utilities.Collections;
+using Neuro.Vision;
 using UnityEngine;
 
-namespace Neuro.Vision.DeadBodies;
+namespace Neuro.zzz.Vision.DeadBodies;
 
 public sealed class DeadBodyVisionData
 {

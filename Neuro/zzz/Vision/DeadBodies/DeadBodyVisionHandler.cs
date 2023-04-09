@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using Neuro.Events;
 using Neuro.Utilities;
+using Neuro.Vision;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
-namespace Neuro.Vision.DeadBodies;
+namespace Neuro.zzz.Vision.DeadBodies;
 
 [RegisterInIl2Cpp]
 public sealed class DeadBodyVisionHandler : MonoBehaviour

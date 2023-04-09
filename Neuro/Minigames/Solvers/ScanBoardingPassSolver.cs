@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(BoardPassGame))]
-public sealed class ScanBoardingPassSolver : MinigameSolver<BoardPassGame>
+public sealed class ScanBoardingPassSolver : TaskMinigameSolver<BoardPassGame>
 {
     protected override IEnumerator CompleteMinigame(BoardPassGame minigame, NormalPlayerTask task)
     {

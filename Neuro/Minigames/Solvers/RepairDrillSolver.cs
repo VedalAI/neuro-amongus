@@ -5,7 +5,7 @@ using PowerTools;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(DrillMinigame))]
-public sealed class RepairDrillSolver : MinigameSolver<DrillMinigame>
+public sealed class RepairDrillSolver : TaskMinigameSolver<DrillMinigame>
 {
     protected override IEnumerator CompleteMinigame(DrillMinigame minigame, NormalPlayerTask task)
     {
