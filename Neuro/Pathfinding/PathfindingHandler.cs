@@ -46,7 +46,6 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        Warning("Running Stop");
         _thread.Stop();
     }
 
@@ -79,6 +78,8 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public float CalculateTotalDistance(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
+        if (NeuroUtilities.IsMemoized(out float memoized, new object[] {start, target, identifier})) return memoized;
+
         if (string.IsNullOrEmpty(identifier)) return float.MaxValue;
 
         _thread.RequestPath(start, target, identifier);
@@ -89,10 +90,10 @@ public sealed class PathfindingHandler : MonoBehaviour
         float distance = 0f;
         for (int i = 0; i < path.Length - 1; i++)
         {
-            distance += Vector2.Distance(path[i], path[i + 1]);
+            distance += MyVector2.Distance(path[i], path[i + 1]);
         }
 
-        return distance;
+        return NeuroUtilities.Memoize(distance, new object[] {start, target, identifier});
     }
 
     public Vector2 CalculateOffsetToFirstNode(PositionProvider start, PositionProvider target, IdentifierProvider identifier)

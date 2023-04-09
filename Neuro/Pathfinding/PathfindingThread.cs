@@ -1,12 +1,19 @@
-﻿using System;
+﻿#define IL2CPP_THREAD
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Neuro.Pathfinding.DataStructures;
+using Neuro.Utilities;
 using Neuro.Utilities.DataStructures;
 using Reactor.Utilities.Attributes;
-using UnityEngine;
+
+#if IL2CPP_THREAD
 using Thread = Il2CppSystem.Threading.Thread;
+#else
+using Thread = System.Threading.Thread;
+#endif
 
 namespace Neuro.Pathfinding;
 
@@ -26,7 +33,11 @@ public sealed class PathfindingThread : Il2CppSystem.Object
         _grid = grid;
         FloodFill(accessiblePosition);
 
+#if IL2CPP_THREAD
         _thread = new Thread(new Action(RunThread));
+#else
+        _thread = new Thread(RunThread);
+#endif
     }
 
     public void Start()
@@ -133,12 +144,10 @@ public sealed class PathfindingThread : Il2CppSystem.Object
             }
         }
 
-        /*
         foreach (Node node in closedSet.ToList())
         {
             Gizmos.CreateNodeVisualPoint(node.worldPosition);
         }
-        */
 
         // Set all nodes not in closed set to inaccessible
         foreach (Node node in _grid)
@@ -214,7 +223,7 @@ public sealed class PathfindingThread : Il2CppSystem.Object
         while (!closestNode.accessible)
         {
             closestNode = queue.Dequeue();
-            float closestDistance = Mathf.Infinity;
+            float closestDistance = float.PositiveInfinity;
             Node closestNeighbour = null;
             foreach (Node neighbour in GetNeighbours(closestNode))
             {
@@ -246,11 +255,11 @@ public sealed class PathfindingThread : Il2CppSystem.Object
     private Node NodeFromWorldPoint(MyVector2 position)
     {
         position *= PathfindingHandler.GRID_DENSITY;
-        float clampedX = Mathf.Clamp(position.x, PathfindingHandler.GRID_LOWER_BOUNDS, PathfindingHandler.GRID_UPPER_BOUNDS);
-        float clampedY = Mathf.Clamp(position.y, PathfindingHandler.GRID_LOWER_BOUNDS, PathfindingHandler.GRID_UPPER_BOUNDS);
+        float clampedX = Math.Clamp(position.x, PathfindingHandler.GRID_LOWER_BOUNDS, PathfindingHandler.GRID_UPPER_BOUNDS);
+        float clampedY = Math.Clamp(position.y, PathfindingHandler.GRID_LOWER_BOUNDS, PathfindingHandler.GRID_UPPER_BOUNDS);
 
-        int xIndex = Mathf.RoundToInt(clampedX + PathfindingHandler.GRID_UPPER_BOUNDS);
-        int yIndex = Mathf.RoundToInt(clampedY + PathfindingHandler.GRID_UPPER_BOUNDS);
+        int xIndex = (int) Math.Round(clampedX + PathfindingHandler.GRID_UPPER_BOUNDS);
+        int yIndex = (int) Math.Round(clampedY + PathfindingHandler.GRID_UPPER_BOUNDS);
 
         return _grid[xIndex, yIndex];
     }
@@ -292,8 +301,8 @@ public sealed class PathfindingThread : Il2CppSystem.Object
 
     private static int GetDistance(Node a, Node b)
     {
-        int dstX = Mathf.Abs(a.gridX - b.gridX);
-        int dstY = Mathf.Abs(a.gridY - b.gridY);
+        int dstX = Math.Abs(a.gridX - b.gridX);
+        int dstY = Math.Abs(a.gridY - b.gridY);
 
         return 14 * dstY + 10 * Math.Abs(dstX - dstY);
     }
