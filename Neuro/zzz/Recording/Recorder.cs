@@ -60,6 +60,7 @@ public sealed class Recorder : MonoBehaviour
         _fixedUpdateCalls = 0;
 
         // For each task, give the relative direction to nearest node plus total distance
+        // TODO: Record map id
         // TODO: Record all of the tasks
         // TODO: Record 11th task as emergency
         // TODO: Record fellow impostors

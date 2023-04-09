@@ -1,6 +1,4 @@
-﻿using Neuro.Utilities;
-
-namespace Neuro.Communication.AmongUsAI.DataStructures;
+﻿namespace Neuro.Communication.AmongUsAI.DataStructures;
 
 public readonly struct DoorData
 {
@@ -19,7 +17,7 @@ public readonly struct DoorData
     {
         return new DoorData
         {
-            Position = PositionData.Create(door),
+            Position = PositionData.Create(door, door),
             IsOpen = door.Open
         };
     }

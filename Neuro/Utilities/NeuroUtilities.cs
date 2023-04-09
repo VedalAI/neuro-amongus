@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Runtime.CompilerServices;
-using Neuro.Pathfinding;
 using UnityEngine;
 
 namespace Neuro.Utilities;

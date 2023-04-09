@@ -36,7 +36,7 @@ public sealed class MapDataRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance) return;
+        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
 
         UpdateNearbyDoors();
         UpdateNearbyVents();
@@ -53,6 +53,7 @@ public sealed class MapDataRecorder : MonoBehaviour
 
     private void UpdateNearbyVents()
     {
+        /*
         Vent closest = null;
         float closestDistance = 999f;
         NearbyVents.Clear();
@@ -80,12 +81,13 @@ public sealed class MapDataRecorder : MonoBehaviour
         {
             DirectionToNearestVent = (ClosestVent.transform.position - PlayerControl.LocalPlayer.transform.position).normalized;
         }
+        */
 
     }
 
     private float Closest(PlainDoor door)
     {
-        return PathfindingHandler.Instance.CalculateTotalDistance(PlayerControl.LocalPlayer.GetTruePosition(), door.transform.position);
+        return PathfindingHandler.Instance.CalculateTotalDistance(PlayerControl.LocalPlayer, door, door);
     }
 
     [EventHandler(EventTypes.GameStarted)]

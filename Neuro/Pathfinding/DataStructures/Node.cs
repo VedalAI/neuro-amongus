@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using Neuro.Communication.AmongUsAI.DataStructures;
 
 namespace Neuro.Pathfinding.DataStructures;
 
@@ -13,9 +13,9 @@ public class Node : IHeapItem<Node>
     public int hCost;
 
     public Node parent;
-    public Vector2 worldPosition;
+    public MyVector2 worldPosition;
 
-    public Node(bool _accessible, Vector2 _worldPosition, int _gridX, int _gridY)
+    public Node(bool _accessible, MyVector2 _worldPosition, int _gridX, int _gridY)
     {
         accessible = _accessible;
         worldPosition = _worldPosition;

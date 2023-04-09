@@ -1,7 +1,6 @@
 ﻿using Neuro.Pathfinding;
 using Neuro.Utilities;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Neuro.Communication.AmongUsAI.DataStructures;
 
@@ -18,12 +17,12 @@ public readonly struct PositionData
 
     public static readonly PositionData Absent = new();
 
-    public static PositionData Create(PositionProvider position)
+    public static PositionData Create(PositionProvider position, IdentifierProvider pathfindingIdentifier)
     {
         return new PositionData
         {
-            TotalDistance = PathfindingHandler.Instance.CalculateTotalDistance(PlayerControl.LocalPlayer.GetTruePosition(), position),
-            OffsetToNextNode = PathfindingHandler.Instance.CalculateOffsetToFirstNode(PlayerControl.LocalPlayer.GetTruePosition(), position)
+            TotalDistance = PathfindingHandler.Instance.CalculateTotalDistance(PlayerControl.LocalPlayer, position, pathfindingIdentifier),
+            OffsetToNextNode = PathfindingHandler.Instance.CalculateOffsetToFirstNode(PlayerControl.LocalPlayer, position, pathfindingIdentifier)
         };
     }
 }
