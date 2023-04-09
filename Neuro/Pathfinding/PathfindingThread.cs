@@ -1,4 +1,4 @@
-﻿#define IL2CPP_THREAD
+﻿#define USE_IL2CPP_THREADS
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using Neuro.Utilities;
 using Neuro.Utilities.DataStructures;
 using Reactor.Utilities.Attributes;
 
-#if IL2CPP_THREAD
+#if USE_IL2CPP_THREADS
 using Thread = Il2CppSystem.Threading.Thread;
 #else
 using Thread = System.Threading.Thread;
@@ -35,7 +35,7 @@ public sealed class PathfindingThread : Il2CppSystem.Object
         _grid = grid;
         FloodFill(accessiblePosition);
 
-#if IL2CPP_THREAD
+#if USE_IL2CPP_THREADS
         _thread = new Thread(new Action(RunThread));
 #else
         _thread = new Thread(RunThread);
@@ -88,7 +88,7 @@ public sealed class PathfindingThread : Il2CppSystem.Object
         {
             try
             {
-                while (_requests.Count > 0)
+                while (_requests.Count > 0 && _queue.Count > 0)
                 {
                     string identifier = _queue.Dequeue();
                     if (!_requests.TryGetValue(identifier, out (MyVector2 start, MyVector2 target) vec)) continue;
