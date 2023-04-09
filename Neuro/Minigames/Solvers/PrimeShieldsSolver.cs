@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(ShieldMinigame))]
-public sealed class PrimeShieldsSolver : TaskMinigameSolver<ShieldMinigame>
+public sealed class PrimeShieldsSolver : GeneralMinigameSolver<ShieldMinigame>
 {
-    protected override IEnumerator CompleteMinigame(ShieldMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(ShieldMinigame minigame, NormalPlayerTask task)
     {
         for (int i = 0; i < minigame.Shields.Count; i++)
         {

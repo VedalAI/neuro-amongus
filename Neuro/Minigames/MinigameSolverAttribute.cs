@@ -7,25 +7,26 @@ using Il2CppInterop.Runtime;
 
 namespace Neuro.Minigames;
 
-[AttributeUsage(AttributeTargets.Class)]
-public sealed class MinigameSolverAttribute : Attribute
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public sealed class MinigameSolverAttribute : MinigameOpenerAttribute
 {
     static MinigameSolverAttribute()
     {
         MinigameSolvers = AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())
-            .Where(t => t.GetCustomAttribute<MinigameSolverAttribute>() is not null)
-            .Where(t => t.IsAssignableTo(typeof(MinigameSolver)))
-            .Select(solverType => (solverType.GetCustomAttribute<MinigameSolverAttribute>()!.Types, solverType))
-            .SelectMany(t => t.Types.Select(type => (type, Activator.CreateInstance(t.solverType))))
-            .ToDictionary(t => Il2CppType.From(t.type).FullName, t => (MinigameSolver) t.Item2);
+            .Where(type => type.IsAssignableTo(typeof(IMinigameSolver)))
+            .SelectMany(solver => solver.GetCustomAttributes<MinigameSolverAttribute>()
+                .Select(attribute => (solver, minigame: attribute.Type)))
+            .Where(item => item.minigame is not null)
+            .ToDictionary(item => Il2CppType.From(item.minigame).FullName,
+                item => (IMinigameSolver) Activator.CreateInstance(item.solver));
     }
 
-    public static Dictionary<string, MinigameSolver> MinigameSolvers { get; }
+    public static Dictionary<string, IMinigameSolver> MinigameSolvers { get; }
 
-    public MinigameSolverAttribute(Type firstType, params Type[] otherTypes)
+    public MinigameSolverAttribute(Type type, bool opens = true) : base(opens ? type : null)
     {
-        Types = otherTypes.AddToArray(firstType);
+        Type = type;
     }
 
-    public readonly Type[] Types;
+    public new readonly Type Type;
 }

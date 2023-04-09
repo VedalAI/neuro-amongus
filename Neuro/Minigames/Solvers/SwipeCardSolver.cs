@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(CardSlideGame))]
-public sealed class SwipeCardSolver : TaskMinigameSolver<CardSlideGame>
+public sealed class SwipeCardSolver : GeneralMinigameSolver<CardSlideGame>
 {
-    protected override IEnumerator CompleteMinigame(CardSlideGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(CardSlideGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.col);
         yield return new WaitForSeconds(0.1f);

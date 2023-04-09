@@ -6,9 +6,11 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SwitchMinigame))]
-public sealed class FixLightsSolver : SabotageMinigameSolver<SwitchMinigame>
+public sealed class FixLightsSolver : IMinigameSolver<SwitchMinigame>, IMinigameOpener
 {
-    protected override IEnumerator CompleteMinigame(SwitchMinigame minigame, SabotageTask task)
+    public bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task) => true;
+
+    public IEnumerator CompleteMinigame(SwitchMinigame minigame)
     {
         SwitchSystem switchSystem = minigame.ship.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
         while (switchSystem.IsActive)

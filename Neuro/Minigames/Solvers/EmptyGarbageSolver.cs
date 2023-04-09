@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(EmptyGarbageMinigame))]
-public sealed class EmptyGarbageMainSolver : TaskMinigameSolver<EmptyGarbageMinigame>
+public sealed class EmptyGarbageSolver : GeneralMinigameSolver<EmptyGarbageMinigame>
 {
-    protected override IEnumerator CompleteMinigame(EmptyGarbageMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(EmptyGarbageMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Handle);
         InGameCursor.Instance.StartHoldingLMB(minigame);

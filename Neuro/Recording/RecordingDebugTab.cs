@@ -71,11 +71,12 @@ public sealed class RecordingDebugTab : DebugTab
     private void BuildOtherPlayersRecorderUI()
     {
         GUILayout.Label(nameof(OtherPlayersRecorder));
-        IndentLabel(1, $"{nameof(OtherPlayersRecorder.LastSeen)} ({OtherPlayersRecorder.Instance.LastSeen.Count})");
+        IndentLabel(1, $"{nameof(OtherPlayersRecorder.LastSeen)} ({OtherPlayersRecorder.Instance.LastSeen.Count})", Color.red);
         foreach (OtherPlayerData player in OtherPlayersRecorder.Instance.LastSeen.Values.OrderBy(d => d.Id))
         {
-            IndentLabel(2, $"- ID({player.Id}), P{player.LastSeenPosition}, T({player.RoundTimeVisible:F2})");
+            IndentLabel(2, $"- ID({player.Id}), P{player.LastSeenPosition}, T({player.RoundTimeVisible:F2})", Color.red);
         }
+        IndentLabel(0, "This doesn't work properly, please fix! (Visibility.IsVisible)", Color.red);
     }
 
     private void IndentLabel(int indent, string label) => IndentLabel(indent, label, GUI.contentColor);

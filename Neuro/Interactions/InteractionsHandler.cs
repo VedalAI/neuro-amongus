@@ -70,12 +70,15 @@ public sealed class InteractionsHandler : MonoBehaviour
     public void UseConsole(Console console)
     {
         PlayerTask task = console.FindTask(PlayerControl.LocalPlayer);
-        MinigameSolver solver = MinigameHandler.GetMinigameSolver(task.GetMinigamePrefab());
-        if (solver == null) return;
+        Minigame minigame = task.GetMinigamePrefab();
 
-        if (solver.CanUseConsole(console, task))
+        if (MinigameHandler.ShouldOpenConsole(console, minigame, task))
         {
             console.Use();
+        }
+        else
+        {
+            Warning($"Shouldn't open console id {console.ConsoleId} for minigame {task.GetMinigamePrefab().GetIl2CppType().Name}");
         }
     }
 

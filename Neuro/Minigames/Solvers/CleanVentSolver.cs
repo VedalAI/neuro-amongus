@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(VentCleaningMinigame))]
-public sealed class CleanVentMinigameSolver : TaskMinigameSolver<VentCleaningMinigame>
+public sealed class CleanVentMinigameSolver : GeneralMinigameSolver<VentCleaningMinigame>
 {
-    protected override IEnumerator CompleteMinigame(VentCleaningMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(VentCleaningMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.ventLidClosed);
         yield return minigame.CoOpenVent();

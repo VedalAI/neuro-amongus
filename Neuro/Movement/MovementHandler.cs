@@ -17,11 +17,11 @@ public sealed class MovementHandler : MonoBehaviour, IDeserializable
     {
     }
 
-    public Vector2 d_ForcedMoveDirection { get; private set; } = new(0, -1);
+    public Vector2 ForcedMoveDirection { get; private set; } //= new(0, -1);
 
     public void Deserialize(BinaryReader reader)
     {
-        d_ForcedMoveDirection = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+        ForcedMoveDirection = new Vector2(reader.ReadSingle(), reader.ReadSingle());
     }
 
     private LineRenderer _arrow;
@@ -43,7 +43,7 @@ public sealed class MovementHandler : MonoBehaviour, IDeserializable
     public void GetForcedMoveDirection(ref Vector2 direction)
     {
         if (direction != Vector2.zero) return;
-        direction = d_ForcedMoveDirection;
+        direction = ForcedMoveDirection;
 
         LineRenderer renderer = _arrow;
         renderer.SetPosition(0, PlayerControl.LocalPlayer.GetTruePosition());
