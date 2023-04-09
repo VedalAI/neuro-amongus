@@ -7,6 +7,7 @@ using Neuro.Utilities.Collections;
 using Neuro.Vision;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Neuro.Recording.OtherPlayers;
 
@@ -67,14 +68,9 @@ public sealed class OtherPlayersRecorder : MonoBehaviour, ISerializable
         foreach (byte id in Data.Keys)
         {
             PlayerControl player = GameData.Instance.GetPlayerById(id).Object;
+            if (!player || player.Data.IsDead) Data.Remove(id);
             Data[player, id] = Data[id].ResetAfterMeeting();
         }
-    }
-
-    [EventHandler(EventTypes.PlayerDied)]
-    public void OnPlayerDied(PlayerControl player, DeathReason _)
-    {
-        Data.Remove(player.PlayerId);
     }
 
     [EventHandler(EventTypes.GameStarted)]
