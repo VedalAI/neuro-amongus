@@ -1,46 +1,33 @@
-﻿#define USE_IL2CPP_THREADS
-
-using System;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Il2CppInterop.Runtime;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities.DataStructures;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
 
-#if USE_IL2CPP_THREADS
-using Thread = Il2CppSystem.Threading.Thread;
-#else
-using Thread = System.Threading.Thread;
-#endif
-
 namespace Neuro.Pathfinding;
 
-// TODO: Figure out: Are we using System threads or Il2Cpp threads?
-// TODO: Figure out: Are we using or avoiding Unity methods?
 [RegisterInIl2Cpp]
 public sealed class PathfindingThread : Il2CppSystem.Object
 {
-    private readonly Queue<string> _queue = new();
-    private readonly Dictionary<string, (MyVector2 start, MyVector2 target)> _requests = new();
-    private readonly Dictionary<string, (MyVector2 start, MyVector2 target, MyVector2[] path, float length)> _results = new();
+    private readonly ConcurrentQueue<string> _queue = new();
+    private readonly ConcurrentDictionary<string, (MyVector2 start, MyVector2 target)> _requests = new();
+    private readonly ConcurrentDictionary<string, (MyVector2 start, MyVector2 target, MyVector2[] path, float length)> _results = new();
 
     private readonly Node[,] _grid;
     private readonly Thread _thread;
-    private bool _stop;
 
     public PathfindingThread(Node[,] grid, MyVector2 accessiblePosition)
     {
         _grid = grid;
         FloodFill(accessiblePosition);
 
-#if USE_IL2CPP_THREADS
-        _thread = new Thread(new Action(RunThread));
-#else
         _thread = new Thread(RunThread);
-#endif
     }
 
     public void Start()
@@ -55,13 +42,8 @@ public sealed class PathfindingThread : Il2CppSystem.Object
     {
         if (_thread.IsAlive)
         {
-            _stop = true;
+            _thread.Interrupt();
         }
-    }
-
-    private void CheckForStop()
-    {
-        if (_stop) throw new ThreadInterruptedException();
     }
 
     public void RequestPath(MyVector2 start, MyVector2 target, string identifier)
@@ -85,25 +67,25 @@ public sealed class PathfindingThread : Il2CppSystem.Object
 
     private void RunThread()
     {
+        IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
+
         while (true)
         {
             try
             {
-                while (_requests.Count > 0 && _queue.Count > 0)
+                while (!_queue.IsEmpty)
                 {
-                    string identifier = _queue.Dequeue();
+                    if (!_queue.TryDequeue(out string identifier)) continue;
                     if (!_requests.TryGetValue(identifier, out (MyVector2 start, MyVector2 target) vec)) continue;
-                    _requests.Remove(identifier);
+                    _requests.TryRemove(identifier, out _);
 
                     MyVector2[] path = FindPath(vec.start, vec.target);
                     _results[identifier] = (vec.start, vec.target, path, CalculateLength(path));
 
                     Thread.Yield();
-                    CheckForStop();
                 }
 
                 Thread.Sleep(250);
-                CheckForStop();
             }
             catch (ThreadInterruptedException)
             {
@@ -115,7 +97,6 @@ public sealed class PathfindingThread : Il2CppSystem.Object
                 try
                 {
                     Thread.Yield();
-                    CheckForStop();
                 }
                 catch
                 {
@@ -151,9 +132,7 @@ public sealed class PathfindingThread : Il2CppSystem.Object
 
         foreach (Node node in closedSet.ToList())
         {
-#if USE_IL2CPP_THREADS
             CreateNodeVisualPoint(node.worldPosition);
-#endif
         }
 
         // Set all nodes not in closed set to inaccessible
@@ -327,7 +306,6 @@ public sealed class PathfindingThread : Il2CppSystem.Object
         return 14 * dstY + 10 * Math.Abs(dstX - dstY);
     }
 
-#if USE_IL2CPP_THREADS
     private static Material _nodeMaterial;
 
     private static void CreateNodeVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.red, 0.1f);
@@ -352,5 +330,4 @@ public sealed class PathfindingThread : Il2CppSystem.Object
         renderer.startColor = color;
         renderer.endColor = color;
     }
-#endif
 }
