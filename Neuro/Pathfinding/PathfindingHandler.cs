@@ -38,7 +38,6 @@ public sealed class PathfindingHandler : MonoBehaviour
         }
 
         Instance = this;
-        EventManager.RegisterHandler(this);
 
         _thread = new PathfindingThread(GenerateNodeGrid(), ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius);
         _thread.Start();

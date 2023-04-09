@@ -5,9 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Neuro.Pathfinding.DataStructures;
-using Neuro.Utilities;
 using Neuro.Utilities.DataStructures;
 using Reactor.Utilities.Attributes;
+using Reactor.Utilities.Extensions;
+using UnityEngine;
 
 #if USE_IL2CPP_THREADS
 using Thread = Il2CppSystem.Threading.Thread;
@@ -150,7 +151,9 @@ public sealed class PathfindingThread : Il2CppSystem.Object
 
         foreach (Node node in closedSet.ToList())
         {
-            Gizmos.CreateNodeVisualPoint(node.worldPosition);
+#if USE_IL2CPP_THREADS
+            CreateNodeVisualPoint(node.worldPosition);
+#endif
         }
 
         // Set all nodes not in closed set to inaccessible
@@ -323,4 +326,31 @@ public sealed class PathfindingThread : Il2CppSystem.Object
 
         return 14 * dstY + 10 * Math.Abs(dstX - dstY);
     }
+
+#if USE_IL2CPP_THREADS
+    private static Material _nodeMaterial;
+
+    private static void CreateNodeVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.red, 0.1f);
+
+    private static void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
+    {
+        if (!_nodeMaterial)
+        {
+            _nodeMaterial = new Material(Shader.Find("Unlit/MaskShader"));
+            _nodeMaterial.DontDestroy();
+        }
+
+        GameObject nodeVisualPoint = new("Gizmo (Visual Point)");
+        nodeVisualPoint.transform.position = position;
+
+        LineRenderer renderer = nodeVisualPoint.AddComponent<LineRenderer>();
+        renderer.SetPosition(0, position);
+        renderer.SetPosition(1, position + new Vector2(0, widthMultiplier));
+        renderer.widthMultiplier = widthMultiplier;
+        renderer.positionCount = 2;
+        renderer.material = _nodeMaterial;
+        renderer.startColor = color;
+        renderer.endColor = color;
+    }
+#endif
 }

@@ -19,16 +19,16 @@ public sealed class MapDataRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    public DoorData[] NearbyDoors { get; } = new DoorData[3];
-    public VentData[] NearbyVents { get; } = new VentData[3];
+    private DoorData[] s_NearbyDoors { get; } = new DoorData[3];
+    private VentData[] s_NearbyVents { get; } = new VentData[3];
 
     public void Serialize(BinaryWriter writer)
     {
         for (int i = 0; i < 3; i++)
-            NearbyDoors[i].Serialize(writer);
+            s_NearbyDoors[i].Serialize(writer);
 
         for (int i = 0; i < 3; i++)
-            NearbyVents[i].Serialize(writer);
+            s_NearbyVents[i].Serialize(writer);
     }
 
     private void Awake()
@@ -41,7 +41,6 @@ public sealed class MapDataRecorder : MonoBehaviour, ISerializable
         }
 
         Instance = this;
-        EventManager.RegisterHandler(this);
     }
 
     private void FixedUpdate()
@@ -57,7 +56,7 @@ public sealed class MapDataRecorder : MonoBehaviour, ISerializable
         PlainDoor[] nearbyDoors = ShipStatus.Instance.AllDoors.OrderBy(Closest).Take(3).ToArray();
         for (int i = 0; i < 3; i++)
         {
-            NearbyDoors[i] = nearbyDoors.ElementAtOrDefault(i) is { } door ? DoorData.Create(door) : DoorData.Absent;
+            s_NearbyDoors[i] = nearbyDoors.ElementAtOrDefault(i) is { } door ? DoorData.Create(door) : DoorData.Absent;
         }
     }
 
@@ -66,7 +65,7 @@ public sealed class MapDataRecorder : MonoBehaviour, ISerializable
         Vent[] nearbyVents = ShipStatus.Instance.AllVents.OrderBy(Closest).Take(3).ToArray();
         for (int i = 0; i < 3; i++)
         {
-            NearbyVents[i] = nearbyVents.ElementAtOrDefault(i) is { } vent ? VentData.Create(vent) : VentData.Absent;
+            s_NearbyVents[i] = nearbyVents.ElementAtOrDefault(i) is { } vent ? VentData.Create(vent) : VentData.Absent;
         }
     }
 
