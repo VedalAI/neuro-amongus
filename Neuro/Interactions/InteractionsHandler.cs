@@ -26,14 +26,13 @@ public sealed class InteractionsHandler : MonoBehaviour
         }
 
         Instance = this;
-        EventManager.RegisterHandler(this);
     }
 
     public void UseTarget(IUsable usable)
     {
         if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
 
-        // TODO: allow neural network to specifiy intention of interacting with usables
+        // TODO: Allow neural network to specifiy intention of interacting with usables
         switch (usable.Cast<Il2CppSystem.Object>().Il2CppCastToTopLevel())
         {
             case Console console:

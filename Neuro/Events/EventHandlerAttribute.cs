@@ -11,30 +11,28 @@ public sealed class EventHandlerAttribute : Attribute
 {
     static EventHandlerAttribute()
     {
-        StaticEvents = Assembly.GetExecutingAssembly().GetTypes()
-            .SelectMany(t => t.GetMethods())
+        StaticEvents = AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())
+            .SelectMany(AccessTools.GetDeclaredMethods)
             .Where(m => m.IsStatic)
             .Where(m => m.GetCustomAttribute<EventHandlerAttribute>() is not null)
-            .SelectMany(m => m.GetCustomAttribute<EventHandlerAttribute>()!.Events.Select(e => (eventType: e, method: m)))
-            .GroupBy(i => i.eventType)
-            .ToDictionary(i => i.Key, i => i.Select(x => x.method).ToList());
+            .GroupBy(m => m.GetCustomAttribute<EventHandlerAttribute>()!.EventType)
+            .ToDictionary(i => i.Key, i => i.ToList());
 
-        InstanceEvents = Assembly.GetExecutingAssembly().GetTypes()
-            .SelectMany(t => t.GetMethods())
+        InstanceEvents = AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())
+            .SelectMany(AccessTools.GetDeclaredMethods)
             .Where(m => !m.IsStatic && m.HasMethodBody())
             .Where(m => m.GetCustomAttribute<EventHandlerAttribute>() is not null)
-            .SelectMany(m => m.GetCustomAttribute<EventHandlerAttribute>()!.Events.Select(e => (eventType: e, method: m)))
-            .GroupBy(i => i.eventType)
-            .ToDictionary(i => i.Key, i => i.Select(x => x.method).ToList());
+            .GroupBy(m => m.GetCustomAttribute<EventHandlerAttribute>()!.EventType)
+            .ToDictionary(i => i.Key, i => i.ToList());
     }
 
     public static Dictionary<EventTypes, List<MethodInfo>> StaticEvents { get; }
     public static Dictionary<EventTypes, List<MethodInfo>> InstanceEvents { get; }
 
-    public EventHandlerAttribute(EventTypes firstEvent, params EventTypes[] otherEvents)
+    public EventHandlerAttribute(EventTypes @event)
     {
-        Events = otherEvents.AddToArray(firstEvent);
+        EventType = @event;
     }
 
-    public readonly EventTypes[] Events;
+    public readonly EventTypes EventType;
 }
