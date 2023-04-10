@@ -46,13 +46,13 @@ public sealed class CommunicationHandler : MonoBehaviour
             var directions = new Vector2[]
             {
                 Vector2.up,
-                Vector2.up + Vector2.right,
+                (Vector2.up + Vector2.right).normalized,
                 Vector2.right,
-                Vector2.right + Vector2.down,
+                (Vector2.right + Vector2.down).normalized,
                 Vector2.down,
-                Vector2.down + Vector2.left,
+                (Vector2.down + Vector2.left).normalized,
                 Vector2.left,
-                Vector2.left + Vector2.up
+                (Vector2.left + Vector2.up).normalized
             };
 
             // if we're close to a wall, add bias to move away from it
