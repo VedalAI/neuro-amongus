@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Neuro.Events;
 using Neuro.Recording;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -56,5 +57,11 @@ public sealed class CommunicationHandler : MonoBehaviour
 
             _hasGotResponse = false;
         }
+    }
+
+    [EventHandler(EventTypes.GameStarted)]
+    private static void OnGameStarted(ShipStatus shipStatus)
+    {
+        shipStatus.gameObject.AddComponent<CommunicationHandler>();
     }
 }

@@ -83,7 +83,7 @@ public sealed class Recorder : MonoBehaviour, ISerializable
     {
         foreach (ISerializable recorder in _recorders)
         {
-            recorder.Serialize(_fileWriter);
+            recorder.Serialize(writer);
         }
     }
 
