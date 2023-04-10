@@ -12,6 +12,7 @@ public record Frame(
     MyVector2 DirectionToNearestBody,
     bool CanReport,
     Dictionary<byte, PlayerRecord> PlayerRecords,
+    float[] RaycastDistances,
     MyVector2 Direction,
     bool Report,
     bool Vent,

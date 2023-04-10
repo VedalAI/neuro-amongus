@@ -32,6 +32,7 @@ public sealed class VisionHandler : MonoBehaviour
     public float[] distances = new float[8];
 
     public GameObject[] distancesDebugObjects = new GameObject[8];
+    public bool showDebugDistances = true;
 
     private void Start()
     {
@@ -41,7 +42,7 @@ public sealed class VisionHandler : MonoBehaviour
             LineRenderer renderer2 = debugObject.AddComponent<LineRenderer>();
             renderer2.SetPosition(0, Vector3.zero);
             renderer2.SetPosition(1, Vector3.zero);
-            renderer2.widthMultiplier = 0.3f;
+            renderer2.widthMultiplier = 0.1f;
             renderer2.positionCount = 2;
             renderer2.material = new Material(Shader.Find("Unlit/MaskShader"));
             renderer2.startColor = Color.red;
@@ -81,20 +82,25 @@ public sealed class VisionHandler : MonoBehaviour
             Vector2.left + Vector2.up
         };
 
-        var layerMask = LayerMask.GetMask("Walls", "Ship", "Objects");
+        var layerMask = LayerMask.GetMask("Ship", "ShortObjects");
         for (var i = 0; i < 8; i++)
         {
+            Physics2D.queriesHitTriggers = false;
             var raycastHit = Physics2D.Raycast(playerPos, directions[i], 100f, layerMask);
+            Physics2D.queriesHitTriggers = true;
             distances[i] = raycastHit.distance;
 
-            Info(playerPos);
-            Info(distancesDebugObjects[i]);
-            Info((bool)distancesDebugObjects[i]);
+            if(showDebugDistances)
+            {
+                Info(playerPos);
+                Info(distancesDebugObjects[i]);
+                Info((bool)distancesDebugObjects[i]);
 
-            LineRenderer lineRenderer = distancesDebugObjects[i].GetComponent<LineRenderer>();
+                LineRenderer lineRenderer = distancesDebugObjects[i].GetComponent<LineRenderer>();
 
-            lineRenderer.SetPosition(0, playerPos);
-            lineRenderer.SetPosition(1, playerPos + directions[i] * raycastHit.distance);
+                lineRenderer.SetPosition(0, playerPos);
+                lineRenderer.SetPosition(1, playerPos + directions[i] * raycastHit.distance);
+            }
         }
     }
 

@@ -51,6 +51,7 @@ public sealed class RecordingHandler : MonoBehaviour
             NeuroPlugin.Instance.Vision.DirectionToNearestBody,
             GameManager.Instance.CanReportBodies() && HudManager.Instance.ReportButton.isActiveAndEnabled,
             NeuroPlugin.Instance.Vision.PlayerRecords.ToDictionary(kv => kv.Key.PlayerId, kv => kv.Value),
+            NeuroPlugin.Instance.Vision.distances,
             NeuroPlugin.Instance.Movement.LastMoveDirection,
             DidReport,
             DidVent,

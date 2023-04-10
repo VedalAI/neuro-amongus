@@ -40,7 +40,31 @@ public sealed class CommunicationHandler : MonoBehaviour
             Info(response);
             Frame frame = JsonSerializer.Deserialize<Frame>(response);
             Info(frame);
-            NeuroPlugin.Instance.Movement.forceMovementDirection = (new Vector2(frame.Direction.x, frame.Direction.y)).normalized;
+            Vector2 desiredMovement = (new Vector2(frame.Direction.x, frame.Direction.y)).normalized;
+
+            float[] raycastResults = NeuroPlugin.Instance.Vision.distances;
+            var directions = new Vector2[]
+            {
+                Vector2.up,
+                Vector2.up + Vector2.right,
+                Vector2.right,
+                Vector2.right + Vector2.down,
+                Vector2.down,
+                Vector2.down + Vector2.left,
+                Vector2.left,
+                Vector2.left + Vector2.up
+            };
+
+            // if we're close to a wall, add bias to move away from it
+            for (int i = 0; i < raycastResults.Length; i++)
+            {
+                if (raycastResults[i] < 0.5f)
+                {
+                    desiredMovement -= directions[i] * (0.5f - raycastResults[i]);
+                }
+            }
+
+            NeuroPlugin.Instance.Movement.forceMovementDirection = desiredMovement.normalized;
             hasGotResponse = true;
         }
 
