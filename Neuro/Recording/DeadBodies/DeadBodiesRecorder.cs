@@ -21,15 +21,6 @@ public sealed class DeadBodiesRecorder : MonoBehaviour, ISerializable
 
     public Dictionary<byte, DeadBodyData> SeenBodies { get; } = new();
 
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(SeenBodies.Count);
-        foreach (DeadBodyData body in SeenBodies.Values)
-        {
-            body.Serialize(writer);
-        }
-    }
-
     private void Awake()
     {
         if (Instance)
@@ -55,6 +46,15 @@ public sealed class DeadBodiesRecorder : MonoBehaviour, ISerializable
             {
                 SeenBodies[deadBody.ParentId] = DeadBodyData.Create(deadBody);
             }
+        }
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        writer.Write((byte) SeenBodies.Count);
+        foreach (DeadBodyData body in SeenBodies.Values)
+        {
+            body.Serialize(writer);
         }
     }
 

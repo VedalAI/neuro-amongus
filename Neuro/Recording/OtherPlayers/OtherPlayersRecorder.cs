@@ -19,15 +19,6 @@ public sealed class OtherPlayersRecorder : MonoBehaviour, ISerializable
 
     public AnchoredUnstableDictionary<byte, OtherPlayerData> LastSeen { get; } = new();
 
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(LastSeen.Count);
-        foreach (OtherPlayerData player in LastSeen.Values)
-        {
-            player.Serialize(writer);
-        }
-    }
-
     private void Awake()
     {
         if (Instance)
@@ -56,6 +47,15 @@ public sealed class OtherPlayersRecorder : MonoBehaviour, ISerializable
             }
 
             LastSeen[playerControl, playerControl.PlayerId] = visionData.UpdateVisible(playerControl);
+        }
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        writer.Write((byte) LastSeen.Count);
+        foreach (OtherPlayerData player in LastSeen.Values)
+        {
+            player.Serialize(writer);
         }
     }
 

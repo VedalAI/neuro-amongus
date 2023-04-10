@@ -20,14 +20,6 @@ public sealed class LocalPlayerRecorder : MonoBehaviour, ISerializable
     public bool DidReport { get; private set; }
     public bool DidVent { get; private set; }
 
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(DidReport);
-        writer.Write(DidVent);
-
-        DidReport = DidVent = false;
-    }
-
     private void Awake()
     {
         if (Instance)
@@ -38,6 +30,14 @@ public sealed class LocalPlayerRecorder : MonoBehaviour, ISerializable
         }
 
         Instance = this;
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        writer.Write(DidReport);
+        writer.Write(DidVent);
+
+        DidReport = DidVent = false;
     }
 
     public void RecordReport() => DidReport = true;

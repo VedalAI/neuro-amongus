@@ -50,7 +50,7 @@ public sealed class Recorder : MonoBehaviour, ISerializable
             OtherPlayersRecorder.Instance
         };
 
-        _fileStream = new FileStream(Path.Combine(BepInEx.Paths.PluginPath, "recording.gymbag"), FileMode.CreateNew);
+        _fileStream = new FileStream(Path.Combine(BepInEx.Paths.PluginPath, "recording.gymbag"), FileMode.Create);
         _fileWriter = new BinaryWriter(_fileStream);
     }
 

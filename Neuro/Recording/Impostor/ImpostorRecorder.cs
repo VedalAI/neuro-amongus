@@ -18,18 +18,8 @@ public sealed class ImpostorRecorder : MonoBehaviour, ISerializable
     }
 
     public bool DidKill { get; private set; }
-    public int SabotageUsed { get; private set; } = -1;
-    public int DoorsUsed { get; private set; } = -1;
-
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(DidKill);
-        writer.Write(SabotageUsed);
-        writer.Write(DoorsUsed);
-
-        DidKill = false;
-        SabotageUsed = DoorsUsed = -1;
-    }
+    public byte SabotageUsed { get; private set; } = byte.MaxValue;
+    public byte DoorsUsed { get; private set; } = byte.MaxValue;
 
     private void Awake()
     {
@@ -43,9 +33,19 @@ public sealed class ImpostorRecorder : MonoBehaviour, ISerializable
         Instance = this;
     }
 
+    public void Serialize(BinaryWriter writer)
+    {
+        writer.Write(DidKill);
+        writer.Write(SabotageUsed);
+        writer.Write(DoorsUsed);
+
+        DidKill = false;
+        SabotageUsed = DoorsUsed = byte.MaxValue;
+    }
+
     public void RecordKill() => DidKill = true;
-    public void RecordSabotage(SystemTypes type) => SabotageUsed = (int) type;
-    public void RecordDoors(SystemTypes room) => DoorsUsed = (int) room;
+    public void RecordSabotage(SystemTypes type) => SabotageUsed = (byte) type;
+    public void RecordDoors(SystemTypes room) => DoorsUsed = (byte) room;
 
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted(ShipStatus shipStatus)

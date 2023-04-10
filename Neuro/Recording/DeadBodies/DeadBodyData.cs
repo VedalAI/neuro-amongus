@@ -13,9 +13,9 @@ public readonly struct DeadBodyData : ISerializable
     public byte ParentId { get; init; }
     public Vector2 LastSeenPosition { get; init; }
     public float FirstSeenTime { get; init; }
-    public int[] NearbyPlayers { get; init; }
+    public List<byte> NearbyPlayers { get; init; }
 
-    private DeadBodyData(byte parentId, Vector2 lastSeenPosition, float firstSeenTime, int[] nearbyPlayers)
+    private DeadBodyData(byte parentId, Vector2 lastSeenPosition, float firstSeenTime, List<byte> nearbyPlayers)
     {
         ParentId = parentId;
         LastSeenPosition = lastSeenPosition;
@@ -28,8 +28,9 @@ public readonly struct DeadBodyData : ISerializable
         writer.Write(ParentId);
         writer.Write(LastSeenPosition);
         writer.Write(FirstSeenTime);
-        for (int i = 0; i < 3; i++)
-            writer.Write(NearbyPlayers.Take(i..(i+1)).DefaultIfEmpty(-1).ElementAt(i));
+        writer.Write((byte) NearbyPlayers.Count);
+        foreach (byte playerId in NearbyPlayers)
+            writer.Write(playerId);
     }
 
     public static DeadBodyData Create(DeadBody deadBody)
@@ -49,7 +50,7 @@ public readonly struct DeadBodyData : ISerializable
             if (distanceBetweenWitnessAndBody < distanceBetweenWitnessAndNeuro) nearbyPlayers.Add((potentialWitness.PlayerId, distanceBetweenWitnessAndBody));
         }
 
-        int[] nearbyPlayersArray = nearbyPlayers.OrderBy(e => e.distance).Take(3).Select(e => e.id).ToArray();
-        return new DeadBodyData(deadBody.ParentId, deadBody.TruePosition, Time.fixedTime, nearbyPlayersArray);
+        List<byte> nearbyPlayersList = nearbyPlayers.OrderBy(e => e.distance).Select(e => (byte) e.id).ToList();
+        return new DeadBodyData(deadBody.ParentId, deadBody.TruePosition, Time.fixedTime, nearbyPlayersList);
     }
 }

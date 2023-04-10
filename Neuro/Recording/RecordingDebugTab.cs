@@ -34,7 +34,7 @@ public sealed class RecordingDebugTab : DebugTab
         IndentLabel(1, $"{nameof(DeadBodiesRecorder.SeenBodies)} ({DeadBodiesRecorder.Instance.SeenBodies.Count})");
         foreach (DeadBodyData body in DeadBodiesRecorder.Instance.SeenBodies.Values)
         {
-            IndentLabel(2, $"- ID({body.ParentId}), P{body.LastSeenPosition}, W({body.NearbyPlayers.Length})");
+            IndentLabel(2, $"- ID({body.ParentId}), P{body.LastSeenPosition}, W({body.NearbyPlayers.Count})");
         }
     }
 

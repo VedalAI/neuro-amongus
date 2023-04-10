@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Neuro.Communication.AmongUsAI;
 
@@ -7,9 +8,9 @@ namespace Neuro.Recording.Map;
 public readonly struct VentData : ISerializable
 {
     public PositionData Position { get; init; }
-    public PositionData[] ConnectingVents { get; init; }
+    public List<PositionData> ConnectingVents { get; init; }
 
-    public VentData(PositionData position, PositionData[] connectingVents)
+    public VentData(PositionData position, List<PositionData> connectingVents)
     {
         Position = position;
         ConnectingVents = connectingVents;
@@ -18,8 +19,9 @@ public readonly struct VentData : ISerializable
     public void Serialize(BinaryWriter writer)
     {
         Position.Serialize(writer);
-        for (int i = 0; i < 3; i++)
-            ConnectingVents.ElementAtOrDefault(i).Serialize(writer);
+        writer.Write((byte) ConnectingVents.Count);
+        foreach (PositionData vent in ConnectingVents)
+            vent.Serialize(writer);
     }
 
     public static VentData Create(Vent vent)
@@ -27,7 +29,7 @@ public readonly struct VentData : ISerializable
         return new VentData
         {
             Position = PositionData.Create(vent, vent),
-            ConnectingVents = vent.NearbyVents.Select(v => PositionData.Create(v, v)).ToArray()
+            ConnectingVents = vent.NearbyVents.Select(v => PositionData.Create(v, v)).ToList()
         };
     }
 }

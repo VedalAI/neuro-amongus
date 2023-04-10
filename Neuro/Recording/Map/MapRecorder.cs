@@ -23,17 +23,6 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
     public List<DoorData> NearbyDoors { get; } = new();
     public List<VentData> NearbyVents { get; } = new();
 
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(NearbyDoors.Count);
-        foreach (DoorData door in NearbyDoors)
-            door.Serialize(writer);
-
-        writer.Write(NearbyVents.Count);
-        foreach (VentData vent in NearbyVents)
-            vent.Serialize(writer);
-    }
-
     private void Awake()
     {
         if (Instance)
@@ -70,6 +59,17 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
         {
             NearbyVents.Add(VentData.Create(vent));
         }
+    }
+
+    public void Serialize(BinaryWriter writer)
+    {
+        writer.Write((byte) NearbyDoors.Count);
+        foreach (DoorData door in NearbyDoors)
+            door.Serialize(writer);
+
+        writer.Write((byte) NearbyVents.Count);
+        foreach (VentData vent in NearbyVents)
+            vent.Serialize(writer);
     }
 
     private float Closest(PlainDoor door)
