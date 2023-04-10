@@ -6,6 +6,7 @@ using Neuro.Recording.DataStructures;
 using Neuro.Vision.DataStructures;
 using Reactor.Utilities;
 using Reactor.Utilities.Attributes;
+using Reactor.Utilities.Extensions;
 using UnityEngine;
 
 namespace Neuro.Vision;
@@ -28,6 +29,28 @@ public sealed class VisionHandler : MonoBehaviour
 
     private float roundStartTime; // in seconds
 
+    public float[] distances = new float[8];
+
+    public GameObject[] distancesDebugObjects = new GameObject[8];
+
+    private void Start()
+    {
+        for (var i = 0; i < 8; i++)
+        {
+            GameObject debugObject = new GameObject("RaycastDebugObject");
+            LineRenderer renderer2 = debugObject.AddComponent<LineRenderer>();
+            renderer2.SetPosition(0, Vector3.zero);
+            renderer2.SetPosition(1, Vector3.zero);
+            renderer2.widthMultiplier = 0.3f;
+            renderer2.positionCount = 2;
+            renderer2.material = new Material(Shader.Find("Unlit/MaskShader"));
+            renderer2.startColor = Color.red;
+            renderer2.endColor = Color.red;
+            distancesDebugObjects[i] = debugObject;
+            debugObject.DontDestroy<GameObject>();
+        }
+    }
+
     public void FixedUpdate()
     {
         if (!ShipStatus.Instance) return;
@@ -37,6 +60,42 @@ public sealed class VisionHandler : MonoBehaviour
 
         UpdateDeadBodiesVision();
         UpdateNearbyPlayersVision();
+        UpdateDistances();
+    }
+
+    private void UpdateDistances()
+    {
+        // Raycast around the player to get distances to walls
+        var playerPos = PlayerControl.LocalPlayer.GetTruePosition();
+
+        var raycastHits = new RaycastHit2D[8];
+        var directions = new Vector2[]
+        {
+            Vector2.up,
+            Vector2.up + Vector2.right,
+            Vector2.right,
+            Vector2.right + Vector2.down,
+            Vector2.down,
+            Vector2.down + Vector2.left,
+            Vector2.left,
+            Vector2.left + Vector2.up
+        };
+
+        var layerMask = LayerMask.GetMask("Walls", "Ship", "Objects");
+        for (var i = 0; i < 8; i++)
+        {
+            var raycastHit = Physics2D.Raycast(playerPos, directions[i], 100f, layerMask);
+            distances[i] = raycastHit.distance;
+
+            Info(playerPos);
+            Info(distancesDebugObjects[i]);
+            Info((bool)distancesDebugObjects[i]);
+
+            LineRenderer lineRenderer = distancesDebugObjects[i].GetComponent<LineRenderer>();
+
+            lineRenderer.SetPosition(0, playerPos);
+            lineRenderer.SetPosition(1, playerPos + directions[i] * raycastHit.distance);
+        }
     }
 
     public void StartTrackingPlayer(PlayerControl player)
