@@ -30,11 +30,11 @@ public sealed class RecordingDebugTab : DebugTab
 
     private void BuildDeadBodiesRecorderUI()
     {
-        GUILayout.Label(nameof(DeadBodiesRecorder));
-        IndentLabel(1, $"{nameof(DeadBodiesRecorder.SeenBodies)} ({DeadBodiesRecorder.Instance.SeenBodies.Count})");
-        foreach (DeadBodyData body in DeadBodiesRecorder.Instance.SeenBodies.Values)
+        GUILayout.Label(nameof(DeadBodiesFrame));
+        IndentLabel(1, $"{nameof(DeadBodiesRecorder.Frame.DeadBodies)} ({DeadBodiesRecorder.Instance.Frame.DeadBodies.Count})");
+        foreach (DeadBodyData body in DeadBodiesRecorder.Instance.Frame.DeadBodies)
         {
-            IndentLabel(2, $"- ID({body.ParentId}), P{body.LastSeenPosition}, W({body.NearbyPlayers.Count})");
+            IndentLabel(2, $"- ID({body.ParentId}), P{body.Position}, W({body.NearbyPlayers.Length})");
         }
     }
 

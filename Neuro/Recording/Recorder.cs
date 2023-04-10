@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using Neuro.Communication.AmongUsAI;
+using Google.Protobuf;
 using Neuro.Events;
 using Neuro.Recording.DeadBodies;
-using Neuro.Recording.Impostor;
-using Neuro.Recording.LocalPlayer;
-using Neuro.Recording.Map;
-using Neuro.Recording.OtherPlayers;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -16,16 +11,14 @@ namespace Neuro.Recording;
 
 // TODO: ReportFindings was removed, we need to implement separate communication with language model
 [RegisterInIl2Cpp]
-public sealed class Recorder : MonoBehaviour, ISerializable
+public sealed class Recorder : MonoBehaviour
 {
     public static Recorder Instance { get; private set; }
 
     public Recorder(IntPtr ptr) : base(ptr) { }
 
-    private List<ISerializable> _recorders = new();
     private int _fixedUpdateCalls = 0;
     private FileStream _fileStream;
-    private BinaryWriter _fileWriter;
 
     private void Awake()
     {
@@ -41,17 +34,7 @@ public sealed class Recorder : MonoBehaviour, ISerializable
 
     private void Start()
     {
-        _recorders = new List<ISerializable>
-        {
-            DeadBodiesRecorder.Instance,
-            ImpostorRecorder.Instance,
-            LocalPlayerRecorder.Instance,
-            MapRecorder.Instance,
-            OtherPlayersRecorder.Instance
-        };
-
         _fileStream = new FileStream(Path.Combine(BepInEx.Paths.PluginPath, "recording.gymbag"), FileMode.Create);
-        _fileWriter = new BinaryWriter(_fileStream);
     }
 
     private void FixedUpdate()
@@ -70,21 +53,23 @@ public sealed class Recorder : MonoBehaviour, ISerializable
         if (_fixedUpdateCalls < 9) return;
         _fixedUpdateCalls = 0;
 
-        Serialize(_fileWriter);
+        Serialize(_fileStream);
     }
 
     private void OnDestroy()
     {
-        _fileWriter.Dispose();
         _fileStream.Dispose();
     }
 
-    public void Serialize(BinaryWriter writer)
+    public void Serialize(Stream stream)
     {
-        foreach (ISerializable recorder in _recorders)
+        Frame frame = new()
         {
-            recorder.Serialize(writer);
-        }
+            DeadBodiesFrame = DeadBodiesRecorder.Instance.Frame
+        };
+        frame.WriteTo(stream);
+        Warning(frame.ToString());
+        stream.Flush();
     }
 
     [EventHandler(EventTypes.GameStarted)]

@@ -1,0 +1,9 @@
+﻿syntax = "proto3";
+
+package Neuro.Recording.DeadBodies;
+
+import "Recording/DeadBodies/DeadBodyData.proto";
+
+message DeadBodiesFrame {
+    repeated DeadBodyData DeadBodies = 1;
+}

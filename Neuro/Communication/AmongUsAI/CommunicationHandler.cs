@@ -51,8 +51,7 @@ public sealed class CommunicationHandler : MonoBehaviour
         if (_hasGotResponse)
         {
             using MemoryStream memoryStream = new();
-            using BinaryWriter binaryWriter = new(memoryStream);
-            Recorder.Instance.Serialize(binaryWriter);
+            Recorder.Instance.Serialize(memoryStream);
             _socket.Send(memoryStream.ToArray());
 
             _hasGotResponse = false;

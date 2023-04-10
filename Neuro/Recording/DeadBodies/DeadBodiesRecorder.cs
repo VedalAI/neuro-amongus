@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Neuro.Communication.AmongUsAI;
+using System.Linq;
 using Neuro.Events;
 using Neuro.Utilities;
 using Neuro.Vision;
@@ -11,7 +9,7 @@ using UnityEngine;
 namespace Neuro.Recording.DeadBodies;
 
 [RegisterInIl2Cpp]
-public sealed class DeadBodiesRecorder : MonoBehaviour, ISerializable
+public sealed class DeadBodiesRecorder : MonoBehaviour
 {
     public static DeadBodiesRecorder Instance { get; private set; }
 
@@ -19,7 +17,7 @@ public sealed class DeadBodiesRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    public Dictionary<byte, DeadBodyData> SeenBodies { get; } = new();
+    public DeadBodiesFrame Frame { get; } = new();
 
     private void Awake()
     {
@@ -42,26 +40,17 @@ public sealed class DeadBodiesRecorder : MonoBehaviour, ISerializable
         {
             if (!Visibility.IsVisible(deadBody)) continue;
 
-            if (!SeenBodies.ContainsKey(deadBody.ParentId))
+            if (Frame.DeadBodies.All(d => d.ParentId != deadBody.ParentId))
             {
-                SeenBodies[deadBody.ParentId] = DeadBodyData.Create(deadBody);
+                Frame.DeadBodies.Add(DeadBodyData.Create(deadBody));
             }
-        }
-    }
-
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write((byte) SeenBodies.Count);
-        foreach (DeadBodyData body in SeenBodies.Values)
-        {
-            body.Serialize(writer);
         }
     }
 
     [EventHandler(EventTypes.MeetingEnded)]
     public void ResetAfterMeeting()
     {
-        SeenBodies.Clear();
+        Frame.DeadBodies.Clear();
     }
 
     [EventHandler(EventTypes.GameStarted)]
