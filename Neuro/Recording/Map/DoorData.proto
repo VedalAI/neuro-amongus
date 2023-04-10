@@ -1,0 +1,10 @@
+﻿syntax = "proto3";
+
+package Neuro.Recording.Map;
+
+import "Recording/PositionData.proto";
+
+message DoorData {
+    PositionData Position = 1;
+    bool IsOpen = 2;
+}

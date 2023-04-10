@@ -1,0 +1,9 @@
+﻿syntax = "proto3";
+
+package Neuro.Recording.OtherPlayers;
+
+import "Recording/OtherPlayers/OtherPlayerData.proto";
+
+message OtherPlayersFrame {
+    repeated OtherPlayerData LastSeenPlayers = 1;
+}

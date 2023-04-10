@@ -1,0 +1,14 @@
+﻿syntax = "proto3";
+
+package Neuro.Recording.OtherPlayers;
+
+import "Recording/MyVector2.proto";
+
+message OtherPlayerData {
+    uint32 Id = 1;
+    MyVector2 LastSeenPosition = 2;
+    float LastSeenTime = 3;
+    uint32 TimesSawVent = 4;
+    float RoundTimeVisible = 5;
+    float GameTimeVisible = 6;
+}

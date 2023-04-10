@@ -32,6 +32,12 @@
         <Compile Remove="zzz_excluded\**" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Compile Update="@(Protobuf->'%(RelativeDir)%(Filename).cs')">
+            <DependentUpon>%(Filename).proto</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(AmongUs)/BepInEx/plugins/" UseSymboliclinksIfPossible="true" />
     </Target>

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
-using Neuro.Communication.AmongUsAI;
+using System.Linq;
 using Neuro.Events;
 using Neuro.Utilities;
-using Neuro.Utilities.Collections;
 using Neuro.Vision;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -11,13 +9,13 @@ using UnityEngine;
 namespace Neuro.Recording.OtherPlayers;
 
 [RegisterInIl2Cpp]
-public sealed class OtherPlayersRecorder : MonoBehaviour, ISerializable
+public sealed class OtherPlayersRecorder : MonoBehaviour
 {
     public static OtherPlayersRecorder Instance { get; private set; }
 
     public OtherPlayersRecorder(IntPtr ptr) : base(ptr) { }
 
-    public AnchoredUnstableDictionary<byte, OtherPlayerData> LastSeen { get; } = new();
+    public OtherPlayersFrame Frame { get; } = new();
 
     private void Awake()
     {
@@ -41,32 +39,34 @@ public sealed class OtherPlayersRecorder : MonoBehaviour, ISerializable
             if (playerControl.AmOwner || playerControl.Data.IsDead) continue;
             if (!Visibility.IsVisible(playerControl)) continue;
 
-            if (!LastSeen.TryGetValue(playerControl.PlayerId, out OtherPlayerData visionData))
+            if (Frame.LastSeenPlayers.FirstOrDefault(p => p.Id == playerControl.PlayerId) is not { } player)
             {
-                visionData = OtherPlayerData.Create(playerControl);
+                OtherPlayerData newData = OtherPlayerData.Create(playerControl);
+                Frame.LastSeenPlayers.Add(newData);
             }
-
-            LastSeen[playerControl, playerControl.PlayerId] = visionData.UpdateVisible(playerControl);
-        }
-    }
-
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write((byte) LastSeen.Count);
-        foreach (OtherPlayerData player in LastSeen.Values)
-        {
-            player.Serialize(writer);
+            else
+            {
+                player.UpdateVisible(playerControl);
+            }
         }
     }
 
     [EventHandler(EventTypes.MeetingEnded)]
     public void ResetAfterMeeting()
     {
-        foreach (byte id in LastSeen.Keys)
+        for (int i = 0; i < Frame.LastSeenPlayers.Count; i++)
         {
-            PlayerControl player = GameData.Instance.GetPlayerById(id).Object;
-            if (!player || player.Data.IsDead) LastSeen.Remove(id);
-            LastSeen[player, id] = LastSeen[id].ResetAfterMeeting();
+            OtherPlayerData data = Frame.LastSeenPlayers[i];
+
+            PlayerControl player = GameData.Instance.GetPlayerById((byte) data.Id).Object;
+            if (!player || player.Data.IsDead)
+            {
+                Frame.LastSeenPlayers.RemoveAt(i);
+                i--;
+                continue;
+            }
+
+            data.ResetAfterMeeting();
         }
     }
 

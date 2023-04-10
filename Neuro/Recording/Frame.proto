@@ -4,8 +4,12 @@ package Neuro.Recording;
 
 import "Recording/DeadBodies/DeadBodiesFrame.proto";
 import "Recording/LocalPlayer/LocalPlayerFrame.proto";
+import "Recording/Map/MapFrame.proto";
+import "Recording/OtherPlayers/OtherPlayersFrame.proto";
 
 message Frame {
-    DeadBodies.DeadBodiesFrame DeadBodiesFrame = 1;
-    LocalPlayer.LocalPlayerFrame LocalPlayerFrame = 2;
+    DeadBodies.DeadBodiesFrame DeadBodies = 1;
+    LocalPlayer.LocalPlayerFrame LocalPlayer = 2;
+    Map.MapFrame Map = 3;
+    OtherPlayers.OtherPlayersFrame OtherPlayers = 4;
 }

@@ -4,6 +4,8 @@ using Google.Protobuf;
 using Neuro.Events;
 using Neuro.Recording.DeadBodies;
 using Neuro.Recording.LocalPlayer;
+using Neuro.Recording.Map;
+using Neuro.Recording.OtherPlayers;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -68,8 +70,10 @@ public sealed class Recorder : MonoBehaviour
     {
         Frame frame = new()
         {
-            DeadBodiesFrame = DeadBodiesRecorder.Instance.Frame,
-            LocalPlayerFrame = LocalPlayerRecorder.Instance.Frame
+            DeadBodies = DeadBodiesRecorder.Instance.Frame,
+            LocalPlayer = LocalPlayerRecorder.Instance.Frame,
+            Map = MapRecorder.Instance.Frame,
+            OtherPlayers = OtherPlayersRecorder.Instance.Frame
         };
         frame.WriteTo(stream);
         Warning(frame.ToString());

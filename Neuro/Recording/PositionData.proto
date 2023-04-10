@@ -1,0 +1,10 @@
+﻿syntax = "proto3";
+
+package Neuro.Recording;
+
+import "Recording/MyVector2.proto";
+
+message PositionData {
+    float TotalDistance = 1;
+    MyVector2 NextNodePosition = 2;
+}

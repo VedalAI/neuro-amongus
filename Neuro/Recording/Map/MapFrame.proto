@@ -1,0 +1,11 @@
+﻿syntax = "proto3";
+
+package Neuro.Recording.Map;
+
+import "Recording/Map/DoorData.proto";
+import "Recording/Map/VentData.proto";
+
+message MapFrame {
+    repeated DoorData NearbyDoors = 1;
+    repeated VentData NearbyVents = 2;
+}

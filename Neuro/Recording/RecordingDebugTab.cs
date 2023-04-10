@@ -29,7 +29,7 @@ public sealed class RecordingDebugTab : DebugTab
     private void BuildDeadBodiesRecorderUI()
     {
         GUILayout.Label(nameof(DeadBodiesFrame));
-        IndentLabel(1, $"{nameof(DeadBodiesRecorder.Frame.DeadBodies)} ({DeadBodiesRecorder.Instance.Frame.DeadBodies.Count})");
+        IndentLabel(1, $"{nameof(DeadBodiesFrame.DeadBodies)} ({DeadBodiesRecorder.Instance.Frame.DeadBodies.Count})");
         foreach (DeadBodyData body in DeadBodiesRecorder.Instance.Frame.DeadBodies)
         {
             IndentLabel(2, $"- ID({body.ParentId}), P{body.Position}, W({body.NearbyPlayers.Length})");
@@ -38,24 +38,24 @@ public sealed class RecordingDebugTab : DebugTab
 
     private void BuildLocalPlayerRecorderUI()
     {
-        GUILayout.Label(nameof(LocalPlayerRecorder));
-        IndentLabel(1, $"{nameof(LocalPlayerRecorder.Frame.DidReport)}: {LocalPlayerRecorder.Instance.Frame.DidReport}", Color.yellow);
-        IndentLabel(1, $"{nameof(LocalPlayerRecorder.Frame.DidVent)}: {LocalPlayerRecorder.Instance.Frame.DidVent}", Color.yellow);
-        IndentLabel(1, $"{nameof(LocalPlayerRecorder.Frame.DidKill)}: {LocalPlayerRecorder.Instance.Frame.DidKill}", Color.yellow);
-        IndentLabel(1, $"{nameof(LocalPlayerRecorder.Frame.SabotageUsed)}: {LocalPlayerRecorder.Instance.Frame.SabotageUsed}", Color.yellow);
-        IndentLabel(1, $"{nameof(LocalPlayerRecorder.Frame.DoorsUsed)}: {LocalPlayerRecorder.Instance.Frame.DoorsUsed}", Color.yellow);
+        GUILayout.Label(nameof(LocalPlayerFrame));
+        IndentLabel(1, $"{nameof(LocalPlayerFrame.DidReport)}: {LocalPlayerRecorder.Instance.Frame.DidReport}", Color.yellow);
+        IndentLabel(1, $"{nameof(LocalPlayerFrame.DidVent)}: {LocalPlayerRecorder.Instance.Frame.DidVent}", Color.yellow);
+        IndentLabel(1, $"{nameof(LocalPlayerFrame.DidKill)}: {LocalPlayerRecorder.Instance.Frame.DidKill}", Color.yellow);
+        IndentLabel(1, $"{nameof(LocalPlayerFrame.SabotageUsed)}: {LocalPlayerRecorder.Instance.Frame.SabotageUsed}", Color.yellow);
+        IndentLabel(1, $"{nameof(LocalPlayerFrame.DoorsUsed)}: {LocalPlayerRecorder.Instance.Frame.DoorsUsed}", Color.yellow);
     }
 
     private void BuildMapRecorderUI()
     {
-        GUILayout.Label(nameof(MapRecorder));
-        IndentLabel(1, $"{nameof(MapRecorder.NearbyDoors)} ({MapRecorder.Instance.NearbyDoors.Count})");
-        foreach (DoorData door in MapRecorder.Instance.NearbyDoors)
+        GUILayout.Label(nameof(MapFrame));
+        IndentLabel(1, $"{nameof(MapFrame.NearbyDoors)} ({MapRecorder.Instance.Frame.NearbyDoors.Count})");
+        foreach (DoorData door in MapRecorder.Instance.Frame.NearbyDoors)
         {
             IndentLabel(2, $"- D({door.Position.TotalDistance:F2}), O({door.IsOpen})");
         }
-        IndentLabel(1, $"{nameof(MapRecorder.NearbyVents)} ({MapRecorder.Instance.NearbyVents.Count})");
-        foreach (VentData vent in MapRecorder.Instance.NearbyVents)
+        IndentLabel(1, $"{nameof(MapFrame.NearbyVents)} ({MapRecorder.Instance.Frame.NearbyVents.Count})");
+        foreach (VentData vent in MapRecorder.Instance.Frame.NearbyVents)
         {
             IndentLabel(2, $"- D({vent.Position.TotalDistance:F2})");
         }
@@ -63,9 +63,9 @@ public sealed class RecordingDebugTab : DebugTab
 
     private void BuildOtherPlayersRecorderUI()
     {
-        GUILayout.Label(nameof(OtherPlayersRecorder));
-        IndentLabel(1, $"{nameof(OtherPlayersRecorder.LastSeen)} ({OtherPlayersRecorder.Instance.LastSeen.Count})", Color.red);
-        foreach (OtherPlayerData player in OtherPlayersRecorder.Instance.LastSeen.Values.OrderBy(d => d.Id))
+        GUILayout.Label(nameof(OtherPlayersFrame));
+        IndentLabel(1, $"{nameof(OtherPlayersFrame.LastSeenPlayers)} ({OtherPlayersRecorder.Instance.Frame.LastSeenPlayers.Count})", Color.red);
+        foreach (OtherPlayerData player in OtherPlayersRecorder.Instance.Frame.LastSeenPlayers.OrderBy(d => d.Id))
         {
             IndentLabel(2, $"- ID({player.Id}), P{player.LastSeenPosition}, T({player.RoundTimeVisible:F2})", Color.red);
         }

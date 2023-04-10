@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Neuro.Communication.AmongUsAI;
 using Neuro.Events;
 using Neuro.Pathfinding;
 using Neuro.Utilities;
@@ -12,7 +9,7 @@ using UnityEngine;
 namespace Neuro.Recording.Map;
 
 [RegisterInIl2Cpp]
-public sealed class MapRecorder : MonoBehaviour, ISerializable
+public sealed class MapRecorder : MonoBehaviour
 {
     public static MapRecorder Instance { get; private set; }
 
@@ -20,8 +17,7 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    public List<DoorData> NearbyDoors { get; } = new();
-    public List<VentData> NearbyVents { get; } = new();
+    public MapFrame Frame { get; } = new();
 
     private void Awake()
     {
@@ -45,31 +41,20 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
 
     private void UpdateNearbyDoors()
     {
-        NearbyDoors.Clear();
+        Frame.NearbyDoors.Clear();
         foreach (PlainDoor door in ShipStatus.Instance.AllDoors.OrderBy(Closest).Take(3))
         {
-            NearbyDoors.Add(DoorData.Create(door));
+            Frame.NearbyDoors.Add(DoorData.Create(door));
         }
     }
 
     private void UpdateNearbyVents()
     {
-        NearbyVents.Clear();
+        Frame.NearbyVents.Clear();
         foreach (Vent vent in ShipStatus.Instance.AllVents.OrderBy(Closest).Take(3))
         {
-            NearbyVents.Add(VentData.Create(vent));
+            Frame.NearbyVents.Add(VentData.Create(vent));
         }
-    }
-
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write((byte) NearbyDoors.Count);
-        foreach (DoorData door in NearbyDoors)
-            door.Serialize(writer);
-
-        writer.Write((byte) NearbyVents.Count);
-        foreach (VentData vent in NearbyVents)
-            vent.Serialize(writer);
     }
 
     private float Closest(PlainDoor door)
