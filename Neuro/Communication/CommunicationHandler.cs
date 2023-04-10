@@ -18,14 +18,16 @@ public sealed class CommunicationHandler : MonoBehaviour
     IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6969);
     Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-    public void Start()
+    bool hasGotResponse = true;
+
+
+    private void Start()
     {
         socket.Connect(iPEndPoint);
     }
 
-    bool hasGotResponse = true;
 
-    public void FixedUpdate()
+    private void FixedUpdate()
     {
         if (!ShipStatus.Instance) return;
         if (MeetingHud.Instance) return;
@@ -40,7 +42,7 @@ public sealed class CommunicationHandler : MonoBehaviour
             Info(response);
             Frame frame = JsonSerializer.Deserialize<Frame>(response);
             Info(frame);
-            NeuroPlugin.Instance.Movement.forceMovementDirection = (new Vector2(frame.Direction.x, frame.Direction.y)).normalized;
+            NeuroPlugin.Instance.Executor.ProcessFrame(frame);
             hasGotResponse = true;
         }
 

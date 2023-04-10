@@ -18,8 +18,6 @@ public sealed class MovementHandler
         // TODO: This should be changed as MovementHandler should not assign to fields in different handlers
         TasksHandler handler = NeuroPlugin.Instance.Tasks;
 
-        if (forceMovementDirection.HasValue) direction = forceMovementDirection.Value;
-
         LastMoveDirection = direction;
         if (handler.CurrentPath.Length <= 0 || handler.PathIndex == -1)
         {

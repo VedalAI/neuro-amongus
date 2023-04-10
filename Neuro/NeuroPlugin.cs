@@ -12,6 +12,7 @@ using Neuro.Utilities;
 using Neuro.Vision;
 using Neuro.Impostor;
 using Neuro.Communcation;
+using Neuro.Execution;
 using Reactor;
 using Reactor.Utilities;
 
@@ -31,6 +32,7 @@ public partial class NeuroPlugin : BasePlugin
     public VisionHandler Vision { get; private set; }
     public ImpostorHandler Impostor { get; private set; }
     public CommunicationHandler Communication { get; private set; }
+    public Executor Executor { get; private set; }
     public bool AIEnabled { get; private set; } = false;
 
 
@@ -51,6 +53,7 @@ public partial class NeuroPlugin : BasePlugin
         if (AIEnabled)
         {
             Communication = AddComponent<CommunicationHandler>();
+            Executor = AddComponent<Executor>();
         }
 
         ResourceManager.CacheSprite("Cursor", 130);
