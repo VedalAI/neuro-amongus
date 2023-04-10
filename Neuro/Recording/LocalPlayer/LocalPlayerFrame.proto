@@ -1,0 +1,11 @@
+﻿syntax = "proto3";
+
+package Neuro.Recording.LocalPlayer;
+
+message LocalPlayerFrame {
+    bool DidReport = 1;
+    bool DidVent = 2;
+    bool DidKill = 3;
+    uint32 SabotageUsed = 4;
+    uint32 DoorsUsed = 5;
+}

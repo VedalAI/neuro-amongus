@@ -3,7 +3,9 @@
 package Neuro.Recording;
 
 import "Recording/DeadBodies/DeadBodiesFrame.proto";
+import "Recording/LocalPlayer/LocalPlayerFrame.proto";
 
 message Frame {
     DeadBodies.DeadBodiesFrame DeadBodiesFrame = 1;
+    LocalPlayer.LocalPlayerFrame LocalPlayerFrame = 2;
 }

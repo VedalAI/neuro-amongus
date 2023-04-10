@@ -3,6 +3,7 @@ using System.IO;
 using Google.Protobuf;
 using Neuro.Events;
 using Neuro.Recording.DeadBodies;
+using Neuro.Recording.LocalPlayer;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -34,7 +35,9 @@ public sealed class Recorder : MonoBehaviour
 
     private void Start()
     {
-        _fileStream = new FileStream(Path.Combine(BepInEx.Paths.PluginPath, "recording.gymbag"), FileMode.Create);
+        string recordingsDirectory = Path.Combine(BepInEx.Paths.PluginPath, "NeuroRecordings");
+        if (!Directory.Exists(recordingsDirectory)) Directory.CreateDirectory(recordingsDirectory);
+        _fileStream = new FileStream(Path.Combine(recordingsDirectory, $"{DateTime.Now.ToFileTime()}.gymbag"), FileMode.Create);
     }
 
     private void FixedUpdate()
@@ -65,7 +68,8 @@ public sealed class Recorder : MonoBehaviour
     {
         Frame frame = new()
         {
-            DeadBodiesFrame = DeadBodiesRecorder.Instance.Frame
+            DeadBodiesFrame = DeadBodiesRecorder.Instance.Frame,
+            LocalPlayerFrame = LocalPlayerRecorder.Instance.Frame
         };
         frame.WriteTo(stream);
         Warning(frame.ToString());

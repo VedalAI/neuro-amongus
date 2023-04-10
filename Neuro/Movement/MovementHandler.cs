@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Neuro.Movement;
 
 [RegisterInIl2Cpp]
-public sealed class MovementHandler : MonoBehaviour, IDeserializable
+public sealed class MovementHandler : MonoBehaviour
 {
     public static MovementHandler Instance { get; private set; }
 
@@ -18,11 +18,6 @@ public sealed class MovementHandler : MonoBehaviour, IDeserializable
     }
 
     public Vector2 ForcedMoveDirection { get; private set; } //= new(0, -1);
-
-    public void Deserialize(BinaryReader reader)
-    {
-        ForcedMoveDirection = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-    }
 
     private LineRenderer _arrow;
 

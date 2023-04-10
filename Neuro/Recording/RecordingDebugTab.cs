@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Neuro.Debugging;
 using Neuro.Recording.DeadBodies;
-using Neuro.Recording.Impostor;
 using Neuro.Recording.LocalPlayer;
 using Neuro.Recording.Map;
 using Neuro.Recording.OtherPlayers;
@@ -22,7 +21,6 @@ public sealed class RecordingDebugTab : DebugTab
         IndentLabel(0, "Yellow values not reset after each frame like they're supposed to!", Color.yellow);
         NeuroUtilities.GUILayoutDivider();
         BuildDeadBodiesRecorderUI();
-        BuildImpostorRecorderUI();
         BuildLocalPlayerRecorderUI();
         BuildMapRecorderUI();
         BuildOtherPlayersRecorderUI();
@@ -38,19 +36,14 @@ public sealed class RecordingDebugTab : DebugTab
         }
     }
 
-    private void BuildImpostorRecorderUI()
-    {
-        GUILayout.Label(nameof(ImpostorRecorder));
-        IndentLabel(1, $"{nameof(ImpostorRecorder.DidKill)}: {ImpostorRecorder.Instance.DidKill}", Color.yellow);
-        IndentLabel(1, $"{nameof(ImpostorRecorder.SabotageUsed)}: {ImpostorRecorder.Instance.SabotageUsed}", Color.yellow);
-        IndentLabel(1, $"{nameof(ImpostorRecorder.DoorsUsed)}: {ImpostorRecorder.Instance.DoorsUsed}", Color.yellow);
-    }
-
     private void BuildLocalPlayerRecorderUI()
     {
         GUILayout.Label(nameof(LocalPlayerRecorder));
-        IndentLabel(1, $"{nameof(LocalPlayerRecorder.DidReport)}: {LocalPlayerRecorder.Instance.DidReport}", Color.yellow);
-        IndentLabel(1, $"{nameof(LocalPlayerRecorder.DidVent)}: {LocalPlayerRecorder.Instance.DidVent}", Color.yellow);
+        IndentLabel(1, $"{nameof(LocalPlayerRecorder.Frame.DidReport)}: {LocalPlayerRecorder.Instance.Frame.DidReport}", Color.yellow);
+        IndentLabel(1, $"{nameof(LocalPlayerRecorder.Frame.DidVent)}: {LocalPlayerRecorder.Instance.Frame.DidVent}", Color.yellow);
+        IndentLabel(1, $"{nameof(LocalPlayerRecorder.Frame.DidKill)}: {LocalPlayerRecorder.Instance.Frame.DidKill}", Color.yellow);
+        IndentLabel(1, $"{nameof(LocalPlayerRecorder.Frame.SabotageUsed)}: {LocalPlayerRecorder.Instance.Frame.SabotageUsed}", Color.yellow);
+        IndentLabel(1, $"{nameof(LocalPlayerRecorder.Frame.DoorsUsed)}: {LocalPlayerRecorder.Instance.Frame.DoorsUsed}", Color.yellow);
     }
 
     private void BuildMapRecorderUI()

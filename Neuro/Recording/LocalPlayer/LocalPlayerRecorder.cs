@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using Neuro.Communication.AmongUsAI;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -9,7 +7,7 @@ using UnityEngine;
 namespace Neuro.Recording.LocalPlayer;
 
 [RegisterInIl2Cpp]
-public sealed class LocalPlayerRecorder : MonoBehaviour, ISerializable
+public sealed class LocalPlayerRecorder : MonoBehaviour
 {
     public static LocalPlayerRecorder Instance { get; private set; }
 
@@ -17,8 +15,7 @@ public sealed class LocalPlayerRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    public bool DidReport { get; private set; }
-    public bool DidVent { get; private set; }
+    public LocalPlayerFrame Frame { get; } = new();
 
     private void Awake()
     {
@@ -32,16 +29,11 @@ public sealed class LocalPlayerRecorder : MonoBehaviour, ISerializable
         Instance = this;
     }
 
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(DidReport);
-        writer.Write(DidVent);
-
-        DidReport = DidVent = false;
-    }
-
-    public void RecordReport() => DidReport = true;
-    public void RecordVent() => DidVent = true;
+    public void RecordReport() => Frame.DidReport = true;
+    public void RecordVent() => Frame.DidVent = true;
+    public void RecordKill() => Frame.DidKill = true;
+    public void RecordSabotage(SystemTypes type) => Frame.SabotageUsed = (byte) type;
+    public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = (byte) room;
 
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted(ShipStatus shipStatus)
