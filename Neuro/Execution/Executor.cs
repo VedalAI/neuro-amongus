@@ -37,6 +37,7 @@ public sealed class Executor : MonoBehaviour
 
         if (frame.Vent)
         {
+            // TODO: actually move between vents
             HudManager.Instance.ImpostorVentButton.DoClick();
         }
     }
