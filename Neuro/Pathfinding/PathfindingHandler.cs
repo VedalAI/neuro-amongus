@@ -58,7 +58,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         {
             Vector2 point = new(x / GRID_DENSITY, y / GRID_DENSITY);
 
-            Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, LayerMask.GetMask("Ship", "ShortObjects"));
+            Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, Constants.ShipAndAllObjectsMask);
             int validColsCount = cols.Count(col =>
                 !col.isTrigger &&
                 !col.GetComponentInParent<Vent>() &&
