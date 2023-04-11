@@ -7,4 +7,5 @@ message LocalPlayerFrame {
     bool DidKill = 3;
     uint32 SabotageUsed = 4;
     uint32 DoorsUsed = 5;
+    repeated float RaycastObstacleDistances = 6;
 }

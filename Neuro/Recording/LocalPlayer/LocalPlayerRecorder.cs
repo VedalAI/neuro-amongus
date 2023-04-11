@@ -11,6 +11,18 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
 {
     public static LocalPlayerRecorder Instance { get; private set; }
 
+    public static readonly Vector2[] RaycastDirections =
+    {
+        Vector2.up,
+        Vector2.up + Vector2.right,
+        Vector2.right,
+        Vector2.right + Vector2.down,
+        Vector2.down,
+        Vector2.down + Vector2.left,
+        Vector2.left,
+        Vector2.left + Vector2.up
+    };
+
     public LocalPlayerRecorder(IntPtr ptr) : base(ptr)
     {
     }
@@ -27,6 +39,26 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
         }
 
         Instance = this;
+
+        // This does not work, see https://github.com/protocolbuffers/protobuf/issues/12442
+        // Frame.RaycastObstacleDistances.Capacity = 8;
+        Frame.RaycastObstacleDistances.EnsureCapacity(8);
+    }
+
+    private void FixedUpdate()
+    {
+        if (!PlayerControl.LocalPlayer) return;
+
+        Vector2 playerPos = PlayerControl.LocalPlayer.GetTruePosition();
+
+        for (int i = 0; i < 8; i++)
+        {
+            Physics2D.queriesHitTriggers = false;
+            RaycastHit2D raycastHit = Physics2D.Raycast(playerPos, RaycastDirections[i], 100f, Constants.ShipAndAllObjectsMask);
+            Physics2D.queriesHitTriggers = true;
+
+            Frame.RaycastObstacleDistances[i] = raycastHit.distance;
+        }
     }
 
     public void RecordReport() => Frame.DidReport = true;
