@@ -1,0 +1,8 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Communication.AmongUsAI";
+
+import "Recording/MyVector2.proto";
+
+message NNOutput {
+    MyVector2 DesiredMoveDirection = 1;
+}

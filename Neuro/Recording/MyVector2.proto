@@ -1,6 +1,5 @@
 ﻿syntax = "proto3";
-
-package Neuro.Recording;
+option csharp_namespace = "Neuro.Recording";
 
 message MyVector2 {
     float X = 1;

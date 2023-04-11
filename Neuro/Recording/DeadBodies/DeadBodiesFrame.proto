@@ -1,6 +1,5 @@
 ﻿syntax = "proto3";
-
-package Neuro.Recording.DeadBodies;
+option csharp_namespace = "Neuro.Recording.DeadBodies";
 
 import "Recording/DeadBodies/DeadBodyData.proto";
 

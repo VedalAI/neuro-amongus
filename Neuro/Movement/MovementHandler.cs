@@ -15,7 +15,7 @@ public sealed class MovementHandler : MonoBehaviour
     {
     }
 
-    public Vector2 ForcedMoveDirection { get; private set; } //= new(0, -1);
+    public Vector2 ForcedMoveDirection { get; set; }
 
     private LineRenderer _arrow;
 

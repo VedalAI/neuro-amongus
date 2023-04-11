@@ -1,6 +1,5 @@
 ﻿syntax = "proto3";
-
-package Neuro.Recording;
+option csharp_namespace = "Neuro.Recording";
 
 import "Recording/MyVector2.proto";
 

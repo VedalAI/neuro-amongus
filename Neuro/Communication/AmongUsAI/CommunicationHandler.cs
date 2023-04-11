@@ -2,8 +2,8 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using Neuro.Events;
+using Neuro.Movement;
 using Neuro.Recording;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -36,14 +36,8 @@ public sealed class CommunicationHandler : MonoBehaviour
         if (_socket.Available > 0)
         {
             int received = _socket.Receive(_buffer, SocketFlags.None);
-            string response = Encoding.UTF8.GetString(_buffer, 0, received);
-            Info(response);
-
-            // TODO: Deserialize data (good luck)
-
-            // Frame frame = JsonSerializer.Deserialize<Frame>(response);
-            // Info(frame);
-            // NeuroPlugin.Instance.Movement.ForcedMoveDirection = new Vector2(frame.Direction.x, frame.Direction.y).normalized;
+            NNOutput output = NNOutput.Parser.ParseFrom(_buffer, 0, received);
+            HandleOutput(output);
 
             _hasGotResponse = true;
         }
@@ -56,6 +50,11 @@ public sealed class CommunicationHandler : MonoBehaviour
 
             _hasGotResponse = false;
         }
+    }
+
+    private void HandleOutput(NNOutput output)
+    {
+        MovementHandler.Instance.ForcedMoveDirection = output.DesiredMoveDirection;
     }
 
     [EventHandler(EventTypes.GameStarted)]
