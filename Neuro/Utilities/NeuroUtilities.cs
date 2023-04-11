@@ -11,7 +11,20 @@ namespace Neuro.Utilities;
 
 public static class NeuroUtilities
 {
-    private static readonly MethodInfo _castMethod = AccessTools.Method(typeof(Il2CppObjectBase), nameof(Il2CppObjectBase.Cast));
+    public static Material MaskShaderMat
+    {
+        get
+        {
+            if (!_maskShaderMat)
+            {
+                _maskShaderMat = new Material(Shader.Find("Unlit/MaskShader"));
+                _maskShaderMat.DontDestroy();
+            }
+
+            return _maskShaderMat;
+        }
+    }
+    private static Material _maskShaderMat;
 
     public static void WarnDoubleSingletonInstance([CallerFilePath] string file = null)
     {
@@ -21,11 +34,6 @@ public static class NeuroUtilities
     public static void GUILayoutDivider()
     {
         GUILayout.Label(string.Empty, GUI.skin.horizontalSlider);
-    }
-
-    public static T Il2CppCastToTopLevel<T>(this T obj) where T : Il2CppObjectBase
-    {
-        return (T)_castMethod.MakeGenericMethod(obj.Cast<Il2CppSystem.Object>().GetIl2CppType().ToSystemType()).Invoke(obj, null);
     }
 
     public static float DistanceToPlayerStraight(PositionProvider position) => Vector2.Distance(PlayerControl.LocalPlayer.GetTruePosition(), position);

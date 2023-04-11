@@ -33,7 +33,7 @@ public sealed class InteractionsHandler : MonoBehaviour
         if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
 
         // TODO: Allow neural network to specifiy intention of interacting with usables
-        switch (usable.Cast<Il2CppSystem.Object>().Il2CppCastToTopLevel())
+        switch (usable.Il2CppCastToTopLevel())
         {
             case Console console:
                 UseConsole(console);

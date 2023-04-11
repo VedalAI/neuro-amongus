@@ -2,7 +2,6 @@
 using System.Linq;
 using Neuro.Events;
 using Neuro.Utilities;
-using Neuro.Vision;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 

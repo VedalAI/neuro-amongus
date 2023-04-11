@@ -76,7 +76,7 @@ public sealed class Recorder : MonoBehaviour
             OtherPlayers = OtherPlayersRecorder.Instance.Frame
         };
         frame.WriteTo(stream);
-        // Warning(frame.ToString());
+        // if (stream is MemoryStream) Warning($"Sent: {frame}");
         stream.Flush();
     }
 

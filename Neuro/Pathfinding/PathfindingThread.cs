@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using Il2CppInterop.Runtime;
 using Neuro.Pathfinding.DataStructures;
-using Reactor.Utilities.Extensions;
+using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Pathfinding;
@@ -303,18 +303,10 @@ public sealed class PathfindingThread
         return 14 * dstY + 10 * Math.Abs(dstX - dstY);
     }
 
-    private static Material _nodeMaterial;
-
     private static void CreateNodeVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.red, 0.1f);
 
     private static void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
     {
-        if (!_nodeMaterial)
-        {
-            _nodeMaterial = new Material(Shader.Find("Unlit/MaskShader"));
-            _nodeMaterial.DontDestroy();
-        }
-
         GameObject nodeVisualPoint = new("Gizmo (Visual Point)");
         nodeVisualPoint.transform.position = position;
 
@@ -323,7 +315,7 @@ public sealed class PathfindingThread
         renderer.SetPosition(1, position + new Vector2(0, widthMultiplier));
         renderer.widthMultiplier = widthMultiplier;
         renderer.positionCount = 2;
-        renderer.material = _nodeMaterial;
+        renderer.material = NeuroUtilities.MaskShaderMat;
         renderer.startColor = color;
         renderer.endColor = color;
     }
