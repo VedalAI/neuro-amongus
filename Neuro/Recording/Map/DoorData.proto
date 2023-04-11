@@ -1,6 +1,5 @@
 ﻿syntax = "proto3";
-
-package Neuro.Recording.Map;
+option csharp_namespace = "Neuro.Recording.Map";
 
 import "Recording/PositionData.proto";
 

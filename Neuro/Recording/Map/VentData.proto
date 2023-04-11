@@ -1,6 +1,5 @@
 ﻿syntax = "proto3";
-
-package Neuro.Recording.Map;
+option csharp_namespace = "Neuro.Recording.Map";
 
 import "Recording/PositionData.proto";
 import "Utilities/MyVector2.proto";
@@ -13,5 +12,5 @@ message VentData {
 
 message ConnectingVentData {
     int32 Id = 1;
-    Utilities.MyVector2 Position = 2;
+    MyVector2 Position = 2;
 }
