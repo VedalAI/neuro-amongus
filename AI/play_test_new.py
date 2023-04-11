@@ -24,4 +24,4 @@ while True:
             output = NnOutput()
             output.desired_move_direction = MyVector2(x=0, y=1)
 
-            conn.sendall(output.SerializeToString())
+            conn.sendall(bytes(output))
