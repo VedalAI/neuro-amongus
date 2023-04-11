@@ -15,18 +15,23 @@ public sealed class CommunicationHandler : MonoBehaviour
 {
     public CommunicationHandler(IntPtr ptr) : base(ptr) { }
 
-    private static readonly IPEndPoint _ipEndPoint = new(IPAddress.Parse("127.0.0.1"), 6969);
-    private static readonly Socket _socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    private readonly IPEndPoint _ipEndPoint = new(IPAddress.Parse("127.0.0.1"), 6969);
+    private readonly Socket _socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
     private void Start()
     {
         _socket.Connect(_ipEndPoint);
     }
 
+    private void OnDestroy()
+    {
+        _socket.Dispose();
+    }
+
     private readonly byte[] _buffer = new byte[1024];
     private bool _hasGotResponse = true;
 
-    public void FixedUpdate()
+    private void FixedUpdate()
     {
         // TODO: We should send meeting data!
 
