@@ -35,18 +35,31 @@ public sealed class DebugWindow : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F1)) _enabled = !_enabled;
         if (DebugTabAttribute.Tabs.Count == 0) _enabled = false;
+
+        foreach (DebugTab tab in DebugTabAttribute.Tabs)
+        {
+            bool isEnabled = tab.IsEnabled;
+
+            if (isEnabled && !tab.LastEnabled) tab.OnEnable();
+            if (!isEnabled && tab.LastEnabled) tab.OnDisable();
+            if (isEnabled) tab.Update();
+
+            tab.LastEnabled = isEnabled;
+        }
+    }
+
+    private void Awake()
+    {
+        foreach (DebugTab tab in DebugTabAttribute.Tabs)
+        {
+            tab.Awake();
+        }
     }
 
     private void OnGUI()
     {
         if (!_enabled) return;
-
         _window.OnGUI();
-
-        if (_selectedTab is { IsEnabled: true })
-        {
-            _selectedTab.OnGUI();
-        }
     }
 
     private void BuildWindow()

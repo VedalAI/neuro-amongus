@@ -37,6 +37,7 @@ public sealed class CommunicationHandler : MonoBehaviour
         {
             int received = _socket.Receive(_buffer, SocketFlags.None);
             NNOutput output = NNOutput.Parser.ParseFrom(_buffer, 0, received);
+            // Warning($"Received: {output}");
             HandleOutput(output);
 
             _hasGotResponse = true;
