@@ -1,5 +1,6 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Neuro.Recording.Map";
+
+package Neuro.Recording.Map;
 
 import "Recording/Map/DoorData.proto";
 import "Recording/Map/VentData.proto";

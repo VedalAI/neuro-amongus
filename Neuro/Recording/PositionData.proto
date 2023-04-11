@@ -1,9 +1,10 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Neuro.Recording";
 
-import "Recording/MyVector2.proto";
+package Neuro.Recording;
+
+import "Utilities/MyVector2.proto";
 
 message PositionData {
     float TotalDistance = 1;
-    MyVector2 NextNodePosition = 2;
+    Utilities.MyVector2 NextNodePosition = 2;
 }

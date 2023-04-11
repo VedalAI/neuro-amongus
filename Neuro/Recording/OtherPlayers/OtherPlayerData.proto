@@ -1,11 +1,12 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Neuro.Recording.OtherPlayers";
 
-import "Recording/MyVector2.proto";
+package Neuro.Recording.OtherPlayers;
+
+import "Utilities/MyVector2.proto";
 
 message OtherPlayerData {
     uint32 Id = 1;
-    MyVector2 LastSeenPosition = 2;
+    Utilities.MyVector2 LastSeenPosition = 2;
     float LastSeenTime = 3;
     uint32 TimesSawVent = 4;
     float RoundTimeVisible = 5;

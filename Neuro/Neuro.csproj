@@ -28,7 +28,7 @@
     <ItemGroup>
         <EmbeddedResource Include="**\Resources\**" />
         <Protobuf Include="**\*.proto" GrpcServices="None" />
-        
+
         <Compile Remove="zzz_excluded\**" />
     </ItemGroup>
 

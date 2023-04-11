@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Neuro.Recording;
+namespace Neuro.Utilities;
 
 public partial class MyVector2
 {

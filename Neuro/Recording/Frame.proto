@@ -1,5 +1,6 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Neuro.Recording";
+
+package Neuro.Recording;
 
 import "Recording/DeadBodies/DeadBodiesFrame.proto";
 import "Recording/LocalPlayer/LocalPlayerFrame.proto";
@@ -7,8 +8,8 @@ import "Recording/Map/MapFrame.proto";
 import "Recording/OtherPlayers/OtherPlayersFrame.proto";
 
 message Frame {
-    DeadBodiesFrame DeadBodies = 1;
-    LocalPlayerFrame LocalPlayer = 2;
-    MapFrame Map = 3;
-    OtherPlayersFrame OtherPlayers = 4;
+    DeadBodies.DeadBodiesFrame DeadBodies = 1;
+    LocalPlayer.LocalPlayerFrame LocalPlayer = 2;
+    Map.MapFrame Map = 3;
+    OtherPlayers.OtherPlayersFrame OtherPlayers = 4;
 }
