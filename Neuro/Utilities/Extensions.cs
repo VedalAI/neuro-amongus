@@ -51,11 +51,11 @@ public static class Extensions
     public static Il2CppSystem.Object Il2CppCastToTopLevel(this Il2CppObjectBase obj)
         => Il2CppCastToTopLevel(obj.Cast<Il2CppSystem.Object>());
 
-    public static void EnsureCapacity<T>(this RepeatedField<T> repeatedField, int capacity)
+    public static void FillWithDefault<T>(this ICollection<T> repeatedField, int capacity)
     {
         for (int i = repeatedField.Count; i < capacity; i++)
         {
-            repeatedField.Add(default(T));
+            repeatedField.Add(default);
         }
     }
 }

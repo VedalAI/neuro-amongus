@@ -40,9 +40,7 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
 
         Instance = this;
 
-        // This does not work, see https://github.com/protocolbuffers/protobuf/issues/12442
-        // Frame.RaycastObstacleDistances.Capacity = 8;
-        Frame.RaycastObstacleDistances.EnsureCapacity(8);
+        Frame.RaycastObstacleDistances.FillWithDefault(8);
     }
 
     private void FixedUpdate()
