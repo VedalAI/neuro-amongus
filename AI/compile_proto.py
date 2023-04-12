@@ -59,7 +59,7 @@ def compile_proto_files(input_dir, output_file, protoc_path):
     for root, _, files in os.walk(input_dir):
         for file in files:
             if file.endswith('.proto'):
-                # Copy the file to the obj directory
+                # Add the file to the build
                 input_file = os.path.join(root, file)
                 proto_files.append(input_file)
 

@@ -30,7 +30,7 @@ public sealed class InteractionsHandler : MonoBehaviour
 
     public void UseTarget(IUsable usable)
     {
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer || usable == null) return;
 
         // TODO: Allow neural network to specifiy intention of interacting with usables
         switch (usable.Il2CppCastToTopLevel())

@@ -45,6 +45,7 @@ public static class Extensions
 
     public static T Il2CppCastToTopLevel<T>(this T obj) where T : Il2CppSystem.Object
     {
+        if (obj == null) return null;
         return (T)_castMethod.MakeGenericMethod(obj.GetIl2CppType().ToSystemType()).Invoke(obj, null);
     }
 
