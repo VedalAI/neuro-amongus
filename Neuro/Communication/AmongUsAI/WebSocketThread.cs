@@ -24,10 +24,11 @@ public sealed class WebSocketThread
         _socket.Shutdown(SocketShutdown.Both);
         _socket.Disconnect(false); //reusing sockets for the same client is impossible.
         _socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        CommunicationHandler.needsHeaderFrame = true;
     }
 
     [HideFromIl2Cpp]
-    //This method will try connecting every 5s, for as long as the component is enabled.
+    //This method will try connecting every 5s, for as long as the token is not cancelled.
     //This should retain the socket connection even if the world blows up and only the client is running.
     internal static void ConnectToServer(object state)
     {
@@ -55,6 +56,10 @@ public sealed class WebSocketThread
                         {
                             //handle ungraceful disconnects
                             GracefulSocketRestart();
+                        }
+                        else {
+                            //try connecting for headerframe sending.
+                            CommunicationHandler.needsHeaderFrame = true;
                         }
                         _socket.Connect(_ipEndPoint);
                     }

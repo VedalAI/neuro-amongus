@@ -5,15 +5,12 @@ using System.Net.Sockets;
 using Google.Protobuf;
 using Il2CppInterop.Runtime.Attributes;
 using System.Threading;
-using System.Threading.Tasks;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Movement;
 using Neuro.Recording;
-using Neuro.Recording.Header;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
+using Neuro.Recording.Header;
 
 namespace Neuro.Communication.AmongUsAI;
 
@@ -43,6 +40,7 @@ public sealed class CommunicationHandler : MonoBehaviour
 
     private readonly byte[] _buffer = new byte[1024];
     private bool _hasGotResponse = true;
+    internal static volatile bool needsHeaderFrame = true;
 
     private void FixedUpdate()
     {
@@ -67,7 +65,14 @@ public sealed class CommunicationHandler : MonoBehaviour
 
         if (_hasGotResponse)
         {
-            Send(Frame.Now);
+            if (needsHeaderFrame)
+            {
+                Send(HeaderFrame.Generate());
+            }
+            else {
+                Send(Frame.Now);
+            }
+            
             // Warning($"Sent: {Frame.Now}");
 
             _hasGotResponse = false;
@@ -79,7 +84,7 @@ public sealed class CommunicationHandler : MonoBehaviour
     {
         using MemoryStream stream = new();
         message.WriteTo(stream);
-        _socket.Send(stream.ToArray());
+        WebSocketThread._socket.Send(stream.ToArray());
     }
 
     [HideFromIl2Cpp]
