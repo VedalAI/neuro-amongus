@@ -39,7 +39,7 @@ public sealed class CommunicationHandler : MonoBehaviour
         // TODO: We should send meeting data!
 
         if (!_socket.Connected) return;
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance) return;
 
         if (_socket.Available > 0)
         {
@@ -73,8 +73,8 @@ public sealed class CommunicationHandler : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<CommunicationHandler>();
+        ShipStatus.Instance.gameObject.AddComponent<CommunicationHandler>();
     }
 }

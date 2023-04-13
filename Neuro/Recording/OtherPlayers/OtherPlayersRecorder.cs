@@ -31,7 +31,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance) return;
 
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
@@ -70,8 +70,8 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<OtherPlayersRecorder>();
+        ShipStatus.Instance.gameObject.AddComponent<OtherPlayersRecorder>();
     }
 }

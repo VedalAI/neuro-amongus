@@ -2,11 +2,7 @@
 using System.IO;
 using Google.Protobuf;
 using Neuro.Events;
-using Neuro.Recording.DeadBodies;
 using Neuro.Recording.Header;
-using Neuro.Recording.LocalPlayer;
-using Neuro.Recording.Map;
-using Neuro.Recording.OtherPlayers;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -48,7 +44,7 @@ public sealed class Recorder : MonoBehaviour
     private void FixedUpdate()
     {
         // TODO: We should record meeting data!
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance) return;
 
         // TODO: Record all of the tasks
         // TODO: Record 11th task as emergency
@@ -75,8 +71,8 @@ public sealed class Recorder : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<Recorder>();
+        ShipStatus.Instance.gameObject.AddComponent<Recorder>();
     }
 }

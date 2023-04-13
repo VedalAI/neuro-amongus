@@ -30,7 +30,7 @@ public sealed class InteractionsHandler : MonoBehaviour
 
     public void UseTarget(IUsable usable)
     {
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer || usable == null) return;
+        if (MeetingHud.Instance || Minigame.Instance || usable == null) return;
 
         // TODO: Allow neural network to specifiy intention of interacting with usables
         switch (usable.Il2CppCastToTopLevel())
@@ -83,8 +83,8 @@ public sealed class InteractionsHandler : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<InteractionsHandler>();
+        ShipStatus.Instance.gameObject.AddComponent<InteractionsHandler>();
     }
 }

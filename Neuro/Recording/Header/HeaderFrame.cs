@@ -7,6 +7,8 @@ public partial class HeaderFrame
 {
     public static HeaderFrame Generate()
     {
+        if (!ShipStatus.Instance || !PlayerControl.LocalPlayer) return null;
+
         HeaderFrame frame = new()
         {
             Map = ShipStatus.Instance.GetHeaderMapType(),

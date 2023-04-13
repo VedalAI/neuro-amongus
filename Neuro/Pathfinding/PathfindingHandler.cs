@@ -97,8 +97,8 @@ public sealed class PathfindingHandler : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<PathfindingHandler>();
+        ShipStatus.Instance.gameObject.AddComponent<PathfindingHandler>();
     }
 }

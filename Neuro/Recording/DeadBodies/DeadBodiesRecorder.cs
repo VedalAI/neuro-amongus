@@ -53,8 +53,8 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<DeadBodiesRecorder>();
+        ShipStatus.Instance.gameObject.AddComponent<DeadBodiesRecorder>();
     }
 }
