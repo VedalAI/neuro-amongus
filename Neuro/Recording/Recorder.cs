@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
 using Google.Protobuf;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
-using Neuro.Recording.DeadBodies;
-using Neuro.Recording.LocalPlayer;
-using Neuro.Recording.Map;
-using Neuro.Recording.OtherPlayers;
+using Neuro.Recording.Header;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -20,7 +18,7 @@ public sealed class Recorder : MonoBehaviour
 
     public Recorder(IntPtr ptr) : base(ptr) { }
 
-    private int _fixedUpdateCalls = 0;
+    private int _fixedUpdateCalls;
     private FileStream _fileStream;
 
     private void Awake()
@@ -40,25 +38,26 @@ public sealed class Recorder : MonoBehaviour
         string recordingsDirectory = Path.Combine(BepInEx.Paths.PluginPath, "NeuroRecordings");
         if (!Directory.Exists(recordingsDirectory)) Directory.CreateDirectory(recordingsDirectory);
         _fileStream = new FileStream(Path.Combine(recordingsDirectory, $"{DateTime.Now.ToFileTime()}.gymbag"), FileMode.Create);
+
+        WriteAndFlush(HeaderFrame.Generate());
     }
 
     private void FixedUpdate()
     {
         // TODO: We should record meeting data!
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance) return;
 
-        // TODO: Record map id
         // TODO: Record all of the tasks
         // TODO: Record 11th task as emergency
-        // TODO: Record fellow impostors
         // TODO: Record localplayer velocity
-        // TODO: Raycast for obstacles
+        // TODO: Record local impostor data: kill cooldown, venting stuff, etc
+        // TODO: Record local player interactions data: opened task, opened door
 
         _fixedUpdateCalls++;
-        if (_fixedUpdateCalls < 9) return;
+        if (_fixedUpdateCalls < 10) return;
         _fixedUpdateCalls = 0;
 
-        Serialize(_fileStream);
+        WriteAndFlush(Frame.Now);
     }
 
     private void OnDestroy()
@@ -66,23 +65,16 @@ public sealed class Recorder : MonoBehaviour
         _fileStream.Dispose();
     }
 
-    public void Serialize(Stream stream)
+    [HideFromIl2Cpp]
+    private void WriteAndFlush(IMessage message)
     {
-        Frame frame = new()
-        {
-            DeadBodies = DeadBodiesRecorder.Instance.Frame,
-            LocalPlayer = LocalPlayerRecorder.Instance.Frame,
-            Map = MapRecorder.Instance.Frame,
-            OtherPlayers = OtherPlayersRecorder.Instance.Frame
-        };
-        frame.WriteTo(stream);
-        // if (stream is MemoryStream) Warning($"Sent: {frame}");
-        stream.Flush();
+        message.WriteTo(_fileStream);
+        _fileStream.Flush();
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<Recorder>();
+        ShipStatus.Instance.gameObject.AddComponent<Recorder>();
     }
 }

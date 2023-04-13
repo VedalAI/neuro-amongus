@@ -1,4 +1,5 @@
 ﻿using System;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -27,6 +28,7 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     {
     }
 
+    [HideFromIl2Cpp]
     public LocalPlayerFrame Frame { get; } = new();
 
     private void Awake()
@@ -45,8 +47,6 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!PlayerControl.LocalPlayer) return;
-
         Vector2 playerPos = PlayerControl.LocalPlayer.GetTruePosition();
 
         for (int i = 0; i < 8; i++)
@@ -66,8 +66,8 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = (byte) room;
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<LocalPlayerRecorder>();
+        ShipStatus.Instance.gameObject.AddComponent<LocalPlayerRecorder>();
     }
 }

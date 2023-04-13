@@ -1,4 +1,6 @@
-﻿namespace Neuro.Recording.Map;
+﻿using static Neuro.Recording.Map.VentData.Types;
+
+namespace Neuro.Recording.Map;
 
 public partial class VentData
 {
@@ -6,7 +8,7 @@ public partial class VentData
     {
         VentData data = new()
         {
-            Id = vent.Id,
+            Id = (uint) vent.Id,
             Position = PositionData.Create(vent, vent)
         };
 
@@ -16,7 +18,7 @@ public partial class VentData
 
             data.ConnectingVents.Add(new ConnectingVentData
             {
-                Id = nearbyVent.Id,
+                Id = (uint) nearbyVent.Id,
                 Position = nearbyVent.transform.position
             });
         }

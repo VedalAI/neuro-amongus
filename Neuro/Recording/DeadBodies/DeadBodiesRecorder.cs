@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -16,6 +17,7 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
     {
     }
 
+    [HideFromIl2Cpp]
     public DeadBodiesFrame Frame { get; } = new();
 
     private void Awake()
@@ -53,8 +55,8 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<DeadBodiesRecorder>();
+        ShipStatus.Instance.gameObject.AddComponent<DeadBodiesRecorder>();
     }
 }

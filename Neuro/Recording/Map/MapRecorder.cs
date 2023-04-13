@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Pathfinding;
 using Neuro.Utilities;
@@ -17,6 +18,7 @@ public sealed class MapRecorder : MonoBehaviour
     {
     }
 
+    [HideFromIl2Cpp]
     public MapFrame Frame { get; } = new();
 
     private void Awake()
@@ -33,7 +35,7 @@ public sealed class MapRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance) return;
 
         UpdateNearbyDoors();
         UpdateNearbyVents();
@@ -68,8 +70,8 @@ public sealed class MapRecorder : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<MapRecorder>();
+        ShipStatus.Instance.gameObject.AddComponent<MapRecorder>();
     }
 }

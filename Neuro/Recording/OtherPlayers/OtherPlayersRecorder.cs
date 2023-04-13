@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -14,6 +15,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
 
     public OtherPlayersRecorder(IntPtr ptr) : base(ptr) { }
 
+    [HideFromIl2Cpp]
     public OtherPlayersFrame Frame { get; } = new();
 
     private void Awake()
@@ -31,7 +33,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance) return;
 
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
@@ -70,8 +72,8 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<OtherPlayersRecorder>();
+        ShipStatus.Instance.gameObject.AddComponent<OtherPlayersRecorder>();
     }
 }

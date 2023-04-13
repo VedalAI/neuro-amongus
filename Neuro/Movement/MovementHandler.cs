@@ -40,8 +40,8 @@ public sealed class MovementHandler : MonoBehaviour
 
     public void GetForcedMoveDirection(ref Vector2 direction)
     {
-        // if (direction != Vector2.zero) return;
-        // direction = ForcedMoveDirection;
+        if (direction != Vector2.zero) return;
+        direction = ForcedMoveDirection;
 
         RepeatedField<float> raycastResults = LocalPlayerRecorder.Instance.Frame.RaycastObstacleDistances;
         for (int i = 0; i < raycastResults.Count; i++)
@@ -103,8 +103,8 @@ public sealed class MovementHandler : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    public static void OnGameStarted(ShipStatus shipStatus)
+    public static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<MovementHandler>();
+        ShipStatus.Instance.gameObject.AddComponent<MovementHandler>();
     }
 }

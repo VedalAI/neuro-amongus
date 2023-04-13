@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
@@ -47,6 +48,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         _thread.Stop();
     }
 
+    [HideFromIl2Cpp]
     private Node[,] GenerateNodeGrid()
     {
         Node[,] grid = new Node[GRID_SIZE, GRID_SIZE];
@@ -97,8 +99,8 @@ public sealed class PathfindingHandler : MonoBehaviour
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<PathfindingHandler>();
+        ShipStatus.Instance.gameObject.AddComponent<PathfindingHandler>();
     }
 }

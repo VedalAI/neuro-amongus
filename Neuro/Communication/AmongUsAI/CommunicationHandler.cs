@@ -2,6 +2,8 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using Google.Protobuf;
+using Il2CppInterop.Runtime.Attributes;
 using System.Threading;
 using System.Threading.Tasks;
 using Il2CppInterop.Runtime;
@@ -9,6 +11,7 @@ using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Movement;
 using Neuro.Recording;
+using Neuro.Recording.Header;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -64,19 +67,30 @@ public sealed class CommunicationHandler : MonoBehaviour
 
         if (_hasGotResponse)
         {
-            using MemoryStream memoryStream = new();
-            Recorder.Instance.Serialize(memoryStream);
-            WebSocketThread._socket.Send(memoryStream.ToArray());
+            Send(Frame.Now);
+            // Warning($"Sent: {Frame.Now}");
 
             _hasGotResponse = false;
         }
     }
 
+    [HideFromIl2Cpp]
+    private void Send(IMessage message)
+    {
+        using MemoryStream stream = new();
+        message.WriteTo(stream);
+        _socket.Send(stream.ToArray());
+    }
 
-
-
+    [HideFromIl2Cpp]
     private void HandleOutput(NNOutput output)
     {
         MovementHandler.Instance.ForcedMoveDirection = output.DesiredMoveDirection;
+    }
+
+    [EventHandler(EventTypes.GameStarted)]
+    private static void OnGameStarted()
+    {
+        ShipStatus.Instance.gameObject.AddComponent<CommunicationHandler>();
     }
 }

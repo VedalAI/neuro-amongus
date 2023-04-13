@@ -1,6 +1,6 @@
 import socket
 
-from proto import Frame, NnOutput, MyVector2
+from proto import HeaderFrame, Frame, NnOutput, MyVector2
 
 # open server on port 6969
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,6 +12,15 @@ while True:
     conn, addr = server.accept()
     with conn:
         print("Connected by", addr)
+
+        header_data = conn.recv(1024)
+        if not header_data:
+            print("no header data")
+            break
+
+        header = HeaderFrame.FromString(header_data)
+        print(header)
+
         while True:
             data = conn.recv(1024)
             if not data:
