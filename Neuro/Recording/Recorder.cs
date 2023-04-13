@@ -14,6 +14,7 @@ using UnityEngine;
 namespace Neuro.Recording;
 
 // TODO: ReportFindings was removed, we need to implement separate communication with language model
+// TODO: SPLIT THIS CLASS. This class currently handles two things: recording data and also saving it to a file. However, the CommunicationHandler class also uses this class to get the data and send it over the socket. This makes is it difficult to implement one-frame fields (or messsages) because the data is being read in multiple locations. The logic for generating the frame and serializing it should be separated from the rest of the logic, either in another class or in Frame.cs itself (create it).
 [RegisterInIl2Cpp]
 public sealed class Recorder : MonoBehaviour
 {
