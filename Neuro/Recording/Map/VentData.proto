@@ -2,15 +2,15 @@
 option csharp_namespace = "Neuro.Recording.Map";
 
 import "Recording/PositionData.proto";
-import "Utilities/MyVector2.proto";
+import "Recording/MyVector2.proto";
 
 message VentData {
-    int32 Id = 1;
+    uint32 Id = 1;
     PositionData Position = 2;
     repeated ConnectingVentData ConnectingVents = 3;
-}
 
-message ConnectingVentData {
-    int32 Id = 1;
-    MyVector2 Position = 2;
+    message ConnectingVentData {
+        uint32 Id = 1;
+        MyVector2 Position = 2;
+    }
 }

@@ -1,7 +1,7 @@
 ﻿syntax = "proto3";
 option csharp_namespace = "Neuro.Recording.DeadBodies";
 
-import "Utilities/MyVector2.proto";
+import "Recording/MyVector2.proto";
 
 message DeadBodyData {
     uint32 ParentId = 1;

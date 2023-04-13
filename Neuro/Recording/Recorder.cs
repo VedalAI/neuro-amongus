@@ -3,6 +3,7 @@ using System.IO;
 using Google.Protobuf;
 using Neuro.Events;
 using Neuro.Recording.DeadBodies;
+using Neuro.Recording.Header;
 using Neuro.Recording.LocalPlayer;
 using Neuro.Recording.Map;
 using Neuro.Recording.OtherPlayers;
@@ -20,7 +21,7 @@ public sealed class Recorder : MonoBehaviour
 
     public Recorder(IntPtr ptr) : base(ptr) { }
 
-    private int _fixedUpdateCalls = 0;
+    private int _fixedUpdateCalls;
     private FileStream _fileStream;
 
     private void Awake()
@@ -47,12 +48,9 @@ public sealed class Recorder : MonoBehaviour
         // TODO: We should record meeting data!
         if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
 
-        // TODO: Record map id
         // TODO: Record all of the tasks
         // TODO: Record 11th task as emergency
-        // TODO: Record fellow impostors
         // TODO: Record localplayer velocity
-        // TODO: Raycast for obstacles
 
         _fixedUpdateCalls++;
         if (_fixedUpdateCalls < 9) return;
@@ -71,10 +69,12 @@ public sealed class Recorder : MonoBehaviour
         Frame frame = new()
         {
             DeadBodies = DeadBodiesRecorder.Instance.Frame,
+            Header = HeaderRecorder.GenerateHeaderFrame(),
             LocalPlayer = LocalPlayerRecorder.Instance.Frame,
             Map = MapRecorder.Instance.Frame,
             OtherPlayers = OtherPlayersRecorder.Instance.Frame
         };
+
         frame.WriteTo(stream);
         // if (stream is MemoryStream) Warning($"Sent: {frame}");
         stream.Flush();

@@ -1,0 +1,28 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.Header";
+
+message HeaderFrame {
+    MapType map = 1;
+    bool IsImpostor = 2;
+    RoleType Role = 3;
+    repeated uint32 OtherImpostors = 4;
+
+    enum MapType {
+        Unset_MapType = 0;
+        Skeld = 1;
+        MiraHQ = 2;
+        Polus = 3;
+        Dleks = 4;
+        Airship = 5;
+    }
+
+    enum RoleType {
+        Unset_RoleType = 0;
+        Crewmate = 1;
+        Impostor = 2;
+        Scientist = 3;
+        Engineer = 4;
+        GuardianAngel = 5;
+        Shapeshifter = 6;
+    }
+}

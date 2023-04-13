@@ -6,7 +6,6 @@ using HarmonyLib;
 using Neuro.Debugging;
 using Neuro.Utilities;
 using Reactor;
-using Reactor.Utilities;
 
 namespace Neuro;
 
@@ -15,8 +14,6 @@ namespace Neuro;
 [BepInDependency(ReactorPlugin.Id)]
 public partial class NeuroPlugin : BasePlugin
 {
-    public static NeuroPlugin Instance => PluginSingleton<NeuroPlugin>.Instance;
-
     public override void Load()
     {
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
