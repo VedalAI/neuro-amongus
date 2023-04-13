@@ -51,6 +51,8 @@ public sealed class Recorder : MonoBehaviour
         // TODO: Record all of the tasks
         // TODO: Record 11th task as emergency
         // TODO: Record localplayer velocity
+        // TODO: Record local impostor data: kill cooldown, venting stuff, etc
+        // TODO: Record local player interactions data: opened task, opened door
 
         _fixedUpdateCalls++;
         if (_fixedUpdateCalls < 9) return;
