@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Google.Protobuf;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Recording.Header;
 using Neuro.Utilities;
@@ -64,6 +65,7 @@ public sealed class Recorder : MonoBehaviour
         _fileStream.Dispose();
     }
 
+    [HideFromIl2Cpp]
     private void WriteAndFlush(IMessage message)
     {
         message.WriteTo(_fileStream);

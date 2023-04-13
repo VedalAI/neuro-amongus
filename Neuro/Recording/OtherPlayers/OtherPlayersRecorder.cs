@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -14,6 +15,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
 
     public OtherPlayersRecorder(IntPtr ptr) : base(ptr) { }
 
+    [HideFromIl2Cpp]
     public OtherPlayersFrame Frame { get; } = new();
 
     private void Awake()

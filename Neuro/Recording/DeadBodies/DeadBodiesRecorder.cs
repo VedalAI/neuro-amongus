@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -16,6 +17,7 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
     {
     }
 
+    [HideFromIl2Cpp]
     public DeadBodiesFrame Frame { get; } = new();
 
     private void Awake()

@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using Google.Protobuf;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Movement;
 using Neuro.Recording;
@@ -60,6 +61,7 @@ public sealed class CommunicationHandler : MonoBehaviour
         }
     }
 
+    [HideFromIl2Cpp]
     private void Send(IMessage message)
     {
         using MemoryStream stream = new();
@@ -67,6 +69,7 @@ public sealed class CommunicationHandler : MonoBehaviour
         _socket.Send(stream.ToArray());
     }
 
+    [HideFromIl2Cpp]
     private void HandleOutput(NNOutput output)
     {
         MovementHandler.Instance.ForcedMoveDirection = output.DesiredMoveDirection;

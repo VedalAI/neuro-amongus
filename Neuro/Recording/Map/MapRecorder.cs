@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Pathfinding;
 using Neuro.Utilities;
@@ -17,6 +18,7 @@ public sealed class MapRecorder : MonoBehaviour
     {
     }
 
+    [HideFromIl2Cpp]
     public MapFrame Frame { get; } = new();
 
     private void Awake()

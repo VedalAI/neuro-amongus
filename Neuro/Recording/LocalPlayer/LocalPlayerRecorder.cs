@@ -1,4 +1,5 @@
 ﻿using System;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -27,6 +28,7 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     {
     }
 
+    [HideFromIl2Cpp]
     public LocalPlayerFrame Frame { get; } = new();
 
     private void Awake()
