@@ -2,6 +2,10 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using Il2CppInterop.Runtime;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Movement;
 using Neuro.Recording;
@@ -15,17 +19,23 @@ public sealed class CommunicationHandler : MonoBehaviour
 {
     public CommunicationHandler(IntPtr ptr) : base(ptr) { }
 
-    private readonly IPEndPoint _ipEndPoint = new(IPAddress.Parse("127.0.0.1"), 6969);
-    private readonly Socket _socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    private CancellationTokenSource cts;
+    private Thread _thread;
 
     private void Start()
     {
-        _socket.Connect(_ipEndPoint);
+        //graceful start
+        if (_thread == null || !_thread.IsAlive)
+        {
+            cts = new CancellationTokenSource();
+            _thread = new Thread(new ParameterizedThreadStart(WebSocketThread.ConnectToServer));
+            _thread.Start(cts.Token);
+        }
     }
 
     private void OnDestroy()
     {
-        _socket.Dispose();
+        cts?.Cancel();
     }
 
     private readonly byte[] _buffer = new byte[1024];
@@ -35,12 +45,16 @@ public sealed class CommunicationHandler : MonoBehaviour
     {
         // TODO: We should send meeting data!
 
-        if (!_socket.Connected) return;
+        if (!WebSocketThread._socket.Connected) {
+            //send data on connect, incase of reset.
+            _hasGotResponse = true;
+            return;
+        }
         if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
 
-        if (_socket.Available > 0)
+        if (WebSocketThread._socket.Available > 0)
         {
-            int received = _socket.Receive(_buffer, SocketFlags.None);
+            int received = WebSocketThread._socket.Receive(_buffer, SocketFlags.None);
             NNOutput output = NNOutput.Parser.ParseFrom(_buffer, 0, received);
             // Warning($"Received: {output}");
             HandleOutput(output);
@@ -52,20 +66,17 @@ public sealed class CommunicationHandler : MonoBehaviour
         {
             using MemoryStream memoryStream = new();
             Recorder.Instance.Serialize(memoryStream);
-            _socket.Send(memoryStream.ToArray());
+            WebSocketThread._socket.Send(memoryStream.ToArray());
 
             _hasGotResponse = false;
         }
     }
 
+
+
+
     private void HandleOutput(NNOutput output)
     {
         MovementHandler.Instance.ForcedMoveDirection = output.DesiredMoveDirection;
-    }
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
-    {
-        shipStatus.gameObject.AddComponent<CommunicationHandler>();
     }
 }
