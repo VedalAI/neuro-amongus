@@ -2,14 +2,12 @@
 option csharp_namespace = "Neuro.Recording";
 
 import "Recording/DeadBodies/DeadBodiesFrame.proto";
-import "Recording/Header/HeaderFrame.proto";
 import "Recording/LocalPlayer/LocalPlayerFrame.proto";
 import "Recording/Map/MapFrame.proto";
 import "Recording/OtherPlayers/OtherPlayersFrame.proto";
 
 message Frame {
     DeadBodiesFrame DeadBodies = 1;
-    optional HeaderFrame Header = 5; // TODO: Ideally the header should be sent before the first frame instead of being contained in one.
     LocalPlayerFrame LocalPlayer = 2;
     MapFrame Map = 3;
     OtherPlayersFrame OtherPlayers = 4;

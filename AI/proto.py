@@ -2,10 +2,7 @@
 # sources: Communication/AmongUsAI/NNOutput.proto, Recording/DeadBodies/DeadBodiesFrame.proto, Recording/DeadBodies/DeadBodyData.proto, Recording/Frame.proto, Recording/Header/HeaderFrame.proto, Recording/LocalPlayer/LocalPlayerFrame.proto, Recording/Map/DoorData.proto, Recording/Map/MapFrame.proto, Recording/Map/VentData.proto, Recording/MyVector2.proto, Recording/OtherPlayers/OtherPlayerData.proto, Recording/OtherPlayers/OtherPlayersFrame.proto, Recording/PositionData.proto
 # plugin: python-betterproto
 from dataclasses import dataclass
-from typing import (
-    List,
-    Optional,
-)
+from typing import List
 
 import betterproto
 
@@ -37,6 +34,8 @@ class MyVector2(betterproto.Message):
 
 @dataclass(eq=False, repr=False)
 class NnOutput(betterproto.Message):
+    """TODO: Include more data in the neural network output"""
+
     desired_move_direction: "MyVector2" = betterproto.message_field(1)
 
 
@@ -51,14 +50,6 @@ class DeadBodyData(betterproto.Message):
 @dataclass(eq=False, repr=False)
 class DeadBodiesFrame(betterproto.Message):
     dead_bodies: List["DeadBodyData"] = betterproto.message_field(1)
-
-
-@dataclass(eq=False, repr=False)
-class HeaderFrame(betterproto.Message):
-    map: "HeaderFrameMapType" = betterproto.enum_field(1)
-    is_impostor: bool = betterproto.bool_field(2)
-    role: "HeaderFrameRoleType" = betterproto.enum_field(3)
-    other_impostors: List[int] = betterproto.uint32_field(4)
 
 
 @dataclass(eq=False, repr=False)
@@ -120,9 +111,14 @@ class OtherPlayersFrame(betterproto.Message):
 @dataclass(eq=False, repr=False)
 class Frame(betterproto.Message):
     dead_bodies: "DeadBodiesFrame" = betterproto.message_field(1)
-    header: Optional["HeaderFrame"] = betterproto.message_field(
-        5, optional=True, group="_Header"
-    )
     local_player: "LocalPlayerFrame" = betterproto.message_field(2)
     map: "MapFrame" = betterproto.message_field(3)
     other_players: "OtherPlayersFrame" = betterproto.message_field(4)
+
+
+@dataclass(eq=False, repr=False)
+class HeaderFrame(betterproto.Message):
+    map: "HeaderFrameMapType" = betterproto.enum_field(1)
+    is_impostor: bool = betterproto.bool_field(2)
+    role: "HeaderFrameRoleType" = betterproto.enum_field(3)
+    other_impostors: List[int] = betterproto.uint32_field(4)

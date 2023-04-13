@@ -14,7 +14,6 @@ using UnityEngine;
 namespace Neuro.Recording;
 
 // TODO: ReportFindings was removed, we need to implement separate communication with language model
-// TODO: SPLIT THIS CLASS. This class currently handles two things: recording data and also saving it to a file. However, the CommunicationHandler class also uses this class to get the data and send it over the socket. This makes is it difficult to implement one-frame fields (or messsages) because the data is being read in multiple locations. The logic for generating the frame and serializing it should be separated from the rest of the logic, either in another class or in Frame.cs itself (create it).
 [RegisterInIl2Cpp]
 public sealed class Recorder : MonoBehaviour
 {
@@ -42,6 +41,8 @@ public sealed class Recorder : MonoBehaviour
         string recordingsDirectory = Path.Combine(BepInEx.Paths.PluginPath, "NeuroRecordings");
         if (!Directory.Exists(recordingsDirectory)) Directory.CreateDirectory(recordingsDirectory);
         _fileStream = new FileStream(Path.Combine(recordingsDirectory, $"{DateTime.Now.ToFileTime()}.gymbag"), FileMode.Create);
+
+        WriteAndFlush(HeaderFrame.Generate());
     }
 
     private void FixedUpdate()
@@ -56,10 +57,10 @@ public sealed class Recorder : MonoBehaviour
         // TODO: Record local player interactions data: opened task, opened door
 
         _fixedUpdateCalls++;
-        if (_fixedUpdateCalls < 9) return;
+        if (_fixedUpdateCalls < 10) return;
         _fixedUpdateCalls = 0;
 
-        Serialize(_fileStream);
+        WriteAndFlush(Frame.Now);
     }
 
     private void OnDestroy()
@@ -67,20 +68,10 @@ public sealed class Recorder : MonoBehaviour
         _fileStream.Dispose();
     }
 
-    public void Serialize(Stream stream)
+    private void WriteAndFlush(IMessage message)
     {
-        Frame frame = new()
-        {
-            DeadBodies = DeadBodiesRecorder.Instance.Frame,
-            Header = HeaderRecorder.GenerateHeaderFrame(),
-            LocalPlayer = LocalPlayerRecorder.Instance.Frame,
-            Map = MapRecorder.Instance.Frame,
-            OtherPlayers = OtherPlayersRecorder.Instance.Frame
-        };
-
-        frame.WriteTo(stream);
-        // if (stream is MemoryStream) Warning($"Sent: {frame}");
-        stream.Flush();
+        message.WriteTo(_fileStream);
+        _fileStream.Flush();
     }
 
     [EventHandler(EventTypes.GameStarted)]

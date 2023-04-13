@@ -3,6 +3,32 @@ using static Neuro.Recording.Header.HeaderFrame.Types;
 
 namespace Neuro.Recording.Header;
 
+public partial class HeaderFrame
+{
+    public static HeaderFrame Generate()
+    {
+        HeaderFrame frame = new()
+        {
+            Map = ShipStatus.Instance.GetHeaderMapType(),
+            Role = PlayerControl.LocalPlayer.Data.Role.Role.ToHeaderRoleType(),
+            IsImpostor = PlayerControl.LocalPlayer.Data.Role.IsImpostor
+        };
+
+        if (frame.IsImpostor)
+        {
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            {
+                if (!player.AmOwner && player.Data.Role.IsImpostor)
+                {
+                    frame.OtherImpostors.Add(player.PlayerId);
+                }
+            }
+        }
+
+        return frame;
+    }
+}
+
 public static class HeaderFrameExtensions
 {
     public static MapType GetHeaderMapType(this ShipStatus shipStatus)

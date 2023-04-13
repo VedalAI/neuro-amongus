@@ -2,9 +2,11 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using Google.Protobuf;
 using Neuro.Events;
 using Neuro.Movement;
 using Neuro.Recording;
+using Neuro.Recording.Header;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -21,6 +23,7 @@ public sealed class CommunicationHandler : MonoBehaviour
     private void Start()
     {
         _socket.Connect(_ipEndPoint);
+        Send(HeaderFrame.Generate());
     }
 
     private void OnDestroy()
@@ -50,12 +53,18 @@ public sealed class CommunicationHandler : MonoBehaviour
 
         if (_hasGotResponse)
         {
-            using MemoryStream memoryStream = new();
-            Recorder.Instance.Serialize(memoryStream);
-            _socket.Send(memoryStream.ToArray());
+            Send(Frame.Now);
+            // Warning($"Sent: {Frame.Now}");
 
             _hasGotResponse = false;
         }
+    }
+
+    private void Send(IMessage message)
+    {
+        using MemoryStream stream = new();
+        message.WriteTo(stream);
+        _socket.Send(stream.ToArray());
     }
 
     private void HandleOutput(NNOutput output)
