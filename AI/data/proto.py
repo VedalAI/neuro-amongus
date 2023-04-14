@@ -137,6 +137,7 @@ class LocalPlayerFrame(betterproto.Message):
     doors_used: int = betterproto.uint32_field(5)
     raycast_obstacle_distances: List[float] = betterproto.float_field(6)
     position: "MyVector2" = betterproto.message_field(7)
+    velocity: "MyVector2" = betterproto.message_field(8)
 
 
 @dataclass(eq=False, repr=False)

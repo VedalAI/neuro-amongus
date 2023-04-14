@@ -11,4 +11,5 @@ message LocalPlayerFrame {
     uint32 DoorsUsed = 5;
     repeated float RaycastObstacleDistances = 6;
     MyVector2 Position = 7;
+    MyVector2 Velocity = 8;
 }

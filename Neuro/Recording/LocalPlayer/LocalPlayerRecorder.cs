@@ -48,6 +48,7 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     private void FixedUpdate()
     {
         Frame.Position = PlayerControl.LocalPlayer.GetTruePosition();
+        Frame.Velocity = PlayerControl.LocalPlayer.MyPhysics.Velocity;
 
         for (int i = 0; i < 8; i++)
         {

@@ -36,7 +36,7 @@ public sealed class Recorder : MonoBehaviour
     {
         string recordingsDirectory = Path.Combine(BepInEx.Paths.PluginPath, "NeuroRecordings");
         if (!Directory.Exists(recordingsDirectory)) Directory.CreateDirectory(recordingsDirectory);
-        _fileStream = new FileStream(Path.Combine(recordingsDirectory, $"{DateTime.Now.ToFileTime()}.gymbag"), FileMode.Create);
+        _fileStream = new FileStream(Path.Combine(recordingsDirectory, $"{DateTime.Now.ToFileTime()}.gymbag2"), FileMode.Create);
 
         WriteAndFlush(Frame.Now(true));
     }
@@ -46,9 +46,6 @@ public sealed class Recorder : MonoBehaviour
         // TODO: We should record meeting data!
         if (MeetingHud.Instance || Minigame.Instance) return;
 
-        // TODO: Record all of the tasks
-        // TODO: Record 11th task as emergency
-        // TODO: Record localplayer velocity
         // TODO: Record local impostor data: kill cooldown, venting stuff, etc
         // TODO: Record local player interactions data: opened task, opened door
 
@@ -67,6 +64,7 @@ public sealed class Recorder : MonoBehaviour
     [HideFromIl2Cpp]
     private void WriteAndFlush(IMessage message)
     {
+        _fileStream.Write(BitConverter.GetBytes(message.CalculateSize()), 0, 4);
         message.WriteTo(_fileStream);
         _fileStream.Flush();
     }
