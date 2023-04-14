@@ -1,15 +1,9 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using Il2CppInterop.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
-using Epic.OnlineServices.Auth;
 using System.Threading;
-using Rewired.Utils.Classes.Utility;
 using SelectMode = System.Net.Sockets.SelectMode;
 
 namespace Neuro.Communication.AmongUsAI;
@@ -21,8 +15,11 @@ public sealed class WebSocketThread
     internal static Socket _socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
     private static void GracefulSocketRestart() {
-        _socket.Shutdown(SocketShutdown.Both);
-        _socket.Disconnect(false); //reusing sockets for the same client is impossible.
+        if (_socket.Connected)
+        {
+            _socket.Shutdown(SocketShutdown.Both);
+        }
+        _socket.Close(); //reusing sockets for the same client is impossible.
         _socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         CommunicationHandler.needsHeaderFrame = true;
     }

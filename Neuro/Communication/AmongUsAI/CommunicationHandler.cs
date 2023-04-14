@@ -65,17 +65,18 @@ public sealed class CommunicationHandler : MonoBehaviour
 
         if (_hasGotResponse)
         {
+            // if we have response, but no headerframe was sent, send a headerframe, wait for one turn, then send frame, then wait for response again.
             if (needsHeaderFrame)
             {
                 Send(HeaderFrame.Generate());
+                needsHeaderFrame = false;
             }
             else {
                 Send(Frame.Now);
+                _hasGotResponse = false;
             }
             
             // Warning($"Sent: {Frame.Now}");
-
-            _hasGotResponse = false;
         }
     }
 
