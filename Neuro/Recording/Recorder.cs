@@ -3,7 +3,6 @@ using System.IO;
 using Google.Protobuf;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
-using Neuro.Recording.Header;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -39,7 +38,7 @@ public sealed class Recorder : MonoBehaviour
         if (!Directory.Exists(recordingsDirectory)) Directory.CreateDirectory(recordingsDirectory);
         _fileStream = new FileStream(Path.Combine(recordingsDirectory, $"{DateTime.Now.ToFileTime()}.gymbag"), FileMode.Create);
 
-        WriteAndFlush(HeaderFrame.Generate());
+        WriteAndFlush(Frame.Now(true));
     }
 
     private void FixedUpdate()
@@ -57,7 +56,7 @@ public sealed class Recorder : MonoBehaviour
         if (_fixedUpdateCalls < 10) return;
         _fixedUpdateCalls = 0;
 
-        WriteAndFlush(Frame.Now);
+        WriteAndFlush(Frame.Now());
     }
 
     private void OnDestroy()

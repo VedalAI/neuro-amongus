@@ -13,14 +13,6 @@ while True:
     with conn:
         print("Connected by", addr)
 
-        header_data = conn.recv(1024)
-        if not header_data:
-            print("no header data")
-            break
-
-        header = HeaderFrame.FromString(header_data)
-        print(header)
-
         while True:
             data = conn.recv(1024)
             if not data:

@@ -2,7 +2,10 @@
 # sources: Communication/AmongUsAI/NNOutput.proto, Recording/DeadBodies/DeadBodiesFrame.proto, Recording/DeadBodies/DeadBodyData.proto, Recording/Frame.proto, Recording/Header/HeaderFrame.proto, Recording/LocalPlayer/LocalPlayerFrame.proto, Recording/Map/DoorData.proto, Recording/Map/MapFrame.proto, Recording/Map/VentData.proto, Recording/MyVector2.proto, Recording/OtherPlayers/OtherPlayerData.proto, Recording/OtherPlayers/OtherPlayersFrame.proto, Recording/PositionData.proto
 # plugin: python-betterproto
 from dataclasses import dataclass
-from typing import List
+from typing import (
+    List,
+    Optional,
+)
 
 import betterproto
 
@@ -50,6 +53,14 @@ class DeadBodyData(betterproto.Message):
 @dataclass(eq=False, repr=False)
 class DeadBodiesFrame(betterproto.Message):
     dead_bodies: List["DeadBodyData"] = betterproto.message_field(1)
+
+
+@dataclass(eq=False, repr=False)
+class HeaderFrame(betterproto.Message):
+    map: "HeaderFrameMapType" = betterproto.enum_field(1)
+    is_impostor: bool = betterproto.bool_field(2)
+    role: "HeaderFrameRoleType" = betterproto.enum_field(3)
+    other_impostors: List[int] = betterproto.uint32_field(4)
 
 
 @dataclass(eq=False, repr=False)
@@ -110,15 +121,18 @@ class OtherPlayersFrame(betterproto.Message):
 
 @dataclass(eq=False, repr=False)
 class Frame(betterproto.Message):
-    dead_bodies: "DeadBodiesFrame" = betterproto.message_field(1)
-    local_player: "LocalPlayerFrame" = betterproto.message_field(2)
-    map: "MapFrame" = betterproto.message_field(3)
-    other_players: "OtherPlayersFrame" = betterproto.message_field(4)
-
-
-@dataclass(eq=False, repr=False)
-class HeaderFrame(betterproto.Message):
-    map: "HeaderFrameMapType" = betterproto.enum_field(1)
-    is_impostor: bool = betterproto.bool_field(2)
-    role: "HeaderFrameRoleType" = betterproto.enum_field(3)
-    other_impostors: List[int] = betterproto.uint32_field(4)
+    dead_bodies: Optional["DeadBodiesFrame"] = betterproto.message_field(
+        1, optional=True, group="_DeadBodies"
+    )
+    local_player: Optional["LocalPlayerFrame"] = betterproto.message_field(
+        2, optional=True, group="_LocalPlayer"
+    )
+    map: Optional["MapFrame"] = betterproto.message_field(
+        3, optional=True, group="_Map"
+    )
+    other_players: Optional["OtherPlayersFrame"] = betterproto.message_field(
+        4, optional=True, group="_OtherPlayers"
+    )
+    header: Optional["HeaderFrame"] = betterproto.message_field(
+        5, optional=True, group="_Header"
+    )

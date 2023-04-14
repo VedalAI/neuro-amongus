@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Il2CppInterop.Runtime;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
 using UnityEngine;
@@ -11,37 +10,18 @@ using UnityEngine;
 namespace Neuro.Pathfinding;
 
 // TODO: [BUG] Sometimes when very close to an object, the distance will be returned as -1
-public sealed class PathfindingThread
+public sealed class PathfindingThread : NeuroThread
 {
     private readonly ConcurrentQueue<string> _queue = new();
     private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target)> _requests = new();
     private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target, Vector2[] path, float length)> _results = new();
 
     private readonly Node[,] _grid;
-    private readonly Thread _thread;
 
     public PathfindingThread(Node[,] grid, Vector2 accessiblePosition)
     {
         _grid = grid;
         FloodFill(accessiblePosition);
-
-        _thread = new Thread(RunThread);
-    }
-
-    public void Start()
-    {
-        if (!_thread.IsAlive)
-        {
-            _thread.Start();
-        }
-    }
-
-    public void Stop()
-    {
-        if (_thread.IsAlive)
-        {
-            _thread.Interrupt();
-        }
     }
 
     public void RequestPath(Vector2 start, Vector2 target, string identifier)
@@ -63,14 +43,14 @@ public sealed class PathfindingThread
         return tried;
     }
 
-    private void RunThread()
+    protected override void RunThread()
     {
-        IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
-
         while (true)
         {
             try
             {
+                Thread.Sleep(250);
+
                 while (!_queue.IsEmpty)
                 {
                     if (!_queue.TryDequeue(out string identifier)) continue;
@@ -82,8 +62,6 @@ public sealed class PathfindingThread
 
                     Thread.Yield();
                 }
-
-                Thread.Sleep(250);
             }
             catch (ThreadInterruptedException)
             {
@@ -91,15 +69,7 @@ public sealed class PathfindingThread
             }
             catch (Exception e)
             {
-                System.Console.WriteLine(e);
-                try
-                {
-                    Thread.Yield();
-                }
-                catch
-                {
-                    return;
-                }
+                Error(e);
             }
         }
     }
