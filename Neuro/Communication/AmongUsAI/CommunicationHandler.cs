@@ -29,7 +29,7 @@ public sealed class CommunicationHandler : MonoBehaviour
         {
             cts = new CancellationTokenSource();
             _thread = new Thread(new ParameterizedThreadStart(WebSocketThread.ConnectToServer));
-            _thread.Start(cts.Token);
+            _thread.Start(cts);
         }
     }
 
