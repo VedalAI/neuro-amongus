@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>latest</LangVersion>
-
+        <AssemblyName>Neuro</AssemblyName>
         <VersionPrefix>1.0.0</VersionPrefix>
         <VersionSuffix>dev</VersionSuffix>
         <Description>Mod for recording data for Neuro-sama to play Among Us</Description>
         <Authors>VedalAI</Authors>
-
+        
+        <TargetFramework>net6.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        
         <DebugType>embedded</DebugType>
-        <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<UseCommonOutputDirectory>true</UseCommonOutputDirectory>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        
+        <ILRepackTargetConfigurations>Debug;Release</ILRepackTargetConfigurations>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,15 +27,18 @@
 
     <ItemGroup>
         <EmbeddedResource Include="**\Resources\**" />
-        <Protobuf Include="**\*.proto" GrpcServices="None" />
-
-        <Compile Remove="zzz_excluded\**" />
+        <EmbeddedResource Include="$(NuGetPackageRoot)google.protobuf\3.22.1\lib\net5.0\Google.Protobuf.dll" LinkBase="Resources" />
     </ItemGroup>
 
     <ItemGroup>
+        <Protobuf Include="**\*.proto" GrpcServices="None" />
         <Compile Update="@(Protobuf->'%(RelativeDir)%(Filename).cs')">
             <DependentUpon>%(Filename).proto</DependentUpon>
         </Compile>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Compile Remove="zzz_excluded\**" />
     </ItemGroup>
 
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

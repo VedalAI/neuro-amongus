@@ -9,28 +9,31 @@ from zipfile import ZipFile
 import requests
 
 
+RELEASE_VERSION = "22.3"
+
+
 def get_protoc_path():
     bin_dir = Path("lib")
     bin_dir.mkdir(parents=True, exist_ok=True)
 
     # Define the base URL for downloading the protoc compiler
-    base_url = "https://github.com/protocolbuffers/protobuf/releases/download/v22.2"
+    base_url = f"https://github.com/protocolbuffers/protobuf/releases/download/v{RELEASE_VERSION}"
 
     # Determine the appropriate protoc binary for the current operating system
     os_name = platform.system().lower()
     os_arch = "x86_64" if platform.machine().endswith('64') else "x86_32"
 
     if os_name == "linux":
-        binary_name = f"protoc-22.2-linux-{os_arch}"
+        binary_name = f"protoc-{RELEASE_VERSION}-linux-{os_arch}"
     elif os_name == "darwin":
-        binary_name = f"protoc-22.2-osx-universal_binary"
+        binary_name = f"protoc-{RELEASE_VERSION}-osx-universal_binary"
     elif os_name == "windows":
-        binary_name = "protoc-22.2-win64" if os_arch == "x86_64" else "protoc-22.2-win32"
+        binary_name = f"protoc-{RELEASE_VERSION}-{'win64' if os_arch == 'x86_64' else 'win32'}"
     else:
         raise RuntimeError("Unsupported operating system")
 
     # Set the local path for the protoc binary
-    protoc_path = bin_dir / ("protoc.exe" if os_name == "windows" else "protoc")
+    protoc_path = bin_dir / f"protoc-{RELEASE_VERSION}{'.exe' if os_name == 'windows' else ''}"
 
     # Download and extract the protoc binary if it doesn't exist
     if not protoc_path.is_file():
@@ -39,9 +42,9 @@ def get_protoc_path():
 
         with ZipFile(BytesIO(response.content)) as zf:
             if os_name == "windows":
-                protoc_zip_path = f"lib/protoc.exe"
+                protoc_zip_path = f"bin/protoc.exe"
             else:
-                protoc_zip_path = f"lib/protoc"
+                protoc_zip_path = f"bin/protoc"
 
             with zf.open(protoc_zip_path) as src, open(protoc_path, "wb") as dst:
                 dst.write(src.read())
