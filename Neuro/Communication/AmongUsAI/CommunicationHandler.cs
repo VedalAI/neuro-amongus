@@ -1,82 +1,81 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
 using Google.Protobuf;
 using Il2CppInterop.Runtime.Attributes;
-using System.Threading;
-using Neuro.Events;
 using Neuro.Movement;
 using Neuro.Recording;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
-using Neuro.Recording.Header;
+using Neuro.Utilities;
 
 namespace Neuro.Communication.AmongUsAI;
 
 [RegisterInIl2Cpp]
 public sealed class CommunicationHandler : MonoBehaviour
 {
+    public static CommunicationHandler Instance { get; private set; }
+
     public CommunicationHandler(IntPtr ptr) : base(ptr) { }
 
-    private CancellationTokenSource cts;
-    private Thread _thread;
+    private readonly byte[] _buffer = new byte[1024];
+    private WebSocketThread _thread;
+    private volatile bool _needsHeaderFrame;
+    private bool _shouldSend = true;
+
+    private void Awake()
+    {
+        if (Instance)
+        {
+            NeuroUtilities.WarnDoubleSingletonInstance();
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+    }
 
     private void Start()
     {
-        //graceful start
-        if (_thread == null || !_thread.IsAlive)
-        {
-            cts = new CancellationTokenSource();
-            _thread = new Thread(new ParameterizedThreadStart(WebSocketThread.ConnectToServer));
-            _thread.Start(cts);
-        }
+        _thread = new WebSocketThread();
+        _thread.OnConnect += () => _needsHeaderFrame = true;
+        _thread.Start();
     }
 
     private void OnDestroy()
     {
-        cts?.Cancel();
+        _thread.Stop();
     }
-
-    private readonly byte[] _buffer = new byte[1024];
-    private bool _hasGotResponse = true;
-    internal static volatile bool needsHeaderFrame = true;
 
     private void FixedUpdate()
     {
-        // TODO: We should send meeting data!
-
-        if (!WebSocketThread._socket.Connected) {
-            //send data on connect, incase of reset.
-            _hasGotResponse = true;
+        if (_thread.Socket is not {Connected: true})
+        {
+            // Send data when next connected, in case of reset.
+            _shouldSend = true;
             return;
         }
+
+        // TODO: We should send meeting data!
         if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
 
-        if (WebSocketThread._socket.Available > 0)
+        if (_thread.Socket.Available > 0)
         {
-            int received = WebSocketThread._socket.Receive(_buffer, SocketFlags.None);
+            int received = _thread.Socket.Receive(_buffer, SocketFlags.None);
             NNOutput output = NNOutput.Parser.ParseFrom(_buffer, 0, received);
             // Warning($"Received: {output}");
             HandleOutput(output);
 
-            _hasGotResponse = true;
+            _shouldSend = true;
         }
 
-        if (_hasGotResponse)
+        if (_shouldSend)
         {
-            // if we have response, but no headerframe was sent, send a headerframe, wait for one turn, then send frame, then wait for response again.
-            if (needsHeaderFrame)
-            {
-                Send(HeaderFrame.Generate());
-                needsHeaderFrame = false;
-            }
-            else {
-                Send(Frame.Now);
-                _hasGotResponse = false;
-            }
-            
+            Send(Frame.Now(_needsHeaderFrame));
+            _needsHeaderFrame = false;
             // Warning($"Sent: {Frame.Now}");
+
+            _shouldSend = false;
         }
     }
 
@@ -85,7 +84,7 @@ public sealed class CommunicationHandler : MonoBehaviour
     {
         using MemoryStream stream = new();
         message.WriteTo(stream);
-        WebSocketThread._socket.Send(stream.ToArray());
+        _thread.Socket.Send(stream.ToArray());
     }
 
     [HideFromIl2Cpp]
