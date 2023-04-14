@@ -93,10 +93,4 @@ public sealed class CommunicationHandler : MonoBehaviour
     {
         MovementHandler.Instance.ForcedMoveDirection = output.DesiredMoveDirection;
     }
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<CommunicationHandler>();
-    }
 }

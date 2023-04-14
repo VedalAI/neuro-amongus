@@ -3,6 +3,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using Neuro.Communication.AmongUsAI;
 using Neuro.Debugging;
 using Neuro.Utilities;
 using Reactor;
@@ -23,6 +24,7 @@ public partial class NeuroPlugin : BasePlugin
     {
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
 
+        AddComponent<CommunicationHandler>();
         AddComponent<DebugWindow>();
 
         ResourceManager.CacheSprite("Cursor", 130);

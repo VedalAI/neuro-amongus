@@ -22,9 +22,7 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public static PathfindingHandler Instance { get; private set; }
 
-    public PathfindingHandler(IntPtr ptr) : base(ptr)
-    {
-    }
+    public PathfindingHandler(IntPtr ptr) : base(ptr) { }
 
     private PathfindingThread _thread;
 
