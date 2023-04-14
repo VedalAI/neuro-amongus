@@ -32,7 +32,7 @@ public sealed class WebSocketThread
         bool _require_startup = true;
         try
         {
-            var token = (CancellationToken)state;
+            var token = (CancellationTokenSource)state;
             IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
 
             while (true)
@@ -41,6 +41,7 @@ public sealed class WebSocketThread
                 if (token.IsCancellationRequested)
                 {
                     GracefulSocketRestart();
+                    token.Dispose();
                     break;
                 }
                 bool isConnected = !(_socket.Poll(1000, SelectMode.SelectRead) && _socket.Available == 0);
