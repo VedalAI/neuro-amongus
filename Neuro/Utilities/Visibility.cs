@@ -5,11 +5,19 @@ namespace Neuro.Utilities;
 
 public static class Visibility
 {
-    // TODO: This is definitely not working!
     private static bool IsVisible(Vector2 rayStart, Vector2 rayEnd)
     {
+        Vector3 viewport = Camera.main.WorldToViewportPoint(rayEnd);
+        //Summon neurosama to check if stuff is visible
+        bool visible = viewport.x > 0 && viewport.x < 1 && viewport.y > 0 && viewport.y < 1;
+
+        //no point doing a raycast if item isn't on screen
+        if (!visible) return false;
+
         Vector2 ray = rayEnd - rayStart;
-        RaycastHit2D hit = Physics2D.Raycast(rayStart, ray.normalized, ray.magnitude, Constants.ShadowMask);
+        //fire towards fog[Illumination], if we hit the fog, it's not visible.
+        RaycastHit2D hit = Physics2D.Raycast(rayStart, ray.normalized, ray.magnitude, 1 << 10);
+
         return !hit;
     }
 
