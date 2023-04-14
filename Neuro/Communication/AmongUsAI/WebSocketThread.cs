@@ -8,7 +8,7 @@ using SelectMode = System.Net.Sockets.SelectMode;
 
 namespace Neuro.Communication.AmongUsAI;
 
-public sealed class WebSocketThread
+public sealed class WebSocketThread : NeuroThread
 {
 
     private static readonly IPEndPoint _ipEndPoint = new(IPAddress.Parse("127.0.0.1"), 6969);
