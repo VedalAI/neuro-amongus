@@ -1,6 +1,7 @@
 import socket
 
-from proto import HeaderFrame, Frame, NnOutput, MyVector2
+from game_data import GameData
+from proto import Frame, NnOutput, MyVector2
 
 # open server on port 6969
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,6 +13,7 @@ while True:
     conn, addr = server.accept()
     with conn:
         print("Connected by", addr)
+        game_data = GameData()
 
         while True:
             data = conn.recv(1024)
@@ -21,6 +23,10 @@ while True:
 
             frame = Frame.FromString(data)
             print(frame)
+
+            game_data.update_frame(frame)
+
+
 
             output = NnOutput()
             output.desired_move_direction = MyVector2(x=0, y=1)

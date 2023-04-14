@@ -3,6 +3,7 @@ using Neuro.Recording.Header;
 using Neuro.Recording.LocalPlayer;
 using Neuro.Recording.Map;
 using Neuro.Recording.OtherPlayers;
+using Neuro.Recording.Tasks;
 
 namespace Neuro.Recording;
 
@@ -16,14 +17,15 @@ public partial class Frame
             Header = includeHeader ? HeaderFrame.Generate() : null,
             LocalPlayer = LocalPlayerRecorder.Instance.Frame,
             Map = MapRecorder.Instance.Frame,
-            OtherPlayers = OtherPlayersRecorder.Instance.Frame
+            OtherPlayers = OtherPlayersRecorder.Instance.Frame,
+            Tasks = TasksRecorder.Instance.Frame,
         };
     }
 
-    public static bool CanGenerate => DeadBodiesRecorder.Instance &&
+    public static bool CanGenerate => ShipStatus.Instance && PlayerControl.LocalPlayer &&
+                                      DeadBodiesRecorder.Instance &&
                                       LocalPlayerRecorder.Instance &&
                                       MapRecorder.Instance &&
                                       OtherPlayersRecorder.Instance &&
-                                      ShipStatus.Instance &&
-                                      PlayerControl.LocalPlayer;
+                                      TasksRecorder.Instance;
 }

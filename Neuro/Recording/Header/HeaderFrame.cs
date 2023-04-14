@@ -1,4 +1,5 @@
-﻿using AmongUs.GameOptions;
+﻿using System;
+using AmongUs.GameOptions;
 using static Neuro.Recording.Header.HeaderFrame.Types;
 
 namespace Neuro.Recording.Header;
@@ -11,8 +12,8 @@ public partial class HeaderFrame
 
         HeaderFrame frame = new()
         {
-            Map = ShipStatus.Instance.GetHeaderMapType(),
-            Role = PlayerControl.LocalPlayer.Data.Role.Role.ToHeaderRoleType(),
+            Map = ShipStatus.Instance.GetTypeForMessage(),
+            Role = PlayerControl.LocalPlayer.Data.Role.Role.ForMessage(),
             IsImpostor = PlayerControl.LocalPlayer.Data.Role.IsImpostor
         };
 
@@ -33,7 +34,7 @@ public partial class HeaderFrame
 
 public static class HeaderFrameExtensions
 {
-    public static MapType GetHeaderMapType(this ShipStatus shipStatus)
+    public static MapType GetTypeForMessage(this ShipStatus shipStatus)
     {
         if (!shipStatus) return MapType.UnsetMapType;
         if (shipStatus.TryCast<AirshipStatus>()) return MapType.Airship;
@@ -48,21 +49,8 @@ public static class HeaderFrameExtensions
         }
     }
 
-    public static RoleType ToHeaderRoleType(this RoleTypes role)
+    public static RoleType ForMessage(this RoleTypes role)
     {
-        switch (role)
-        {
-            case RoleTypes.Crewmate: return RoleType.Crewmate;
-            case RoleTypes.Impostor: return RoleType.Impostor;
-            case RoleTypes.Scientist: return RoleType.Scientist;
-            case RoleTypes.Engineer: return RoleType.Engineer;
-            case RoleTypes.GuardianAngel: return RoleType.GuardianAngel;
-            case RoleTypes.Shapeshifter: return RoleType.Shapeshifter;
-            case RoleTypes.CrewmateGhost: return RoleType.UnsetRoleType;
-            case RoleTypes.ImpostorGhost: return RoleType.UnsetRoleType;
-            default:
-                Warning($"Unkown role type: {role}");
-                return RoleType.UnsetRoleType;
-        }
+        return Enum.TryParse(role.ToString(), out RoleType result) ? result : RoleType.UnsetRoleType;
     }
 }
