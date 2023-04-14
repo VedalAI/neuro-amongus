@@ -20,7 +20,7 @@ public sealed class CommunicationHandler : MonoBehaviour
 
     private readonly byte[] _buffer = new byte[1024];
     private WebSocketThread _thread;
-    private volatile bool _needsHeaderFrame;
+    private volatile bool _shouldSendHeader = true;
     private bool _shouldSend = true;
 
     private void Awake()
@@ -38,7 +38,7 @@ public sealed class CommunicationHandler : MonoBehaviour
     private void Start()
     {
         _thread = new WebSocketThread();
-        _thread.OnConnect += () => _needsHeaderFrame = true;
+        _thread.OnConnect += () => _shouldSendHeader = true;
         _thread.Start();
     }
 
@@ -57,7 +57,7 @@ public sealed class CommunicationHandler : MonoBehaviour
         }
 
         // TODO: We should send meeting data!
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance || !Frame.CanGenerate) return;
 
         if (_thread.Socket.Available > 0)
         {
@@ -71,8 +71,8 @@ public sealed class CommunicationHandler : MonoBehaviour
 
         if (_shouldSend)
         {
-            Send(Frame.Now(_needsHeaderFrame));
-            _needsHeaderFrame = false;
+            Send(Frame.Now(_shouldSendHeader));
+            _shouldSendHeader = false;
             // Warning($"Sent: {Frame.Now}");
 
             _shouldSend = false;

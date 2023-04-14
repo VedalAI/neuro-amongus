@@ -19,4 +19,11 @@ public partial class Frame
             OtherPlayers = OtherPlayersRecorder.Instance.Frame
         };
     }
+
+    public static bool CanGenerate => DeadBodiesRecorder.Instance &&
+                                      LocalPlayerRecorder.Instance &&
+                                      MapRecorder.Instance &&
+                                      OtherPlayersRecorder.Instance &&
+                                      ShipStatus.Instance &&
+                                      PlayerControl.LocalPlayer;
 }
