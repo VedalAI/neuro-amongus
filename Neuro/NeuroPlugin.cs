@@ -14,6 +14,11 @@ namespace Neuro;
 [BepInDependency(ReactorPlugin.Id)]
 public partial class NeuroPlugin : BasePlugin
 {
+    static NeuroPlugin()
+    {
+        DependencyResolver.InjectResources();
+    }
+
     public override void Load()
     {
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
