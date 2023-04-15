@@ -8,11 +8,11 @@ def convert_bool(data):
 
 
 def convert_dict(data):
-    return np.hstack([convert_type(x) for x in data.values()])
+    return np.hstack([convert_type(x) for x in data.values()]) if data else np.array([])
 
 
 def convert_list(data):
-    return np.hstack([convert_type(x) for x in data])
+    return np.hstack([convert_type(x) for x in data]) if data else np.array([])
 
 
 def convert_positiondata(data):

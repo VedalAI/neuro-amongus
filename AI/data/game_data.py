@@ -1,7 +1,7 @@
 import numpy as np
 
 from data.proto import Frame
-from data.proto_defaults import def_taskdata, def_vector2
+from data.proto_defaults import def_taskdata, def_vector2, def_positiondata
 from util.converter import convert_type
 
 
@@ -19,15 +19,16 @@ class GameData:
 
         if frame.tasks:
             self.tasks = [frame.tasks.tasks[i] if i < len(frame.tasks.tasks) else def_taskdata() for i in range(10)]
+            for task in self.tasks:
+                task.consoles_of_interest = [task.consoles_of_interest[i] if i < len(task.consoles_of_interest) else def_positiondata() for i in range(3)]
             self.sabotage = frame.tasks.sabotage if frame.tasks.sabotage else def_taskdata()
+            self.sabotage.consoles_of_interest = [self.sabotage.consoles_of_interest[i] if i < len(self.sabotage.consoles_of_interest) else def_positiondata() for i in range(3)]
 
     def get_x(self):
-        position_data = convert_type(self.position)
         tasks_data = [convert_type(task) for task in self.tasks]
         sabotage_data = convert_type(self.sabotage)
 
         return np.hstack([
-            position_data,
             *tasks_data,
             sabotage_data
         ])

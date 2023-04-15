@@ -35,7 +35,7 @@ def main():
 
                 x = game_data.get_x()
                 x = torch.tensor(x, dtype=torch.float32, device=device)
-                output = model(x).detach().cpu().numpy()[0]
+                output = model(x).detach().cpu().numpy()
                 output = [float(o) for o in output]
 
                 result = NnOutput()

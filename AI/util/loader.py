@@ -13,11 +13,11 @@ def deserialize_gymbag(file_path: str) -> List[Frame]:
         index = 0
 
         while index < len(data):
-            length = int.from_bytes(data[index : index + 4], "little")
+            length = int.from_bytes(data[index:index+4], "little")
             index += 4
 
             frame = Frame()
-            frame.parse(data[index : index + length])
+            frame.parse(data[index:index+length])
             index += length
 
             frames.append(frame)

@@ -76,7 +76,7 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public float GetPathLength(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
-        if (string.IsNullOrEmpty(identifier)) return float.MaxValue;
+        if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
 
         _thread.RequestPath(start, target, identifier);
         if (!_thread.TryGetPath(identifier, out _, out float length)) return -1;
@@ -86,7 +86,7 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public Vector2 GetFirstNodeInPath(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
-        if (string.IsNullOrEmpty(identifier)) return default;
+        if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
 
         _thread.RequestPath(start, target, identifier);
         if (!_thread.TryGetPath(identifier, out Vector2[] path, out _)) return Vector2.zero;

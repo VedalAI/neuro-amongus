@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 
-from data.game_data import TrainingGameData
+from data.training_game_data import TrainingGameData
 
 
 class AmongUsDataset(Dataset):

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Neuro.Minigames;
+using Neuro.Pathfinding;
 using static Neuro.Recording.Tasks.TaskData.Types;
 
 namespace Neuro.Recording.Tasks;
@@ -15,12 +16,17 @@ public partial class TaskData
             Type = task.TaskType.ForMessage(),
         };
 
-        foreach (Console consoleOfInterest in task.FindConsoles()._items.Where(c => MinigameHandler.ShouldOpenConsole(c, task.MinigamePrefab, task)))
+        foreach (Console consoleOfInterest in task.FindConsoles()._items.Where(c => c && MinigameHandler.ShouldOpenConsole(c, task.MinigamePrefab, task)).OrderBy(Closest).Take(3))
         {
             data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest, consoleOfInterest));
         }
 
         return data;
+    }
+
+    private static float Closest(Console console)
+    {
+        return PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, console, console);
     }
 }
 

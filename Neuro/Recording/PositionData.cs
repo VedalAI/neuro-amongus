@@ -10,7 +10,7 @@ public partial class PositionData
         return new PositionData
         {
             TotalDistance = PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, position, pathfindingIdentifier),
-            NextNodePosition = PathfindingHandler.Instance.GetFirstNodeInPath(PlayerControl.LocalPlayer, position, pathfindingIdentifier)
+            NextNodePosition = PathfindingHandler.Instance.GetFirstNodeInPath(PlayerControl.LocalPlayer, position, pathfindingIdentifier) - PlayerControl.LocalPlayer.GetTruePosition()
         };
     }
 }

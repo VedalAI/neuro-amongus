@@ -50,7 +50,7 @@ public sealed class Recorder : MonoBehaviour
         // TODO: Record local player interactions data: opened task, opened door
 
         _fixedUpdateCalls++;
-        if (_fixedUpdateCalls < 10) return;
+        if (_fixedUpdateCalls < 5) return;
         _fixedUpdateCalls = 0;
 
         WriteAndFlush(Frame.Now());
@@ -66,6 +66,7 @@ public sealed class Recorder : MonoBehaviour
     {
         _fileStream.Write(BitConverter.GetBytes(message.CalculateSize()), 0, 4);
         message.WriteTo(_fileStream);
+        Warning(message);
         _fileStream.Flush();
     }
 
