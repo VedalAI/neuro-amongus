@@ -16,7 +16,7 @@ def convert_list(data):
 
 
 def convert_positiondata(data):
-    return np.hstack([float(data.total_distance), convert_type(data.next_node_position)])
+    return np.hstack([float(data.total_distance), convert_type(data.next_node_offset)])
 
 
 def convert_taskdata(data):

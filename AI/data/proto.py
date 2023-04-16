@@ -144,6 +144,7 @@ class LocalPlayerFrame(betterproto.Message):
 class PositionData(betterproto.Message):
     total_distance: float = betterproto.float_field(1)
     next_node_position: "MyVector2" = betterproto.message_field(2)
+    next_node_offset: "MyVector2" = betterproto.message_field(3)
 
 
 @dataclass(eq=False, repr=False)
