@@ -20,7 +20,7 @@ def convert_positiondata(data):
 
 
 def convert_taskdata(data):
-    return convert_type(data.consoles_of_interest)
+    return convert_type(data.consoles_of_interest[:2])
 
 
 def convert_vector2(data):

@@ -2,7 +2,7 @@ import numpy as np
 
 from data.proto import Frame
 from data.proto_defaults import def_taskdata, def_vector2, def_positiondata, pad_list
-from util.converter import convert_type
+from data.converter import convert_type
 
 
 class GameData:
@@ -20,9 +20,9 @@ class GameData:
         if frame.tasks:
             self.tasks = pad_list(frame.tasks.tasks, 10, def_taskdata)
             for task in self.tasks:
-                task.consoles_of_interest = pad_list(task.consoles_of_interest, 3, def_positiondata)
+                task.consoles_of_interest = pad_list(task.consoles_of_interest, 2, def_positiondata)
             self.sabotage = frame.tasks.sabotage if frame.tasks.sabotage else def_taskdata()
-            self.sabotage.consoles_of_interest = pad_list(self.sabotage.consoles_of_interest, 3, def_positiondata)
+            self.sabotage.consoles_of_interest = pad_list(self.sabotage.consoles_of_interest, 2, def_positiondata)
 
     def get_x(self):
         tasks_data = [convert_type(task) for task in self.tasks]

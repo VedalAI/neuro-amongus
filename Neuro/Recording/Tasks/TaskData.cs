@@ -16,7 +16,7 @@ public partial class TaskData
             Type = task.TaskType.ForMessage(),
         };
 
-        foreach (Console consoleOfInterest in task.FindConsoles()._items.Where(c => c && MinigameHandler.ShouldOpenConsole(c, task.MinigamePrefab, task)).OrderBy(Closest).Take(3))
+        foreach (Console consoleOfInterest in task.FindConsoles()._items.Where(c => c && MinigameHandler.ShouldOpenConsole(c, task.MinigamePrefab, task)).OrderBy(Closest).Take(2))
         {
             data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest, consoleOfInterest));
         }
