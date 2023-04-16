@@ -47,12 +47,13 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector2 playerPos = PlayerControl.LocalPlayer.GetTruePosition();
+        Frame.Position = PlayerControl.LocalPlayer.GetTruePosition();
+        Frame.Velocity = PlayerControl.LocalPlayer.MyPhysics.Velocity;
 
         for (int i = 0; i < 8; i++)
         {
             Physics2D.queriesHitTriggers = false;
-            RaycastHit2D raycastHit = Physics2D.Raycast(playerPos, RaycastDirections[i], 100f, Constants.ShipAndAllObjectsMask);
+            RaycastHit2D raycastHit = Physics2D.Raycast(Frame.Position, RaycastDirections[i], 100f, Constants.ShipAndAllObjectsMask);
             Physics2D.queriesHitTriggers = true;
 
             Frame.RaycastObstacleDistances[i] = raycastHit.distance;

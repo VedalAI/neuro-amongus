@@ -5,17 +5,15 @@ namespace Neuro.Utilities;
 
 public static class Visibility
 {
+    // TODO: Improve (idea: send raycast from camera to target)
     private static bool IsVisible(Vector2 rayStart, Vector2 rayEnd)
     {
-        Vector3 viewport = Camera.main.WorldToViewportPoint(rayEnd);
-        //Summon neurosama to check if stuff is visible
-        bool visible = viewport.x > 0 && viewport.x < 1 && viewport.y > 0 && viewport.y < 1;
-
-        //no point doing a raycast if item isn't on screen
+        Vector3 viewport = Camera.main!.WorldToViewportPoint(rayEnd);
+        bool visible = viewport.x is > 0 and < 1 && viewport.y is > 0 and < 1;
         if (!visible) return false;
 
         Vector2 ray = rayEnd - rayStart;
-        //fire towards shadowmask, if we hit the objects causing shadows, it's not visible.
+        //fire towards target, if we hit shadowmask, target is not visible.
         RaycastHit2D hit = Physics2D.Raycast(rayStart, ray.normalized, ray.magnitude, Constants.ShadowMask);
 
         return !hit;

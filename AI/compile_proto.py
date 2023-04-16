@@ -79,4 +79,4 @@ def compile_proto_files(input_dir, output_file, protoc_path):
 
 
 if __name__ == "__main__":
-    compile_proto_files("../Neuro", "proto.py", get_protoc_path())
+    compile_proto_files("../Neuro", "data/proto.py", get_protoc_path())

@@ -6,4 +6,5 @@ import "Recording/MyVector2.proto";
 message PositionData {
     float TotalDistance = 1;
     MyVector2 NextNodePosition = 2;
+    MyVector2 NextNodeOffset = 3;
 }
