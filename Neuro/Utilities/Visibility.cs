@@ -13,7 +13,9 @@ public static class Visibility
         if (!visible) return false;
 
         Vector2 ray = rayEnd - rayStart;
+        //fire towards target, if we hit shadowmask, target is not visible.
         RaycastHit2D hit = Physics2D.Raycast(rayStart, ray.normalized, ray.magnitude, Constants.ShadowMask);
+
         return !hit;
     }
 
