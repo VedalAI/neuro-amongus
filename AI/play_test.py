@@ -3,7 +3,7 @@ import socket
 import torch
 
 from data.game_data import GameData
-from data.proto import Frame, NnOutput, MyVector2
+from data.proto import Frame, NnOutput, Vector2
 from nn.model import Model
 
 
@@ -39,7 +39,7 @@ def main():
                 output = [float(o) for o in output]
 
                 result = NnOutput()
-                result.desired_move_direction = MyVector2(x=output[0], y=output[1])
+                result.desired_move_direction = Vector2(x=output[0], y=output[1])
 
                 conn.sendall(bytes(result))
 

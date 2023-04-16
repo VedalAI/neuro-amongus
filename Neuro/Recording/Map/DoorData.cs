@@ -1,4 +1,6 @@
-﻿namespace Neuro.Recording.Map;
+﻿using Neuro.Recording.Common;
+
+namespace Neuro.Recording.Map;
 
 public partial class DoorData
 {

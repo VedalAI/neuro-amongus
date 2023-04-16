@@ -1,8 +1,8 @@
 import numpy as np
 
+from data.converter import convert_type
 from data.proto import Frame
 from data.proto_defaults import def_taskdata, def_vector2, def_positiondata, pad_list
-from data.converter import convert_type
 
 
 class GameData:

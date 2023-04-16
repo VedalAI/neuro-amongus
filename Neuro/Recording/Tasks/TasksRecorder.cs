@@ -2,7 +2,6 @@
 using System.Linq;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
-using Neuro.Pathfinding;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;

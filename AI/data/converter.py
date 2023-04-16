@@ -1,6 +1,6 @@
 import numpy as np
 
-from data.proto import TaskData, PositionData, MyVector2
+from data.proto import TaskData, PositionData, Vector2
 
 
 def convert_bool(data):
@@ -34,7 +34,7 @@ def convert_type(data):
         dict: convert_dict,
         PositionData: convert_positiondata,
         TaskData: convert_taskdata,
-        MyVector2: convert_vector2,
+        Vector2: convert_vector2,
     }
 
     for cls, func in type_mapping.items():

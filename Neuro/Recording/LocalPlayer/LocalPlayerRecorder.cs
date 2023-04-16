@@ -1,9 +1,11 @@
 ﻿using System;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
+using Neuro.Recording.Common;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
 
 namespace Neuro.Recording.LocalPlayer;
 
@@ -63,8 +65,8 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     public void RecordReport() => Frame.DidReport = true;
     public void RecordVent() => Frame.DidVent = true;
     public void RecordKill() => Frame.DidKill = true;
-    public void RecordSabotage(SystemTypes type) => Frame.SabotageUsed = (byte) type;
-    public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = (byte) room;
+    public void RecordSabotage(SystemTypes type) => Frame.SabotageUsed = type.ForMessage();
+    public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = room.ForMessage();
 
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted()

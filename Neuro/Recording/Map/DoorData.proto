@@ -1,7 +1,7 @@
 ﻿syntax = "proto3";
 option csharp_namespace = "Neuro.Recording.Map";
 
-import "Recording/PositionData.proto";
+import "Recording/Common/PositionData.proto";
 
 message DoorData {
     PositionData Position = 1;

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Neuro.Minigames;
 using Neuro.Pathfinding;
-using static Neuro.Recording.Tasks.TaskData.Types;
+using Neuro.Recording.Common;
 
 namespace Neuro.Recording.Tasks;
 
@@ -27,13 +26,5 @@ public partial class TaskData
     private static float Closest(Console console)
     {
         return PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, console, console);
-    }
-}
-
-public static class TaskDataExtensions
-{
-    public static TaskType ForMessage(this TaskTypes taskType)
-    {
-        return Enum.TryParse(taskType.ToString(), out TaskType result) ? result : TaskType.Unset;
     }
 }
