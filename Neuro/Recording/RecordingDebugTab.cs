@@ -18,7 +18,7 @@ public sealed class RecordingDebugTab : DebugTab
 
     public override void BuildUI()
     {
-        IndentLabel(0, "Yellow values not reset after each frame like they're supposed to!", Color.yellow);
+        Label(0, "Yellow values not reset after each frame like they're supposed to!", Color.yellow);
         NeuroUtilities.GUILayoutDivider();
         BuildDeadBodiesRecorderUI();
         BuildLocalPlayerRecorderUI();
@@ -29,52 +29,51 @@ public sealed class RecordingDebugTab : DebugTab
     private void BuildDeadBodiesRecorderUI()
     {
         GUILayout.Label(nameof(DeadBodiesFrame));
-        IndentLabel(1, $"{nameof(DeadBodiesFrame.DeadBodies)} ({DeadBodiesRecorder.Instance.Frame.DeadBodies.Count})");
+        Label(1, $"{nameof(DeadBodiesFrame.DeadBodies)} ({DeadBodiesRecorder.Instance.Frame.DeadBodies.Count})");
         foreach (DeadBodyData body in DeadBodiesRecorder.Instance.Frame.DeadBodies)
         {
-            IndentLabel(2, $"- ID({body.ParentId}), P{body.Position}, W({body.NearbyPlayers.Length})");
+            Label(2, $"- ID({body.ParentId}), P{body.Position}, W({body.NearbyPlayers.Length})");
         }
     }
 
     private void BuildLocalPlayerRecorderUI()
     {
         GUILayout.Label(nameof(LocalPlayerFrame));
-        IndentLabel(1, $"{nameof(LocalPlayerFrame.DidReport)}: {LocalPlayerRecorder.Instance.Frame.DidReport}", Color.yellow);
-        IndentLabel(1, $"{nameof(LocalPlayerFrame.DidVent)}: {LocalPlayerRecorder.Instance.Frame.DidVent}", Color.yellow);
-        IndentLabel(1, $"{nameof(LocalPlayerFrame.DidKill)}: {LocalPlayerRecorder.Instance.Frame.DidKill}", Color.yellow);
-        IndentLabel(1, $"{nameof(LocalPlayerFrame.SabotageUsed)}: {LocalPlayerRecorder.Instance.Frame.SabotageUsed}", Color.yellow);
-        IndentLabel(1, $"{nameof(LocalPlayerFrame.DoorsUsed)}: {LocalPlayerRecorder.Instance.Frame.DoorsUsed}", Color.yellow);
+        Label(1, $"{nameof(LocalPlayerFrame.DidReport)}: {LocalPlayerRecorder.Instance.Frame.DidReport}", Color.yellow);
+        Label(1, $"{nameof(LocalPlayerFrame.DidVent)}: {LocalPlayerRecorder.Instance.Frame.DidVent}", Color.yellow);
+        Label(1, $"{nameof(LocalPlayerFrame.DidKill)}: {LocalPlayerRecorder.Instance.Frame.DidKill}", Color.yellow);
+        Label(1, $"{nameof(LocalPlayerFrame.SabotageUsed)}: {LocalPlayerRecorder.Instance.Frame.SabotageUsed}", Color.yellow);
+        Label(1, $"{nameof(LocalPlayerFrame.DoorsUsed)}: {LocalPlayerRecorder.Instance.Frame.DoorsUsed}", Color.yellow);
     }
 
     private void BuildMapRecorderUI()
     {
         GUILayout.Label(nameof(MapFrame));
-        IndentLabel(1, $"{nameof(MapFrame.NearbyDoors)} ({MapRecorder.Instance.Frame.NearbyDoors.Count})");
+        Label(1, $"{nameof(MapFrame.NearbyDoors)} ({MapRecorder.Instance.Frame.NearbyDoors.Count})");
         foreach (DoorData door in MapRecorder.Instance.Frame.NearbyDoors)
         {
-            IndentLabel(2, $"- D({door.Position.TotalDistance:F2}), O({door.IsOpen})");
+            Label(2, $"- D({door.Position.TotalDistance:F2}), O({door.IsOpen})");
         }
-        IndentLabel(1, $"{nameof(MapFrame.NearbyVents)} ({MapRecorder.Instance.Frame.NearbyVents.Count})");
+        Label(1, $"{nameof(MapFrame.NearbyVents)} ({MapRecorder.Instance.Frame.NearbyVents.Count})");
         foreach (VentData vent in MapRecorder.Instance.Frame.NearbyVents)
         {
-            IndentLabel(2, $"- D({vent.Position.TotalDistance:F2})");
+            Label(2, $"- D({vent.Position.TotalDistance:F2})");
         }
     }
 
     private void BuildOtherPlayersRecorderUI()
     {
         GUILayout.Label(nameof(OtherPlayersFrame));
-        IndentLabel(1, $"{nameof(OtherPlayersFrame.LastSeenPlayers)} ({OtherPlayersRecorder.Instance.Frame.LastSeenPlayers.Count})", Color.red);
+        Label(1, $"{nameof(OtherPlayersFrame.LastSeenPlayers)} ({OtherPlayersRecorder.Instance.Frame.LastSeenPlayers.Count})");
         foreach (OtherPlayerData player in OtherPlayersRecorder.Instance.Frame.LastSeenPlayers.OrderBy(d => d.Id))
         {
-            IndentLabel(2, $"- ID({player.Id}), P{player.LastSeenPosition}, T({player.RoundTimeVisible:F2})", Color.red);
+            Label(2, $"- ID({player.Id}), P{player.LastSeenPosition}, T({player.RoundTimeVisible:F2})");
         }
-        IndentLabel(0, "This doesn't work properly, please fix! (Visibility.IsVisible)", Color.red);
     }
 
-    private void IndentLabel(int indent, string label) => IndentLabel(indent, label, GUI.contentColor);
+    private void Label(int indent, string label) => Label(indent, label, GUI.contentColor);
 
-    private void IndentLabel(int indent, string label, Color color)
+    private void Label(int indent, string label, Color color)
     {
         GUILayout.BeginHorizontal();
         GUILayout.Space(20 * indent);
