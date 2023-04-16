@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Callable, List, TypeVar
 
 from data.proto import Vector2, PositionData, TaskData, TaskType
@@ -15,8 +14,8 @@ def def_positiondata():
 
 
 def def_taskdata():
-    return TaskData(id=-1, type=TaskType.None_TaskType, consoles_of_interest=[def_positiondata() for _ in range(3)])
+    return TaskData(id=-1, type=TaskType.None_TaskType, consoles_of_interest=[def_positiondata() for _ in range(2)])
 
 
 def pad_list(lst: List[T], length: int, padding_value: Callable[[], T]):
-    return lst + [deepcopy(padding_value())] * (length - len(lst))
+    return lst + [padding_value() for _ in range(len(lst), length)]

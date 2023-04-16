@@ -7,14 +7,12 @@ from data.proto_defaults import def_taskdata, def_vector2, def_positiondata, pad
 
 class GameData:
     def __init__(self):
-        self.position = def_vector2()
         self.velocity = def_vector2()
         self.tasks = [def_taskdata() for _ in range(10)]
         self.sabotage = def_taskdata()
 
     def update_frame(self, frame: Frame):
         if frame.local_player:
-            self.position = frame.local_player.position
             self.velocity = frame.local_player.velocity
 
         if frame.tasks:

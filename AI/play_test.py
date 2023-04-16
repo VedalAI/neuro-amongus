@@ -35,13 +35,13 @@ def main():
 
                 x = game_data.get_x()
                 x = torch.tensor(x, dtype=torch.float32, device=device)
-                output = model(x).detach().cpu().numpy()
-                output = [float(o) for o in output]
+                y = model(x).detach().cpu().numpy()
+                y = [float(o) for o in y]
 
-                result = NnOutput()
-                result.desired_move_direction = Vector2(x=output[0], y=output[1])
+                output = NnOutput()
+                output.desired_move_direction = Vector2(x=y[0], y=y[1])
 
-                conn.sendall(bytes(result))
+                conn.sendall(bytes(output))
 
 
 if __name__ == "__main__":
