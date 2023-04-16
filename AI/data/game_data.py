@@ -1,7 +1,7 @@
 import numpy as np
 
 from data.proto import Frame
-from data.proto_defaults import def_taskdata, def_vector2, def_positiondata
+from data.proto_defaults import def_taskdata, def_vector2, def_positiondata, pad_list
 from util.converter import convert_type
 
 
@@ -18,11 +18,11 @@ class GameData:
             self.velocity = frame.local_player.velocity
 
         if frame.tasks:
-            self.tasks = [frame.tasks.tasks[i] if i < len(frame.tasks.tasks) else def_taskdata() for i in range(10)]
+            self.tasks = pad_list(frame.tasks.tasks, 10, def_taskdata)
             for task in self.tasks:
-                task.consoles_of_interest = [task.consoles_of_interest[i] if i < len(task.consoles_of_interest) else def_positiondata() for i in range(3)]
+                task.consoles_of_interest = pad_list(task.consoles_of_interest, 3, def_positiondata)
             self.sabotage = frame.tasks.sabotage if frame.tasks.sabotage else def_taskdata()
-            self.sabotage.consoles_of_interest = [self.sabotage.consoles_of_interest[i] if i < len(self.sabotage.consoles_of_interest) else def_positiondata() for i in range(3)]
+            self.sabotage.consoles_of_interest = pad_list(self.sabotage.consoles_of_interest, 3, def_positiondata)
 
     def get_x(self):
         tasks_data = [convert_type(task) for task in self.tasks]

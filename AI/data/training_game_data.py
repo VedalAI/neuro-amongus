@@ -1,4 +1,4 @@
-import copy
+from copy import deepcopy
 
 import numpy as np
 
@@ -15,7 +15,7 @@ class TrainingGameData:
         for frame in frames:
             game_data.update_frame(frame)
             self.states.append(game_data)
-            game_data = copy.deepcopy(game_data)
+            game_data = deepcopy(game_data)
 
     def shuffle(self):
         np.random.shuffle(self.states)
