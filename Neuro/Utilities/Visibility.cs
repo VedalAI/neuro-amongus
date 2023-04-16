@@ -15,8 +15,8 @@ public static class Visibility
         if (!visible) return false;
 
         Vector2 ray = rayEnd - rayStart;
-        //fire towards fog[Illumination], if we hit the fog, it's not visible.
-        RaycastHit2D hit = Physics2D.Raycast(rayStart, ray.normalized, ray.magnitude, 1 << 10);
+        //fire towards shadowmask, if we hit the objects causing shadows, it's not visible.
+        RaycastHit2D hit = Physics2D.Raycast(rayStart, ray.normalized, ray.magnitude, Constants.ShadowMask);
 
         return !hit;
     }
