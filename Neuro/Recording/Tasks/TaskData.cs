@@ -2,6 +2,11 @@
 using Neuro.Minigames;
 using Neuro.Pathfinding;
 using Neuro.Recording.Common;
+using Neuro.Utilities;
+using Neuro.Utilities.Convertors;
+using UnityEngine;
+using Random = System.Random;
+using Vector2 = UnityEngine.Vector2;
 
 namespace Neuro.Recording.Tasks;
 
@@ -21,9 +26,36 @@ public partial class TaskData
                      .OrderBy(Closest).Take(2))
         {
             data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest, consoleOfInterest));
+
+            var path = PathfindingHandler.Instance.GetPath(PlayerControl.LocalPlayer, consoleOfInterest, consoleOfInterest);
+
+            DrawPath(path, consoleOfInterest);
         }
 
         return data;
+    }
+
+    private static void DrawPath(Vector2[] path, IdentifierProvider name)
+    {
+        if (string.IsNullOrEmpty(name)) return;
+
+        GameObject.Destroy(GameObject.Find("Neuro Path " + name));
+        GameObject test = new("Neuro Path " + name);
+        //Info(test.transform);
+        test.transform.position = PlayerControl.LocalPlayer.transform.position;
+
+        LineRenderer renderer = test.AddComponent<LineRenderer>();
+        renderer.positionCount = path.Length;
+        for (int i = 0; i < path.Length; i++)
+        {
+            renderer.SetPosition(i, path[i]);
+        }
+
+        renderer.material = NeuroUtilities.MaskShaderMat;
+        renderer.widthMultiplier = 0.2f;
+
+        Random random = new(name.GetHashCode());
+        renderer.startColor = new Color(random.NextSingle(), random.NextSingle(), random.NextSingle());
     }
 
     private static float Closest(Console console)

@@ -96,6 +96,18 @@ public sealed class PathfindingHandler : MonoBehaviour
         return path[0];
     }
 
+    public Vector2[] GetPath(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
+    {
+        if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
+
+        _thread.RequestPath(start, target, identifier);
+        if (!_thread.TryGetPath(identifier, out Vector2[] path, out _)) return Array.Empty<Vector2>();
+
+        if (path.Length == 0) return Array.Empty<Vector2>();
+
+        return path;
+    }
+
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted()
     {
