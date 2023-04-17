@@ -2,6 +2,7 @@
 using System.IO;
 using Google.Protobuf;
 using Il2CppInterop.Runtime.Attributes;
+using Neuro.Communication.AmongUsAI;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -46,6 +47,13 @@ public sealed class Recorder : MonoBehaviour
         // TODO: We should record meeting data!
         if (MeetingHud.Instance || Minigame.Instance) return;
 
+        if (CommunicationHandler.Instance.IsConnected)
+        {
+            Warning("Connected to socket, stopping Recorder");
+            Destroy(this);
+            return;
+        }
+
         // TODO: Record local impostor data: kill cooldown, venting stuff, etc
         // TODO: Record local player interactions data: opened task, opened door
 
@@ -66,7 +74,7 @@ public sealed class Recorder : MonoBehaviour
     {
         _fileStream.Write(BitConverter.GetBytes(message.CalculateSize()), 0, 4);
         message.WriteTo(_fileStream);
-        Warning(message);
+        // Warning($"Recorded: {message}");
         _fileStream.Flush();
     }
 

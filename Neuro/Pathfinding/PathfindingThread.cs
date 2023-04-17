@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
@@ -51,6 +50,7 @@ public sealed class PathfindingThread : NeuroThread
             try
             {
                 await Task.Delay(250, CancellationToken);
+                Il2CppAttach();
 
                 while (!_queue.IsEmpty)
                 {

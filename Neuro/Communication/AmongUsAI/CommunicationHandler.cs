@@ -23,6 +23,8 @@ public sealed class CommunicationHandler : MonoBehaviour
     private volatile bool _shouldSendHeader = true;
     private bool _shouldSend = true;
 
+    public bool IsConnected => _thread.Socket.Connected;
+
     private void Awake()
     {
         if (Instance)

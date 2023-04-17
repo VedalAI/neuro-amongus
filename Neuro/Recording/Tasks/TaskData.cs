@@ -15,7 +15,10 @@ public partial class TaskData
             Type = task.TaskType.ForMessage(),
         };
 
-        foreach (Console consoleOfInterest in task.FindConsoles()._items.Where(c => c && MinigameHandler.ShouldOpenConsole(c, task.MinigamePrefab, task)).OrderBy(Closest).Take(2))
+        bool minigameHasNoSolver = !MinigameOpenerAttribute.MinigameOpeners.TryGetValue(task.MinigamePrefab.GetIl2CppType().FullName, out _);
+        foreach (Console consoleOfInterest in task.FindConsoles()._items
+                     .Where(c => c && (minigameHasNoSolver || MinigameHandler.ShouldOpenConsole(c, task.MinigamePrefab, task)))
+                     .OrderBy(Closest).Take(2))
         {
             data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest, consoleOfInterest));
         }

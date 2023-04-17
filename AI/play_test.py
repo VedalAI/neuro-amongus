@@ -30,7 +30,7 @@ def main():
                     print("no data")
                     break
 
-                frame = Frame.FromString(data)
+                frame = Frame().parse(data)
                 game_data.update_frame(frame)
 
                 x = game_data.get_x()

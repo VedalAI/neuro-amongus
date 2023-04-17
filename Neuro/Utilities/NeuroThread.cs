@@ -14,7 +14,7 @@ public abstract class NeuroThread
     {
         _thread = new Thread(() =>
         {
-            IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
+            Il2CppAttach();
             RunThread();
         });
         _cancellationTokenSource = new CancellationTokenSource();
@@ -35,6 +35,8 @@ public abstract class NeuroThread
             _cancellationTokenSource.Cancel();
         }
     }
+
+    protected static void Il2CppAttach() => IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
 
     protected abstract void RunThread();
 }

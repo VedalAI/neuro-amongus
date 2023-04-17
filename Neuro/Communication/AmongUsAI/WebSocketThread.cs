@@ -14,7 +14,7 @@ public sealed class WebSocketThread : NeuroThread
     public Socket Socket { get; private set; }
     public event Action OnConnect = delegate { };
 
-    // This method will try connecting every 5s, for as long as the thread is not interrupted.
+    // TODO: Fix thread sometimes being stuck not closing the game
     protected override async void RunThread()
     {
         while (true)
@@ -22,6 +22,7 @@ public sealed class WebSocketThread : NeuroThread
             try
             {
                 await Task.Delay(5000, CancellationToken);
+                Il2CppAttach();
 
                 if (Socket == null || (Socket.Poll(1000, SelectMode.SelectRead) && Socket.Available == 0) || !Socket.Connected)
                 {
@@ -29,6 +30,7 @@ public sealed class WebSocketThread : NeuroThread
                     Socket?.Close();
                     Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     await Socket.ConnectAsync(_endPoint, CancellationToken);
+                    Il2CppAttach();
                     OnConnect?.Invoke();
                 }
             }
