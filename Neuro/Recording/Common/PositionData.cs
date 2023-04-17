@@ -13,7 +13,7 @@ public partial class PositionData
         {
             TotalDistance = PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, position, pathfindingIdentifier),
             NextNodePosition = nextNodePos,
-            NextNodeOffset = nextNodePos - PlayerControl.LocalPlayer.GetTruePosition()
+            NextNodeOffset = (nextNodePos - PlayerControl.LocalPlayer.GetTruePosition()).normalized
         };
     }
 }

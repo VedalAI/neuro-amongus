@@ -25,7 +25,12 @@ class TrainingGameData:
         return TrainingGameData(self.states[:split_index]), TrainingGameData(self.states[split_index:])
 
     def get_x(self):
-        return np.vstack([state.get_x() for state in self.states])
+        # return np.vstack([state.get_x() for state in self.states])
+        # updated to return sequences of states of length 10
+        return np.array([np.vstack([self.states[i + j].get_x() for j in range(10)]) for i in range(len(self.states) - 10)])
+
 
     def get_y(self):
-        return np.vstack([state.get_y() for state in self.states])
+        # return np.vstack([state.get_y() for state in self.states])
+        # updated to the corresponding y value
+        return np.array([self.states[i + 10].get_y() for i in range(len(self.states) - 10)])
