@@ -6,7 +6,7 @@ import numpy as np
 
 from data.game_data import GameData
 from data.proto import Frame, NnOutput, Vector2
-from nn.model import LSTMModel
+from nn.model import LSTMModel, Model
 
 
 def main():
@@ -38,6 +38,9 @@ def main():
                 game_data.update_frame(frame)
 
                 x = game_data.get_x()
+                
+                print(x)
+                
                 x_history.append(x)
                 # max length of 10
                 if len(x_history) > 10:
@@ -47,17 +50,27 @@ def main():
                 while len(x_history) < 10:
                     x_history.insert(0, np.zeros_like(x_history[0]))
                 
-                print(x_history)
+                #print(x_history)
                 #print(np.array([x_history]).shape)
                     
                 x_history_tensor = torch.tensor(np.array([x_history]), dtype=torch.float32, device=device)
                 y = model(x_history_tensor).detach().cpu().numpy()[0]
                 y = [float(o) for o in y]
+                
+                new_y = [0, 0]
+                if y[0] > 0.5:
+                    new_y[0] += 1
+                if y[1] > 0.5:
+                    new_y[0] -= 1
+                if y[2] > 0.5:
+                    new_y[1] += 1
+                if y[3] > 0.5:
+                    new_y[1] -= 1
 
                 output = NnOutput()
-                output.desired_move_direction = Vector2(x=y[0], y=y[1])
+                output.desired_move_direction = Vector2(x=new_y[0], y=new_y[1])
                 
-                print(y)
+                print(new_y)
 
                 conn.sendall(bytes(output))
         # except Exception as e:

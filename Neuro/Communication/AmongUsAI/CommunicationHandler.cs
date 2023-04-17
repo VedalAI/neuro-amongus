@@ -94,6 +94,7 @@ public sealed class CommunicationHandler : MonoBehaviour
     [HideFromIl2Cpp]
     private void HandleOutput(NNOutput output)
     {
+        Info(output);
         MovementHandler.Instance.ForcedMoveDirection = output.DesiredMoveDirection;
     }
 }

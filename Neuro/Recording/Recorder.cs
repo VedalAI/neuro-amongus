@@ -61,7 +61,10 @@ public sealed class Recorder : MonoBehaviour
         if (_fixedUpdateCalls < 5) return;
         _fixedUpdateCalls = 0;
 
-        WriteAndFlush(Frame.Now());
+        Frame frame = Frame.Now();
+        Info(frame.Tasks.Tasks);
+        Info(frame.LocalPlayer.Velocity);
+        WriteAndFlush(frame);
     }
 
     private void OnDestroy()

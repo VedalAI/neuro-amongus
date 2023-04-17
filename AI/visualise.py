@@ -13,13 +13,31 @@ def main():
     
     angles = []
     
-    print(x_data[300])
-    print(y_data[300])
+    print(x_data[5])
+    print(y_data[5])
     
     for i in range(len(x_data)):
         x = x_data[i]
         path = x[-1][0:2]
         y = y_data[i]
+        
+        # y contains 4 values, up down left right
+        # convert them to a vector2 where eg. up + right would be (0.701, 0.701)
+        new_y = [0, 0]
+        if y[0] == 1:
+            new_y[0] += 1
+        if y[1] == 1:
+            new_y[0] -= 1
+        if y[2] == 1:
+            new_y[1] += 1
+        if y[3] == 1:
+            new_y[1] -= 1
+        
+        # normalize
+        length = math.sqrt(new_y[0] * new_y[0] + new_y[1] * new_y[1])
+        if length > 0:
+            new_y[0] /= length
+            new_y[1] /= length
         
         # get angle between path and y
         dot_product = path[0] * y[0] + path[1] * y[1]

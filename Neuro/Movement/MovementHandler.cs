@@ -43,14 +43,14 @@ public sealed class MovementHandler : MonoBehaviour
         if (direction != Vector2.zero) return;
         direction = ForcedMoveDirection.normalized;
 
-        RepeatedField<float> raycastResults = LocalPlayerRecorder.Instance.Frame.RaycastObstacleDistances;
+        /*RepeatedField<float> raycastResults = LocalPlayerRecorder.Instance.Frame.RaycastObstacleDistances;
         for (int i = 0; i < raycastResults.Count; i++)
         {
             if (raycastResults[i] < OBSTACLE_PADDING)
             {
                 direction -= LocalPlayerRecorder.RaycastDirections[i] * (OBSTACLE_PADDING - raycastResults[i]) * 1 / OBSTACLE_PADDING * PADDING_STRENGTH;
             }
-        }
+        }*/
 
         /* TODO: I tried to fix the issues with the obstacle padding but it didn't work for tight corridors
         // if we're close to a wall, add bias to move away from it

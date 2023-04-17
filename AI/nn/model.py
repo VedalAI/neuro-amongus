@@ -12,14 +12,17 @@ class Model(torch.nn.Module):
         # OUTPUTS (2)
         # velocity: 2 floats = 2
 
-        self.fc1 = torch.nn.Linear(28, 128)
+        self.fc1 = torch.nn.Linear(4, 64)
         
-        self.fc2 = torch.nn.Linear(128, 2)
+        self.fc2 = torch.nn.Linear(64, 4)
 
     def forward(self, x):
+        # input is batch x 10 x 4 so we need to flatten it
+        x = x[:, -1, :]
+        
         x = torch.relu(self.fc1(x))
         
-        x = self.fc2(x)
+        x = torch.sigmoid(self.fc2(x))
 
         return x
     
@@ -37,11 +40,11 @@ class LSTMModel(torch.nn.Module):
         self.hidden_dim = 64
         self.layers = 2
 
-        self.fc1 = torch.nn.Linear(4, self.hidden_dim)
+        self.fc1 = torch.nn.Linear(28, self.hidden_dim)
         
         self.lstm = torch.nn.LSTM(self.hidden_dim, self.hidden_dim, self.layers)
         
-        self.fc2 = torch.nn.Linear(self.hidden_dim, 2)
+        self.fc2 = torch.nn.Linear(self.hidden_dim, 4)
 
     def forward(self, x):
         hidden = self.init_hidden(x.shape[1], x.device)
@@ -52,7 +55,7 @@ class LSTMModel(torch.nn.Module):
         
         x = x[:, -1, :]
 
-        x = self.fc2(x)
+        x = torch.sigmoid(self.fc2(x))
         
         return x
         
