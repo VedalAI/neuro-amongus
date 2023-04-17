@@ -1,48 +1,81 @@
-from model import Model
-from dataset import get_x
-import torch
 import socket
-import json
 import os
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+import torch
+import numpy as np
 
-model = Model().to(device)
-model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model.pt"))
+from data.game_data import GameData
+from data.proto import Frame, NnOutput, Vector2
+from nn.model import LSTMModel, Model
 
-model.eval()
 
-# open server on port 6969
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("localhost", 6969))
+def main():
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    model = LSTMModel().to(device)
+    model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model.pt"))
+    model.eval()
 
-while True:
-    server.listen(1)
-    print("Waiting for connection...")
-    conn, addr = server.accept()
-    with conn:
-        print("Connected by", addr)
-        while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            frame = json.loads(data.decode())
-            if "PlayerRecords" in frame:
-                num = len(frame["PlayerRecords"])
-                # ensure there are 14 players
-                while num < 14:
-                    frame["PlayerRecords"][num] = {'Distance': -1, 'RelativeDirection': {'x': 0, 'y': 0}}
-                    num += 1
-            x = get_x([frame])
-            x = torch.tensor(x, dtype=torch.float32, device=device)
-            output = model(x).detach().cpu().numpy()[0]
-            output = [float(o) for o in output]
-            response = { "Direction": {"x": output[0], "y": output[1]},
-                         "Report": output[2] > 0.5,
-                         "Vent": output[3] > 0.5,
-                         "Kill": output[4] > 0.5,
-                         "Sabotage": output[5] > 0.5,
-                         "Doors": output[6] > 0.5
-            }
-            print(response)
-            conn.sendall(json.dumps(response).encode())
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(("localhost", 6969))
+
+    while True:
+        # try:
+        server.listen(1)
+        print("Waiting for connection...")
+        conn, addr = server.accept()
+        with conn:
+            print("Connected by", addr)
+
+            game_data = GameData()
+            x_history = []
+            while True:
+                data = conn.recv(1024)
+                if not data:
+                    print("no data")
+                    break
+
+                frame = Frame().parse(data)
+                game_data.update_frame(frame)
+
+                x = game_data.get_x()
+                
+                print(x)
+                
+                x_history.append(x)
+                # max length of 10
+                if len(x_history) > 10:
+                    x_history.pop(0)
+                    
+                # pad with zeros if not enough data
+                while len(x_history) < 10:
+                    x_history.insert(0, np.zeros_like(x_history[0]))
+                
+                #print(x_history)
+                #print(np.array([x_history]).shape)
+                    
+                x_history_tensor = torch.tensor(np.array([x_history]), dtype=torch.float32, device=device)
+                y = model(x_history_tensor).detach().cpu().numpy()[0]
+                y = [float(o) for o in y]
+                
+                new_y = [0, 0]
+                if y[0] > 0.5:
+                    new_y[0] += 1
+                if y[1] > 0.5:
+                    new_y[0] -= 1
+                if y[2] > 0.5:
+                    new_y[1] += 1
+                if y[3] > 0.5:
+                    new_y[1] -= 1
+
+                output = NnOutput()
+                output.desired_move_direction = Vector2(x=new_y[0], y=new_y[1])
+                
+                print(new_y)
+
+                conn.sendall(bytes(output))
+        # except Exception as e:
+        #     print(e)
+
+
+if __name__ == "__main__":
+    main()

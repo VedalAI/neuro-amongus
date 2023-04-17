@@ -1,0 +1,8 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.OtherPlayers";
+
+import "Recording/OtherPlayers/OtherPlayerData.proto";
+
+message OtherPlayersFrame {
+    repeated OtherPlayerData LastSeenPlayers = 1;
+}
