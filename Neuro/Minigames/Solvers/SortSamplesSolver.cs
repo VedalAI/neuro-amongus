@@ -5,9 +5,9 @@ using System.Collections;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SortMinigame))]
-public sealed class SortSamplesSolver : MinigameSolver<SortMinigame>
+public sealed class SortSamplesSolver : GeneralMinigameSolver<SortMinigame>
 {
-    protected override IEnumerator CompleteMinigame(SortMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(SortMinigame minigame, NormalPlayerTask task)
     {
         foreach (var obj in minigame.Objects)
         {
@@ -24,7 +24,7 @@ public sealed class SortSamplesSolver : MinigameSolver<SortMinigame>
                     yield return InGameCursor.Instance.CoMoveTo(minigame.MineralBox); break;
             }
 
-            InGameCursor.Instance.StopHolding();
+            InGameCursor.Instance.StopHoldingLMB();
         }
     }
 }

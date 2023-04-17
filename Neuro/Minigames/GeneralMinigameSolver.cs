@@ -6,5 +6,8 @@ public abstract class GeneralMinigameSolver<TMinigame> : IMinigameSolver<TMiniga
     where TMinigame : Minigame
 {
     public abstract IEnumerator CompleteMinigame(TMinigame minigame, NormalPlayerTask task);
-    public bool ShouldOpenConsole(Console console, TMinigame minigame, NormalPlayerTask task) => true;
+    public bool ShouldOpenConsole(Console console, TMinigame minigame, NormalPlayerTask task)
+    {
+        return (task.TimerStarted != NormalPlayerTask.TimerState.Started) && !task.IsComplete;
+    }
 }
