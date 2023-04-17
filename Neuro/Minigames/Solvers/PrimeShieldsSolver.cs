@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(ShieldMinigame))]
-public sealed class PrimeShieldsSolver : MinigameSolver<ShieldMinigame>
+public sealed class PrimeShieldsSolver : GeneralMinigameSolver<ShieldMinigame>
 {
-    protected override IEnumerator CompleteMinigame(ShieldMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(ShieldMinigame minigame, NormalPlayerTask task)
     {
         for (int i = 0; i < minigame.Shields.Count; i++)
         {
@@ -15,9 +16,8 @@ public sealed class PrimeShieldsSolver : MinigameSolver<ShieldMinigame>
             {
                 yield return InGameCursor.Instance.CoMoveTo(minigame.Shields[i].transform.position);
                 minigame.ToggleShield(i);
-                yield return Sleep(0.1f);
+                yield return new WaitForSeconds(0.1f);
             }
         }
     }
 }
-

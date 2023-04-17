@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Il2CppInterop.Runtime;
+using BepInEx.Unity.IL2CPP.Utils;
 using Neuro.Cursor;
 using UnityEngine;
 
@@ -11,21 +9,27 @@ namespace Neuro.Minigames;
 
 public static class MinigameHandler
 {
-    static MinigameHandler()
+    public static void TryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
-        MinigameSolvers = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => t.GetCustomAttribute<MinigameSolverAttribute>() is { })
-            .Where(t => t.IsAssignableTo(typeof(MinigameSolver)))
-            .Select(solverType => (solverType.GetCustomAttribute<MinigameSolverAttribute>()!.Types, solverType))
-            .SelectMany(t => t.Types.Select(type => (type, Activator.CreateInstance(t.solverType))))
-            .ToDictionary(t => Il2CppType.From(t.type).FullName, t => (MinigameSolver) t.Item2);
+        GameObject coroutineObject = new("Minigame Solver");
+        coroutineObject.transform.parent = minigame.transform;
+
+        // DivertPowerMetagame doesn't run any logic by itself
+        MonoBehaviour coroutineBehaviour = coroutineObject.AddComponent<DivertPowerMetagame>();
+        coroutineBehaviour.StartCoroutine(CoTryCompleteMinigame(minigame, task));
     }
 
-    private static readonly Dictionary<string, MinigameSolver> MinigameSolvers;
-
-    public static IEnumerator TryCompleteMinigame(Minigame minigame, PlayerTask task)
+    public static bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task)
     {
-        if (!MinigameSolvers.TryGetValue(minigame.GetIl2CppType().FullName, out MinigameSolver solver))
+        if (!MinigameOpenerAttribute.MinigameOpeners.TryGetValue(minigame.GetIl2CppType().FullName, out List<IMinigameOpener> openers))
+            return false;
+
+        return openers.Any(o => o.ShouldOpenConsole(console, minigame, task));
+    }
+
+    private static IEnumerator CoTryCompleteMinigame(Minigame minigame, PlayerTask task)
+    {
+        if (!MinigameSolverAttribute.MinigameSolvers.TryGetValue(minigame.GetIl2CppType().FullName, out IMinigameSolver solver))
         {
             Warning($"Cannot solve minigame of type {minigame.GetIl2CppType().FullName}");
             yield break;

@@ -1,0 +1,12 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.Common";
+
+enum RoleType {
+    None_RoleType = 0;
+    Crewmate = 1;
+    Impostor = 2;
+    Scientist = 3;
+    Engineer = 4;
+    GuardianAngel = 5;
+    Shapeshifter = 6;
+}

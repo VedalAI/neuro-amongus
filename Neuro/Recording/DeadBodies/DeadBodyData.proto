@@ -1,0 +1,11 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.DeadBodies";
+
+import "Recording/Common/Vector2.proto";
+
+message DeadBodyData {
+    uint32 ParentId = 1;
+    Vector2 Position = 2;
+    float FirstSeenTime = 3;
+    bytes NearbyPlayers = 4;
+}

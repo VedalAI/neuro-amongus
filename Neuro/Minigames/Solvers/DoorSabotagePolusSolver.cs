@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
-[MinigameSolver(typeof(DoorBreakerGame))]
-public sealed class DoorSabotagePolusSolver : TasklessMinigameSolver<DoorBreakerGame>
+[MinigameSolver(typeof(DoorBreakerGame), false)]
+public sealed class DoorSabotagePolusSolver : IMinigameSolver<DoorBreakerGame>
 {
-    protected override IEnumerator CompleteMinigame(DoorBreakerGame minigame)
+    public IEnumerator CompleteMinigame(DoorBreakerGame minigame)
     {
         foreach (SpriteRenderer button in minigame.Buttons)
         {
@@ -15,7 +15,7 @@ public sealed class DoorSabotagePolusSolver : TasklessMinigameSolver<DoorBreaker
             {
                 yield return InGameCursor.Instance.CoMoveTo(button.transform.position + new Vector3(0.35f, 0));
                 minigame.FlipSwitch(button);
-                yield return Sleep(0.1f);
+                yield return new WaitForSeconds(0.1f);
             }
         }
     }

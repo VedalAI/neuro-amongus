@@ -11,8 +11,6 @@ namespace Neuro.Cursor;
 [RegisterInIl2Cpp]
 public sealed class InGameCursor : MonoBehaviour
 {
-    public const float SPEED_MULTIPLER = 15;
-
     public static InGameCursor Instance { get; private set; }
 
     public InGameCursor(IntPtr ptr) : base(ptr) { }
@@ -40,7 +38,7 @@ public sealed class InGameCursor : MonoBehaviour
     {
         if (Instance)
         {
-            Warning("Tried to create an instance of InGameCursor when it already exists");
+            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
@@ -61,7 +59,7 @@ public sealed class InGameCursor : MonoBehaviour
     {
         if (_followTarget)
         {
-            float speed = _followSpeed * SPEED_MULTIPLER;
+            float speed = _followSpeed * 15;
 
             transform.position = (Vector3) Vector2.MoveTowards(Position, _followTarget.position, speed * Time.deltaTime) with {z = transform.position.z};
 
@@ -75,7 +73,7 @@ public sealed class InGameCursor : MonoBehaviour
         {
             if (!_clickCondition())
             {
-                StopHolding();
+                StopHoldingLMB();
             }
         }
 
@@ -106,7 +104,7 @@ public sealed class InGameCursor : MonoBehaviour
     {
         StopMovement();
 
-        speed *= SPEED_MULTIPLER;
+        speed *= 15; // Do not change this, it will break some tasks like Swipe Card
 
         // if (IsHidden)
         // {
@@ -143,7 +141,7 @@ public sealed class InGameCursor : MonoBehaviour
     public void Hide()
     {
         _hideCondition = null;
-        StopHolding();
+        StopHoldingLMB();
         SnapTo(new Vector2(-5000, -5000));
     }
 
@@ -177,7 +175,16 @@ public sealed class InGameCursor : MonoBehaviour
     [HideFromIl2Cpp]
     public void StartHoldingLMB(Component @lock, Func<bool> whileCondition = null) => StartHoldingLMB(@lock.gameObject, whileCondition);
 
-    public void StopHolding()
+    [HideFromIl2Cpp]
+    public IEnumerator CoPressLMB()
+    {
+        StartHoldingLMB(HudManager.Instance);
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
+        StopHoldingLMB();
+    }
+
+    public void StopHoldingLMB()
     {
         _clickLock = null;
     }

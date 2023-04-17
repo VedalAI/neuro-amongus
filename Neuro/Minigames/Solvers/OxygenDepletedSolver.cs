@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(KeypadGame))]
-public sealed class OxygenDepletedSolver : TasklessMinigameSolver<KeypadGame>
+public sealed class OxygenDepletedSolver : IMinigameSolver<KeypadGame>, IMinigameOpener
 {
-    protected override IEnumerator CompleteMinigame(KeypadGame minigame)
-    {
-        // Important TODO: Fix this. Currently only works on one of the keypads and incorrectly marks completions
+    public bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task) => true;
 
+    public IEnumerator CompleteMinigame(KeypadGame minigame)
+    {
         int[] numbers = Array.ConvertAll(minigame.oxyTask.targetNumber.ToString().ToCharArray(), x => (int)char.GetNumericValue(x));
         UiElement[] buttons = minigame.ControllerSelectable.ToArray();
         foreach (int number in numbers)
@@ -21,7 +22,7 @@ public sealed class OxygenDepletedSolver : TasklessMinigameSolver<KeypadGame>
             else
                 yield return InGameCursor.Instance.CoMoveTo(buttons[number - 1]);
             minigame.ClickNumber(number);
-            yield return Sleep(0.2f);
+            yield return new WaitForSeconds(0.2f);
         }
         yield return InGameCursor.Instance.CoMoveTo(minigame.AcceptButton);
         minigame.Enter();

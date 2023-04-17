@@ -1,0 +1,11 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.Tasks";
+
+import "Recording/Common/PositionData.proto";
+import "Recording/Common/TaskType.proto";
+
+message TaskData {
+    uint32 Id = 1;
+    TaskType Type = 2;
+    repeated PositionData ConsolesOfInterest = 3;
+}
