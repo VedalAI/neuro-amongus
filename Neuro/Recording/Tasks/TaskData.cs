@@ -27,15 +27,15 @@ public partial class TaskData
         {
             data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest, consoleOfInterest));
 
-            var path = PathfindingHandler.Instance.GetPath(PlayerControl.LocalPlayer, consoleOfInterest, consoleOfInterest);
+            //var path = PathfindingHandler.Instance.GetPath(PlayerControl.LocalPlayer, consoleOfInterest, consoleOfInterest);
 
-            DrawPath(path, consoleOfInterest);
+            //DrawPath(path, consoleOfInterest);
         }
 
         return data;
     }
 
-    private static void DrawPath(Vector2[] path, IdentifierProvider name)
+    public static void DrawPath(Vector2[] path, IdentifierProvider name)
     {
         if (string.IsNullOrEmpty(name)) return;
 

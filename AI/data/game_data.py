@@ -10,9 +10,16 @@ class GameData:
         self.velocity = def_vector2()
         self.tasks = [def_taskdata() for _ in range(10)]
         self.sabotage = def_taskdata()
+        self.last_velocity = def_vector2()
 
     def update_frame(self, frame: Frame):
+        if frame.local_player.velocity.x == 0 and frame.local_player.velocity.y == 0:
+            #print("test ignore")
+            return
+        
         if frame.local_player:
+            if self.velocity:
+                self.last_velocity = self.velocity
             self.velocity = frame.local_player.velocity
 
         if frame.tasks:
@@ -24,11 +31,18 @@ class GameData:
 
     def get_x(self):
         tasks_data = [convert_type(task) for task in self.tasks]
+        tasks_data_unsorted = tasks_data.copy()
+        # sort tasks by distance
+        tasks_data.sort(key=lambda x: -x[0])
+        tasks_data = [[task[1], task[2]] for task in tasks_data[:2]]
         sabotage_data = convert_type(self.sabotage)
-
+        
+        velocity_data = convert_type(self.last_velocity)
+        
         return np.hstack([
+            #velocity_data,
             *tasks_data,
-            sabotage_data
+            #sabotage_data
         ])
 
     def get_y(self):
