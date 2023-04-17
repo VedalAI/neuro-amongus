@@ -37,12 +37,12 @@ public sealed class TasksRecorder : MonoBehaviour
         if (MeetingHud.Instance || Minigame.Instance) return;
 
         Frame.Tasks.Clear();
-        foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>())
+        foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>().Where(t => !t.IsComplete))
         {
             Frame.Tasks.Add(TaskData.Create(task));
         }
 
-        PlayerTask sabotage = PlayerControl.LocalPlayer.myTasks._items.FirstOrDefault(PlayerTask.TaskIsEmergency);
+        PlayerTask sabotage = PlayerControl.LocalPlayer.myTasks._items.FirstOrDefault(s => PlayerTask.TaskIsEmergency(s) && !s.IsComplete);
         Frame.Sabotage = sabotage ? TaskData.Create(sabotage) : null;
     }
 
