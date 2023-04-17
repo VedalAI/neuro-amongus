@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(TelescopeGame))]
-public sealed class AlignTelescopeSolver : MinigameSolver<TelescopeGame>
+public sealed class AlignTelescopeSolver : GeneralMinigameSolver<TelescopeGame>
 {
-    protected override IEnumerator CompleteMinigame(TelescopeGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(TelescopeGame minigame, NormalPlayerTask task)
     {
         Transform target = minigame.TargetItem.transform;
 
@@ -31,7 +31,7 @@ public sealed class AlignTelescopeSolver : MinigameSolver<TelescopeGame>
         position.y -= 6;
         yield return InGameCursor.Instance.CoMoveTo(position);
         yield return wait;
-        InGameCursor.Instance.StopHolding();
+        InGameCursor.Instance.StopHoldingLMB();
 
         Vector3 positionDifference;
         do
@@ -42,7 +42,7 @@ public sealed class AlignTelescopeSolver : MinigameSolver<TelescopeGame>
 
             const int SPEED_MULTIPLIER = -8;
             yield return InGameCursor.Instance.CoMoveTo(minigame.Reticle.transform.position + positionDifference.normalized * SPEED_MULTIPLIER);
-            InGameCursor.Instance.StopHolding();
+            InGameCursor.Instance.StopHoldingLMB();
         } while (Mathf.Abs(positionDifference.x) + Mathf.Abs(positionDifference.y) > 2f);
 
         yield return InGameCursor.Instance.CoMoveTo(target);

@@ -4,9 +4,9 @@ using Neuro.Cursor;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(UploadDataGame))]
-public sealed class UploadDataSolver : MinigameSolver<UploadDataGame>
+public sealed class UploadDataSolver : GeneralMinigameSolver<UploadDataGame>
 {
-    protected override IEnumerator CompleteMinigame(UploadDataGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(UploadDataGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Button);
         minigame.Click();

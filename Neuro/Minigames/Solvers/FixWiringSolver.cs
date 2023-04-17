@@ -5,9 +5,9 @@ using Neuro.Cursor;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WireMinigame))]
-public sealed class FixWiringSolver : MinigameSolver<WireMinigame>
+public sealed class FixWiringSolver : GeneralMinigameSolver<WireMinigame>
 {
-    protected override IEnumerator CompleteMinigame(WireMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(WireMinigame minigame, NormalPlayerTask task)
     {
         for (int i = 0; i < minigame.LeftNodes.Count; i++)
         {
@@ -17,7 +17,7 @@ public sealed class FixWiringSolver : MinigameSolver<WireMinigame>
 
             WireNode right = minigame.RightNodes.First(x => x.WireId == minigame.ExpectedWires[i]);
             yield return InGameCursor.Instance.CoMoveTo(right);
-            InGameCursor.Instance.StopHolding();
+            InGameCursor.Instance.StopHoldingLMB();
         }
     }
 }

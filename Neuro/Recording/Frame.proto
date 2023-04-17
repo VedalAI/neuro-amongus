@@ -1,0 +1,18 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Recording";
+
+import "Recording/DeadBodies/DeadBodiesFrame.proto";
+import "Recording/Header/HeaderFrame.proto";
+import "Recording/LocalPlayer/LocalPlayerFrame.proto";
+import "Recording/Map/MapFrame.proto";
+import "Recording/OtherPlayers/OtherPlayersFrame.proto";
+import "Recording/Tasks/TasksFrame.proto";
+
+message Frame {
+    optional DeadBodiesFrame DeadBodies = 1;
+    optional HeaderFrame Header = 2;
+    optional LocalPlayerFrame LocalPlayer = 3;
+    optional MapFrame Map = 4;
+    optional OtherPlayersFrame OtherPlayers = 5;
+    optional TasksFrame Tasks = 6;
+}

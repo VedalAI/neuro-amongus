@@ -1,0 +1,12 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.Header";
+
+import "Recording/Common/MapType.proto";
+import "Recording/Common/RoleType.proto";
+
+message HeaderFrame {
+    MapType map = 1;
+    bool IsImpostor = 2;
+    RoleType Role = 3;
+    repeated uint32 OtherImpostors = 4;
+}

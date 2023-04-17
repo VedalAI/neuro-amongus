@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WaterWheelGame))]
-public class OpenWaterwaysSolver : MinigameSolver<WaterWheelGame>
+public class OpenWaterwaysSolver : GeneralMinigameSolver<WaterWheelGame>
 {
-    protected override IEnumerator CompleteMinigame(WaterWheelGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(WaterWheelGame minigame, NormalPlayerTask task)
     {
         Transform wheelTransform = minigame.Wheel.transform;
         Vector2 wheelPosition = wheelTransform.position;
@@ -26,6 +26,6 @@ public class OpenWaterwaysSolver : MinigameSolver<WaterWheelGame>
             if (!InGameCursor.Instance.IsLeftButtonPressed) InGameCursor.Instance.StartHoldingLMB(wheelTransform);
         } while (wheelTransform.localEulerAngles.z < 358.99f);
 
-        InGameCursor.Instance.StopHolding();
+        InGameCursor.Instance.StopHoldingLMB();
     }
 }

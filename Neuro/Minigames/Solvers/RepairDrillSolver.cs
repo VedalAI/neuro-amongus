@@ -5,9 +5,9 @@ using PowerTools;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(DrillMinigame))]
-public sealed class RepairDrillSolver : MinigameSolver<DrillMinigame>
+public sealed class RepairDrillSolver : GeneralMinigameSolver<DrillMinigame>
 {
-    protected override IEnumerator CompleteMinigame(DrillMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(DrillMinigame minigame, NormalPlayerTask task)
     {
         int buttonIndex = 0;
         while (buttonIndex < minigame.Buttons.Length)
