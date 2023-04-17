@@ -43,7 +43,7 @@ public sealed class PathfindingHandler
             if (ShipStatus.Instance.TryCast<MiraShipStatus>()) gridDensity = 4.404010295867919921875f; // Magic number for Mira
             else if (ShipStatus.Instance.TryCast<PolusShipStatus>()) gridDensity = 4.5252170562744140625f; // Magic number for Polus
             else if (ShipStatus.Instance.TryCast<AirshipStatus>()) gridDensity = 4.333333f; // Magic number for Airship
-            else gridDensity = 4.34f; // Magic number for The Skeld. Don't ask me why I can't TryCast<SkeldShipStatus>()
+            else gridDensity = 4.489812374114990234375f; // Magic number for The Skeld. Don't ask me why I can't TryCast<SkeldShipStatus>()
         }
 
         if (!overrideGridBaseWidth)
@@ -51,7 +51,7 @@ public sealed class PathfindingHandler
             if (ShipStatus.Instance.TryCast<MiraShipStatus>()) gridBaseWidth = 80; // Min width for Mira
             else if (ShipStatus.Instance.TryCast<PolusShipStatus>()) gridBaseWidth = 96; // Min width for Polus
             else if (ShipStatus.Instance.TryCast<AirshipStatus>()) gridBaseWidth = 100; // Min width for Airship. Needs verification after ladders
-            else gridBaseWidth = 59; // Min width for Skeld
+            else gridBaseWidth = 58; // Min width for Skeld
         }
 
         gridSize = (int)(gridBaseWidth * gridDensity);
