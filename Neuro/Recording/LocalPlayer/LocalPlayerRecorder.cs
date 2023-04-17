@@ -52,6 +52,8 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
         Frame.Position = PlayerControl.LocalPlayer.GetTruePosition();
         Frame.Velocity = PlayerControl.LocalPlayer.MyPhysics.Velocity; // TODO: Velocity depends on player speed game setting
 
+        Warning("Current velocity: " + ((Vector2)Frame.Velocity).normalized);
+
         for (int i = 0; i < 8; i++)
         {
             Physics2D.queriesHitTriggers = false;
