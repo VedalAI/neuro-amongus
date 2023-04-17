@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using Neuro.Utilities;
 
 namespace Neuro.Communication.AmongUsAI;
@@ -14,27 +15,27 @@ public sealed class WebSocketThread : NeuroThread
     public event Action OnConnect = delegate { };
 
     // This method will try connecting every 5s, for as long as the thread is not interrupted.
-    protected override void RunThread()
+    protected override async void RunThread()
     {
         while (true)
         {
             try
             {
-                Thread.Sleep(5000);
+                await Task.Delay(5000, CancellationToken);
 
                 if (Socket == null || (Socket.Poll(1000, SelectMode.SelectRead) && Socket.Available == 0) || !Socket.Connected)
                 {
                     Warning("Connecting to socket");
                     Socket?.Close();
                     Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    Socket.Connect(_endPoint);
+                    await Socket.ConnectAsync(_endPoint, CancellationToken);
                     OnConnect?.Invoke();
                 }
             }
-            catch (ThreadInterruptedException)
+            catch (OperationCanceledException)
             {
-                Socket!.Shutdown(SocketShutdown.Both);
-                Socket.Close();
+                Socket?.Shutdown(SocketShutdown.Both);
+                Socket?.Close();
                 return;
             }
             catch (SocketException e)

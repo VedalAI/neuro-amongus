@@ -25,6 +25,7 @@ def deserialize_gymbag(file_path: str) -> List[Frame]:
     return frames
 
 
+# TODO: Improve speed of reading recordings
 def read_all_recordings() -> TrainingGameData:
     result = TrainingGameData()
 

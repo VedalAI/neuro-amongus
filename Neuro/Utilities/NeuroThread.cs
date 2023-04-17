@@ -5,7 +5,10 @@ namespace Neuro.Utilities;
 
 public abstract class NeuroThread
 {
-    protected Thread _thread { get; private set; }
+    private readonly Thread _thread;
+    private readonly CancellationTokenSource _cancellationTokenSource;
+
+    protected CancellationToken CancellationToken => _cancellationTokenSource.Token;
 
     protected NeuroThread()
     {
@@ -14,6 +17,7 @@ public abstract class NeuroThread
             IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
             RunThread();
         });
+        _cancellationTokenSource = new CancellationTokenSource();
     }
 
     public void Start()
@@ -26,9 +30,9 @@ public abstract class NeuroThread
 
     public void Stop()
     {
-        if (_thread.IsAlive)
+        if (_thread.IsAlive && !_cancellationTokenSource.IsCancellationRequested)
         {
-            _thread.Interrupt();
+            _cancellationTokenSource.Cancel();
         }
     }
 

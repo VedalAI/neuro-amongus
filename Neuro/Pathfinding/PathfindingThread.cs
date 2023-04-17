@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
 using UnityEngine;
@@ -43,13 +44,13 @@ public sealed class PathfindingThread : NeuroThread
         return tried;
     }
 
-    protected override void RunThread()
+    protected override async void RunThread()
     {
         while (true)
         {
             try
             {
-                Thread.Sleep(250);
+                await Task.Delay(250, CancellationToken);
 
                 while (!_queue.IsEmpty)
                 {
@@ -60,10 +61,10 @@ public sealed class PathfindingThread : NeuroThread
                     Vector2[] path = FindPath(vec.start, vec.target);
                     _results[identifier] = (vec.start, vec.target, path, CalculateLength(path));
 
-                    Thread.Yield();
+                    CancellationToken.ThrowIfCancellationRequested();
                 }
             }
-            catch (ThreadInterruptedException)
+            catch (OperationCanceledException)
             {
                 return;
             }
