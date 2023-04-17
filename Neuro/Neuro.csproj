@@ -13,7 +13,6 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         
         <ILRepackTargetConfigurations>Debug;Release</ILRepackTargetConfigurations>
-        <OutputPath>V:\SteamLibrary\steamapps\common\Among Us\BepInEx\plugins</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
