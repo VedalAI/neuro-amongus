@@ -7,8 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(StartFansMinigame))]
 public sealed class StartFansSolver : IMinigameSolver<StartFansMinigame, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
 {
-    private static Sprite[] codeSprites = new Sprite[4];
-    private static Console codeConsole;
+    private Sprite[] codeSprites = new Sprite[4];
+    private Console codeConsole;
 
     public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
