@@ -13,29 +13,26 @@ public sealed class RewindTapesSolver : GeneralMinigameSolver<RewindTapeMinigame
         {
             yield return InGameCursor.Instance.CoMoveTo(minigame.RewindButton);
             minigame.Rewind();
-            yield return InGameCursor.Instance.CoMoveTo(minigame.PlayButton);
+            yield return new WaitForSeconds(0.5f);
+            yield return InGameCursor.Instance.CoMoveTo(minigame.PlayButton, 0.5f);
 
-            // overshoot a little when rewinding to make it a bit more realistic
-            while (minigame.currentTime - minigame.targetTime > -5f)
-                yield return null;
+            while (minigame.currentTime - minigame.targetTime > -2.5f) yield return null;
         }
         else
         {
             yield return InGameCursor.Instance.CoMoveTo(minigame.FastFwdButton);
             minigame.FastForward();
-            yield return InGameCursor.Instance.CoMoveTo(minigame.PlayButton);
+            yield return new WaitForSeconds(0.5f);
+            yield return InGameCursor.Instance.CoMoveTo(minigame.PlayButton, 0.5f);
 
-            // stop a bit before the target time to make it a bit more realistic
-            while (Mathf.Abs(minigame.targetTime - minigame.currentTime) > 5f)
-                yield return null;
+            while (minigame.targetTime - minigame.currentTime > 2.5f) yield return null;
         }
 
         minigame.Play();
-        yield return InGameCursor.Instance.CoMoveTo(minigame.PauseButton);
+        yield return new WaitForSeconds(0.5f);
+        yield return InGameCursor.Instance.CoMoveTo(minigame.PauseButton, 0.5f);
 
-        // stops a second before the actual time, but this is how the game checks for it so /shrug?
-        while (Mathf.Abs(minigame.targetTime - minigame.currentTime) > 1f)
-            yield return null;
+        while (minigame.targetTime - minigame.currentTime > -0.25f) yield return null;
 
         minigame.Pause();
     }
