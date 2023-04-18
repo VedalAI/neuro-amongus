@@ -43,6 +43,7 @@ public sealed class StartFansSolver : IMinigameSolver<StartFansMinigame, NormalP
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.mainCodeButton);
         minigame.RevealCode();
+        yield return new WaitForSeconds(0.25f);
         for (int index = 0; index < minigame.CodeIcons.Count; index++)
         {
             // check if this button is already set
@@ -52,7 +53,7 @@ public sealed class StartFansSolver : IMinigameSolver<StartFansMinigame, NormalP
             while (minigame.CodeIcons[index].sprite != codeSprites[index])
             {
                 minigame.RotateImage(minigame.CodeIcons[index]);
-                yield return new WaitForSeconds(0.33f);
+                yield return new WaitForSeconds(0.5f);
             }
         }
     }

@@ -19,6 +19,7 @@ public sealed class PickUpTowelsSolver : GeneralMinigameSolver<TowelMinigame>
             yield return new WaitForSeconds(0.25f);
             yield return InGameCursor.Instance.CoMoveTo(minigame.BasketHitbox);
             InGameCursor.Instance.StopHoldingLMB();
+            yield return new WaitForSeconds(0.25f);
         }
     }
 }
