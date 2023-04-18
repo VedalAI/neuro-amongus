@@ -41,7 +41,7 @@ public sealed class MovementHandler : MonoBehaviour
     public void GetForcedMoveDirection(ref Vector2 direction)
     {
         if (direction != Vector2.zero) return;
-        direction = ForcedMoveDirection.normalized;
+        direction = ForcedMoveDirection.normalized; // TODO: We need to adjust this based on player speed setting
 
         /*RepeatedField<float> raycastResults = LocalPlayerRecorder.Instance.Frame.RaycastObstacleDistances;
         for (int i = 0; i < raycastResults.Count; i++)
