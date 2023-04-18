@@ -1,29 +1,40 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
 using UnityEngine;
+using static NormalPlayerTask;
 
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(PhotosMinigame))]
 public class DevelopPhotosSolver : GeneralMinigameSolver<PhotosMinigame>
 {
+    public override bool ShouldOpenConsole(Console console, PhotosMinigame minigame, NormalPlayerTask task)
+    {
+        return task.TimerStarted is TimerState.NotStarted or TimerState.Finished;
+    }
+
     public override IEnumerator CompleteMinigame(PhotosMinigame minigame, NormalPlayerTask task)
     {
-        if (task.TimerStarted == NormalPlayerTask.TimerState.NotStarted) yield return CompleteStage1(minigame);
-        else if (task.TimerStarted == NormalPlayerTask.TimerState.Finished) yield return CompleteStage2(minigame);
-        else
+        switch (task.TimerStarted)
         {
-            yield return new WaitForSeconds(0.5f);
-            minigame.Close();
+            case TimerState.NotStarted:
+                yield return CompleteStep1(minigame);
+                break;
+            case TimerState.Finished:
+                yield return CompleteStep2(minigame);
+                break;
+            default:
+                yield return minigame.CoStartClose(0.5f);
+                yield break;
         }
     }
 
-    private IEnumerator CompleteStage1(PhotosMinigame minigame)
+    private IEnumerator CompleteStep1(PhotosMinigame minigame)
     {
         foreach (GamePhotoBehaviour photo in minigame.photos)
         {
             yield return InGameCursor.Instance.CoMoveTo(photo);
-            InGameCursor.Instance.StartHoldingLMB(photo);
+            InGameCursor.Instance.StartHoldingLMB(minigame);
             Bounds bounds = minigame.PoolHitbox.bounds;
             float xOffset = Random.Range(bounds.center.x - 1, bounds.center.x + 1);
             float yOffset = Random.Range(bounds.center.y - 1, bounds.center.y + 1);
@@ -33,12 +44,12 @@ public class DevelopPhotosSolver : GeneralMinigameSolver<PhotosMinigame>
         }
     }
 
-    private IEnumerator CompleteStage2(PhotosMinigame minigame)
+    private IEnumerator CompleteStep2(PhotosMinigame minigame)
     {
         foreach (GamePhotoBehaviour photo in minigame.photos)
         {
             yield return InGameCursor.Instance.CoMoveTo(photo);
-            InGameCursor.Instance.StartHoldingLMB(photo);
+            InGameCursor.Instance.StartHoldingLMB(minigame);
             Rect bounds = minigame.PolaroidBounds;
             Vector2 position = new(bounds.xMin, Random.Range(bounds.yMin, bounds.yMax));
             yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(position));
