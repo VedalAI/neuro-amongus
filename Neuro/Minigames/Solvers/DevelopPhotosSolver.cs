@@ -6,14 +6,14 @@ using static NormalPlayerTask;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(PhotosMinigame))]
-public class DevelopPhotosSolver : GeneralMinigameSolver<PhotosMinigame>
+public class DevelopPhotosSolver : IMinigameSolver<PhotosMinigame, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
 {
-    public override bool ShouldOpenConsole(Console console, PhotosMinigame minigame, NormalPlayerTask task)
+    public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
         return task.TimerStarted is TimerState.NotStarted or TimerState.Finished;
     }
 
-    public override IEnumerator CompleteMinigame(PhotosMinigame minigame, NormalPlayerTask task)
+    public IEnumerator CompleteMinigame(PhotosMinigame minigame, NormalPlayerTask task)
     {
         switch (task.TimerStarted)
         {
@@ -24,7 +24,7 @@ public class DevelopPhotosSolver : GeneralMinigameSolver<PhotosMinigame>
                 yield return CompleteStep2(minigame);
                 break;
             default:
-                yield return minigame.CoStartClose(0.5f);
+                minigame.CoStartClose(0.5f);
                 yield break;
         }
     }

@@ -1,50 +1,52 @@
 ﻿using System.Collections;
-using System.Linq;
 using Neuro.Cursor;
 using UnityEngine;
+using static SampleMinigame;
 
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SampleMinigame))]
-public class InspectSampleSolver : GeneralMinigameSolver<SampleMinigame>
+public class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMinigameOpener<Minigame, NormalPlayerTask>
 {
-    public override IEnumerator CompleteMinigame(SampleMinigame minigame, NormalPlayerTask task)
+    public bool ShouldOpenConsole(Console console, Minigame minigame, NormalPlayerTask task)
     {
-        // when you first open the task, the state will actually be PrepareSample, not AwaitingStart
-        // therefore we have to handle it here
-        if (minigame.State == SampleMinigame.States.PrepareSample) yield return CompleteStage1(minigame);
-        else if (minigame.State == SampleMinigame.States.Selection) yield return CompleteStage2(minigame);
-        else
+        States state = (States) task.Data[0];
+        return state == States.PrepareSample || (state == States.Processing && task.TaskTimer <= 0);
+    }
+
+    public IEnumerator CompleteMinigame(SampleMinigame minigame)
+    {
+        switch (minigame.State)
         {
-            yield return new WaitForSeconds(0.5f);
-            minigame.Close();
+            case States.PrepareSample:
+                yield return CompleteStage1(minigame);
+                break;
+            case States.Selection:
+                yield return CompleteStage2(minigame);
+                break;
+            default:
+                minigame.CoStartClose(0.5f);
+                yield break;
         }
     }
 
     private IEnumerator CompleteStage1(SampleMinigame minigame)
     {
-        // wait a bit for SampleMinigame.BringPanelUp to finish. if the game is just starting, then the state will be corrected after this function is called
-        yield return new WaitForSeconds(1f);
-        if (minigame.State == SampleMinigame.States.AwaitingStart)
-        {
-            SpriteRenderer startButton = minigame.LowerButtons.First(l => l.name == "medBay_buttonConfirm");
-            yield return InGameCursor.Instance.CoMoveTo(startButton);
-            minigame.NextStep();
-            yield return new WaitForSeconds(2f);
-            minigame.Close();
-        }
-        else
-        {
-            // if not, we somehow closed the minigame during the selection animation
-            yield return new WaitForSeconds(0.5f);
-            minigame.Close();
-        }
+        // wait for SampleMinigame.BringPanelUp to finish
+        while (minigame.State != States.AwaitingStart) yield return null;
+
+        yield return InGameCursor.Instance.CoMoveTo(minigame.LowerButtons[0]);
+        yield return InGameCursor.Instance.CoPressLMB();
+
+        // CoStartClose doesn't work here, probably because the minigame does StopAllCoroutines(?)
+        yield return new WaitForSeconds(0.75f);
+        minigame.Close();
     }
 
     private IEnumerator CompleteStage2(SampleMinigame minigame)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         yield return InGameCursor.Instance.CoMoveTo(minigame.Buttons[minigame.AnomalyId]);
-        minigame.SelectTube(minigame.AnomalyId);
+        yield return InGameCursor.Instance.CoPressLMB();
     }
 }
