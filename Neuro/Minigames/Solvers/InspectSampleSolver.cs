@@ -36,7 +36,7 @@ public sealed class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMini
         while (minigame.State != States.AwaitingStart) yield return null;
 
         yield return InGameCursor.Instance.CoMoveTo(minigame.LowerButtons[0]);
-        yield return InGameCursor.Instance.CoPressLMB();
+        minigame.NextStep();
 
         // CoStartClose doesn't work here, probably because the minigame does StopAllCoroutines(?)
         yield return new WaitForSeconds(0.75f);
@@ -47,6 +47,6 @@ public sealed class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMini
     {
         yield return new WaitForSeconds(0.5f);
         yield return InGameCursor.Instance.CoMoveTo(minigame.Buttons[minigame.AnomalyId]);
-        yield return InGameCursor.Instance.CoPressLMB();
+        minigame.SelectTube(minigame.AnomalyId);
     }
 }
