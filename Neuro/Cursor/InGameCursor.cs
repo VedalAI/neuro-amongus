@@ -130,6 +130,7 @@ public sealed class InGameCursor : MonoBehaviour
         }
 
         SnapTo(targetPosition);
+        yield return null;
     }
 
     [HideFromIl2Cpp]
