@@ -11,3 +11,13 @@ public static class PlayerControl_CmdReportDeadBody
         LocalPlayerRecorder.Instance.RecordReport();
     }
 }
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckMurder))]
+public static class PlayerControl_CmdCheckMurder
+{
+    [HarmonyPostfix]
+    public static void Postfix()
+    {
+        LocalPlayerRecorder.Instance.RecordKill();
+    }
+}

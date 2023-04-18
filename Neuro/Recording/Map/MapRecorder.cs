@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Neuro.Communication.AmongUsAI;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Pathfinding;
 using Neuro.Utilities;
@@ -12,7 +10,7 @@ using UnityEngine;
 namespace Neuro.Recording.Map;
 
 [RegisterInIl2Cpp]
-public sealed class MapRecorder : MonoBehaviour, ISerializable
+public sealed class MapRecorder : MonoBehaviour
 {
     public static MapRecorder Instance { get; private set; }
 
@@ -20,19 +18,8 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    public List<DoorData> NearbyDoors { get; } = new();
-    public List<VentData> NearbyVents { get; } = new();
-
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(NearbyDoors.Count);
-        foreach (DoorData door in NearbyDoors)
-            door.Serialize(writer);
-
-        writer.Write(NearbyVents.Count);
-        foreach (VentData vent in NearbyVents)
-            vent.Serialize(writer);
-    }
+    [HideFromIl2Cpp]
+    public MapFrame Frame { get; } = new();
 
     private void Awake()
     {
@@ -48,7 +35,7 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance) return;
 
         UpdateNearbyDoors();
         UpdateNearbyVents();
@@ -56,19 +43,19 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
 
     private void UpdateNearbyDoors()
     {
-        NearbyDoors.Clear();
+        Frame.NearbyDoors.Clear();
         foreach (PlainDoor door in ShipStatus.Instance.AllDoors.OrderBy(Closest).Take(3))
         {
-            NearbyDoors.Add(DoorData.Create(door));
+            Frame.NearbyDoors.Add(DoorData.Create(door));
         }
     }
 
     private void UpdateNearbyVents()
     {
-        NearbyVents.Clear();
+        Frame.NearbyVents.Clear();
         foreach (Vent vent in ShipStatus.Instance.AllVents.OrderBy(Closest).Take(3))
         {
-            NearbyVents.Add(VentData.Create(vent));
+            Frame.NearbyVents.Add(VentData.Create(vent));
         }
     }
 
@@ -83,8 +70,8 @@ public sealed class MapRecorder : MonoBehaviour, ISerializable
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<MapRecorder>();
+        ShipStatus.Instance.gameObject.AddComponent<MapRecorder>();
     }
 }

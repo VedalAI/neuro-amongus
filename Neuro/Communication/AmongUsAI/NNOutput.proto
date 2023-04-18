@@ -1,0 +1,9 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Communication.AmongUsAI";
+
+import "Recording/Common/Vector2.proto";
+
+// TODO: Include more data in the neural network output
+message NNOutput {
+    Vector2 DesiredMoveDirection = 1;
+}

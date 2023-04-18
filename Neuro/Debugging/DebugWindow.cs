@@ -12,6 +12,7 @@ public sealed class DebugWindow : MonoBehaviour
     private DebugTab _selectedTab;
     private bool _enabled = true;
     private readonly DragWindow _window;
+    private Vector2 positionOnScrollbar = Vector2.zero;
 
     private int _frameCount;
     private float _fpsUpdateTime;
@@ -35,18 +36,31 @@ public sealed class DebugWindow : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F1)) _enabled = !_enabled;
         if (DebugTabAttribute.Tabs.Count == 0) _enabled = false;
+
+        foreach (DebugTab tab in DebugTabAttribute.Tabs)
+        {
+            bool isEnabled = tab.IsEnabled;
+
+            if (isEnabled && !tab.LastEnabled) tab.OnEnable();
+            if (!isEnabled && tab.LastEnabled) tab.OnDisable();
+            if (isEnabled) tab.Update();
+
+            tab.LastEnabled = isEnabled;
+        }
+    }
+
+    private void Awake()
+    {
+        foreach (DebugTab tab in DebugTabAttribute.Tabs)
+        {
+            tab.Awake();
+        }
     }
 
     private void OnGUI()
     {
         if (!_enabled) return;
-
         _window.OnGUI();
-
-        if (_selectedTab is { IsEnabled: true })
-        {
-            _selectedTab.OnGUI();
-        }
     }
 
     private void BuildWindow()
@@ -72,6 +86,8 @@ public sealed class DebugWindow : MonoBehaviour
                 if (isSelected != GUILayout.Toggle(isSelected, tab.Name, GUI.skin.button))
                 {
                     _selectedTab = !isSelected ? tab : null;
+                    //New tab selected, reset the scrollbar position.
+                    positionOnScrollbar = Vector2.zero;
                 }
 
                 if (tabHidden) GUI.enabled = true;
@@ -81,8 +97,12 @@ public sealed class DebugWindow : MonoBehaviour
 
             if (_selectedTab is { IsEnabled: true })
             {
+                //Create header for our tab
                 NeuroUtilities.GUILayoutDivider();
-                _selectedTab?.BuildUI();
+                //Create a scrollbarview for all tabs that suddenly become bigger than what fits.
+                positionOnScrollbar = GUILayout.BeginScrollView(positionOnScrollbar, GUILayout.Height(Screen.height/2));
+                  _selectedTab?.BuildUI();  //Build UI.
+                GUILayout.EndScrollView();
             }
 
             GUILayout.EndVertical();

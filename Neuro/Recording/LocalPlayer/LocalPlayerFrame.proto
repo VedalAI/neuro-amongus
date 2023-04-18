@@ -1,0 +1,16 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.LocalPlayer";
+
+import "Recording/Common/SystemType.proto";
+import "Recording/Common/Vector2.proto";
+
+message LocalPlayerFrame {
+    bool DidReport = 1;
+    bool DidVent = 2;
+    bool DidKill = 3;
+    SystemType SabotageUsed = 4;
+    SystemType DoorsUsed = 5;
+    repeated float RaycastObstacleDistances = 6;
+    Vector2 Position = 7;
+    Vector2 Velocity = 8;
+}

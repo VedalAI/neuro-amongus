@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
@@ -21,9 +22,7 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public static PathfindingHandler Instance { get; private set; }
 
-    public PathfindingHandler(IntPtr ptr) : base(ptr)
-    {
-    }
+    public PathfindingHandler(IntPtr ptr) : base(ptr) { }
 
     private PathfindingThread _thread;
 
@@ -47,6 +46,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         _thread.Stop();
     }
 
+    [HideFromIl2Cpp]
     private Node[,] GenerateNodeGrid()
     {
         Node[,] grid = new Node[GRID_SIZE, GRID_SIZE];
@@ -58,7 +58,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         {
             Vector2 point = new(x / GRID_DENSITY, y / GRID_DENSITY);
 
-            Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, LayerMask.GetMask("Ship", "ShortObjects"));
+            Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, Constants.ShipAndAllObjectsMask);
             int validColsCount = cols.Count(col =>
                 !col.isTrigger &&
                 !col.GetComponentInParent<Vent>() &&
@@ -76,7 +76,7 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public float GetPathLength(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
-        if (string.IsNullOrEmpty(identifier)) return float.MaxValue;
+        if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
 
         _thread.RequestPath(start, target, identifier);
         if (!_thread.TryGetPath(identifier, out _, out float length)) return -1;
@@ -86,7 +86,7 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public Vector2 GetFirstNodeInPath(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
-        if (string.IsNullOrEmpty(identifier)) return default;
+        if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
 
         _thread.RequestPath(start, target, identifier);
         if (!_thread.TryGetPath(identifier, out Vector2[] path, out _)) return Vector2.zero;
@@ -96,9 +96,21 @@ public sealed class PathfindingHandler : MonoBehaviour
         return path[0];
     }
 
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    public Vector2[] GetPath(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
-        shipStatus.gameObject.AddComponent<PathfindingHandler>();
+        if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
+
+        _thread.RequestPath(start, target, identifier);
+        if (!_thread.TryGetPath(identifier, out Vector2[] path, out _)) return Array.Empty<Vector2>();
+
+        if (path.Length == 0) return Array.Empty<Vector2>();
+
+        return path;
+    }
+
+    [EventHandler(EventTypes.GameStarted)]
+    private static void OnGameStarted()
+    {
+        ShipStatus.Instance.gameObject.AddComponent<PathfindingHandler>();
     }
 }

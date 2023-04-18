@@ -7,16 +7,17 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WeaponsMinigame))]
-public sealed class ClearAsteroidsMinigameSolver : TaskMinigameSolver<WeaponsMinigame>
+public sealed class ClearAsteroidsMinigameSolver : GeneralMinigameSolver<WeaponsMinigame>
 {
-    protected override IEnumerator CompleteMinigame(WeaponsMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(WeaponsMinigame minigame, NormalPlayerTask task)
     {
         InGameCursor.Instance.SnapToCenter();
 
         while (!task.IsComplete)
         {
             Asteroid closest = minigame.asteroidPool.activeChildren.ToArray().OfIl2CppType<Asteroid>()
-                .Where(a => a && a.enabled && a.gameObject.active && a.transform.localPosition.x < 2)
+                .Where(a => a && a.enabled && a.gameObject.active)
+                .Where(a => a.transform.localPosition is {x: < 1.9f, y: > -1.9f and < 1.9f})
                 .MinBy(a => ((Vector2) InGameCursor.Instance.transform.position - (Vector2) a.transform.position).sqrMagnitude);
 
             if (!closest)

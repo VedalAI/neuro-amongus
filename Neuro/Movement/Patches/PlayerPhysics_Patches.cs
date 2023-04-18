@@ -7,8 +7,10 @@ namespace Neuro.Movement.Patches;
 public static class PlayerPhysics_SetNormalizedVelocity
 {
     [HarmonyPrefix]
-    public static void Prefix(ref Vector2 direction)
+    public static void Prefix(PlayerPhysics __instance, ref Vector2 direction)
     {
+        if (!MovementHandler.Instance || !__instance.myPlayer.AmOwner) return;
+
         MovementHandler.Instance.GetForcedMoveDirection(ref direction);
     }
 }

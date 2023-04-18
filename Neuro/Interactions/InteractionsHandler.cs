@@ -30,10 +30,10 @@ public sealed class InteractionsHandler : MonoBehaviour
 
     public void UseTarget(IUsable usable)
     {
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance || usable == null) return;
 
         // TODO: Allow neural network to specifiy intention of interacting with usables
-        switch (usable.Cast<Il2CppSystem.Object>().Il2CppCastToTopLevel())
+        switch (usable.Il2CppCastToTopLevel())
         {
             case Console console:
                 UseConsole(console);
@@ -70,18 +70,21 @@ public sealed class InteractionsHandler : MonoBehaviour
     public void UseConsole(Console console)
     {
         PlayerTask task = console.FindTask(PlayerControl.LocalPlayer);
-        MinigameSolver solver = MinigameHandler.GetMinigameSolver(task.GetMinigamePrefab());
-        if (solver == null) return;
+        Minigame minigame = task.GetMinigamePrefab();
 
-        if (solver.CanUseConsole(console, task))
+        if (MinigameHandler.ShouldOpenConsole(console, minigame, task))
         {
             console.Use();
+        }
+        else
+        {
+            Warning($"Shouldn't open console id {console.ConsoleId} for minigame {task.GetMinigamePrefab().GetIl2CppType().Name}");
         }
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<InteractionsHandler>();
+        ShipStatus.Instance.gameObject.AddComponent<InteractionsHandler>();
     }
 }

@@ -8,7 +8,7 @@ public static class Location
     {
         if (!ShipStatus.Instance) return "the lobby"; // If called from the lobby
 
-        float closestDistance = Mathf.Infinity;
+        float closestDistance = float.MaxValue;
         PlainShipRoom closestLocation = null;
         string nearPrefix = "outside near "; // If we're not in any rooms/hallways, we're "outside"
 

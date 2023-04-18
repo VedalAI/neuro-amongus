@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
+using Google.Protobuf;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Communication.AmongUsAI;
 using Neuro.Events;
-using Neuro.Recording.DeadBodies;
-using Neuro.Recording.Impostor;
-using Neuro.Recording.LocalPlayer;
-using Neuro.Recording.Map;
-using Neuro.Recording.OtherPlayers;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -21,7 +18,8 @@ public sealed class Recorder : MonoBehaviour
 
     public Recorder(IntPtr ptr) : base(ptr) { }
 
-    private List<ISerializable> _recorders = new();
+    private int _fixedUpdateCalls;
+    private FileStream _fileStream;
 
     private void Awake()
     {
@@ -33,54 +31,56 @@ public sealed class Recorder : MonoBehaviour
         }
 
         Instance = this;
-        // EventManager.RegisterHandler(this);
     }
 
     private void Start()
     {
-        _recorders = new List<ISerializable>
-        {
-            DeadBodiesRecorder.Instance,
-            ImpostorRecorder.Instance,
-            LocalPlayerRecorder.Instance,
-            MapRecorder.Instance,
-            OtherPlayersRecorder.Instance
-        };
-    }
+        string recordingsDirectory = Path.Combine(BepInEx.Paths.PluginPath, "NeuroRecordings");
+        if (!Directory.Exists(recordingsDirectory)) Directory.CreateDirectory(recordingsDirectory);
+        _fileStream = new FileStream(Path.Combine(recordingsDirectory, $"{DateTime.Now.ToFileTime()}.gymbag2"), FileMode.Create);
 
-    private int _fixedUpdateCalls = 0;
+        WriteAndFlush(Frame.Now(true));
+    }
 
     private void FixedUpdate()
     {
         // TODO: We should record meeting data!
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
+        if (MeetingHud.Instance || Minigame.Instance) return;
 
-        // TODO: Record map id
-        // TODO: Record all of the tasks
-        // TODO: Record 11th task as emergency
-        // TODO: Record fellow impostors
-        // TODO: Record localplayer velocity
-        // TODO: Raycast for obstacles
+        if (CommunicationHandler.Instance.IsConnected)
+        {
+            Warning("Connected to socket, stopping Recorder");
+            Destroy(this);
+            return;
+        }
+
+        // TODO: Record local impostor data: kill cooldown, venting stuff, etc
+        // TODO: Record local player interactions data: opened task, opened door
 
         _fixedUpdateCalls++;
-        if (_fixedUpdateCalls < 9) return;
+        if (_fixedUpdateCalls < 5) return;
         _fixedUpdateCalls = 0;
 
-        // TODO: Serialize data for writing to file
+        WriteAndFlush(Frame.Now());
     }
 
-    /*[EventHandler(EventTypes.MeetingStarted)]
-    public void WriteData()
+    private void OnDestroy()
     {
-        // If uncommenting this also uncomment EventManager.RegisterHandler(this); in Awake
-        string frameString = JsonSerializer.Serialize(Frames);
-        File.WriteAllText(Path.Combine(BepInEx.Paths.PluginPath, "output.json"), frameString);
-        Info(Path.Combine(BepInEx.Paths.PluginPath, "output.json"));
-    }*/
+        _fileStream.Dispose();
+    }
+
+    [HideFromIl2Cpp]
+    private void WriteAndFlush(IMessage message)
+    {
+        _fileStream.Write(BitConverter.GetBytes(message.CalculateSize()), 0, 4);
+        message.WriteTo(_fileStream);
+        // Warning($"Recorded: {message}");
+        _fileStream.Flush();
+    }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<Recorder>();
+        ShipStatus.Instance.gameObject.AddComponent<Recorder>();
     }
 }

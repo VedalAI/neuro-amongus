@@ -1,25 +1,9 @@
-﻿using System.IO;
-using Neuro.Communication.AmongUsAI;
+﻿using Neuro.Recording.Common;
 
 namespace Neuro.Recording.Map;
 
-public readonly struct DoorData : ISerializable
+public partial class DoorData
 {
-    public PositionData Position { get; init; } = default;
-    public bool IsOpen { get; init; } = true;
-
-    public DoorData(PositionData position, bool isOpen)
-    {
-        Position = position;
-        IsOpen = isOpen;
-    }
-
-    public void Serialize(BinaryWriter writer)
-    {
-        Position.Serialize(writer);
-        writer.Write(IsOpen);
-    }
-
     public static DoorData Create(PlainDoor door)
     {
         return new DoorData

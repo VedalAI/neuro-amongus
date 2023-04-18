@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(TempMinigame))]
-public sealed class RecordTemperatureSolver : TaskMinigameSolver<TempMinigame>
+public sealed class RecordTemperatureSolver : GeneralMinigameSolver<TempMinigame>
 {
-    protected override IEnumerator CompleteMinigame(TempMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(TempMinigame minigame, NormalPlayerTask task)
     {
         int direction = minigame.logValue < minigame.readingValue ? 1 : -1;
         Vector3 position = minigame.LogText.transform.position + new Vector3(0f, direction == 1 ? 0.7f : -0.7f, 0f);

@@ -2,6 +2,7 @@
 
 namespace Neuro.Utilities.Convertors;
 
+// TODO: Get rid of this class
 public struct PositionProvider
 {
     public Vector2 Position { get; }

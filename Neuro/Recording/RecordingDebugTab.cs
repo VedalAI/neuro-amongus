@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Neuro.Debugging;
 using Neuro.Recording.DeadBodies;
-using Neuro.Recording.Impostor;
 using Neuro.Recording.LocalPlayer;
 using Neuro.Recording.Map;
 using Neuro.Recording.OtherPlayers;
@@ -19,10 +18,9 @@ public sealed class RecordingDebugTab : DebugTab
 
     public override void BuildUI()
     {
-        IndentLabel(0, "Yellow values not reset after each frame like they're supposed to!", Color.yellow);
+        Label(0, "Yellow values not reset after each frame like they're supposed to!", Color.yellow);
         NeuroUtilities.GUILayoutDivider();
         BuildDeadBodiesRecorderUI();
-        BuildImpostorRecorderUI();
         BuildLocalPlayerRecorderUI();
         BuildMapRecorderUI();
         BuildOtherPlayersRecorderUI();
@@ -30,57 +28,52 @@ public sealed class RecordingDebugTab : DebugTab
 
     private void BuildDeadBodiesRecorderUI()
     {
-        GUILayout.Label(nameof(DeadBodiesRecorder));
-        IndentLabel(1, $"{nameof(DeadBodiesRecorder.SeenBodies)} ({DeadBodiesRecorder.Instance.SeenBodies.Count})");
-        foreach (DeadBodyData body in DeadBodiesRecorder.Instance.SeenBodies.Values)
+        GUILayout.Label(nameof(DeadBodiesFrame));
+        Label(1, $"{nameof(DeadBodiesFrame.DeadBodies)} ({DeadBodiesRecorder.Instance.Frame.DeadBodies.Count})");
+        foreach (DeadBodyData body in DeadBodiesRecorder.Instance.Frame.DeadBodies)
         {
-            IndentLabel(2, $"- ID({body.ParentId}), P{body.LastSeenPosition}, W({body.NearbyPlayers.Length})");
+            Label(2, $"- ID({body.ParentId}), P{body.Position}, W({body.NearbyPlayers.Length})");
         }
-    }
-
-    private void BuildImpostorRecorderUI()
-    {
-        GUILayout.Label(nameof(ImpostorRecorder));
-        IndentLabel(1, $"{nameof(ImpostorRecorder.DidKill)}: {ImpostorRecorder.Instance.DidKill}", Color.yellow);
-        IndentLabel(1, $"{nameof(ImpostorRecorder.SabotageUsed)}: {ImpostorRecorder.Instance.SabotageUsed}", Color.yellow);
-        IndentLabel(1, $"{nameof(ImpostorRecorder.DoorsUsed)}: {ImpostorRecorder.Instance.DoorsUsed}", Color.yellow);
     }
 
     private void BuildLocalPlayerRecorderUI()
     {
-        GUILayout.Label(nameof(LocalPlayerRecorder));
-        IndentLabel(1, $"{nameof(LocalPlayerRecorder.DidReport)}: {LocalPlayerRecorder.Instance.DidReport}", Color.yellow);
-        IndentLabel(1, $"{nameof(LocalPlayerRecorder.DidVent)}: {LocalPlayerRecorder.Instance.DidVent}", Color.yellow);
+        GUILayout.Label(nameof(LocalPlayerFrame));
+        Label(1, $"{nameof(LocalPlayerFrame.DidReport)}: {LocalPlayerRecorder.Instance.Frame.DidReport}", Color.yellow);
+        Label(1, $"{nameof(LocalPlayerFrame.DidVent)}: {LocalPlayerRecorder.Instance.Frame.DidVent}", Color.yellow);
+        Label(1, $"{nameof(LocalPlayerFrame.DidKill)}: {LocalPlayerRecorder.Instance.Frame.DidKill}", Color.yellow);
+        Label(1, $"{nameof(LocalPlayerFrame.SabotageUsed)}: {LocalPlayerRecorder.Instance.Frame.SabotageUsed}", Color.yellow);
+        Label(1, $"{nameof(LocalPlayerFrame.DoorsUsed)}: {LocalPlayerRecorder.Instance.Frame.DoorsUsed}", Color.yellow);
     }
 
     private void BuildMapRecorderUI()
     {
-        GUILayout.Label(nameof(MapRecorder));
-        IndentLabel(1, $"{nameof(MapRecorder.NearbyDoors)} ({MapRecorder.Instance.NearbyDoors.Count})");
-        foreach (DoorData door in MapRecorder.Instance.NearbyDoors)
+        GUILayout.Label(nameof(MapFrame));
+        Label(1, $"{nameof(MapFrame.NearbyDoors)} ({MapRecorder.Instance.Frame.NearbyDoors.Count})");
+        foreach (DoorData door in MapRecorder.Instance.Frame.NearbyDoors)
         {
-            IndentLabel(2, $"- D({door.Position.TotalDistance:F2}), O({door.IsOpen})");
+            Label(2, $"- D({door.Position.TotalDistance:F2}), O({door.IsOpen})");
         }
-        IndentLabel(1, $"{nameof(MapRecorder.NearbyVents)} ({MapRecorder.Instance.NearbyVents.Count})");
-        foreach (VentData vent in MapRecorder.Instance.NearbyVents)
+        Label(1, $"{nameof(MapFrame.NearbyVents)} ({MapRecorder.Instance.Frame.NearbyVents.Count})");
+        foreach (VentData vent in MapRecorder.Instance.Frame.NearbyVents)
         {
-            IndentLabel(2, $"- D({vent.Position.TotalDistance:F2})");
+            Label(2, $"- D({vent.Position.TotalDistance:F2})");
         }
     }
 
     private void BuildOtherPlayersRecorderUI()
     {
-        GUILayout.Label(nameof(OtherPlayersRecorder));
-        IndentLabel(1, $"{nameof(OtherPlayersRecorder.LastSeen)} ({OtherPlayersRecorder.Instance.LastSeen.Count})");
-        foreach (OtherPlayerData player in OtherPlayersRecorder.Instance.LastSeen.Values.OrderBy(d => d.Id))
+        GUILayout.Label(nameof(OtherPlayersFrame));
+        Label(1, $"{nameof(OtherPlayersFrame.LastSeenPlayers)} ({OtherPlayersRecorder.Instance.Frame.LastSeenPlayers.Count})");
+        foreach (OtherPlayerData player in OtherPlayersRecorder.Instance.Frame.LastSeenPlayers.OrderBy(d => d.Id))
         {
-            IndentLabel(2, $"- ID({player.Id}), P{player.LastSeenPosition}, T({player.RoundTimeVisible:F2})");
+            Label(2, $"- ID({player.Id}), P{player.LastSeenPosition}, T({player.RoundTimeVisible:F2})");
         }
     }
 
-    private void IndentLabel(int indent, string label) => IndentLabel(indent, label, GUI.contentColor);
+    private void Label(int indent, string label) => Label(indent, label, GUI.contentColor);
 
-    private void IndentLabel(int indent, string label, Color color)
+    private void Label(int indent, string label, Color color)
     {
         GUILayout.BeginHorizontal();
         GUILayout.Space(20 * indent);

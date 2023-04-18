@@ -1,55 +1,100 @@
 ﻿using System;
-using System.Net;
+using System.IO;
 using System.Net.Sockets;
-using System.Text;
+using Google.Protobuf;
+using Il2CppInterop.Runtime.Attributes;
+using Neuro.Movement;
+using Neuro.Recording;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
+using Neuro.Utilities;
 
 namespace Neuro.Communication.AmongUsAI;
 
 [RegisterInIl2Cpp]
 public sealed class CommunicationHandler : MonoBehaviour
 {
+    public static CommunicationHandler Instance { get; private set; }
+
     public CommunicationHandler(IntPtr ptr) : base(ptr) { }
 
-    private static readonly IPEndPoint _ipEndPoint = new(IPAddress.Parse("127.0.0.1"), 6969);
-    private static readonly Socket _socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    private readonly byte[] _buffer = new byte[1024];
+    private WebSocketThread _thread;
+    private volatile bool _shouldSendHeader = true;
+    private bool _shouldSend = true;
+
+    public bool IsConnected => _thread.Socket.Connected;
+
+    private void Awake()
+    {
+        if (Instance)
+        {
+            NeuroUtilities.WarnDoubleSingletonInstance();
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+    }
 
     private void Start()
     {
-        _socket.Connect(_ipEndPoint);
+        _thread = new WebSocketThread();
+        _thread.OnConnect += () => _shouldSendHeader = true;
+        _thread.Start();
     }
 
-    private readonly byte[] _buffer = new byte[1024];
-    private bool _hasGotResponse = true;
-
-    public void FixedUpdate()
+    private void OnDestroy()
     {
+        _thread.Stop();
+    }
+
+    private void FixedUpdate()
+    {
+        if (_thread.Socket is not {Connected: true})
+        {
+            // Send data when next connected, in case of reset.
+            _shouldSend = true;
+            return;
+        }
+
         // TODO: We should send meeting data!
+        if (MeetingHud.Instance || Minigame.Instance || !Frame.CanGenerate) return;
 
-        if (!_socket.Connected) return;
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer) return;
-
-        if (_socket.Available > 0)
+        if (_thread.Socket.Available > 0)
         {
-            int received = _socket.Receive(_buffer, SocketFlags.None);
-            string response = Encoding.UTF8.GetString(_buffer, 0, received);
-            Info(response);
+            int received = _thread.Socket.Receive(_buffer, SocketFlags.None);
+            NNOutput output = NNOutput.Parser.ParseFrom(_buffer, 0, received);
+            // Warning($"Received: {output}");
+            HandleOutput(output);
 
-            // TODO: Deserialize data
-
-            // Frame frame = JsonSerializer.Deserialize<Frame>(response);
-            // Info(frame);
-            // NeuroPlugin.Instance.Movement.ForcedMoveDirection = new Vector2(frame.Direction.x, frame.Direction.y).normalized;
-
-            _hasGotResponse = true;
+            _shouldSend = true;
         }
 
-        if (_hasGotResponse)
+        if (_shouldSend)
         {
-            // TODO: Serialize data for sending over socket
-            // _socket.Send(Encoding.ASCII.GetBytes(JsonSerializer.Serialize<Frame>(NeuroPlugin.Instance.Recording.Frames.Last())));
-            _hasGotResponse = false;
+            Send(Frame.Now(_shouldSendHeader));
+            _shouldSendHeader = false;
+            // Warning($"Sent: {Frame.Now}");
+
+            Info(Frame.Now());
+
+            _shouldSend = false;
         }
+    }
+
+    [HideFromIl2Cpp]
+    private void Send(IMessage message)
+    {
+        using MemoryStream stream = new();
+        message.WriteTo(stream);
+        _thread.Socket.Send(stream.ToArray());
+    }
+
+    [HideFromIl2Cpp]
+    private void HandleOutput(NNOutput output)
+    {
+        // Info(output);
+        MovementHandler.Instance.ForcedMoveDirection = output.DesiredMoveDirection;
     }
 }

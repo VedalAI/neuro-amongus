@@ -1,39 +1,10 @@
-﻿using System.IO;
-using Neuro.Communication.AmongUsAI;
-using Neuro.Utilities;
+﻿using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Recording.OtherPlayers;
 
-public readonly struct OtherPlayerData : ISerializable
+public partial class OtherPlayerData
 {
-    public int Id { get; init; }
-    public Vector2 LastSeenPosition { get; init; }
-    public float LastSeenTime { get; init; }
-    public int SawVent { get; init; }
-    public float RoundTimeVisible { get; init; }
-    public float GameTimeVisible { get; init; }
-
-    public OtherPlayerData(int id, Vector2 lastSeenPosition, float lastSeenTime, int sawVent, float roundTimeVisible, float gameTimeVisible)
-    {
-        Id = id;
-        LastSeenPosition = lastSeenPosition;
-        LastSeenTime = lastSeenTime;
-        SawVent = sawVent;
-        RoundTimeVisible = roundTimeVisible;
-        GameTimeVisible = gameTimeVisible;
-    }
-
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(Id);
-        writer.Write(LastSeenPosition);
-        writer.Write(LastSeenTime);
-        writer.Write(SawVent);
-        writer.Write(RoundTimeVisible);
-        writer.Write(GameTimeVisible);
-    }
-
     public static OtherPlayerData Create(PlayerControl player)
     {
         return new OtherPlayerData
@@ -41,40 +12,31 @@ public readonly struct OtherPlayerData : ISerializable
             Id = player.PlayerId,
             LastSeenPosition = player.GetTruePosition(),
             LastSeenTime = Time.fixedTime,
-            SawVent = 0,
+            TimesSawVent = 0,
             RoundTimeVisible = 0,
             GameTimeVisible = 0
         };
     }
 
-    public OtherPlayerData UpdateVisible(PlayerControl owner)
+    public void UpdateVisible(PlayerControl owner)
     {
-        OtherPlayerData result = this;
-
+        // TODO: Only trigger once per vent
         if (owner.MyPhysics.Animations.IsPlayingEnterVentAnimation() || owner.MyPhysics.Animations.IsPlayingExitVentAnimation())
         {
-            result = result with {SawVent = SawVent + 1};
+            TimesSawVent++;
         }
 
-        if (owner.inVent) return result;
+        if (owner.inVent) return;
 
-        result = result with
-        {
-            LastSeenPosition = owner.GetTruePosition(),
-            LastSeenTime = Time.fixedTime,
-            RoundTimeVisible = RoundTimeVisible + Time.fixedDeltaTime,
-            GameTimeVisible = GameTimeVisible + Time.fixedDeltaTime
-        };
-
-        return result;
+        LastSeenPosition = owner.GetTruePosition();
+        LastSeenTime = Time.fixedTime;
+        RoundTimeVisible += Time.fixedDeltaTime;
+        GameTimeVisible += Time.fixedDeltaTime;
     }
 
-    public OtherPlayerData ResetAfterMeeting()
+    public void ResetAfterMeeting()
     {
-        return this with
-        {
-            SawVent = 0,
-            RoundTimeVisible = 0
-        };
+        TimesSawVent = 0;
+        RoundTimeVisible = 0;
     }
 }

@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Neuro.Communication.AmongUsAI;
+using System.Linq;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Utilities;
-using Neuro.Vision;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
 namespace Neuro.Recording.DeadBodies;
 
 [RegisterInIl2Cpp]
-public sealed class DeadBodiesRecorder : MonoBehaviour, ISerializable
+public sealed class DeadBodiesRecorder : MonoBehaviour
 {
     public static DeadBodiesRecorder Instance { get; private set; }
 
@@ -19,16 +17,8 @@ public sealed class DeadBodiesRecorder : MonoBehaviour, ISerializable
     {
     }
 
-    public Dictionary<byte, DeadBodyData> SeenBodies { get; } = new();
-
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(SeenBodies.Count);
-        foreach (DeadBodyData body in SeenBodies.Values)
-        {
-            body.Serialize(writer);
-        }
-    }
+    [HideFromIl2Cpp]
+    public DeadBodiesFrame Frame { get; } = new();
 
     private void Awake()
     {
@@ -51,9 +41,9 @@ public sealed class DeadBodiesRecorder : MonoBehaviour, ISerializable
         {
             if (!Visibility.IsVisible(deadBody)) continue;
 
-            if (!SeenBodies.ContainsKey(deadBody.ParentId))
+            if (Frame.DeadBodies.All(d => d.ParentId != deadBody.ParentId))
             {
-                SeenBodies[deadBody.ParentId] = DeadBodyData.Create(deadBody);
+                Frame.DeadBodies.Add(DeadBodyData.Create(deadBody));
             }
         }
     }
@@ -61,12 +51,12 @@ public sealed class DeadBodiesRecorder : MonoBehaviour, ISerializable
     [EventHandler(EventTypes.MeetingEnded)]
     public void ResetAfterMeeting()
     {
-        SeenBodies.Clear();
+        Frame.DeadBodies.Clear();
     }
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<DeadBodiesRecorder>();
+        ShipStatus.Instance.gameObject.AddComponent<DeadBodiesRecorder>();
     }
 }

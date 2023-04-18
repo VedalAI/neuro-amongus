@@ -1,32 +1,37 @@
 ﻿using System;
-using System.IO;
-using Neuro.Communication.AmongUsAI;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
+using Neuro.Recording.Common;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
 
 namespace Neuro.Recording.LocalPlayer;
 
 [RegisterInIl2Cpp]
-public sealed class LocalPlayerRecorder : MonoBehaviour, ISerializable
+public sealed class LocalPlayerRecorder : MonoBehaviour
 {
     public static LocalPlayerRecorder Instance { get; private set; }
+
+    public static readonly Vector2[] RaycastDirections =
+    {
+        Vector2.up,
+        Vector2.up + Vector2.right,
+        Vector2.right,
+        Vector2.right + Vector2.down,
+        Vector2.down,
+        Vector2.down + Vector2.left,
+        Vector2.left,
+        Vector2.left + Vector2.up
+    };
 
     public LocalPlayerRecorder(IntPtr ptr) : base(ptr)
     {
     }
 
-    public bool DidReport { get; private set; }
-    public bool DidVent { get; private set; }
-
-    public void Serialize(BinaryWriter writer)
-    {
-        writer.Write(DidReport);
-        writer.Write(DidVent);
-
-        DidReport = DidVent = false;
-    }
+    [HideFromIl2Cpp]
+    public LocalPlayerFrame Frame { get; } = new();
 
     private void Awake()
     {
@@ -38,14 +43,34 @@ public sealed class LocalPlayerRecorder : MonoBehaviour, ISerializable
         }
 
         Instance = this;
+
+        Frame.RaycastObstacleDistances.FillWithDefault(8);
     }
 
-    public void RecordReport() => DidReport = true;
-    public void RecordVent() => DidVent = true;
+    private void FixedUpdate()
+    {
+        Frame.Position = PlayerControl.LocalPlayer.GetTruePosition();
+        Frame.Velocity = PlayerControl.LocalPlayer.MyPhysics.Velocity.normalized;
+
+        for (int i = 0; i < 8; i++)
+        {
+            Physics2D.queriesHitTriggers = false;
+            RaycastHit2D raycastHit = Physics2D.Raycast(Frame.Position, RaycastDirections[i], 100f, Constants.ShipAndAllObjectsMask);
+            Physics2D.queriesHitTriggers = true;
+
+            Frame.RaycastObstacleDistances[i] = raycastHit.distance;
+        }
+    }
+
+    public void RecordReport() => Frame.DidReport = true;
+    public void RecordVent() => Frame.DidVent = true;
+    public void RecordKill() => Frame.DidKill = true;
+    public void RecordSabotage(SystemTypes type) => Frame.SabotageUsed = type.ForMessage();
+    public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = room.ForMessage();
 
     [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted(ShipStatus shipStatus)
+    private static void OnGameStarted()
     {
-        shipStatus.gameObject.AddComponent<LocalPlayerRecorder>();
+        ShipStatus.Instance.gameObject.AddComponent<LocalPlayerRecorder>();
     }
 }

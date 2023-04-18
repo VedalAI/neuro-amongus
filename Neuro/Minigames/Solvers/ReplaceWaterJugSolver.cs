@@ -3,10 +3,16 @@ using Neuro.Cursor;
 
 namespace Neuro.Minigames.Solvers;
 
-[MinigameSolver(typeof(WaterStage))]
-public sealed class ReplaceWaterJugSolver : TaskMinigameSolver<WaterStage>
+[MinigameSolver(typeof(WaterStage), false)]
+[MinigameOpener(typeof(MultistageMinigame))]
+public sealed class ReplaceWaterJugSolver : IMinigameSolver<WaterStage>, IMinigameOpener
 {
-    protected override IEnumerator CompleteMinigame(WaterStage minigame, NormalPlayerTask task)
+    public bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task)
+    {
+        return task.TaskType == TaskTypes.ReplaceWaterJug;
+    }
+
+    public IEnumerator CompleteMinigame(WaterStage minigame)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.waterButton);
         InGameCursor.Instance.StartHoldingLMB(minigame);

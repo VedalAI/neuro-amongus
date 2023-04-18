@@ -29,9 +29,9 @@ public sealed class EventHandlerAttribute : Attribute
     public static Dictionary<EventTypes, List<MethodInfo>> StaticEvents { get; }
     public static Dictionary<EventTypes, List<MethodInfo>> InstanceEvents { get; }
 
-    public EventHandlerAttribute(EventTypes @event)
+    public EventHandlerAttribute(EventTypes eventType)
     {
-        EventType = @event;
+        EventType = eventType;
     }
 
     public readonly EventTypes EventType;

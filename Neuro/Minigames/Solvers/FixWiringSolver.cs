@@ -5,9 +5,9 @@ using Neuro.Cursor;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WireMinigame))]
-public sealed class FixWiringSolver : TaskMinigameSolver<WireMinigame>
+public sealed class FixWiringSolver : GeneralMinigameSolver<WireMinigame>
 {
-    protected override IEnumerator CompleteMinigame(WireMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(WireMinigame minigame, NormalPlayerTask task)
     {
         for (int i = 0; i < minigame.LeftNodes.Count; i++)
         {

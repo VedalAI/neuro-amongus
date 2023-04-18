@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(VendingMinigame))]
-public sealed class BuyBeverageMinigameSolver : TaskMinigameSolver<VendingMinigame>
+public sealed class BuyBeverageMinigameSolver : GeneralMinigameSolver<VendingMinigame>
 {
-    protected override IEnumerator CompleteMinigame(VendingMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(VendingMinigame minigame, NormalPlayerTask task)
     {
         UiElement[] uiElements = minigame.ControllerSelectable.ToArray();
 

@@ -1,0 +1,9 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.Tasks";
+
+import "Recording/Tasks/TaskData.proto";
+
+message TasksFrame {
+    repeated TaskData Tasks = 1;
+    optional TaskData Sabotage = 2;
+}

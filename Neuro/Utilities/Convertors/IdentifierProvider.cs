@@ -2,6 +2,7 @@
 
 namespace Neuro.Utilities.Convertors;
 
+// TODO: Ideally this should be removed and replaced with just component.GetInstanceID(), however it helps with giving everything a name in the debug tab
 public readonly struct IdentifierProvider
 {
     public string Identifier { get; }
@@ -9,6 +10,16 @@ public readonly struct IdentifierProvider
     public IdentifierProvider(string identifier)
     {
         Identifier = identifier;
+    }
+
+    public static implicit operator IdentifierProvider(Console console)
+    {
+        if (!console) return default;
+
+        int index = ShipStatus.Instance.AllConsoles.IndexOf(new Func<Console, bool>(c => c.GetInstanceID() == console.GetInstanceID()));
+        if (index == -1) return default;
+
+        return new IdentifierProvider($"Console_{index}");
     }
 
     public static implicit operator IdentifierProvider(PlainDoor door)

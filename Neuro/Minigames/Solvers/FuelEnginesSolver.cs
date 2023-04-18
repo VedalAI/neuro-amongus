@@ -4,10 +4,16 @@ using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
-[MinigameSolver(typeof(RefuelStage))]
-public sealed class FuelEnginesSolver : TaskMinigameSolver<RefuelStage>
+[MinigameSolver(typeof(RefuelStage), false)]
+[MinigameOpener(typeof(MultistageMinigame))]
+public sealed class FuelEnginesSolver : IMinigameSolver<RefuelStage>, IMinigameOpener
 {
-    protected override IEnumerator CompleteMinigame(RefuelStage minigame, NormalPlayerTask task)
+    public bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task)
+    {
+        return task.TaskType == TaskTypes.FuelEngines;
+    }
+
+    public IEnumerator CompleteMinigame(RefuelStage minigame)
     {
         Vector3 position = Vector3.Lerp(minigame.greenLight.transform.position, minigame.redLight.transform.position, 0.5f) + new Vector3(0f, -0.6f);
         yield return InGameCursor.Instance.CoMoveTo(position);

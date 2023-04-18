@@ -2,46 +2,26 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Il2CppInterop.Runtime;
+using System.Threading.Tasks;
 using Neuro.Pathfinding.DataStructures;
-using Reactor.Utilities.Extensions;
+using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Pathfinding;
 
 // TODO: [BUG] Sometimes when very close to an object, the distance will be returned as -1
-public sealed class PathfindingThread
+public sealed class PathfindingThread : NeuroThread
 {
     private readonly ConcurrentQueue<string> _queue = new();
     private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target)> _requests = new();
     private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target, Vector2[] path, float length)> _results = new();
 
     private readonly Node[,] _grid;
-    private readonly Thread _thread;
 
     public PathfindingThread(Node[,] grid, Vector2 accessiblePosition)
     {
         _grid = grid;
         FloodFill(accessiblePosition);
-
-        _thread = new Thread(RunThread);
-    }
-
-    public void Start()
-    {
-        if (!_thread.IsAlive)
-        {
-            _thread.Start();
-        }
-    }
-
-    public void Stop()
-    {
-        if (_thread.IsAlive)
-        {
-            _thread.Interrupt();
-        }
     }
 
     public void RequestPath(Vector2 start, Vector2 target, string identifier)
@@ -60,17 +40,27 @@ public sealed class PathfindingThread
         bool tried = _results.TryGetValue(identifier, out (Vector2, Vector2, Vector2[] path, float length) result);
         path = result.path;
         length = result.length;
+        if (path != null)
+        {
+            while (path.Length > 1 && Vector2.Distance(PlayerControl.LocalPlayer.GetTruePosition(), path[0]) < 0.5f)
+            {
+                path = path.Skip(1).ToArray();
+            }
+            _results[identifier] = result with { path = path };
+        }
+
         return tried;
     }
 
-    private void RunThread()
+    protected override async void RunThread()
     {
-        IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
-
         while (true)
         {
             try
             {
+                await Task.Delay(250, CancellationToken);
+                Il2CppAttach();
+
                 while (!_queue.IsEmpty)
                 {
                     if (!_queue.TryDequeue(out string identifier)) continue;
@@ -80,26 +70,16 @@ public sealed class PathfindingThread
                     Vector2[] path = FindPath(vec.start, vec.target);
                     _results[identifier] = (vec.start, vec.target, path, CalculateLength(path));
 
-                    Thread.Yield();
+                    CancellationToken.ThrowIfCancellationRequested();
                 }
-
-                Thread.Sleep(250);
             }
-            catch (ThreadInterruptedException)
+            catch (OperationCanceledException)
             {
                 return;
             }
             catch (Exception e)
             {
-                System.Console.WriteLine(e);
-                try
-                {
-                    Thread.Yield();
-                }
-                catch
-                {
-                    return;
-                }
+                Error(e);
             }
         }
     }
@@ -292,7 +272,28 @@ public sealed class PathfindingThread
         Vector2[] waypoints = path.Select(p => p.worldPosition).ToArray();
         new Span<Vector2>(waypoints).Reverse();
 
-        return waypoints;
+        return SimplifyPath(waypoints);
+    }
+
+    static Vector2[] SimplifyPath(Vector2[] path)
+    {
+        List<Vector2> waypoints = new();
+        Vector2 directionOld = Vector2.zero;
+        for (int i = 1; i < path.Length; i++)
+        {
+            Vector2 directionNew = new Vector2(path[i - 1].x - path[i].x, path[i - 1].y - path[i].y);
+            if (directionNew != directionOld)
+            {
+                waypoints.Add(path[i]);
+            }
+
+            directionOld = directionNew;
+        }
+
+        // add last waypoint
+        waypoints.Add(path[^1]);
+
+        return waypoints.ToArray();
     }
 
     private static int GetDistanceCost(Node a, Node b)
@@ -300,21 +301,13 @@ public sealed class PathfindingThread
         int dstX = Math.Abs(a.gridX - b.gridX);
         int dstY = Math.Abs(a.gridY - b.gridY);
 
-        return 14 * dstY + 10 * Math.Abs(dstX - dstY);
+        return 14 * Math.Min(dstX, dstY) + 10 * Math.Abs(dstX - dstY);
     }
-
-    private static Material _nodeMaterial;
 
     private static void CreateNodeVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.red, 0.1f);
 
     private static void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
     {
-        if (!_nodeMaterial)
-        {
-            _nodeMaterial = new Material(Shader.Find("Unlit/MaskShader"));
-            _nodeMaterial.DontDestroy();
-        }
-
         GameObject nodeVisualPoint = new("Gizmo (Visual Point)");
         nodeVisualPoint.transform.position = position;
 
@@ -323,7 +316,7 @@ public sealed class PathfindingThread
         renderer.SetPosition(1, position + new Vector2(0, widthMultiplier));
         renderer.widthMultiplier = widthMultiplier;
         renderer.positionCount = 2;
-        renderer.material = _nodeMaterial;
+        renderer.material = NeuroUtilities.MaskShaderMat;
         renderer.startColor = color;
         renderer.endColor = color;
     }

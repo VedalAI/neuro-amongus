@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.Reflection;
+using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes;
-using UnityEngine;
+using Reactor.Utilities.Extensions;
 
 namespace Neuro.Utilities;
 
 public static class Extensions
 {
+    private static readonly MethodInfo _castMethod = AccessTools.Method(typeof(Il2CppObjectBase), nameof(Il2CppObjectBase.Cast));
+
     /// <summary>
     /// This returns the element at the specified index from the il2cpp list.
     /// JetBrains Rider will complain about an ambiguous indexer if used normally (list[i]).
@@ -23,9 +26,6 @@ public static class Extensions
         return list._items[index];
     }
 
-    /// <summary>
-    /// Filters the elements of an <see cref="IEnumerable"/> based on a specified Il2Cpp type.
-    /// </summary>
     public static IEnumerable<T> OfIl2CppType<T>(this IEnumerable collection) where T : Il2CppObjectBase
     {
         foreach (object obj in collection)
@@ -42,9 +42,20 @@ public static class Extensions
         return animations.Animator.GetCurrentAnimation() == animations.group.ExitVentAnim;
     }
 
-    public static void Write(this BinaryWriter writer, Vector2 vector)
+    public static T Il2CppCastToTopLevel<T>(this T obj) where T : Il2CppSystem.Object
     {
-        writer.Write(vector.x);
-        writer.Write(vector.y);
+        if (obj == null) return null;
+        return (T)_castMethod.MakeGenericMethod(obj.GetIl2CppType().ToSystemType()).Invoke(obj, null);
+    }
+
+    public static Il2CppSystem.Object Il2CppCastToTopLevel(this Il2CppObjectBase obj)
+        => Il2CppCastToTopLevel(obj.Cast<Il2CppSystem.Object>());
+
+    public static void FillWithDefault<T>(this ICollection<T> repeatedField, int capacity)
+    {
+        for (int i = repeatedField.Count; i < capacity; i++)
+        {
+            repeatedField.Add(default);
+        }
     }
 }

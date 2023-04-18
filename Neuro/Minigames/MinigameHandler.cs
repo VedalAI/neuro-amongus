@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using BepInEx.Unity.IL2CPP.Utils;
 using Neuro.Cursor;
 using UnityEngine;
@@ -18,21 +20,21 @@ public static class MinigameHandler
         coroutineBehaviour.StartCoroutine(CoTryCompleteMinigame(minigame, task));
     }
 
-    public static MinigameSolver GetMinigameSolver(Minigame minigame)
+    public static bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task)
     {
-        if (!MinigameSolverAttribute.MinigameSolvers.TryGetValue(minigame.GetIl2CppType().FullName, out MinigameSolver solver))
-        {
-            Warning($"Cannot solve minigame of type {minigame.GetIl2CppType().FullName}");
-            return null;
-        }
+        if (!MinigameOpenerAttribute.MinigameOpeners.TryGetValue(minigame.GetIl2CppType().FullName, out List<IMinigameOpener> openers))
+            return false;
 
-        return solver;
+        return openers.Any(o => o.ShouldOpenConsole(console, minigame, task));
     }
 
     private static IEnumerator CoTryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
-        MinigameSolver solver = GetMinigameSolver(minigame);
-        if (solver == null) yield break;
+        if (!MinigameSolverAttribute.MinigameSolvers.TryGetValue(minigame.GetIl2CppType().FullName, out IMinigameSolver solver))
+        {
+            Warning($"Cannot solve minigame of type {minigame.GetIl2CppType().FullName}");
+            yield break;
+        }
 
         InGameCursor.Instance.HideWhen(() => !minigame);
 

@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(UnlockManifoldsMinigame))]
-public sealed class UnlockManifoldsSolver : TaskMinigameSolver<UnlockManifoldsMinigame>
+public sealed class UnlockManifoldsSolver : GeneralMinigameSolver<UnlockManifoldsMinigame>
 {
-    protected override IEnumerator CompleteMinigame(UnlockManifoldsMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(UnlockManifoldsMinigame minigame, NormalPlayerTask task)
     {
         while (minigame.buttonCounter < minigame.Buttons.Length)
         {

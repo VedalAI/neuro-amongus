@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
-[MinigameSolver(typeof(DoorBreakerGame))]
-public sealed class DoorSabotagePolusSolver : MinigameSolver<DoorBreakerGame>
+[MinigameSolver(typeof(DoorBreakerGame), false)]
+public sealed class DoorSabotagePolusSolver : IMinigameSolver<DoorBreakerGame>
 {
-    protected override IEnumerator CompleteMinigame(DoorBreakerGame minigame)
+    public IEnumerator CompleteMinigame(DoorBreakerGame minigame)
     {
         foreach (SpriteRenderer button in minigame.Buttons)
         {
