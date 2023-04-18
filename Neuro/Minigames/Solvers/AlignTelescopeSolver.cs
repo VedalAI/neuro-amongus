@@ -18,7 +18,7 @@ public sealed class AlignTelescopeSolver : GeneralMinigameSolver<TelescopeGame>
         yield return InGameCursor.Instance.CoMoveTo(minigame.Reticle.transform.position + new Vector3(0, -3f));
         yield return new WaitForSeconds(0.3f);
 
-        Vector2 position = minigame.Reticle.transform.position + new Vector3(3, 6);
+        Vector2 position = minigame.Reticle.transform.position + new Vector3(3, 0);
         WaitForSeconds wait = new(0.8f);
         yield return InGameCursor.Instance.CoMoveTo(position);
         yield return wait;

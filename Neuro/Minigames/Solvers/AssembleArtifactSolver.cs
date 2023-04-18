@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(CrystalMinigame))]
-public class AssembleArtifactSolver : GeneralMinigameSolver<CrystalMinigame>
+public sealed class AssembleArtifactSolver : GeneralMinigameSolver<CrystalMinigame>
 {
     public override IEnumerator CompleteMinigame(CrystalMinigame minigame, NormalPlayerTask task)
     {

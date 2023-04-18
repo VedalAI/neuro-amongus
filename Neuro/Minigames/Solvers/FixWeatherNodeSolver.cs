@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(Weather1Game))]
-public class FixWeatherNodeSolver : GeneralMinigameSolver<Weather1Game>
+public sealed class FixWeatherNodeSolver : GeneralMinigameSolver<Weather1Game>
 {
     public override IEnumerator CompleteMinigame(Weather1Game minigame, NormalPlayerTask task)
     {
@@ -28,7 +28,7 @@ public class FixWeatherNodeSolver : GeneralMinigameSolver<Weather1Game>
             var tileRealPosition = new Vector3((tile.x + 1) * tileBounds.x, (tile.y + 1) * tileBounds.y, (tile.z + 1) * tileBounds.z);
             yield return InGameCursor.Instance.CoMoveTo(tileRealPosition + mapPos);
 
-            if (!InGameCursor.Instance.IsLeftButtonPressed) InGameCursor.Instance.StartHoldingLMB(minigame.transform);
+            if (!InGameCursor.Instance.IsLeftButtonPressed) InGameCursor.Instance.StartHoldingLMB(minigame);
             yield return wait;
         }
 
