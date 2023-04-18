@@ -19,9 +19,9 @@ public class FillCanistersSolver : GeneralMinigameSolver<FillCanistersGame>
             while (minigame.Canister.Gauge.Value < minigame.Canister.Gauge.MaxValue)
                 yield return null;
             yield return new WaitForSeconds(0.2f);
-            yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(minigame.CanisterSnapPosition) + Vector3.right, 0.5f);
-            // pulling away the canister only requires a click
+            // pulling away the canister only requires a click, but we still make a movement to the right so it looks better
             yield return InGameCursor.Instance.CoPressLMB();
+            yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(minigame.CanisterSnapPosition) + Vector3.right, 0.8f);
             // wait for the next canister to appear
             yield return new WaitForSeconds(0.5f);
         }
