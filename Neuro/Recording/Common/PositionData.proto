@@ -6,5 +6,5 @@ import "Recording/Common/Vector2.proto";
 message PositionData {
     float TotalDistance = 1;
     Vector2 NextNodePosition = 2;
-    Vector2 NextNodeOffset = 3;
+    Vector2 NextNodeOffset = 3; // TODO: Rename to NextNodeDirection
 }

@@ -33,13 +33,13 @@ public sealed class MapRecorder : MonoBehaviour
         Instance = this;
     }
 
-/*    private void FixedUpdate()
+    private void FixedUpdate()
     {
         if (MeetingHud.Instance || Minigame.Instance) return;
 
         UpdateNearbyDoors();
         UpdateNearbyVents();
-    }*/
+    }
 
     private void UpdateNearbyDoors()
     {

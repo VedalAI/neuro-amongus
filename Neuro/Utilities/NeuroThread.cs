@@ -30,7 +30,7 @@ public abstract class NeuroThread
 
     public void Stop()
     {
-        if (_thread.IsAlive && !_cancellationTokenSource.IsCancellationRequested)
+        if (!_cancellationTokenSource.IsCancellationRequested)
         {
             _cancellationTokenSource.Cancel();
         }

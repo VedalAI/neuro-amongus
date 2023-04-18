@@ -60,13 +60,13 @@ public sealed class TasksRecorder : MonoBehaviour
 
         }
 
-        if(closestConsole != null)
+        /*if(closestConsole != null)
         {
             var path = PathfindingHandler.Instance.GetPath(PlayerControl.LocalPlayer, closestConsole, closestConsole);
 
             TaskData.DrawPath(path, closestConsole);
-        }
-        
+        }*/
+
 
         PlayerTask sabotage = PlayerControl.LocalPlayer.myTasks._items.FirstOrDefault(s => PlayerTask.TaskIsEmergency(s) && !s.IsComplete);
         Frame.Sabotage = sabotage ? TaskData.Create(sabotage) : null;

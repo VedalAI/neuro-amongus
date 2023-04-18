@@ -29,7 +29,6 @@ class TrainingGameData:
         # updated to return sequences of states of length 10
         return np.array([np.vstack([self.states[i + j].get_x() for j in range(10)]) for i in range(len(self.states) - 10)])
 
-
     def get_y(self):
         # return np.vstack([state.get_y() for state in self.states])
         # updated to the corresponding y value
