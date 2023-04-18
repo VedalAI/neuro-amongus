@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SampleMinigame))]
-public class InspectSampleSolver : TaskMinigameSolver<SampleMinigame>
+public class InspectSampleSolver : GeneralMinigameSolver<SampleMinigame>
 {
-    protected override IEnumerator CompleteMinigame(SampleMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(SampleMinigame minigame, NormalPlayerTask task)
     {
         // when you first open the task, the state will actually be PrepareSample, not AwaitingStart
         // therefore we have to handle it here

@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(PhotosMinigame))]
-public class DevelopPhotosSolver : TaskMinigameSolver<PhotosMinigame>
+public class DevelopPhotosSolver : GeneralMinigameSolver<PhotosMinigame>
 {
-    protected override IEnumerator CompleteMinigame(PhotosMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(PhotosMinigame minigame, NormalPlayerTask task)
     {
         if (task.TimerStarted == NormalPlayerTask.TimerState.NotStarted) yield return CompleteStage1(minigame);
         else if (task.TimerStarted == NormalPlayerTask.TimerState.Finished) yield return CompleteStage2(minigame);

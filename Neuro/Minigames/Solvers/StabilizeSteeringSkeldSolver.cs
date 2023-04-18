@@ -4,9 +4,9 @@ using Neuro.Cursor;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(NavigationMinigame))]
-public class StabilizeSteeringSkeldSolver : TaskMinigameSolver<NavigationMinigame>
+public class StabilizeSteeringSkeldSolver : GeneralMinigameSolver<NavigationMinigame>
 {
-    protected override IEnumerator CompleteMinigame(NavigationMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(NavigationMinigame minigame, NormalPlayerTask task)
     {
         InGameCursor.Instance.SnapTo(minigame.CrossHairImage);
         InGameCursor.Instance.StartHoldingLMB(minigame.CrossHairImage);

@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(ElecLeverGame))]
-public class ResetBreakersSolver : TaskMinigameSolver<ElecLeverGame>
+public class ResetBreakersSolver : GeneralMinigameSolver<ElecLeverGame>
 {
-    protected override IEnumerator CompleteMinigame(ElecLeverGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(ElecLeverGame minigame, NormalPlayerTask task)
     {
         // TODO: programatically pathfind to the switches in order and/or remember ones we visit
 

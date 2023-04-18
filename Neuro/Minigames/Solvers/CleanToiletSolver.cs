@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(ToiletMinigame))]
-public class CleanToiletSolver : TaskMinigameSolver<ToiletMinigame>
+public class CleanToiletSolver : GeneralMinigameSolver<ToiletMinigame>
 {
-    protected override IEnumerator CompleteMinigame(ToiletMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(ToiletMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Plunger);
         InGameCursor.Instance.StartHoldingLMB(minigame.Plunger);

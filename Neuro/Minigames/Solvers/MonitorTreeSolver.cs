@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(MonitorOxyMinigame))]
-public class MonitorTreeSolver : TaskMinigameSolver<MonitorOxyMinigame>
+public class MonitorTreeSolver : GeneralMinigameSolver<MonitorOxyMinigame>
 {
-    protected override IEnumerator CompleteMinigame(MonitorOxyMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(MonitorOxyMinigame minigame, NormalPlayerTask task)
     {
         for (int i = 0; i < minigame.Sliders.Count; i++)
         {

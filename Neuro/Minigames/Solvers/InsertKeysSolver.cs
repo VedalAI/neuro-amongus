@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(KeyMinigame))]
-public class InsertKeysSolver : TaskMinigameSolver<KeyMinigame>
+public class InsertKeysSolver : GeneralMinigameSolver<KeyMinigame>
 {
-    protected override IEnumerator CompleteMinigame(KeyMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(KeyMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.key);
         InGameCursor.Instance.StartHoldingLMB(minigame.key);

@@ -6,9 +6,9 @@ using System.Linq;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(LeafMinigame))]
-public class CleanO2FilterSolver : TaskMinigameSolver<LeafMinigame>
+public class CleanO2FilterSolver : GeneralMinigameSolver<LeafMinigame>
 {
-    protected override IEnumerator CompleteMinigame(LeafMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(LeafMinigame minigame, NormalPlayerTask task)
     {
         // ValidArea is somewhere offscreen so easier to just move towards the arrows on the chute
         Vector3 exit = minigame.Arrows[0].transform.position;

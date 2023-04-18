@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(AirshipGarbageGame))]
-public class EmptyGarbageAirshipSolver : TaskMinigameSolver<AirshipGarbageGame>
+public class EmptyGarbageAirshipSolver : GeneralMinigameSolver<AirshipGarbageGame>
 {
-    protected override IEnumerator CompleteMinigame(AirshipGarbageGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(AirshipGarbageGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.can.Handle);
         InGameCursor.Instance.StartHoldingLMB(minigame.can.Handle);

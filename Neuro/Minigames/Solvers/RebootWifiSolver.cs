@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WifiGame))]
-public class RebootWifiSolver : TaskMinigameSolver<WifiGame>
+public class RebootWifiSolver : GeneralMinigameSolver<WifiGame>
 {
-    protected override IEnumerator CompleteMinigame(WifiGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(WifiGame minigame, NormalPlayerTask task)
     {
         if (task.TimerStarted == NormalPlayerTask.TimerState.NotStarted)
         {

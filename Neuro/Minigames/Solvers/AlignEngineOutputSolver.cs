@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(AlignGame))]
-public class AlignEngineOutputSolver : TaskMinigameSolver<AlignGame>
+public class AlignEngineOutputSolver : GeneralMinigameSolver<AlignGame>
 {
-    protected override IEnumerator CompleteMinigame(AlignGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(AlignGame minigame, NormalPlayerTask task)
     {
         Collider2D slider = minigame.col;
         yield return InGameCursor.Instance.CoMoveTo(slider);

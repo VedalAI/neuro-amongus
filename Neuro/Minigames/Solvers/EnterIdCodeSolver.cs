@@ -8,9 +8,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(EnterCodeMinigame))]
-public class EnterIdCodeSolver : TaskMinigameSolver<EnterCodeMinigame>
+public class EnterIdCodeSolver : GeneralMinigameSolver<EnterCodeMinigame>
 {
-    protected override IEnumerator CompleteMinigame(EnterCodeMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(EnterCodeMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Card);
         yield return minigame.CoShowCard();

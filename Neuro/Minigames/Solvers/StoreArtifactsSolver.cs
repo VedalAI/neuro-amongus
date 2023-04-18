@@ -5,10 +5,10 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SpecimenGame))]
-public class StoreArtifactsSolver : TaskMinigameSolver<SpecimenGame>
+public class StoreArtifactsSolver : GeneralMinigameSolver<SpecimenGame>
 {
     // TODO: prevent unusual behaviour since the array and how they appear on screen are different
-    protected override IEnumerator CompleteMinigame(SpecimenGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(SpecimenGame minigame, NormalPlayerTask task)
     {
         for (int i = 0; i < minigame.Specimens.Count; i++)
         {

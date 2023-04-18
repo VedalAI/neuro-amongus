@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(FillCanistersGame))]
-public class FillCanistersSolver : TaskMinigameSolver<FillCanistersGame>
+public class FillCanistersSolver : GeneralMinigameSolver<FillCanistersGame>
 {
-    protected override IEnumerator CompleteMinigame(FillCanistersGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(FillCanistersGame minigame, NormalPlayerTask task)
     {
         // this minigame also uses localPositions so convert them into world space
         while (!task.IsComplete)

@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(PolishRubyGame))]
-public class PolishRubySolver : TaskMinigameSolver<PolishRubyGame>
+public class PolishRubySolver : GeneralMinigameSolver<PolishRubyGame>
 {
-    protected override IEnumerator CompleteMinigame(PolishRubyGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(PolishRubyGame minigame, NormalPlayerTask task)
     {
         var buttons = minigame.Buttons
             .Select((button, index) => (button, index))

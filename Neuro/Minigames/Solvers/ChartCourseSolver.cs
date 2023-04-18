@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(CourseMinigame))]
-public class ChartCourseSolver : TaskMinigameSolver<CourseMinigame>
+public class ChartCourseSolver : GeneralMinigameSolver<CourseMinigame>
 {
-    protected override IEnumerator CompleteMinigame(CourseMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(CourseMinigame minigame, NormalPlayerTask task)
     {
         // for some reason this minigame uses localPositions for everything so we have to convert them into world positions
 

@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(AdjustSteeringGame))]
-public class StabilizeSteeringAirshipSolver : TaskMinigameSolver<AdjustSteeringGame>
+public class StabilizeSteeringAirshipSolver : GeneralMinigameSolver<AdjustSteeringGame>
 {
-    protected override IEnumerator CompleteMinigame(AdjustSteeringGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(AdjustSteeringGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Thrust);
         float startingThrust = minigame.Thrust.transform.localPosition.y;

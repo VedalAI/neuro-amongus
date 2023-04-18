@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SortMinigame))]
-public class SortSamplesSolver : TaskMinigameSolver<SortMinigame>
+public class SortSamplesSolver : GeneralMinigameSolver<SortMinigame>
 {
-    protected override IEnumerator CompleteMinigame(SortMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(SortMinigame minigame, NormalPlayerTask task)
     {
         bool secondPlant = false, secondAnimal = false, secondMineral = false;
         Vector3 left = new(-0.5f, 0f);

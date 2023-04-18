@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(BurgerMinigame))]
-public class MakeBurgerSolver : TaskMinigameSolver<BurgerMinigame>
+public class MakeBurgerSolver : GeneralMinigameSolver<BurgerMinigame>
 {
-    protected override IEnumerator CompleteMinigame(BurgerMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(BurgerMinigame minigame, NormalPlayerTask task)
     {
         yield return new WaitForSeconds(1.5f);
         minigame.TogglePaper();

@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(DiagnosticGame))]
-public class RunDiagnosticsSolver : TaskMinigameSolver<DiagnosticGame>
+public class RunDiagnosticsSolver : GeneralMinigameSolver<DiagnosticGame>
 {
-    protected override IEnumerator CompleteMinigame(DiagnosticGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(DiagnosticGame minigame, NormalPlayerTask task)
     {
         if (task.TimerStarted == NormalPlayerTask.TimerState.NotStarted)
         {

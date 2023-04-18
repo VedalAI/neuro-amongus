@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(RewindTapeMinigame))]
-public class RewindTapesSolver : TaskMinigameSolver<RewindTapeMinigame>
+public class RewindTapesSolver : GeneralMinigameSolver<RewindTapeMinigame>
 {
-    protected override IEnumerator CompleteMinigame(RewindTapeMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(RewindTapeMinigame minigame, NormalPlayerTask task)
     {
         if (minigame.currentTime > minigame.targetTime)
         {

@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(DressUpMinigame))]
-public class DressMannequinSolver : TaskMinigameSolver<DressUpMinigame>
+public class DressMannequinSolver : GeneralMinigameSolver<DressUpMinigame>
 {
-    protected override IEnumerator CompleteMinigame(DressUpMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(DressUpMinigame minigame, NormalPlayerTask task)
     {
         // the hitbox placement in this minigame is terrible
         // innersloth pls fix
