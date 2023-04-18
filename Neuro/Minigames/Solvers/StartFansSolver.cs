@@ -1,5 +1,4 @@
-﻿using Il2CppSystem.Collections.Generic;
-using Neuro.Cursor;
+﻿using Neuro.Cursor;
 using System.Collections;
 using UnityEngine;
 

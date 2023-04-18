@@ -1,7 +1,6 @@
 ﻿using Neuro.Cursor;
 using System.Collections;
 using System.Linq;
-using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 

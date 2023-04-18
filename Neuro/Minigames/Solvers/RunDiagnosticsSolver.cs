@@ -1,18 +1,18 @@
 ﻿using Neuro.Cursor;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(DiagnosticGame))]
-public sealed class RunDiagnosticsSolver : GeneralMinigameSolver<DiagnosticGame>
+public sealed class RunDiagnosticsSolver : IMinigameSolver<DiagnosticGame, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
 {
-    public override IEnumerator CompleteMinigame(DiagnosticGame minigame, NormalPlayerTask task)
+    public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
+    {
+        return (task.TimerStarted != NormalPlayerTask.TimerState.Started) && !task.IsComplete;
+    }
+
+    public IEnumerator CompleteMinigame(DiagnosticGame minigame, NormalPlayerTask task)
     {
         if (task.TimerStarted == NormalPlayerTask.TimerState.NotStarted) yield return CompleteStage1(minigame);
         if (task.TimerStarted == NormalPlayerTask.TimerState.Finished) yield return CompleteStage2(minigame);
