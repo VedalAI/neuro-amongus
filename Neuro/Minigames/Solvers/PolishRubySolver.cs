@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(PolishRubyGame))]
-public class PolishRubySolver : GeneralMinigameSolver<PolishRubyGame>
+public sealed class PolishRubySolver : GeneralMinigameSolver<PolishRubyGame>
 {
     public override IEnumerator CompleteMinigame(PolishRubyGame minigame, NormalPlayerTask task)
     {

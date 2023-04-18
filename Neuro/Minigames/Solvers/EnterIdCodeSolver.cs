@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(EnterCodeMinigame))]
-public class EnterIdCodeSolver : GeneralMinigameSolver<EnterCodeMinigame>
+public sealed class EnterIdCodeSolver : GeneralMinigameSolver<EnterCodeMinigame>
 {
     public override IEnumerator CompleteMinigame(EnterCodeMinigame minigame, NormalPlayerTask task)
     {

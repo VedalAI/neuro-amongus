@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(WifiGame))]
-public class RebootWifiSolver : GeneralMinigameSolver<WifiGame>
+public sealed class RebootWifiSolver : GeneralMinigameSolver<WifiGame>
 {
     public override IEnumerator CompleteMinigame(WifiGame minigame, NormalPlayerTask task)
     {

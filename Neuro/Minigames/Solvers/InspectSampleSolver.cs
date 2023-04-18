@@ -6,7 +6,7 @@ using static SampleMinigame;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SampleMinigame))]
-public class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMinigameOpener<Minigame, NormalPlayerTask>
+public sealed class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMinigameOpener<Minigame, NormalPlayerTask>
 {
     public bool ShouldOpenConsole(Console console, Minigame minigame, NormalPlayerTask task)
     {
@@ -19,10 +19,10 @@ public class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMinigameOpe
         switch (minigame.State)
         {
             case States.PrepareSample:
-                yield return CompleteStage1(minigame);
+                yield return CompleteStep1(minigame);
                 break;
             case States.Selection:
-                yield return CompleteStage2(minigame);
+                yield return CompleteStep2(minigame);
                 break;
             default:
                 minigame.CoStartClose(0.5f);
@@ -30,7 +30,7 @@ public class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMinigameOpe
         }
     }
 
-    private IEnumerator CompleteStage1(SampleMinigame minigame)
+    private IEnumerator CompleteStep1(SampleMinigame minigame)
     {
         // wait for SampleMinigame.BringPanelUp to finish
         while (minigame.State != States.AwaitingStart) yield return null;
@@ -43,7 +43,7 @@ public class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMinigameOpe
         minigame.Close();
     }
 
-    private IEnumerator CompleteStage2(SampleMinigame minigame)
+    private IEnumerator CompleteStep2(SampleMinigame minigame)
     {
         yield return new WaitForSeconds(0.5f);
         yield return InGameCursor.Instance.CoMoveTo(minigame.Buttons[minigame.AnomalyId]);

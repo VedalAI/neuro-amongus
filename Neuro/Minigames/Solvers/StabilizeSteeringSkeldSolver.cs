@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(NavigationMinigame))]
-public class StabilizeSteeringSkeldSolver : GeneralMinigameSolver<NavigationMinigame>
+public sealed class StabilizeSteeringSkeldSolver : GeneralMinigameSolver<NavigationMinigame>
 {
     public override IEnumerator CompleteMinigame(NavigationMinigame minigame, NormalPlayerTask task)
     {

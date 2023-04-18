@@ -6,7 +6,7 @@ namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(AirshipGarbageGame), false)]
 [MinigameOpener(typeof(AutoMultistageMinigame))]
-public class EmptyGarbageAirshipSolver : IMinigameSolver<AirshipGarbageGame>, IMinigameOpener
+public sealed class EmptyGarbageAirshipSolver : IMinigameSolver<AirshipGarbageGame>, IMinigameOpener
 {
     public bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task)
     {

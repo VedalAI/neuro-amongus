@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(AlignGame))]
-public class AlignEngineOutputSolver : GeneralMinigameSolver<AlignGame>
+public sealed class AlignEngineOutputSolver : GeneralMinigameSolver<AlignGame>
 {
     public override IEnumerator CompleteMinigame(AlignGame minigame, NormalPlayerTask task)
     {

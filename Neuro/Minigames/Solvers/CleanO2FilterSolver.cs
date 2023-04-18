@@ -7,7 +7,7 @@ using Rewired.Utils;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(LeafMinigame))]
-public class CleanO2FilterSolver : GeneralMinigameSolver<LeafMinigame>
+public sealed class CleanO2FilterSolver : GeneralMinigameSolver<LeafMinigame>
 {
     public override IEnumerator CompleteMinigame(LeafMinigame minigame, NormalPlayerTask task)
     {

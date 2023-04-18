@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(KeyMinigame))]
-public class InsertKeysSolver : GeneralMinigameSolver<KeyMinigame>
+public sealed class InsertKeysSolver : GeneralMinigameSolver<KeyMinigame>
 {
     public override IEnumerator CompleteMinigame(KeyMinigame minigame, NormalPlayerTask task)
     {

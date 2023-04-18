@@ -5,13 +5,13 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SortMinigame))]
-public class SortSamplesSolver : GeneralMinigameSolver<SortMinigame>
+public sealed class SortSamplesSolver : GeneralMinigameSolver<SortMinigame>
 {
     public override IEnumerator CompleteMinigame(SortMinigame minigame, NormalPlayerTask task)
     {
         bool secondPlant = false, secondAnimal = false, secondMineral = false;
-        Vector3 left = new(-0.5f, 0f);
-        Vector3 right = new(0.5f, 0f);
+        Vector3 left = Vector3.left / 2;
+        Vector3 right = Vector3.right / 2;
         foreach (SortGameObject obj in minigame.Objects)
         {
             yield return InGameCursor.Instance.CoMoveTo(obj);

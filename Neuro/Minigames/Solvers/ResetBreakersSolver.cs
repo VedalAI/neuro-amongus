@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(ElecLeverGame))]
-public class ResetBreakersSolver : GeneralMinigameSolver<ElecLeverGame>
+public sealed class ResetBreakersSolver : GeneralMinigameSolver<ElecLeverGame>
 {
     public override IEnumerator CompleteMinigame(ElecLeverGame minigame, NormalPlayerTask task)
     {

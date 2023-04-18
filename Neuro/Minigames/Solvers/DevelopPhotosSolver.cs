@@ -6,7 +6,7 @@ using static NormalPlayerTask;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(PhotosMinigame))]
-public class DevelopPhotosSolver : IMinigameSolver<PhotosMinigame, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
+public sealed class DevelopPhotosSolver : IMinigameSolver<PhotosMinigame, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
 {
     public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
