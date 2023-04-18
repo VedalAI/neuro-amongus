@@ -290,8 +290,11 @@ public sealed class PathfindingThread : NeuroThread
             directionOld = directionNew;
         }
 
-        // add last waypoint
-        waypoints.Add(path[^1]);
+        // add last waypoint, if it exists
+        if (path.Length > 0)
+        {
+            waypoints.Add(path[^1]);
+        }
 
         return waypoints.ToArray();
     }
