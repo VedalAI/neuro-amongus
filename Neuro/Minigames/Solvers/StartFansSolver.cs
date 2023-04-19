@@ -36,6 +36,8 @@ public sealed class StartFansSolver : IMinigameSolver<StartFansMinigame, NormalP
         yield return new WaitForSeconds(0.25f);
         for (int index = 0; index < minigame.CodeIcons.Count; index++)
         {
+            // allow skipping over already set codes
+            if (minigame.CodeIcons[index].sprite == minigame.IconSprites[(int)task.Data[index]]) continue;
             yield return InGameCursor.Instance.CoMoveTo(minigame.CodeIcons[index]);
             while (minigame.CodeIcons[index].sprite != minigame.IconSprites[(int)task.Data[index]])
             {
