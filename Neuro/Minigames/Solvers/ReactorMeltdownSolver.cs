@@ -6,7 +6,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(ReactorMinigame))]
 public sealed class ReactorMeltdownSolver : IMinigameSolver<ReactorMinigame>, IMinigameOpener
 {
-    public bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task) => true;
+    public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
     public IEnumerator CompleteMinigame(ReactorMinigame minigame)
     {

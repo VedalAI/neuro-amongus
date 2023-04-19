@@ -1,12 +1,7 @@
-﻿using System.Collections;
+﻿namespace Neuro.Minigames.Solvers;
 
-namespace Neuro.Minigames.Solvers;
-
-[MinigameSolver(typeof(ShowerMinigame))]
-public sealed class DecontaminateSolver : GeneralMinigameSolver<ShowerMinigame>
+[MinigameOpener(typeof(ShowerMinigame))]
+public sealed class DecontaminateSolver : IMinigameOpener
 {
-    public override IEnumerator CompleteMinigame(ShowerMinigame minigame, NormalPlayerTask task)
-    {
-        yield break;
-    }
+    public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 }

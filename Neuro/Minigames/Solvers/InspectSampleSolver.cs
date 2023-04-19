@@ -6,9 +6,9 @@ using static SampleMinigame;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SampleMinigame))]
-public sealed class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMinigameOpener<Minigame, NormalPlayerTask>
+public sealed class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMinigameOpener<NormalPlayerTask>
 {
-    public bool ShouldOpenConsole(Console console, Minigame minigame, NormalPlayerTask task)
+    public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
         States state = (States) task.Data[0];
         return state == States.PrepareSample || (state == States.Processing && task.TaskTimer <= 0);
@@ -26,7 +26,7 @@ public sealed class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMini
                 break;
             default:
                 minigame.CoStartClose(0.5f);
-                yield break;
+                break;
         }
     }
 

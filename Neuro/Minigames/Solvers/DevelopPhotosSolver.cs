@@ -25,7 +25,7 @@ public sealed class DevelopPhotosSolver : IMinigameSolver<PhotosMinigame, Normal
                 break;
             default:
                 minigame.CoStartClose(0.5f);
-                yield break;
+                break;
         }
     }
 

@@ -25,7 +25,7 @@ public static class MinigameHandler
         if (!MinigameOpenerAttribute.MinigameOpeners.TryGetValue(minigame.GetIl2CppType().FullName, out List<IMinigameOpener> openers))
             return false;
 
-        return openers.Any(o => o.ShouldOpenConsole(console, minigame, task));
+        return openers.Any(o => o.ShouldOpenConsole(console, task));
     }
 
     private static IEnumerator CoTryCompleteMinigame(Minigame minigame, PlayerTask task)

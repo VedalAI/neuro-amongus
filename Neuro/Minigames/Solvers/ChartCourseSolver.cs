@@ -25,7 +25,7 @@ public sealed class ChartCourseSolver : GeneralMinigameSolver<CourseMinigame>
                 worldPos += new Vector3(0.2f, 0.2f, 0f);
                 yield return InGameCursor.Instance.CoMoveTo(worldPos, 0.33f);
                 InGameCursor.Instance.StopHoldingLMB();
-                yield break;
+                break;
             }
             yield return InGameCursor.Instance.CoMoveTo(worldPos, 0.33f);
             yield return new WaitForSeconds(0.1f);

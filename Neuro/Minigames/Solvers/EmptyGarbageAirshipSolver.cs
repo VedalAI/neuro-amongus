@@ -8,7 +8,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameOpener(typeof(AutoMultistageMinigame))]
 public sealed class EmptyGarbageAirshipSolver : IMinigameSolver<AirshipGarbageGame>, IMinigameOpener
 {
-    public bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task)
+    public bool ShouldOpenConsole(Console console, PlayerTask task)
     {
         return task.TaskType == TaskTypes.EmptyGarbage;
     }
