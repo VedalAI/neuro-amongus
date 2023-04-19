@@ -1,14 +1,8 @@
-﻿using System.Collections;
-using UnityEngine;
-
-namespace Neuro.Minigames.Solvers;
+﻿namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(MedScanMinigame))]
 
-public sealed class SubmitScanSolver : GeneralMinigameSolver<MedScanMinigame>
+public sealed class SubmitScanSolver : IMinigameOpener<MedScanMinigame, NormalPlayerTask>
 {
-    public override IEnumerator CompleteMinigame(MedScanMinigame minigame, NormalPlayerTask task)
-    {
-        yield return new WaitForSeconds(minigame.ScanDuration);
-    }
+    public bool ShouldOpenConsole(Console console, MedScanMinigame minigame, NormalPlayerTask task) => true;
 }
