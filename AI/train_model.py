@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from nn.dataset import AmongUsDataset
-from nn.model import LSTMModel, Model
+from nn.model import LSTMModel
 from util.loader import read_all_recordings
 
 
@@ -17,7 +17,7 @@ def main():
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     game_data = read_all_recordings()
-    #game_data.shuffle()
+    # game_data.shuffle()
     train_data, val_data = game_data.split(0.8)
 
     train_dataset = AmongUsDataset(train_data, device)

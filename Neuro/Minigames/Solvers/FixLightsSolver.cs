@@ -8,7 +8,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(SwitchMinigame))]
 public sealed class FixLightsSolver : IMinigameSolver<SwitchMinigame>, IMinigameOpener
 {
-    public bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task) => true;
+    public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
     public IEnumerator CompleteMinigame(SwitchMinigame minigame)
     {

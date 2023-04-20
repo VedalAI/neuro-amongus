@@ -2,9 +2,9 @@
 
 namespace Neuro.Minigames;
 
-public abstract class GeneralMinigameSolver<TMinigame> : IMinigameSolver<TMinigame, NormalPlayerTask>, IMinigameOpener<TMinigame, NormalPlayerTask>
+public abstract class GeneralMinigameSolver<TMinigame> : IMinigameSolver<TMinigame, NormalPlayerTask>, IMinigameOpener
     where TMinigame : Minigame
 {
     public abstract IEnumerator CompleteMinigame(TMinigame minigame, NormalPlayerTask task);
-    public bool ShouldOpenConsole(Console console, TMinigame minigame, NormalPlayerTask task) => true;
+    public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 }

@@ -5,15 +5,15 @@
         <Description>Neuro-sama Among Us plugin</Description>
         <VersionPrefix>1.0.0</VersionPrefix>
         <VersionSuffix>dev</VersionSuffix>
-        
+
         <TargetFramework>net6.0</TargetFramework>
         <LangVersion>latest</LangVersion>
-        
+
         <DebugType>embedded</DebugType>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
         <ILRepackTargetConfigurations>Debug;Release</ILRepackTargetConfigurations>
-        <OutputPath>V:\SteamLibrary\steamapps\common\Among Us\BepInEx\plugins</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
@@ -37,7 +37,7 @@
             <DependentUpon>%(Filename).proto</DependentUpon>
         </Compile>
     </ItemGroup>
-    
+
     <ItemGroup>
         <Compile Remove="zzz_excluded\**" />
     </ItemGroup>
