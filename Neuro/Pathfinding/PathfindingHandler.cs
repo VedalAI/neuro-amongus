@@ -4,7 +4,6 @@ using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
-using Neuro.Utilities.Convertors;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -74,7 +73,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         return grid;
     }
 
-    public float GetPathLength(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
+    private float GetPathLength(Vector2 start, Vector2 target, string identifier)
     {
         if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
 
@@ -84,7 +83,13 @@ public sealed class PathfindingHandler : MonoBehaviour
         return length;
     }
 
-    public Vector2 GetFirstNodeInPath(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
+    public float GetPathLength(Vector2 target, string identifier) => GetPathLength(PlayerControl.LocalPlayer.GetTruePosition(), target, identifier);
+
+    public float GetPathLength(Vector2 target, int identifier) => GetPathLength(target, identifier.ToString());
+
+    public float GetPathLength(Component target) => GetPathLength(target.transform.position, target.GetInstanceID());
+
+    private Vector2 GetFirstNodeInPath(Vector2 start, Vector2 target, string identifier)
     {
         if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
 
@@ -96,8 +101,14 @@ public sealed class PathfindingHandler : MonoBehaviour
         return path[0];
     }
 
+    public Vector2 GetFirstNodeInPath(Vector2 target, string identifier) => GetFirstNodeInPath(PlayerControl.LocalPlayer.GetTruePosition(), target, identifier);
+
+    public Vector2 GetFirstNodeInPath(Vector2 target, int identifier) => GetFirstNodeInPath(target, identifier.ToString());
+
+    public Vector2 GetFirstNodeInPath(Component target) => GetFirstNodeInPath(target.transform.position, target.GetInstanceID());
+
     [HideFromIl2Cpp]
-    public Vector2[] GetPath(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
+    private Vector2[] GetPath(Vector2 start, Vector2 target, string identifier)
     {
         if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
 
@@ -108,6 +119,15 @@ public sealed class PathfindingHandler : MonoBehaviour
 
         return path;
     }
+
+    [HideFromIl2Cpp]
+    public Vector2[] GetPath(Vector2 target, string identifier) => GetPath(PlayerControl.LocalPlayer.GetTruePosition(), target, identifier);
+
+    [HideFromIl2Cpp]
+    public Vector2[] GetPath(Vector2 target, int identifier) => GetPath(target, identifier.ToString());
+
+    [HideFromIl2Cpp]
+    public Vector2[] GetPath(Component target) => GetPath(target.transform.position, target.GetInstanceID());
 
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted()

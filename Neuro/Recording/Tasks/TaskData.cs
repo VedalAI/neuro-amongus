@@ -3,7 +3,6 @@ using Neuro.Minigames;
 using Neuro.Pathfinding;
 using Neuro.Recording.Common;
 using Neuro.Utilities;
-using Neuro.Utilities.Convertors;
 using UnityEngine;
 using Random = System.Random;
 using Vector2 = UnityEngine.Vector2;
@@ -25,22 +24,20 @@ public partial class TaskData
                      .Where(c => c && (minigameHasNoSolver || MinigameHandler.ShouldOpenConsole(c, task.MinigamePrefab, task)))
                      .OrderBy(Closest).Take(2))
         {
-            data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest, consoleOfInterest));
+            data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest));
 
             // TODO: Move this thing out of here
-            Vector2[] path = PathfindingHandler.Instance.GetPath(PlayerControl.LocalPlayer, consoleOfInterest, consoleOfInterest);
-            DrawPath(path, consoleOfInterest);
+            Vector2[] path = PathfindingHandler.Instance.GetPath(consoleOfInterest);
+            DrawPath(path, consoleOfInterest.GetInstanceID());
         }
 
         return data;
     }
 
-    private static void DrawPath(Vector2[] path, IdentifierProvider name)
+    private static void DrawPath(Vector2[] path, int id)
     {
-        if (string.IsNullOrEmpty(name)) return;
-
-        GameObject.Destroy(GameObject.Find("Neuro Path " + name));
-        GameObject test = new("Neuro Path " + name);
+        GameObject.Destroy(GameObject.Find("Neuro Path " + id));
+        GameObject test = new("Neuro Path " + id);
         //Info(test.transform);
         test.transform.position = PlayerControl.LocalPlayer.transform.position;
 
@@ -54,12 +51,12 @@ public partial class TaskData
         renderer.material = NeuroUtilities.MaskShaderMat;
         renderer.widthMultiplier = 0.2f;
 
-        Random random = new(name.GetHashCode());
+        Random random = new(id);
         renderer.startColor = new Color(random.NextSingle(), random.NextSingle(), random.NextSingle());
     }
 
     private static float Closest(Console console)
     {
-        return PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, console, console);
+        return PathfindingHandler.Instance.GetPathLength(console);
     }
 }
