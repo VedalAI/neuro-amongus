@@ -12,7 +12,7 @@ public sealed class DebugWindow : MonoBehaviour
     private DebugTab _selectedTab;
     private bool _enabled = true;
     private readonly DragWindow _window;
-    private Vector2 positionOnScrollbar = Vector2.zero;
+    // private Vector2 positionOnScrollbar = Vector2.zero;
 
     private int _frameCount;
     private float _fpsUpdateTime;
@@ -87,7 +87,7 @@ public sealed class DebugWindow : MonoBehaviour
                 {
                     _selectedTab = !isSelected ? tab : null;
                     //New tab selected, reset the scrollbar position.
-                    positionOnScrollbar = Vector2.zero;
+                    // positionOnScrollbar = Vector2.zero;
                 }
 
                 if (tabHidden) GUI.enabled = true;
@@ -97,12 +97,12 @@ public sealed class DebugWindow : MonoBehaviour
 
             if (_selectedTab is { IsEnabled: true })
             {
-                //Create header for our tab
                 NeuroUtilities.GUILayoutDivider();
+
                 //Create a scrollbarview for all tabs that suddenly become bigger than what fits.
-                positionOnScrollbar = GUILayout.BeginScrollView(positionOnScrollbar, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Height(Screen.height/2));
-                  _selectedTab?.BuildUI();  //Build UI.
-                GUILayout.EndScrollView();
+                // positionOnScrollbar = GUILayout.BeginScrollView(positionOnScrollbar, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Height(Screen.height/2));
+                _selectedTab?.BuildUI();  //Build UI.
+                // GUILayout.EndScrollView();
             }
 
             GUILayout.EndVertical();

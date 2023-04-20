@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
+using Reactor.Utilities.Extensions;
 using UnityEngine;
 
 namespace Neuro.Pathfinding;
@@ -17,10 +18,12 @@ public sealed class PathfindingThread : NeuroThread
     private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target, Vector2[] path, float length)> _results = new();
 
     private readonly Node[,] _grid;
+    private readonly Transform _visualPointParent;
 
-    public PathfindingThread(Node[,] grid, Vector2 accessiblePosition)
+    public PathfindingThread(Node[,] grid, Vector2 accessiblePosition, Transform visualPointParent = null)
     {
         _grid = grid;
+        _visualPointParent = visualPointParent;
         FloodFill(accessiblePosition);
     }
 
@@ -115,6 +118,7 @@ public sealed class PathfindingThread : NeuroThread
         // Set all nodes not in closed set to inaccessible
         foreach (Node node in _grid)
         {
+            // TODO: On some densities, node can be null here!!
             if (!closedSet.Contains(node)) node.accessible = false;
         }
     }
@@ -129,7 +133,7 @@ public sealed class PathfindingThread : NeuroThread
 
         if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<Vector2>();
 
-        Heap<Node> openSet = new(PathfindingHandler.GRID_SIZE * PathfindingHandler.GRID_SIZE);
+        Heap<Node> openSet = new(PathfindingHandler.Instance.GridSize * PathfindingHandler.Instance.GridSize);
         HashSet<Node> closedSet = new();
 
         openSet.Add(startNode);
@@ -230,12 +234,12 @@ public sealed class PathfindingThread : NeuroThread
 
     private Node NodeFromWorldPoint(Vector2 position)
     {
-        position *= PathfindingHandler.GRID_DENSITY;
-        float clampedX = Math.Clamp(position.x, PathfindingHandler.GRID_LOWER_BOUNDS, PathfindingHandler.GRID_UPPER_BOUNDS);
-        float clampedY = Math.Clamp(position.y, PathfindingHandler.GRID_LOWER_BOUNDS, PathfindingHandler.GRID_UPPER_BOUNDS);
+        position *= PathfindingHandler.Instance.GridDensity;
+        float clampedX = Math.Clamp(position.x, PathfindingHandler.Instance.GridLowerBounds, PathfindingHandler.Instance.GridUpperBounds);
+        float clampedY = Math.Clamp(position.y, PathfindingHandler.Instance.GridLowerBounds, PathfindingHandler.Instance.GridUpperBounds);
 
-        int xIndex = (int) Math.Round(clampedX + PathfindingHandler.GRID_UPPER_BOUNDS);
-        int yIndex = (int) Math.Round(clampedY + PathfindingHandler.GRID_UPPER_BOUNDS);
+        int xIndex = (int) Math.Round(clampedX + PathfindingHandler.Instance.GridUpperBounds);
+        int yIndex = (int) Math.Round(clampedY + PathfindingHandler.Instance.GridUpperBounds);
 
         return _grid[xIndex, yIndex];
     }
@@ -253,7 +257,8 @@ public sealed class PathfindingThread : NeuroThread
             int checkX = node.gridX + x;
             int checkY = node.gridY + y;
 
-            if (checkX is >= 0 and < PathfindingHandler.GRID_SIZE && checkY is >= 0 and < PathfindingHandler.GRID_SIZE) neighbours.Add(_grid[checkX, checkY]);
+            if (checkX >= 0 && checkX < PathfindingHandler.Instance.GridSize &&
+                checkY >= 0 && checkY < PathfindingHandler.Instance.GridSize) neighbours.Add(_grid[checkX, checkY]);
         }
 
         return neighbours;
@@ -304,11 +309,14 @@ public sealed class PathfindingThread : NeuroThread
         return 14 * Math.Min(dstX, dstY) + 10 * Math.Abs(dstX - dstY);
     }
 
-    private static void CreateNodeVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.red, 0.1f);
+    private void CreateNodeVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.red, 0.1f);
 
-    private static void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
+    private void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
     {
+        if (!_visualPointParent) return;
+
         GameObject nodeVisualPoint = new("Gizmo (Visual Point)");
+        nodeVisualPoint.transform.parent = _visualPointParent;
         nodeVisualPoint.transform.position = position;
 
         LineRenderer renderer = nodeVisualPoint.AddComponent<LineRenderer>();

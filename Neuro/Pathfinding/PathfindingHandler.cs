@@ -3,27 +3,31 @@ using System.Linq;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
+using Neuro.Recording.Common;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
+using Reactor.Utilities.Extensions;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
 
 namespace Neuro.Pathfinding;
 
 [RegisterInIl2Cpp]
 public sealed class PathfindingHandler : MonoBehaviour
 {
-    public const float GRID_DENSITY = 5f;
-    public const int GRID_BASE_WIDTH = 100;
+    public float GridDensity { get; set; }
+    public int GridBaseWidth { get; set; }
 
-    public const int GRID_SIZE = (int)(GRID_BASE_WIDTH * GRID_DENSITY);
-    public const int GRID_LOWER_BOUNDS = GRID_SIZE / -2;
-    public const int GRID_UPPER_BOUNDS = GRID_SIZE / 2;
+    public int GridSize => (int)(GridBaseWidth * GridDensity);
+    public int GridLowerBounds => GridSize / -2;
+    public int GridUpperBounds => GridSize / 2;
 
     public static PathfindingHandler Instance { get; private set; }
 
     public PathfindingHandler(IntPtr ptr) : base(ptr) { }
 
     private PathfindingThread _thread;
+    private GameObject _visualPointParent;
 
     private void Awake()
     {
@@ -36,8 +40,8 @@ public sealed class PathfindingHandler : MonoBehaviour
 
         Instance = this;
 
-        _thread = new PathfindingThread(GenerateNodeGrid(), ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius);
-        _thread.Start();
+        InitializeGridSizes();
+        InitializeThread();
     }
 
     private void OnDestroy()
@@ -45,10 +49,46 @@ public sealed class PathfindingHandler : MonoBehaviour
         _thread.Stop();
     }
 
+    public void InitializeGridSizes()
+    {
+        switch (ShipStatus.Instance.GetTypeForMessage())
+        {
+            case MapType.Skeld:
+                GridDensity = 4.489812374114990234375f;
+                GridBaseWidth = 58;
+                break;
+
+            case MapType.MiraHq:
+                GridDensity = 4.404010295867919921875f;
+                GridBaseWidth = 80;
+                break;
+
+            case MapType.Polus:
+                GridDensity = 4.5252170562744140625f;
+                GridBaseWidth = 96;
+                break;
+
+            case MapType.Airship:
+                GridDensity = 4.333333f;
+                GridBaseWidth = 100;
+                break;
+        }
+    }
+
+    public void InitializeThread()
+    {
+        if (_visualPointParent) _visualPointParent.Destroy();
+        _visualPointParent = new GameObject("Visual Point Parent");
+
+        _thread?.Stop();
+        _thread = new PathfindingThread(GenerateNodeGrid(), ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius, _visualPointParent.transform);
+        _thread.Start();
+    }
+
     [HideFromIl2Cpp]
     private Node[,] GenerateNodeGrid()
     {
-        Node[,] grid = new Node[GRID_SIZE, GRID_SIZE];
+        Node[,] grid = new Node[GridSize, GridSize];
 
         const float OFFSET = 1 / 5f; // Must be less than 1 / 4f or it will flood fill through walls
         Vector2[] offsetCoords =
@@ -58,8 +98,8 @@ public sealed class PathfindingHandler : MonoBehaviour
             new(-OFFSET, OFFSET), new(0, OFFSET), new(OFFSET, OFFSET)
         };
 
-        for (int x = GRID_LOWER_BOUNDS; x < GRID_UPPER_BOUNDS; x++)
-        for (int y = GRID_LOWER_BOUNDS; y < GRID_UPPER_BOUNDS; y++)
+        for (int x = GridLowerBounds; x < GridUpperBounds; x++)
+        for (int y = GridLowerBounds; y < GridUpperBounds; y++)
         {
             Vector2 point = Vector2.zero;
             bool accessible = false;
@@ -73,7 +113,7 @@ public sealed class PathfindingHandler : MonoBehaviour
                 }
             }
 
-            grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
+            grid[x + GridUpperBounds, y + GridUpperBounds] = new Node(accessible, point, x + GridUpperBounds, y + GridUpperBounds);
         }
 
         return grid;
@@ -81,10 +121,10 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     private bool TryGetAccessiblePoint(float x, float y, out Vector2 point)
     {
-        const float NODE_RADIUS = 1 / GRID_DENSITY;
-        point = new(x / GRID_DENSITY, y / GRID_DENSITY);
+        float nodeRadius = 1 / GridDensity;
+        point = new(x / GridDensity, y / GridDensity);
 
-        Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, Constants.ShipAndAllObjectsMask);
+        Collider2D[] cols = Physics2D.OverlapCircleAll(point, nodeRadius, Constants.ShipAndAllObjectsMask);
         int validColsCount = cols.Count(col =>
             !col.isTrigger &&
             !col.GetComponentInParent<Vent>() &&
