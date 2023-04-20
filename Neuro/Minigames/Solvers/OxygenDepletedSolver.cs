@@ -8,7 +8,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(KeypadGame))]
 public sealed class OxygenDepletedSolver : IMinigameSolver<KeypadGame>, IMinigameOpener
 {
-    public bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task) => true;
+    public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
     public IEnumerator CompleteMinigame(KeypadGame minigame)
     {
