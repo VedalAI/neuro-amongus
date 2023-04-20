@@ -2,7 +2,7 @@
 
 [MinigameSolver(typeof(MedScanMinigame))]
 
-public sealed class SubmitScanSolver : IMinigameOpener<MedScanMinigame, NormalPlayerTask>
+public sealed class SubmitScanSolver : IMinigameOpener<NormalPlayerTask>
 {
-    public bool ShouldOpenConsole(Console console, MedScanMinigame minigame, NormalPlayerTask task) => true;
+    public bool ShouldOpenConsole(Console console, NormalPlayerTask task) => true;
 }

@@ -38,25 +38,25 @@ def main():
                 game_data.update_frame(frame)
 
                 x = game_data.get_x()
-                
-                print(x)
-                
+
+                # print(x)
+
                 x_history.append(x)
                 # max length of 10
                 if len(x_history) > 10:
                     x_history.pop(0)
-                    
+
                 # pad with zeros if not enough data
                 while len(x_history) < 10:
                     x_history.insert(0, np.zeros_like(x_history[0]))
-                
-                #print(x_history)
-                #print(np.array([x_history]).shape)
-                    
+
+                # print(x_history)
+                # print(np.array([x_history]).shape)
+
                 x_history_tensor = torch.tensor(np.array([x_history]), dtype=torch.float32, device=device)
                 y = model(x_history_tensor).detach().cpu().numpy()[0]
                 y = [float(o) for o in y]
-                
+
                 new_y = [0, 0]
                 if y[0] > 0.5:
                     new_y[0] += 1
@@ -69,7 +69,7 @@ def main():
 
                 output = NnOutput()
                 output.desired_move_direction = Vector2(x=new_y[0], y=new_y[1])
-                
+
                 print(new_y)
 
                 conn.sendall(bytes(output))

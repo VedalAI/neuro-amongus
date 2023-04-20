@@ -100,7 +100,7 @@ public sealed class DebugWindow : MonoBehaviour
                 //Create header for our tab
                 NeuroUtilities.GUILayoutDivider();
                 //Create a scrollbarview for all tabs that suddenly become bigger than what fits.
-                positionOnScrollbar = GUILayout.BeginScrollView(positionOnScrollbar, GUILayout.Height(Screen.height/2));
+                positionOnScrollbar = GUILayout.BeginScrollView(positionOnScrollbar, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Height(Screen.height/2));
                   _selectedTab?.BuildUI();  //Build UI.
                 GUILayout.EndScrollView();
             }

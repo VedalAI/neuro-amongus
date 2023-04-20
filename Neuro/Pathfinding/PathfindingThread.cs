@@ -40,15 +40,15 @@ public sealed class PathfindingThread : NeuroThread
         bool tried = _results.TryGetValue(identifier, out (Vector2, Vector2, Vector2[] path, float length) result);
         path = result.path;
         length = result.length;
-        if(path != null)
+        if (path != null)
         {
-            while(path.Length > 1 && Vector2.Distance(PlayerControl.LocalPlayer.GetTruePosition(), path[0]) < 0.5f)
+            while (path.Length > 1 && Vector2.Distance(PlayerControl.LocalPlayer.GetTruePosition(), path[0]) < 0.5f)
             {
                 path = path.Skip(1).ToArray();
             }
             _results[identifier] = result with { path = path };
         }
-        
+
         return tried;
     }
 
@@ -304,9 +304,7 @@ public sealed class PathfindingThread : NeuroThread
         int dstX = Math.Abs(a.gridX - b.gridX);
         int dstY = Math.Abs(a.gridY - b.gridY);
 
-        if (dstX > dstY)
-            return 14 * dstY + 10 * (dstX - dstY);
-        return 14 * dstX + 10 * (dstY - dstX);
+        return 14 * Math.Min(dstX, dstY) + 10 * Math.Abs(dstX - dstY);
     }
 
     private static void CreateNodeVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.red, 0.1f);

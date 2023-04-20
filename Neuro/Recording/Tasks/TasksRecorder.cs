@@ -2,11 +2,9 @@
 using System.Linq;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
-using Neuro.Pathfinding;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
-using UnityEngine.Playables;
 
 namespace Neuro.Recording.Tasks;
 
@@ -38,8 +36,8 @@ public sealed class TasksRecorder : MonoBehaviour
     {
         if (MeetingHud.Instance || Minigame.Instance) return;
 
-        Console closestConsole = null;
-        float closestDistance = 999f;
+        /*Console closestConsole = null;
+        float closestDistance = 999f;*/
 
         Frame.Tasks.Clear();
         foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>().Where(t => !t.IsComplete))
@@ -47,7 +45,7 @@ public sealed class TasksRecorder : MonoBehaviour
             TaskData data = TaskData.Create(task);
             Frame.Tasks.Add(data);
 
-            foreach (Console console in task.FindConsoles())
+            /*foreach (Console console in task.FindConsoles())
             {
                 if (!console) continue;
                 var distance = PathfindingHandler.Instance.GetPathLength(PlayerControl.LocalPlayer, console, console);
@@ -56,17 +54,16 @@ public sealed class TasksRecorder : MonoBehaviour
                     closestDistance = distance;
                     closestConsole = console;
                 }
-            }
-
+            }*/
         }
 
-        if(closestConsole != null)
+        /*if(closestConsole != null)
         {
             var path = PathfindingHandler.Instance.GetPath(PlayerControl.LocalPlayer, closestConsole, closestConsole);
 
             TaskData.DrawPath(path, closestConsole);
-        }
-        
+        }*/
+
 
         PlayerTask sabotage = PlayerControl.LocalPlayer.myTasks._items.FirstOrDefault(s => PlayerTask.TaskIsEmergency(s) && !s.IsComplete);
         Frame.Sabotage = sabotage ? TaskData.Create(sabotage) : null;

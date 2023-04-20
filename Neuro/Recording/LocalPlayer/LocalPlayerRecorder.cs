@@ -50,9 +50,7 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     private void FixedUpdate()
     {
         Frame.Position = PlayerControl.LocalPlayer.GetTruePosition();
-        Frame.Velocity = PlayerControl.LocalPlayer.MyPhysics.Velocity.normalized; // TODO: Velocity depends on player speed game setting
-
-        Warning("Current velocity: " + ((Vector2)Frame.Velocity).normalized);
+        Frame.Velocity = PlayerControl.LocalPlayer.MyPhysics.Velocity.normalized;
 
         for (int i = 0; i < 8; i++)
         {
