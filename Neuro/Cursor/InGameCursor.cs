@@ -129,6 +129,8 @@ public sealed class InGameCursor : MonoBehaviour
             yield return null;
         }
 
+        if (!_isInMovingCoroutine) yield break;
+
         SnapTo(targetPosition);
         yield return null;
     }
