@@ -9,7 +9,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameOpener(typeof(DivertPowerMetagame))]
 public sealed class DivertPowerSolver : IMinigameSolver<Minigame>, IMinigameOpener
 {
-    public bool ShouldOpenConsole(Console console, Minigame minigame, PlayerTask task) => true;
+    public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
     public IEnumerator CompleteMinigame(Minigame minigame)
     {

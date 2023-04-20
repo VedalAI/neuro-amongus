@@ -9,6 +9,7 @@ namespace Neuro.Minigames;
 
 public static class MinigameHandler
 {
+    // TODO: Implement something (maybe in control panel) to disengage from minigame and/or ignore it for the rest of the match
     public static void TryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
         GameObject coroutineObject = new("Minigame Solver");
@@ -24,7 +25,7 @@ public static class MinigameHandler
         if (!MinigameOpenerAttribute.MinigameOpeners.TryGetValue(minigame.GetIl2CppType().FullName, out List<IMinigameOpener> openers))
             return false;
 
-        return openers.Any(o => o.ShouldOpenConsole(console, minigame, task));
+        return openers.Any(o => o.ShouldOpenConsole(console, task));
     }
 
     private static IEnumerator CoTryCompleteMinigame(Minigame minigame, PlayerTask task)

@@ -96,6 +96,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         return path[0];
     }
 
+    [HideFromIl2Cpp]
     public Vector2[] GetPath(PositionProvider start, PositionProvider target, IdentifierProvider identifier)
     {
         if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");

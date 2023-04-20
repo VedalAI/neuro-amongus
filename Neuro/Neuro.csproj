@@ -11,6 +11,7 @@
 
         <DebugType>embedded</DebugType>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
         <ILRepackTargetConfigurations>Debug;Release</ILRepackTargetConfigurations>
     </PropertyGroup>
