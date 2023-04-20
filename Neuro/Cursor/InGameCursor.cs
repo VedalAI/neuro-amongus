@@ -89,15 +89,20 @@ public sealed class InGameCursor : MonoBehaviour
         _isInMovingCoroutine = false;
     }
 
-    public void SnapTo(Vector2 position, bool stopMovement = true)
+    public void SnapTo(Vector2 target, bool stopMovement = true)
     {
         if (stopMovement) StopMovement();
-        transform.position = transform.position with {x = position.x, y = position.y};
+        transform.position = transform.position with {x = target.x, y = target.y};
     }
 
-    public void SnapTo(Component target, bool stopMovement = true) => SnapTo(target.transform.position, stopMovement);
+    public void SnapTo(Component target, bool stopMovement = true)
+        => SnapTo(target.transform.position, stopMovement);
 
-    public void SnapToCenter(bool stopMovement = true) => SnapTo(transform.parent.position, stopMovement);
+    public void SnapTo(GameObject target, bool stopMovement = true)
+        => SnapTo(target.transform.position, stopMovement);
+
+    public void SnapToCenter(bool stopMovement = true)
+        => SnapTo(transform.parent.position, stopMovement);
 
     [HideFromIl2Cpp]
     public IEnumerator CoMoveTo(Vector2 targetPosition, float speed = 1f)
@@ -136,13 +141,54 @@ public sealed class InGameCursor : MonoBehaviour
     }
 
     [HideFromIl2Cpp]
-    public IEnumerator CoMoveTo(Component target, float speed = 1f) => CoMoveTo(target.transform.position, speed);
+    public IEnumerator CoMoveTo(Component target, float speed = 1f)
+        => CoMoveTo(target.transform.position, speed);
 
     [HideFromIl2Cpp]
-    public IEnumerator CoMoveTo(GameObject target, float speed = 1f) => CoMoveTo(target.transform.position, speed);
+    public IEnumerator CoMoveTo(GameObject target, float speed = 1f)
+        => CoMoveTo(target.transform.position, speed);
 
     [HideFromIl2Cpp]
     public IEnumerator CoMoveToCenter(float speed = 1f) => CoMoveTo(transform.parent.position, speed);
+
+    [HideFromIl2Cpp]
+    public IEnumerator CoMoveToCircleStart(Vector2 origin, float radius, float startAngle, float speed = 1f)
+    {
+        Vector2 positionOnCircle = origin + new Vector2(Mathf.Cos(startAngle), Mathf.Sin(startAngle)) * radius;
+        yield return CoMoveTo(positionOnCircle, speed);
+    }
+
+    [HideFromIl2Cpp]
+    public IEnumerator CoMoveToCircleStart(Component origin, float radius, float startAngle, float speed = 1f)
+        => CoMoveToCircleStart(origin.transform.position, radius, startAngle, speed);
+
+    [HideFromIl2Cpp]
+    public IEnumerator CoMoveToCircleStart(GameObject origin, float radius, float startAngle, float speed = 1f)
+        => CoMoveToCircleStart(origin.transform.position, radius, startAngle, speed);
+
+    [HideFromIl2Cpp]
+    public IEnumerator CoMoveCircle(Vector2 origin, float radius, float startAngle, float targetAngle, float duration)
+    {
+        yield return CoMoveToCircleStart(origin, radius, startAngle);
+
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            float angle = Mathf.Lerp(startAngle, targetAngle, t / duration);
+            float angleInRadians = angle * Mathf.Deg2Rad;
+
+            Vector2 positionOnCircle = origin + new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians)) * radius;
+            SnapTo(positionOnCircle);
+            yield return null;
+        }
+    }
+
+    [HideFromIl2Cpp]
+    public IEnumerator CoMoveCircle(Component origin, float radius, float startAngle, float targetAngle, float duration)
+        => CoMoveCircle(origin.transform.position, radius, startAngle, targetAngle, duration);
+
+    [HideFromIl2Cpp]
+    public IEnumerator CoMoveCircle(GameObject origin, float radius, float startAngle, float targetAngle, float duration)
+        => CoMoveCircle(origin.transform.position, radius, startAngle, targetAngle, duration);
 
     public void Hide()
     {
