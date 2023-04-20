@@ -50,27 +50,50 @@ public sealed class PathfindingHandler : MonoBehaviour
     {
         Node[,] grid = new Node[GRID_SIZE, GRID_SIZE];
 
-        const float NODE_RADIUS = 1 / GRID_DENSITY;
+        const float OFFSET = 1 / 5f; // Must be less than 1 / 4f or it will flood fill through walls
+        Vector2[] offsetCoords =
+        {
+            new(-OFFSET, -OFFSET), new(0, -OFFSET), new(OFFSET, -OFFSET),
+            new(-OFFSET, 0), Vector2.zero, new(OFFSET, 0),
+            new(-OFFSET, OFFSET), new(0, OFFSET), new(OFFSET, OFFSET)
+        };
 
         for (int x = GRID_LOWER_BOUNDS; x < GRID_UPPER_BOUNDS; x++)
         for (int y = GRID_LOWER_BOUNDS; y < GRID_UPPER_BOUNDS; y++)
         {
-            Vector2 point = new(x / GRID_DENSITY, y / GRID_DENSITY);
+            Vector2 point = Vector2.zero;
+            bool accessible = false;
+            for (int i = 0; i < 9; i++)
+            {
+                int b = (i * 4 + 4) % 9; // Noncontinuous linear index through the array
+                if (TryGetAccessiblePoint(x + offsetCoords[b].x, y + offsetCoords[b].y, out point))
+                {
+                    accessible = true;
+                    break;
+                }
+            }
 
-            Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, Constants.ShipAndAllObjectsMask);
-            int validColsCount = cols.Count(col =>
-                !col.isTrigger &&
-                !col.GetComponentInParent<Vent>() &&
-                !col.GetComponentInParent<SomeKindaDoor>()
-            );
-
-            // TODO: Add edge case for Airship ladders
-
-            bool accessible = validColsCount == 0;
             grid[x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS] = new Node(accessible, point, x + GRID_UPPER_BOUNDS, y + GRID_UPPER_BOUNDS);
         }
 
         return grid;
+    }
+
+    private bool TryGetAccessiblePoint(float x, float y, out Vector2 point)
+    {
+        const float NODE_RADIUS = 1 / GRID_DENSITY;
+        point = new(x / GRID_DENSITY, y / GRID_DENSITY);
+
+        Collider2D[] cols = Physics2D.OverlapCircleAll(point, NODE_RADIUS, Constants.ShipAndAllObjectsMask);
+        int validColsCount = cols.Count(col =>
+            !col.isTrigger &&
+            !col.GetComponentInParent<Vent>() &&
+            !col.GetComponentInParent<SomeKindaDoor>()
+        );
+
+        // TODO: Add edge case for Airship ladders
+
+        return validColsCount == 0;
     }
 
     private float GetPathLength(Vector2 start, Vector2 target, string identifier)
