@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Neuro.Events;
 using Neuro.Utilities;
+using Neuro.Utilities.Convertors;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -11,6 +14,8 @@ public sealed class MovementHandler : MonoBehaviour
 {
     private const float OBSTACLE_PADDING = 0.5f; // The minimum distance betweeen the agent an obstacle
     private const float PADDING_STRENGTH = 0.5f; // The speed at which the agent will be pushed away from the obstacle. 1 is max.
+
+    private PlayerControl followPlayer = null;
 
     public static MovementHandler Instance { get; private set; }
 
@@ -85,6 +90,57 @@ public sealed class MovementHandler : MonoBehaviour
         renderer.SetPosition(0, PlayerControl.LocalPlayer.GetTruePosition());
         renderer.SetPosition(1, PlayerControl.LocalPlayer.GetTruePosition() + direction);
     }
+
+    public void MoveDeadPlayer() {
+        Console closestConsole = null;
+        float closestDistance = 999f;
+        
+        foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>().Where(t => !t.IsComplete))
+        {
+
+            foreach (Console console in task.FindConsoles())
+            {
+                if (!console) continue;
+                var distance = Vector2.Distance(console.transform.position, PlayerControl.LocalPlayer.GetTruePosition());
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestConsole = console;
+                }
+            }
+        }
+        if (closestConsole) {
+            moveToPosition(closestConsole.transform.position);
+            return;
+        }
+
+        // follow random player
+        if (followPlayer is null || followPlayer.Data.IsDead)
+        {
+            List<PlayerControl> alivePlayers = new();
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls) 
+            {
+                if (!player.Data.IsDead) 
+                {
+                    alivePlayers.Add(player);
+
+                } 
+            }
+            System.Random random = new();
+            int i = random.Next(alivePlayers.Count);
+            followPlayer = alivePlayers[i];
+            Info("Now following " + followPlayer.name);
+        }
+        moveToPosition(followPlayer.GetTruePosition());
+    }
+
+    private void moveToPosition(PositionProvider target)
+    {
+        if (Vector2.Distance(target, PlayerControl.LocalPlayer.GetTruePosition()) < 0.5f) ForcedMoveDirection = Vector2.zero;
+        else ForcedMoveDirection = (target - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+        
+    }
+
 
     private void CreateArrow()
     {
