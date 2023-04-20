@@ -17,8 +17,13 @@ public sealed class EmptyGarbageAirshipSolver : IMinigameSolver<AirshipGarbageGa
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.can.Handle);
         InGameCursor.Instance.StartHoldingLMB(minigame);
-        // yank that shit out of there
-        yield return InGameCursor.Instance.CoMoveTo(new Vector2(Screen.width / 2, Screen.height), 3f);
+        while (minigame.can.Body.IsTouching(minigame.can.Success))
+        {
+            yield return InGameCursor.Instance.CoMoveTo(minigame.can.Handle.transform.position + new Vector3(0f, 2f), 2);
+            yield return new WaitForSeconds(0.05f);
+            yield return InGameCursor.Instance.CoMoveTo(minigame.can.Handle.transform.position + new Vector3(0f, -1f), 2);
+            yield return new WaitForSeconds(0.05f);
+        }
         InGameCursor.Instance.StopHoldingLMB();
     }
 }
