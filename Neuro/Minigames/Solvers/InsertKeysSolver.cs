@@ -15,17 +15,18 @@ public sealed class InsertKeysSolver : GeneralMinigameSolver<KeyMinigame>
         InGameCursor.Instance.StopHoldingLMB();
         yield return new WaitForSeconds(0.1f);
 
+        const float radius = 0.5f;
+        Vector2 keyPosition = minigame.key.transform.position;
+        yield return InGameCursor.Instance.CoMoveTo(keyPosition + new Vector2(0, 1) * radius, 0.5f);
+
         InGameCursor.Instance.StartHoldingLMB(minigame);
         const float spinDuration = 0.2f;
         for (float t = 0; t < spinDuration; t += Time.deltaTime)
         {
-            Vector2 keyPosition = minigame.key.transform.position;
+            float angle = Mathf.Lerp(90, 0, t / spinDuration);
+            float angleInRadians = angle * Mathf.Deg2Rad;
 
-            // This can also probably be done with some trigonometry but i'm too stupid for that
-            Vector2 positionOnChord = Vector2.Lerp(keyPosition + Vector2.up, keyPosition + Vector2.left, t / spinDuration);
-            Vector2 unnormalizedDirection = positionOnChord - keyPosition;
-            Vector2 normalizedDirection = unnormalizedDirection.normalized;
-            Vector2 positionOnCircle = keyPosition + normalizedDirection * 0.5f;
+            Vector2 positionOnCircle = keyPosition + new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians)) * radius;
 
             InGameCursor.Instance.SnapTo(positionOnCircle);
             yield return null;
