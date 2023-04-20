@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
-using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -9,7 +8,7 @@ public sealed class WeatherSwitchSolver : GeneralMinigameSolver<WeatherSwitchGam
 {
     public override IEnumerator CompleteMinigame(WeatherSwitchGame minigame, NormalPlayerTask task)
     {
-        var desiredSwitch = minigame.Controls[minigame.WeatherTask.NodeId];
+        WeatherControl desiredSwitch = minigame.Controls[minigame.WeatherTask.NodeId];
 
         yield return InGameCursor.Instance.CoMoveTo(desiredSwitch.Switch);
         yield return InGameCursor.Instance.CoPressLMB();

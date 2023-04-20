@@ -25,7 +25,7 @@ public sealed class FixWeatherNodeSolver : GeneralMinigameSolver<Weather1Game>
                 continue;
             }
 
-            var tileRealPosition = new Vector3((tile.x + 1) * tileBounds.x, (tile.y + 1) * tileBounds.y, (tile.z + 1) * tileBounds.z);
+            Vector3 tileRealPosition = new Vector3((tile.x + 1) * tileBounds.x, (tile.y + 1) * tileBounds.y, (tile.z + 1) * tileBounds.z);
             yield return InGameCursor.Instance.CoMoveTo(tileRealPosition + mapPos);
 
             if (!InGameCursor.Instance.IsLeftButtonPressed) InGameCursor.Instance.StartHoldingLMB(minigame);

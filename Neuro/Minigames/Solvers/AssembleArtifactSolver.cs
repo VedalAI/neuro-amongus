@@ -13,7 +13,7 @@ public sealed class AssembleArtifactSolver : GeneralMinigameSolver<CrystalMiniga
         Transform[] crystalSlots = minigame.CrystalSlots;
 
         WaitForSeconds wait = new(0.2f);
-        for (var i = 0; i < crystals.Length; i++)
+        for (int i = 0; i < crystals.Length; i++)
         {
             yield return wait;
             yield return InGameCursor.Instance.CoMoveTo(crystals[i]);
