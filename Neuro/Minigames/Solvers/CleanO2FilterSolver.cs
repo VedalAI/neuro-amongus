@@ -2,23 +2,22 @@
 using UnityEngine;
 using Neuro.Cursor;
 using System.Linq;
+using Rewired.Utils;
 
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(LeafMinigame))]
-public class CleanO2FilterSolver : MinigameSolver<LeafMinigame>
+public sealed class CleanO2FilterSolver : GeneralMinigameSolver<LeafMinigame>
 {
-    protected override IEnumerator CompleteMinigame(LeafMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(LeafMinigame minigame, NormalPlayerTask task)
     {
         // ValidArea is somewhere offscreen so easier to just move towards the arrows on the chute
-        Vector3 exit = minigame.Arrows[0].transform.position;
-        Collider2D lastLeaf = null;
+        Vector2 exit = minigame.Arrows[0].transform.position;
         while (!task.IsComplete)
         {
             Collider2D leaf = minigame.Leaves
-                .Where(l => l && l.enabled && l.gameObject.active && l != lastLeaf 
-                    && Vector3.Distance(l.transform.position, exit) > 4f)  
-                .MaxBy(l => (InGameCursor.Instance.Position - (Vector2)l.transform.position).magnitude);
+                .Where(leaf => !leaf.IsNullOrDestroyed())
+                .MaxBy(leaf => (InGameCursor.Instance.Position - (Vector2) leaf.transform.position).sqrMagnitude);
 
             if (!leaf)
             {
@@ -26,13 +25,11 @@ public class CleanO2FilterSolver : MinigameSolver<LeafMinigame>
                 continue;
             }
 
-            // get a different leaf every time to avoid already moving leaves
-            lastLeaf = leaf;
             yield return InGameCursor.Instance.CoMoveTo(leaf);
-            InGameCursor.Instance.StartHoldingLMB(leaf);
+            InGameCursor.Instance.StartHoldingLMB(minigame);
             yield return InGameCursor.Instance.CoMoveTo(exit);
-            InGameCursor.Instance.StopHolding();
-            yield return Sleep(0.1f);
+            InGameCursor.Instance.StopHoldingLMB();
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }

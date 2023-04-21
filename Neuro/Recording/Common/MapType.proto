@@ -1,0 +1,11 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.Common";
+
+enum MapType {
+    None_MapType = 0;
+    Skeld = 1;
+    MiraHQ = 2;
+    Polus = 3;
+    Dleks = 4;
+    Airship = 5;
+}

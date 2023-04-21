@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.ImGui;
 using UnityEngine;
@@ -11,21 +9,14 @@ namespace Neuro.Debugging;
 [RegisterInIl2Cpp]
 public sealed class DebugWindow : MonoBehaviour
 {
-    static DebugWindow()
-    {
-        _tabs = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => t.GetCustomAttribute<DebugTabAttribute>() is { })
-            .Where(t => t.IsAssignableTo(typeof(DebugTab)))
-            .Select(Activator.CreateInstance)
-            .OfType<DebugTab>()
-            .ToList();
-    }
-
-    private static readonly List<DebugTab> _tabs;
-
     private DebugTab _selectedTab;
     private bool _enabled = true;
     private readonly DragWindow _window;
+    private Vector2 positionOnScrollbar = Vector2.zero;
+
+    private int _frameCount;
+    private float _fpsUpdateTime;
+    private float _fps;
 
     public DebugWindow(IntPtr ptr) : base(ptr)
     {
@@ -34,20 +25,42 @@ public sealed class DebugWindow : MonoBehaviour
 
     private void Update()
     {
+        _frameCount++;
+        _fpsUpdateTime += Time.deltaTime;
+        if (_fpsUpdateTime > 0.25f)
+        {
+            _fps = _frameCount / _fpsUpdateTime;
+            _frameCount = 0;
+            _fpsUpdateTime -= 0.25f;
+        }
+
         if (Input.GetKeyDown(KeyCode.F1)) _enabled = !_enabled;
-        if (_tabs.Count == 0) _enabled = false;
+        if (DebugTabAttribute.Tabs.Count == 0) _enabled = false;
+
+        foreach (DebugTab tab in DebugTabAttribute.Tabs)
+        {
+            bool isEnabled = tab.IsEnabled;
+
+            if (isEnabled && !tab.LastEnabled) tab.OnEnable();
+            if (!isEnabled && tab.LastEnabled) tab.OnDisable();
+            if (isEnabled) tab.Update();
+
+            tab.LastEnabled = isEnabled;
+        }
+    }
+
+    private void Awake()
+    {
+        foreach (DebugTab tab in DebugTabAttribute.Tabs)
+        {
+            tab.Awake();
+        }
     }
 
     private void OnGUI()
     {
         if (!_enabled) return;
-
         _window.OnGUI();
-
-        if (_selectedTab is { IsEnabled: true })
-        {
-            _selectedTab.OnGUI();
-        }
     }
 
     private void BuildWindow()
@@ -56,9 +69,11 @@ public sealed class DebugWindow : MonoBehaviour
         {
             GUILayout.BeginVertical();
 
+            GUILayout.Label($"FPS: {_fps:F2}", GUILayout.Width(75));
+
             GUILayout.BeginHorizontal();
 
-            foreach (DebugTab tab in _tabs)
+            foreach (DebugTab tab in DebugTabAttribute.Tabs)
             {
                 bool tabHidden = !tab.IsEnabled;
                 if (tabHidden)
@@ -71,6 +86,8 @@ public sealed class DebugWindow : MonoBehaviour
                 if (isSelected != GUILayout.Toggle(isSelected, tab.Name, GUI.skin.button))
                 {
                     _selectedTab = !isSelected ? tab : null;
+                    //New tab selected, reset the scrollbar position.
+                    positionOnScrollbar = Vector2.zero;
                 }
 
                 if (tabHidden) GUI.enabled = true;
@@ -80,8 +97,12 @@ public sealed class DebugWindow : MonoBehaviour
 
             if (_selectedTab is { IsEnabled: true })
             {
-                GUILayout.Label(string.Empty, GUI.skin.horizontalSlider); // This creates a divider
-                _selectedTab?.BuildUI();
+                //Create header for our tab
+                NeuroUtilities.GUILayoutDivider();
+                //Create a scrollbarview for all tabs that suddenly become bigger than what fits.
+                positionOnScrollbar = GUILayout.BeginScrollView(positionOnScrollbar, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Height(Screen.height/2));
+                  _selectedTab?.BuildUI();  //Build UI.
+                GUILayout.EndScrollView();
             }
 
             GUILayout.EndVertical();

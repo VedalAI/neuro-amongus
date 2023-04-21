@@ -1,38 +1,34 @@
 ﻿using System.Collections;
 using System.Linq;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(BurgerMinigame))]
-public class MakeBurgerSolver : MinigameSolver<BurgerMinigame>
+public sealed class MakeBurgerSolver : GeneralMinigameSolver<BurgerMinigame>
 {
-    protected override IEnumerator CompleteMinigame(BurgerMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(BurgerMinigame minigame, NormalPlayerTask task)
     {
-        yield return Sleep(1.5f);
+        yield return new WaitForSeconds(0.5f);
         minigame.TogglePaper();
 
         foreach (BurgerToppingTypes topping in minigame.ExpectedToppings)
         {
+            yield return new WaitForSeconds(0.2f);
+
             // apparently the plate is a topping
             if (topping == BurgerToppingTypes.Plate)
                 continue;
 
             BurgerTopping target = minigame.Toppings
                 .Where(t => !minigame.burger.Contains(t))
-                .FirstOrDefault(t => t.ToppingType == topping);
+                .First(t => t.ToppingType == topping);
 
-            if (!target)
-            {
-                Error("Failed to find any valid toppings for type " + topping);
-                yield break;
-            }
-
-            yield return InGameCursor.Instance.CoMoveTo(target);
-            InGameCursor.Instance.StartHoldingLMB(target);
-            yield return InGameCursor.Instance.CoMoveTo(minigame.burger.Peek());
-            InGameCursor.Instance.StopHolding();
-            yield return Sleep(0.2f);
+            yield return InGameCursor.Instance.CoMoveTo(target, 0.75f);
+            InGameCursor.Instance.StartHoldingLMB(minigame);
+            yield return InGameCursor.Instance.CoMoveTo(minigame.burger.Peek(), 0.75f);
+            InGameCursor.Instance.StopHoldingLMB();
         }
     }
 }

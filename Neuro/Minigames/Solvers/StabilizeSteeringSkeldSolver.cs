@@ -1,16 +1,18 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(NavigationMinigame))]
-public class StabilizeSteeringSkeldSolver : MinigameSolver<NavigationMinigame>
+public sealed class StabilizeSteeringSkeldSolver : GeneralMinigameSolver<NavigationMinigame>
 {
-    protected override IEnumerator CompleteMinigame(NavigationMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(NavigationMinigame minigame, NormalPlayerTask task)
     {
-        InGameCursor.Instance.SnapToCenter();
-        InGameCursor.Instance.StartHoldingLMB(minigame.CrossHairImage);
-        yield return Sleep(0.5f);
-        InGameCursor.Instance.StopHolding();
+        InGameCursor.Instance.SnapTo(minigame.CrossHairImage);
+        InGameCursor.Instance.StartHoldingLMB(minigame);
+        yield return InGameCursor.Instance.CoMoveToCenter(0.75f);
+        yield return new WaitForSeconds(0.1f);
+        InGameCursor.Instance.StopHoldingLMB();
     }
 }

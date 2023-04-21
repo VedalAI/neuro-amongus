@@ -5,34 +5,22 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(AdjustSteeringGame))]
-public class StabilizeSteeringAirshipSolver : MinigameSolver<AdjustSteeringGame>
+public sealed class StabilizeSteeringAirshipSolver : GeneralMinigameSolver<AdjustSteeringGame>
 {
-    protected override IEnumerator CompleteMinigame(AdjustSteeringGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(AdjustSteeringGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Thrust);
-        float startingThrust = minigame.Thrust.transform.localPosition.y;
-        for (float t = 0; t < 0.5f; t += Time.deltaTime)
-        {
-            InGameCursor.Instance.SnapTo(minigame.Steering);
+        InGameCursor.Instance.StartHoldingLMB(minigame);
+        yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(minigame.Thrust.transform.localPosition with {y = minigame.TargetThrustY}));
+        InGameCursor.Instance.StopHoldingLMB();
 
-            Vector3 position = minigame.Thrust.transform.localPosition;
-            position.y = Mathf.Lerp(startingThrust, minigame.TargetThrustY, t / 0.5f);
-            minigame.Thrust.transform.localPosition = position;
-            yield return null;
-        }
-        minigame.thrustLocked = true;
-
-        // TODO: make the cursor stick to one of the steering wheel grips
         yield return InGameCursor.Instance.CoMoveTo(minigame.Steering);
-        for (float t = 0; t < 1f; t += Time.deltaTime)
-        {
-            InGameCursor.Instance.SnapTo(minigame.Steering);
-
-            Vector3 eulerAngles = minigame.Steering.transform.localEulerAngles;
-            eulerAngles.z = Mathf.LerpAngle(minigame.startAngle, minigame.TargetSteeringRot, t);
-            minigame.Steering.transform.localEulerAngles = eulerAngles;
-            yield return null;
-        }
-        minigame.steeringLocked = true;
+        InGameCursor.Instance.StartHoldingLMB(minigame);
+        float localEulerAngles2z = minigame.Steering.transform.localEulerAngles.z;
+        if (localEulerAngles2z > 180f) localEulerAngles2z -= 360f;
+        Vector3 targetOffset = (minigame.TargetSteeringRot - localEulerAngles2z) / -15f * Vector2.right;
+        yield return InGameCursor.Instance.CoMoveTo(minigame.Steering.transform.position + targetOffset, 0.5f);
+        yield return new WaitForSeconds(0.2f);
+        InGameCursor.Instance.StopHoldingLMB();
     }
 }

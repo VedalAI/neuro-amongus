@@ -5,21 +5,21 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(ToiletMinigame))]
-public class CleanToiletSolver : MinigameSolver<ToiletMinigame>
+public sealed class CleanToiletSolver : GeneralMinigameSolver<ToiletMinigame>
 {
-    protected override IEnumerator CompleteMinigame(ToiletMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(ToiletMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Plunger);
-        InGameCursor.Instance.StartHoldingLMB(minigame.Plunger);
+        InGameCursor.Instance.StartHoldingLMB(minigame);
 
         while (!task.IsComplete)
         {
-            yield return InGameCursor.Instance.CoMoveTo(minigame.Plunger.transform.position + new Vector3(0f, 1f, 0f), 2);
-            yield return Sleep(0.05f);
-            yield return InGameCursor.Instance.CoMoveTo(minigame.Plunger.transform.position + new Vector3(0f, -1f, 0f), 2);
-            yield return Sleep(0.05f);
+            yield return InGameCursor.Instance.CoMoveTo(minigame.Plunger.transform.position + new Vector3(0f, 1f), 2);
+            yield return new WaitForSeconds(0.05f);
+            yield return InGameCursor.Instance.CoMoveTo(minigame.Plunger.transform.position + new Vector3(0f, -1f), 2);
+            yield return new WaitForSeconds(0.05f);
         }
 
-        InGameCursor.Instance.StopHolding();
+        InGameCursor.Instance.StopHoldingLMB();
     }
 }

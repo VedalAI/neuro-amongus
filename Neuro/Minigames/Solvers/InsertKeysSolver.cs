@@ -5,26 +5,19 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(KeyMinigame))]
-public class InsertKeysSolver : MinigameSolver<KeyMinigame>
+public sealed class InsertKeysSolver : GeneralMinigameSolver<KeyMinigame>
 {
-    protected override IEnumerator CompleteMinigame(KeyMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(KeyMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.key);
-        InGameCursor.Instance.StartHoldingLMB(minigame.key);
+        InGameCursor.Instance.StartHoldingLMB(minigame);
         yield return InGameCursor.Instance.CoMoveTo(minigame.Slots[minigame.targetSlotId]);
-        InGameCursor.Instance.StopHolding();
-        yield return Sleep(0.1f);
-        InGameCursor.Instance.StartHoldingLMB(minigame.key);
-        for (float t = 0; t < 0.5f; t += Time.deltaTime) 
-        {
-            minigame.prevHadInput = true;
-            // TODO: make the cursor follow the topside of the key (its bounds are massive)
-            InGameCursor.Instance.SnapTo(minigame.key);
-            Vector3 currentAngles = minigame.key.transform.localEulerAngles;
-            currentAngles.z = Mathf.LerpAngle(0f, 90f, t / 0.5f);
-            minigame.key.transform.localEulerAngles = currentAngles;
-            yield return null;
-        }
-        InGameCursor.Instance.StopHolding();
+        InGameCursor.Instance.StopHoldingLMB();
+        yield return new WaitForSeconds(0.1f);
+
+        yield return InGameCursor.Instance.CoMoveToCircleStart(minigame.key, 0.5f, 90, 0.5f);
+        InGameCursor.Instance.StartHoldingLMB(minigame);
+        yield return InGameCursor.Instance.CoMoveCircle(minigame.key, 0.5f, 90, 0, 0.2f);
+        InGameCursor.Instance.StopHoldingLMB();
     }
 }

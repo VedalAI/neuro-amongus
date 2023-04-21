@@ -4,9 +4,11 @@ using Neuro.Cursor;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(ReactorMinigame))]
-public sealed class ReactorMeltdownSolver : TasklessMinigameSolver<ReactorMinigame>
+public sealed class ReactorMeltdownSolver : IMinigameSolver<ReactorMinigame>, IMinigameOpener
 {
-    protected override IEnumerator CompleteMinigame(ReactorMinigame minigame)
+    public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
+
+    public IEnumerator CompleteMinigame(ReactorMinigame minigame)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.hand);
         minigame.ButtonDown();

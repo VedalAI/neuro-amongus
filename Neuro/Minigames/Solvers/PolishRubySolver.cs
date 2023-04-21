@@ -1,50 +1,30 @@
 ﻿using System.Collections;
-using System.Linq;
 using Neuro.Cursor;
 using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(PolishRubyGame))]
-public class PolishRubySolver : MinigameSolver<PolishRubyGame>
+public sealed class PolishRubySolver : GeneralMinigameSolver<PolishRubyGame>
 {
-    protected override IEnumerator CompleteMinigame(PolishRubyGame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(PolishRubyGame minigame, NormalPlayerTask task)
     {
-        var buttons = minigame.Buttons
-            .Select((PassiveButton button, int index) => (button, index))
-            .Where(b => b.button.isActiveAndEnabled)
-            .ToArray();
+        Vector3 rubOffset = new(0.1f, 0.1f);
 
-        Vector3 moveDistance = new(0f, 0.2f, 0f);
-        int lastMoveDir = 1;
-        foreach (var b in buttons)
+        foreach (PassiveButton button in minigame.Buttons)
         {
-            PassiveButton button = b.button;
+            if (!button.isActiveAndEnabled) continue;
+
             yield return InGameCursor.Instance.CoMoveTo(button);
-            SpriteRenderer sprite = button.GetComponent<SpriteRenderer>();
-            for (int i = 0; i < minigame.swipesToClean; i++)
+
+            InGameCursor.Instance.StartHoldingLMB(minigame);
+            SpriteRenderer renderer = button.GetComponent<SpriteRenderer>();
+            while (renderer.color != Palette.ClearWhite)
             {
-                yield return InGameCursor.Instance.CoMoveTo(button.transform.position + (moveDistance * lastMoveDir));
-                lastMoveDir = -lastMoveDir;
-                // easier to just mimic the rubbing ourselves, minigame sometimes misses fake cursor input
-                // taken from PolishRubyGame.Update
-                if (Constants.ShouldPlaySfx())
-                {
-                    SoundManager.Instance.PlaySoundImmediate(minigame.rubSounds[Random.Range(0, minigame.rubSounds.Count)], false, 1f, 1f, null);
-                }
-                int num = i + 1;
-                if (num <= minigame.swipesToClean)
-                {
-                    sprite.color = Color.Lerp(Color.white, Palette.ClearWhite, (float)num / minigame.swipesToClean);
-                    if (num == minigame.swipesToClean)
-                    {
-                        minigame.Sparkles[b.index].enabled = true;
-                    }
-                }
-                yield return Sleep(0.1f);
+                yield return InGameCursor.Instance.CoMoveTo(button.transform.position + rubOffset);
+                yield return InGameCursor.Instance.CoMoveTo(button.transform.position - rubOffset);
             }
+            InGameCursor.Instance.StopHoldingLMB();
         }
-        minigame.MyNormTask.NextStep();
-        minigame.Close();
     }
 }
