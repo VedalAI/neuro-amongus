@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(DoorCardSwipeGame))]
-public sealed class DoorSabotageAirshipSolver : TasklessMinigameSolver<DoorCardSwipeGame>
+public sealed class DoorSabotageAirshipSolver : IMinigameSolver<DoorCardSwipeGame>
 {
-    protected override IEnumerator CompleteMinigame(DoorCardSwipeGame minigame)
+    public IEnumerator CompleteMinigame(DoorCardSwipeGame minigame)
     {
         yield return minigame.InsertCard();
 
@@ -17,8 +17,8 @@ public sealed class DoorSabotageAirshipSolver : TasklessMinigameSolver<DoorCardS
 
         yield return InGameCursor.Instance.CoMoveTo(minigame.col.transform.position - new Vector3(0, 4f), minigame.minAcceptedTime + 0.1f);
 
-        InGameCursor.Instance.StopHolding();
+        InGameCursor.Instance.StopHoldingLMB();
 
-        yield return Sleep(0.1f);
+        yield return new WaitForSeconds(0.1f);
     }
 }
