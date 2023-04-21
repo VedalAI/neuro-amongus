@@ -15,7 +15,7 @@ public sealed class SortSamplesSolver : GeneralMinigameSolver<SortMinigame>
         foreach (SortGameObject obj in minigame.Objects)
         {
             yield return InGameCursor.Instance.CoMoveTo(obj);
-            InGameCursor.Instance.StartHoldingLMB(obj);
+            InGameCursor.Instance.StartHoldingLMB(minigame);
             switch (obj.MyType)
             {
                 case SortGameObject.ObjType.Plant:

@@ -16,7 +16,7 @@ public sealed class StoreArtifactsSolver : GeneralMinigameSolver<SpecimenGame>
         for (int i = 0; i < minigame.Specimens.Count; i++)
         {
             yield return InGameCursor.Instance.CoMoveTo(minigame.Specimens[i], 0.75f);
-            InGameCursor.Instance.StartHoldingLMB(minigame.Specimens[i]);
+            InGameCursor.Instance.StartHoldingLMB(minigame);
             yield return InGameCursor.Instance.CoMoveTo(minigame.Slots[i], 0.75f);
             yield return new WaitForSeconds(0.1f);
             InGameCursor.Instance.StopHoldingLMB();

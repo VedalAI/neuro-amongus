@@ -218,14 +218,17 @@ public sealed class InGameCursor : MonoBehaviour
     public void StartFollowing(GameObject target, Func<bool> whileCondition = null, float speed = 1f) => StartFollowing(target.transform, whileCondition, speed);
 
     [HideFromIl2Cpp]
-    public void StartHoldingLMB(GameObject @lock, Func<bool> whileCondition = null)
+    private void StartHoldingLMB(GameObject @lock, Func<bool> whileCondition = null)
     {
         _clickLock = @lock;
         _clickCondition = whileCondition ?? (() => true);
     }
 
     [HideFromIl2Cpp]
-    public void StartHoldingLMB(Component @lock, Func<bool> whileCondition = null) => StartHoldingLMB(@lock.gameObject, whileCondition);
+    private void StartHoldingLMB(Component @lock, Func<bool> whileCondition = null) => StartHoldingLMB(@lock.gameObject, whileCondition);
+
+    [HideFromIl2Cpp]
+    public void StartHoldingLMB(Minigame @lock, Func<bool> whileCondition = null) => StartHoldingLMB(@lock.gameObject, whileCondition);
 
     [HideFromIl2Cpp]
     public IEnumerator CoPressLMB()

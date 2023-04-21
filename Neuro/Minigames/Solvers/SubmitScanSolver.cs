@@ -1,8 +1,7 @@
 ﻿namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(MedScanMinigame))]
-
-public sealed class SubmitScanSolver : IMinigameOpener<NormalPlayerTask>
+public sealed class SubmitScanSolver : IMinigameOpener
 {
-    public bool ShouldOpenConsole(Console console, NormalPlayerTask task) => true;
+    public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 }
