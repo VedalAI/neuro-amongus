@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
 using Neuro.Events;
 using Neuro.Utilities;
 using Neuro.Utilities.Convertors;
@@ -113,6 +114,12 @@ public sealed class MovementHandler : MonoBehaviour
             moveToPosition(closestConsole.transform.position);
             return;
         }
+        if (PlayerControl.LocalPlayer.Data.RoleType is RoleTypes.CrewmateGhost)
+        {
+            ForcedMoveDirection = Vector2.zero;
+            PlayerControl.LocalPlayer.Data.Role.UseAbility();
+            return;
+        }
 
         // follow random player
         if (followPlayer is null || followPlayer.Data.IsDead)
@@ -123,7 +130,6 @@ public sealed class MovementHandler : MonoBehaviour
                 if (!player.Data.IsDead) 
                 {
                     alivePlayers.Add(player);
-
                 } 
             }
             System.Random random = new();
