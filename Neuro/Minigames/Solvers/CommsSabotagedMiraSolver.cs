@@ -17,17 +17,29 @@ public sealed class CommsSabotagedMiraSolver : IMinigameSolver<AuthGame>, IMinig
         do
         {
             yield return new WaitForSeconds(0.5f);
-            IEnumerable<int> code = minigame.system.TargetNumber.ToString().PadLeft(5, '0').Select(c => c - '0');
+            int codeNumber = minigame.system.TargetNumber;
+            int[] code = codeNumber.ToString().PadLeft(5, '0').Select(c => c - '0').ToArray();
             foreach (int number in code)
             {
                 yield return InGameCursor.Instance.CoMoveTo(minigame.ControllerSelectable.At(number > 0 ? number - 1 : 9));
                 minigame.ClickNumber(number);
                 yield return new WaitForSeconds(0.25f);
+
+                if (codeNumber != minigame.system.TargetNumber)
+                {
+                    yield return InGameCursor.Instance.CoMoveTo(minigame.ControllerSelectable.At(^2));
+                    minigame.ClearEntry();
+                    yield return new WaitForSeconds(0.5f);
+
+                    // We don't have a cleaner way to exit
+                    yield return CompleteMinigame(minigame);
+                    yield break;
+                }
             }
-            yield return InGameCursor.Instance.CoMoveTo(minigame.ControllerSelectable.At(minigame.ControllerSelectable.Count - 1));
+            yield return InGameCursor.Instance.CoMoveTo(minigame.ControllerSelectable.At(^1));
             minigame.Enter();
             yield return new WaitForSeconds(0.5f);
-            yield return new WaitForSeconds(minigame.system.Timer);
+            if (codeNumber == minigame.system.TargetNumber) yield return new WaitForSeconds(minigame.system.Timer);
         }
         while (!minigame.MyTask.IsComplete);
     }

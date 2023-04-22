@@ -1,6 +1,5 @@
 ﻿using Neuro.Cursor;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Neuro.Utilities;
 using UnityEngine;
@@ -17,17 +16,29 @@ public sealed class AvertCrashCourseSolver : IMinigameSolver<AirshipAuthGame>, I
         do
         {
             yield return new WaitForSeconds(0.5f);
-            IEnumerable<int> code = minigame.system.TargetCode.ToString().PadLeft(5, '0').Select(c => c - '0');
+            int codeNumber = minigame.system.TargetCode;
+            int[] code = codeNumber.ToString().PadLeft(5, '0').Select(c => c - '0').ToArray();
             foreach (int number in code)
             {
                 yield return InGameCursor.Instance.CoMoveTo(minigame.selectableButtons.At(number > 0 ? number - 1 : 9));
                 minigame.ClickNumber(number);
                 yield return new WaitForSeconds(0.25f);
+
+                if (codeNumber != minigame.system.TargetCode)
+                {
+                    yield return InGameCursor.Instance.CoMoveTo(minigame.selectableButtons.At(^2));
+                    minigame.ClearEntry();
+                    yield return new WaitForSeconds(0.5f);
+
+                    // We don't have a cleaner way to exit
+                    yield return CompleteMinigame(minigame);
+                    yield break;
+                }
             }
-            yield return InGameCursor.Instance.CoMoveTo(minigame.selectableButtons.At(minigame.selectableButtons.Count - 1));
+            yield return InGameCursor.Instance.CoMoveTo(minigame.selectableButtons.At(^1));
             minigame.Enter();
             yield return new WaitForSeconds(0.5f);
-            yield return new WaitForSeconds(minigame.system.codeResetTimer);
+            if (codeNumber == minigame.system.TargetCode) yield return new WaitForSeconds(minigame.system.codeResetTimer);
         }
         while (!minigame.MyTask.IsComplete);
     }
