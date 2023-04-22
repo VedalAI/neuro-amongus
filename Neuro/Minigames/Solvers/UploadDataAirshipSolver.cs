@@ -15,7 +15,7 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
     public IEnumerator CompleteMinigame(AirshipUploadGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Phone);
-        InGameCursor.Instance.StartHoldingLMB(task);
+        InGameCursor.Instance.StartHoldingLMB(minigame);
 
         yield return InGameCursor.Instance.CoMoveTo(minigame.Hotspot);
         InGameCursor.Instance.StopHoldingLMB();

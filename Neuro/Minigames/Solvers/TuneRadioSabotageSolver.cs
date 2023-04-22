@@ -17,7 +17,7 @@ public class TuneRadioSabotageSolver : IMinigameSolver<TuneRadioMinigame>, IMini
 
         Vector3 moveTo = PositionInCircumference(minigame.dial.DialTrans.transform.position, radius, angle);
         yield return InGameCursor.Instance.CoMoveTo(moveTo);
-        InGameCursor.Instance.StartHoldingLMB(minigame.dial.DialTrans);
+        InGameCursor.Instance.StartHoldingLMB(minigame);
 
         while (!minigame.finished)
         {
