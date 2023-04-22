@@ -39,7 +39,7 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
 
         foreach (DeadBody deadBody in ComponentCache<DeadBody>.Cached)
         {
-            if (!Visibility.IsVisible(deadBody)) continue;
+            if (!Visibility.IsVisible(deadBody.TruePosition)) continue;
 
             if (Frame.DeadBodies.All(d => d.ParentId != deadBody.ParentId))
             {
