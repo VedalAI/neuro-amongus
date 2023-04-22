@@ -35,7 +35,7 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance) return;
+        if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
         foreach (DeadBody deadBody in ComponentCache<DeadBody>.Cached)
         {

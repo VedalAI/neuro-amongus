@@ -35,7 +35,7 @@ public sealed class MapRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance) return;
+        if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
         UpdateNearbyDoors();
         UpdateNearbyVents();

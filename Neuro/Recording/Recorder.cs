@@ -45,7 +45,7 @@ public sealed class Recorder : MonoBehaviour
     private void FixedUpdate()
     {
         // TODO: We should record meeting data!
-        if (MeetingHud.Instance || Minigame.Instance) return;
+        if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
         if (CommunicationHandler.Instance.IsConnected)
         {

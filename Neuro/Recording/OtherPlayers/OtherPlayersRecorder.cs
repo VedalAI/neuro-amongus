@@ -33,7 +33,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance) return;
+        if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {

@@ -34,7 +34,7 @@ public sealed class TasksRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance) return;
+        if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
         /*Console closestConsole = null;
         float closestDistance = 999f;*/
