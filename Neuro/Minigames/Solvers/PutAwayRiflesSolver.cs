@@ -16,7 +16,7 @@ public sealed class PutAwayRiflesSolver : IMinigameSolver<StowArms, NormalPlayer
         // If it's not a StoreArmsTaskConsole, then it's a regular Console so it's part 2 which we always want to open
         if (console.TryCast<StoreArmsTaskConsole>() is not { } stowArmsConsole) return true;
 
-        const float pickupDelay = 0.2f;
+        const float pickupDelay = 0.175f;
 
         // Use task.Data to store our own information
         if (task.Data.Length == 1) task.Data = ToBytes(stowArmsConsole.timesUsed, Time.time);

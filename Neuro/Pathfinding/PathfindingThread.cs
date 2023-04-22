@@ -52,6 +52,7 @@ public sealed class PathfindingThread : NeuroThread
         return tried;
     }
 
+    // TODO: Instead of pathing to the closest node to the destination, path to the closest node to the player that is close enough to the destination
     protected override async void RunThread()
     {
         while (true)

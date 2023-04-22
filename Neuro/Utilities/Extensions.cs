@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes;
@@ -57,5 +58,20 @@ public static class Extensions
         {
             repeatedField.Add(default);
         }
+    }
+
+    public static IEnumerable<T> ReverseSection<T>(this IList<T> list, Range range)
+    {
+        int startIndex = range.Start.IsFromEnd ? list.Count - range.Start.Value : range.Start.Value;
+        int endIndex = range.End.IsFromEnd ? list.Count - range.End.Value : range.End.Value;
+
+        if (startIndex < 0 || endIndex > list.Count || startIndex >= endIndex)
+        {
+            throw new ArgumentException("Invalid range.");
+        }
+
+        return list.Take(startIndex)
+            .Concat(list.Skip(startIndex).Take(endIndex - startIndex).Reverse())
+            .Concat(list.Skip(endIndex));
     }
 }

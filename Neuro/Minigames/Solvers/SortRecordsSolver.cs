@@ -1,6 +1,8 @@
 ﻿using Neuro.Cursor;
 using System.Collections;
 using System.Linq;
+using Neuro.Utilities;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -16,7 +18,7 @@ public sealed class SortRecordsSolver : GeneralMinigameSolver<RecordsMinigame>
 
     private IEnumerator GrabFolder(RecordsMinigame minigame)
     {
-        var target = minigame.Folders.Where(folder => folder.gameObject.active).Take(1).Single();
+        SpriteRenderer target = minigame.Folders.ReverseSection(1..3).First(folder => folder.gameObject.active);
         yield return InGameCursor.Instance.CoMoveTo(target);
         minigame.GrabFolder(target);
     }
