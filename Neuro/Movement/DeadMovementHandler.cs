@@ -38,7 +38,9 @@ public sealed class DeadMovementHandler : MonoBehaviour
     {
         Console closestConsole = getClosestConsole();
         if (closestConsole) {
-            moveToPosition(closestConsole.transform.position);
+            Vector2 target = closestConsole.transform.position;
+            if (closestConsole.onlyFromBelow) target.y -= 0.5f;
+            moveToPosition(target);
             return;
         }
 
