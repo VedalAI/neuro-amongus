@@ -13,7 +13,7 @@ public sealed class FillCanistersSolver : GeneralMinigameSolver<FillCanistersGam
         while (!task.IsComplete)
         {
             yield return InGameCursor.Instance.CoMoveTo(minigame.Canister);
-            InGameCursor.Instance.StartHoldingLMB(minigame.Canister);
+            InGameCursor.Instance.StartHoldingLMB(minigame);
             yield return InGameCursor.Instance.CoMoveTo(minigame.transform.TransformPoint(minigame.CanisterSnapPosition));
             InGameCursor.Instance.StopHoldingLMB();
             while (minigame.Canister.Gauge.Value < minigame.Canister.Gauge.MaxValue)
