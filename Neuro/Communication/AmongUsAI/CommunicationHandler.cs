@@ -64,7 +64,7 @@ public sealed class CommunicationHandler : MonoBehaviour
         //PlayerControl.LocalPlayer.Die(DeathReason.Kill, true);
         if (PlayerControl.LocalPlayer.Data.IsDead)
         {
-            MovementHandler.Instance.MoveDeadPlayer();
+            DeadMovementHandler.Instance.Move();
             return;
         }
 

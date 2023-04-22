@@ -15,8 +15,6 @@ public sealed class MovementHandler : MonoBehaviour
     private const float OBSTACLE_PADDING = 0.5f; // The minimum distance betweeen the agent an obstacle
     private const float PADDING_STRENGTH = 0.5f; // The speed at which the agent will be pushed away from the obstacle. 1 is max.
 
-    private PlayerControl followPlayer = null;
-
     public static MovementHandler Instance { get; private set; }
 
     public MovementHandler(IntPtr ptr) : base(ptr)
@@ -90,62 +88,6 @@ public sealed class MovementHandler : MonoBehaviour
         renderer.SetPosition(0, PlayerControl.LocalPlayer.GetTruePosition());
         renderer.SetPosition(1, PlayerControl.LocalPlayer.GetTruePosition() + direction);
     }
-
-    public void MoveDeadPlayer() {
-        Console closestConsole = null;
-        float closestDistance = 999f;
-        
-        foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>().Where(t => !t.IsComplete))
-        {
-
-            foreach (Console console in task.FindConsoles())
-            {
-                if (!console) continue;
-                var distance = Vector2.Distance(console.transform.position, PlayerControl.LocalPlayer.GetTruePosition());
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestConsole = console;
-                }
-            }
-        }
-        if (closestConsole) {
-            moveToPosition(closestConsole.transform.position);
-            return;
-        }
-        if (PlayerControl.LocalPlayer.Data.RoleType is RoleTypes.CrewmateGhost)
-        {
-            ForcedMoveDirection = Vector2.zero;
-            PlayerControl.LocalPlayer.Data.Role.UseAbility();
-            return;
-        }
-
-        // follow random player
-        if (followPlayer is null || followPlayer.Data.IsDead)
-        {
-            List<PlayerControl> alivePlayers = new();
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls) 
-            {
-                if (!player.Data.IsDead) 
-                {
-                    alivePlayers.Add(player);
-                } 
-            }
-            System.Random random = new();
-            int i = random.Next(alivePlayers.Count);
-            followPlayer = alivePlayers[i];
-            Info("Now following " + followPlayer.name);
-        }
-        moveToPosition(followPlayer.GetTruePosition());
-    }
-
-    private void moveToPosition(Vector2 target, float margin = 0.2f)
-    {
-        if (Vector2.Distance(target, PlayerControl.LocalPlayer.GetTruePosition()) < margin) ForcedMoveDirection = Vector2.zero;
-        else ForcedMoveDirection = (target - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
-        
-    }
-
 
     private void CreateArrow()
     {

@@ -1,4 +1,5 @@
 using HarmonyLib;
+using Neuro.Movement;
 
 namespace Neuro.Minigames.Patches;
 
@@ -9,5 +10,6 @@ public static class HauntMenuMinigame_Begin
     public static void Postfix(HauntMenuMinigame __instance)
     {
         __instance.SetFilter((int)HauntMenuMinigame.HauntFilters.Impostor);
+        DeadMovementHandler.Instance.minigame = __instance;
     }
 }
