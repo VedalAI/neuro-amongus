@@ -70,6 +70,11 @@ public sealed class InteractionsHandler : MonoBehaviour
     public void UseConsole(Console console)
     {
         PlayerTask task = console.FindTask(PlayerControl.LocalPlayer);
+        if (task == null)
+        {
+            Warning($"Unable to find task from console id {console.ConsoleId}");
+            return;
+        }
         Minigame minigame = task.GetMinigamePrefab();
 
         if (MinigameHandler.ShouldOpenConsole(console, minigame, task))

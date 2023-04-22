@@ -1,10 +1,11 @@
-﻿using Neuro.Utilities.Convertors;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Neuro.Utilities;
 
 public static class Visibility
 {
+    public static bool IsVisible(Vector2 target) => IsVisible(PlayerControl.LocalPlayer.GetTruePosition(), target);
+
     // TODO: Improve (idea: send raycast from camera to target)
     private static bool IsVisible(Vector2 rayStart, Vector2 rayEnd)
     {
@@ -18,6 +19,4 @@ public static class Visibility
 
         return !hit;
     }
-
-    public static bool IsVisible(PositionProvider target) => IsVisible(PlayerControl.LocalPlayer.GetTruePosition(), target);
 }

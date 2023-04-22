@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Runtime.CompilerServices;
-using Neuro.Utilities.Convertors;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
 
@@ -32,6 +31,4 @@ public static class NeuroUtilities
     {
         GUILayout.Label(string.Empty, GUI.skin.horizontalSlider);
     }
-
-    public static float DistanceToPlayerStraight(PositionProvider position) => Vector2.Distance(PlayerControl.LocalPlayer.GetTruePosition(), position);
 }

@@ -16,7 +16,7 @@ public partial class DeadBodyData
             if (potentialWitness.AmOwner) continue;
             if (potentialWitness.inVent || potentialWitness.Data.IsDead) continue;
 
-            if (!Visibility.IsVisible(potentialWitness)) continue;
+            if (!Visibility.IsVisible(potentialWitness.GetTruePosition())) continue;
 
             // If a witness is closer to the body than to neuro, there is a chance they did the kill.
             float distanceBetweenWitnessAndBody = Vector2.Distance(potentialWitness.GetTruePosition(), deadBody.TruePosition);
