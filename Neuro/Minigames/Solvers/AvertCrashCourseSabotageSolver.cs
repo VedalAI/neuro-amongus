@@ -1,6 +1,7 @@
 ﻿using Neuro.Cursor;
 using System.Collections;
 using System.Linq;
+using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
@@ -18,11 +19,11 @@ public sealed class AvertCrashCourseSabotageSolver : IMinigameSolver<AirshipAuth
             var code = minigame.system.TargetCode.ToString().Select(c => c - '0');
             foreach (var number in code)
             {
-                yield return InGameCursor.Instance.CoMoveTo(minigame.selectableButtons[number > 0 ? number - 1 : 9]);
+                yield return InGameCursor.Instance.CoMoveTo(minigame.selectableButtons.At(number > 0 ? number - 1 : 9));
                 minigame.ClickNumber(number);
                 yield return new WaitForSeconds(0.5f);
             }
-            yield return InGameCursor.Instance.CoMoveTo(minigame.selectableButtons[minigame.selectableButtons.Count - 1]);
+            yield return InGameCursor.Instance.CoMoveTo(minigame.selectableButtons.At(minigame.selectableButtons.Count - 1));
             minigame.Enter();
             yield return new WaitForSeconds(0.5f);
             yield return new WaitForSeconds(minigame.system.codeResetTimer);
