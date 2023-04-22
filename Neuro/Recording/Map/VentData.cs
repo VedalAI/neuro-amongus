@@ -10,7 +10,7 @@ public partial class VentData
         VentData data = new()
         {
             Id = (uint) vent.Id,
-            Position = PositionData.Create(vent, vent)
+            Position = PositionData.Create(vent)
         };
 
         foreach (Vent nearbyVent in vent.NearbyVents)
