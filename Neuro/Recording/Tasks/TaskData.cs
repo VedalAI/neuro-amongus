@@ -27,7 +27,7 @@ public partial class TaskData
             data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest));
 
             // TODO: Move this thing out of here
-            Vector2[] path = PathfindingHandler.Instance.GetPath(consoleOfInterest);
+            Vector2[] path = PathfindingHandler.Instance.GetPath(consoleOfInterest, false);
             DrawPath(path, consoleOfInterest.GetInstanceID());
         }
 
@@ -45,7 +45,7 @@ public partial class TaskData
         renderer.positionCount = path.Length;
         for (int i = 0; i < path.Length; i++)
         {
-            renderer.SetPosition(i, path[i]);
+            renderer.SetPosition(i, new Vector3(path[i].x, path[i].y, path[i].y / 1000f + 0.0005f));
         }
 
         renderer.material = NeuroUtilities.MaskShaderMat;
