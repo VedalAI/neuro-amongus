@@ -4,7 +4,6 @@ using System.Linq;
 using AmongUs.GameOptions;
 using Neuro.Events;
 using Neuro.Utilities;
-using Neuro.Utilities.Convertors;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -140,9 +139,9 @@ public sealed class MovementHandler : MonoBehaviour
         moveToPosition(followPlayer.GetTruePosition());
     }
 
-    private void moveToPosition(PositionProvider target)
+    private void moveToPosition(Vector2 target, float margin = 0.2f)
     {
-        if (Vector2.Distance(target, PlayerControl.LocalPlayer.GetTruePosition()) < 0.5f) ForcedMoveDirection = Vector2.zero;
+        if (Vector2.Distance(target, PlayerControl.LocalPlayer.GetTruePosition()) < margin) ForcedMoveDirection = Vector2.zero;
         else ForcedMoveDirection = (target - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
         
     }
