@@ -34,13 +34,54 @@ public sealed class DeadMovementHandler : MonoBehaviour
     }
 
 
-    public void Move() {
+    public void Move() 
+    {
+        Console closestConsole = getClosestConsole();
+        if (closestConsole) {
+            moveToPosition(closestConsole.transform.position);
+            return;
+        }
+
+        switch(PlayerControl.LocalPlayer.Data.RoleType)
+        {
+            case RoleTypes.CrewmateGhost:
+            case RoleTypes.ImpostorGhost:
+                // TODO: sabotage when impostor
+                MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
+                PlayerControl.LocalPlayer.Data.Role.UseAbility();
+                break;
+
+            case RoleTypes.GuardianAngel:
+                // does not have the ability to haunt so we follow manually
+                if (followPlayer is null || followPlayer.Data.IsDead)
+                {
+                    followPlayer = getRandomAlivePlayer();
+                    Info("Now following " + followPlayer.name);
+                }
+                moveToPosition(followPlayer.GetTruePosition(), 1.0f);
+                break;
+
+            default:
+                MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
+                Warning($"Cannot handle movement for {PlayerControl.LocalPlayer.Data.RoleType}");
+                break;
+        }
+    }
+
+    private void moveToPosition(Vector2 target, float margin = 0.1f)
+    {
+        if (Vector2.Distance(target, PlayerControl.LocalPlayer.GetTruePosition()) < margin) MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
+        else MovementHandler.Instance.ForcedMoveDirection = (target - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+        
+    }
+
+    private Console getClosestConsole()
+    {
         Console closestConsole = null;
         float closestDistance = 999f;
         
         foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>().Where(t => !t.IsComplete))
         {
-
             foreach (Console console in task.FindConsoles())
             {
                 if (!console) continue;
@@ -52,42 +93,22 @@ public sealed class DeadMovementHandler : MonoBehaviour
                 }
             }
         }
-        if (closestConsole) {
-            moveToPosition(closestConsole.transform.position);
-            return;
-        }
-        PlayerControl.LocalPlayer.SetRole(RoleTypes.ImpostorGhost);
-        if (PlayerControl.LocalPlayer.Data.RoleType is RoleTypes.CrewmateGhost)
-        {
-            MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
-            PlayerControl.LocalPlayer.Data.Role.UseAbility();
-            return;
-        }
-
-        // follow random player
-        if (followPlayer is null || followPlayer.Data.IsDead)
-        {
-            List<PlayerControl> alivePlayers = new();
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls) 
-            {
-                if (!player.Data.IsDead) 
-                {
-                    alivePlayers.Add(player);
-                } 
-            }
-            System.Random random = new();
-            int i = random.Next(alivePlayers.Count);
-            followPlayer = alivePlayers[i];
-            Info("Now following " + followPlayer.name);
-        }
-        moveToPosition(followPlayer.GetTruePosition());
+        return closestConsole;
     }
 
-    private void moveToPosition(Vector2 target, float margin = 0.2f)
+    private PlayerControl getRandomAlivePlayer() 
     {
-        if (Vector2.Distance(target, PlayerControl.LocalPlayer.GetTruePosition()) < margin) MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
-        else MovementHandler.Instance.ForcedMoveDirection = (target - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
-        
+        List<PlayerControl> alivePlayers = new();
+        foreach (PlayerControl player in PlayerControl.AllPlayerControls) 
+        {
+            if (!player.Data.IsDead) 
+            {
+                alivePlayers.Add(player);
+            } 
+        }
+        System.Random random = new();
+        int i = random.Next(alivePlayers.Count);
+        return alivePlayers[i];
     }
 
     [EventHandler(EventTypes.GameStarted)]
