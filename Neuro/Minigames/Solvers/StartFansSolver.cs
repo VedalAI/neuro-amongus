@@ -9,8 +9,7 @@ public sealed class StartFansSolver : IMinigameSolver<StartFansMinigame, NormalP
 {
     public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
-        if (task.TaskStep == console.ConsoleId) return true;
-        else return false;
+        return task.TaskStep == console.ConsoleId;
     }
 
     public IEnumerator CompleteMinigame(StartFansMinigame minigame, NormalPlayerTask task)
@@ -25,7 +24,7 @@ public sealed class StartFansSolver : IMinigameSolver<StartFansMinigame, NormalP
         minigame.RevealCode();
 
         // fake committing code to memory
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1.5f);
         minigame.Close();
     }
 
@@ -34,15 +33,17 @@ public sealed class StartFansSolver : IMinigameSolver<StartFansMinigame, NormalP
         yield return InGameCursor.Instance.CoMoveTo(minigame.mainCodeButton);
         minigame.RevealCode();
         yield return new WaitForSeconds(0.25f);
+
         for (int index = 0; index < minigame.CodeIcons.Count; index++)
         {
             // allow skipping over already set codes
-            if (minigame.CodeIcons[index].sprite == minigame.IconSprites[(int)task.Data[index]]) continue;
+            if (minigame.CodeIcons[index].sprite == minigame.IconSprites[task.Data[index]]) continue;
+
             yield return InGameCursor.Instance.CoMoveTo(minigame.CodeIcons[index]);
-            while (minigame.CodeIcons[index].sprite != minigame.IconSprites[(int)task.Data[index]])
+            while (minigame.CodeIcons[index].sprite != minigame.IconSprites[task.Data[index]])
             {
                 minigame.RotateImage(minigame.CodeIcons[index]);
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.3f);
             }
         }
     }
