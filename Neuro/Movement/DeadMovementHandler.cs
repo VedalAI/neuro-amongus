@@ -44,23 +44,28 @@ public sealed class DeadMovementHandler : MonoBehaviour
             return;
         }
 
-        switch(PlayerControl.LocalPlayer.Data.RoleType)
+        switch (PlayerControl.LocalPlayer.Data.Role.Il2CppCastToTopLevel())
         {
-            case RoleTypes.CrewmateGhost:
-            case RoleTypes.ImpostorGhost:
-                // TODO: sabotage when impostor
-                MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
-                PlayerControl.LocalPlayer.Data.Role.UseAbility();
-                break;
-
-            case RoleTypes.GuardianAngel:
-                // does not have the ability to haunt so we follow manually
+            case GuardianAngelRole role: 
                 if (followPlayer is null || followPlayer.Data.IsDead)
                 {
                     followPlayer = getRandomAlivePlayer();
-                    Info("Now following " + followPlayer.name);
+                    Info($"Now following {followPlayer.name}");
                 }
-                moveToPosition(followPlayer.GetTruePosition(), 1.0f);
+
+                if (moveToPosition(followPlayer.GetTruePosition(), 1.0f) && !role.IsCoolingDown)
+                {
+                    role.SetPlayerTarget(followPlayer);
+                    role.UseAbility();
+                    Info($"Protected {followPlayer.name}");
+                } 
+                break;
+
+            case CrewmateGhostRole:
+            case ImpostorGhostRole:
+                // TODO: sabotage when impostor
+                MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
+                PlayerControl.LocalPlayer.Data.Role.UseAbility();
                 break;
 
             default:
@@ -70,10 +75,18 @@ public sealed class DeadMovementHandler : MonoBehaviour
         }
     }
 
-    private void moveToPosition(Vector2 target, float margin = 0.1f)
+    private bool moveToPosition(Vector2 target, float margin = 0.1f)
     {
-        if (Vector2.Distance(target, PlayerControl.LocalPlayer.GetTruePosition()) < margin) MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
-        else MovementHandler.Instance.ForcedMoveDirection = (target - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+        if (Vector2.Distance(target, PlayerControl.LocalPlayer.GetTruePosition()) < margin) 
+        {
+            MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
+            return true;
+        }
+        else 
+        {
+            MovementHandler.Instance.ForcedMoveDirection = (target - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+            return false;
+        }
         
     }
 
