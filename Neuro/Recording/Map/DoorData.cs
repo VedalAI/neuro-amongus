@@ -8,7 +8,7 @@ public partial class DoorData
     {
         return new DoorData
         {
-            Position = PositionData.Create(door, door),
+            Position = PositionData.Create(door),
             IsOpen = door.Open
         };
     }
