@@ -13,20 +13,17 @@ public sealed class AlignTelescopeSolver : GeneralMinigameSolver<TelescopeGame>
 
         // Do a little square dance to be more realistic
         InGameCursor.Instance.StartHoldingLMB(minigame);
-        yield return InGameCursor.Instance.CoMoveTo(minigame.Reticle.transform.position + new Vector3(0, -3f));
-        yield return new WaitForSeconds(0.3f);
-
-        Vector2 position = minigame.Reticle.transform.position + new Vector3(3, 0);
+        Vector2 position = minigame.Reticle.transform.position + new Vector3(3, 3);
         WaitForSeconds wait = new(0.8f);
         yield return InGameCursor.Instance.CoMoveTo(position);
         yield return wait;
-        position.y += 6;
+        position.y -= 6;
         yield return InGameCursor.Instance.CoMoveTo(position);
         yield return wait;
         position.x -= 6;
         yield return InGameCursor.Instance.CoMoveTo(position);
         yield return wait;
-        position.y -= 6;
+        position.y += 6;
         yield return InGameCursor.Instance.CoMoveTo(position);
         yield return wait;
         InGameCursor.Instance.StopHoldingLMB();
@@ -43,7 +40,7 @@ public sealed class AlignTelescopeSolver : GeneralMinigameSolver<TelescopeGame>
             const int DISTANCE_MULTIPLIER = 8;
             yield return InGameCursor.Instance.CoMoveTo(minigame.Reticle.transform.position + positionDifference.normalized * DISTANCE_MULTIPLIER);
             InGameCursor.Instance.StopHoldingLMB();
-        } while (Mathf.Abs(positionDifference.x) + Mathf.Abs(positionDifference.y) > 2);
+        } while (Mathf.Abs(positionDifference.x) + Mathf.Abs(positionDifference.y) > 4.5f);
 
         // Just in case we're a bit off, move exactly the remaining distance
         yield return InGameCursor.Instance.CoMoveTo(target);
