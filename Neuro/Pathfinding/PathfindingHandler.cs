@@ -108,12 +108,12 @@ public sealed class PathfindingHandler : MonoBehaviour
     public Vector2 GetFirstNodeInPath(Component target) => GetFirstNodeInPath(target.transform.position, target.GetInstanceID());
 
     [HideFromIl2Cpp]
-    private Vector2[] GetPath(Vector2 start, Vector2 target, string identifier)
+    private Vector2[] GetPath(Vector2 start, Vector2 target, string identifier, bool removeCloseNodes = true)
     {
         if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
 
         _thread.RequestPath(start, target, identifier);
-        if (!_thread.TryGetPath(identifier, out Vector2[] path, out _)) return Array.Empty<Vector2>();
+        if (!_thread.TryGetPath(identifier, out Vector2[] path, out _, removeCloseNodes)) return Array.Empty<Vector2>();
 
         if (path.Length == 0) return Array.Empty<Vector2>();
 
@@ -121,13 +121,13 @@ public sealed class PathfindingHandler : MonoBehaviour
     }
 
     [HideFromIl2Cpp]
-    public Vector2[] GetPath(Vector2 target, string identifier) => GetPath(PlayerControl.LocalPlayer.GetTruePosition(), target, identifier);
+    public Vector2[] GetPath(Vector2 target, string identifier, bool removeCloseNodes = true) => GetPath(PlayerControl.LocalPlayer.GetTruePosition(), target, identifier, removeCloseNodes);
 
     [HideFromIl2Cpp]
-    public Vector2[] GetPath(Vector2 target, int identifier) => GetPath(target, identifier.ToString());
+    public Vector2[] GetPath(Vector2 target, int identifier, bool removeCloseNodes = true) => GetPath(target, identifier.ToString(), removeCloseNodes);
 
     [HideFromIl2Cpp]
-    public Vector2[] GetPath(Component target) => GetPath(target.transform.position, target.GetInstanceID());
+    public Vector2[] GetPath(Component target, bool removeCloseNodes = true) => GetPath(target.transform.position, target.GetInstanceID(), removeCloseNodes);
 
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted()
