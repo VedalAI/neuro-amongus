@@ -61,7 +61,6 @@ public sealed class CommunicationHandler : MonoBehaviour
         // TODO: We should send meeting data!
         if (MeetingHud.Instance || Minigame.Instance || !Frame.CanGenerate) return;
 
-        //PlayerControl.LocalPlayer.Die(DeathReason.Kill, true);
         if (PlayerControl.LocalPlayer.Data.IsDead)
         {
             DeadMovementHandler.Instance.Move();
@@ -83,8 +82,6 @@ public sealed class CommunicationHandler : MonoBehaviour
             Send(Frame.Now(_shouldSendHeader));
             _shouldSendHeader = false;
             // Warning($"Sent: {Frame.Now}");
-
-            //Info(Frame.Now());
 
             _shouldSend = false;
         }
