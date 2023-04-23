@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AmongUs.GameOptions;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -13,8 +12,6 @@ namespace Neuro.Movement;
 public sealed class DeadMovementHandler : MonoBehaviour
 {
     private PlayerControl followPlayer = null;
-
-    public HauntMenuMinigame minigame { get; set; }
 
     public static DeadMovementHandler Instance { get; private set; }
 
@@ -63,7 +60,6 @@ public sealed class DeadMovementHandler : MonoBehaviour
 
             case CrewmateGhostRole:
             case ImpostorGhostRole:
-                // TODO: sabotage when impostor
                 MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
                 PlayerControl.LocalPlayer.Data.Role.UseAbility();
                 break;
