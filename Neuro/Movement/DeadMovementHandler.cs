@@ -5,6 +5,7 @@ using Neuro.Events;
 using Neuro.Minigames;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
+using Reactor.Utilities.Extensions;
 using UnityEngine;
 
 namespace Neuro.Movement;
@@ -110,17 +111,8 @@ public sealed class DeadMovementHandler : MonoBehaviour
 
     private static PlayerControl GetRandomAlivePlayer()
     {
-        List<PlayerControl> alivePlayers = new();
-        foreach (PlayerControl player in PlayerControl.AllPlayerControls)
-        {
-            if (!player.Data.IsDead)
-            {
-                alivePlayers.Add(player);
-            }
-        }
-        System.Random random = new();
-        int i = random.Next(alivePlayers.Count);
-        return alivePlayers[i];
+        // We don't return impostors because there's no logic to avoid the killer or to stop following the target if they do something sus, so just pick a crewmate instaed. Guess it's fine to have PsychicNeuro sometimes ¯\_(ツ)_/¯
+        return PlayerControl.AllPlayerControls._items.Where(p => !p.Data.Disconnected && !p.Data.IsDead && !p.Data.Role.IsImpostor).Random();
     }
 
     [EventHandler(EventTypes.GameStarted)]
