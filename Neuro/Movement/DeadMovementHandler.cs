@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Neuro.Events;
 using Neuro.Minigames;
@@ -112,7 +111,7 @@ public sealed class DeadMovementHandler : MonoBehaviour
     private static PlayerControl GetRandomAlivePlayer()
     {
         // We don't return impostors because there's no logic to avoid the killer or to stop following the target if they do something sus, so just pick a crewmate instaed. Guess it's fine to have PsychicNeuro sometimes ¯\_(ツ)_/¯
-        return PlayerControl.AllPlayerControls._items.Where(p => !p.Data.Disconnected && !p.Data.IsDead && !p.Data.Role.IsImpostor).Random();
+        return PlayerControl.AllPlayerControls._items.Where(p => p && !p.Data.Disconnected && !p.Data.IsDead && !p.Data.Role.IsImpostor).Random();
     }
 
     [EventHandler(EventTypes.GameStarted)]
