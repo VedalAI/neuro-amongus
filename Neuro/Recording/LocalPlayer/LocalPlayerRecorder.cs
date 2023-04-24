@@ -79,7 +79,7 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
         else if (role == RoleTypes.ImpostorGhost)
             Frame.Role = RoleType.Impostor;
         else
-            Frame.Role = (RoleType)(role + 1);
+            Frame.Role = (role + 1).ForMessage();
     }
 
     [EventHandler(EventTypes.GameStarted)]
