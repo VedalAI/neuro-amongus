@@ -9,6 +9,8 @@ public sealed class DoorSabotageAirshipSolver : IMinigameSolver<DoorCardSwipeGam
 {
     public IEnumerator CompleteMinigame(DoorCardSwipeGame minigame)
     {
+        yield return InGameCursor.Instance.CoMoveTo(minigame.col);
+
         yield return minigame.InsertCard();
 
         yield return InGameCursor.Instance.CoMoveTo(minigame.col);
