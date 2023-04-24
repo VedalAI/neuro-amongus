@@ -40,7 +40,7 @@ class LSTMModel(torch.nn.Module):
         self.hidden_dim = 64
         self.layers = 2
 
-        self.fc1 = torch.nn.Linear(28, self.hidden_dim)
+        self.fc1 = torch.nn.Linear(36, self.hidden_dim)
 
         self.lstm = torch.nn.LSTM(self.hidden_dim, self.hidden_dim, self.layers)
 
