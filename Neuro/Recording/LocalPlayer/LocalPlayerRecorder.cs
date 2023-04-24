@@ -61,6 +61,9 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
 
             Frame.RaycastObstacleDistances[i] = raycastHit.distance;
         }
+
+        Frame.IsDead = PlayerControl.LocalPlayer.Data.IsDead;
+        RecordRole();
     }
 
     public void RecordReport() => Frame.DidReport = true;
@@ -68,7 +71,6 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     public void RecordKill() => Frame.DidKill = true;
     public void RecordSabotage(SystemTypes type) => Frame.SabotageUsed = type.ForMessage();
     public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = room.ForMessage();
-    public void RecordDead() => Frame.IsDead = PlayerControl.LocalPlayer.Data.IsDead;
     public void RecordRole()
     {
         RoleTypes role = PlayerControl.LocalPlayer.Data.RoleType;
