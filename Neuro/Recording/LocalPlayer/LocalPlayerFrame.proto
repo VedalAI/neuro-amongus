@@ -15,5 +15,4 @@ message LocalPlayerFrame {
     Vector2 Position = 7;
     Vector2 Velocity = 8;
     bool IsDead = 9;
-    RoleType Role = 10;
 }

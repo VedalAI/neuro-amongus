@@ -61,9 +61,6 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
 
             Frame.RaycastObstacleDistances[i] = raycastHit.distance;
         }
-
-        Frame.IsDead = PlayerControl.LocalPlayer.Data.IsDead;
-        RecordRole();
     }
 
     public void RecordReport() => Frame.DidReport = true;
@@ -71,18 +68,6 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     public void RecordKill() => Frame.DidKill = true;
     public void RecordSabotage(SystemTypes type) => Frame.SabotageUsed = type.ForMessage();
     public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = room.ForMessage();
-    public void RecordRole()
-    {
-        RoleTypes role = PlayerControl.LocalPlayer.Data.RoleType;
-        // among us considers ghosts as seperate roles, so convert them to our role type
-        // TODO: Maybe implement the ghost roles to the RoleType enum if necessary
-        if (role == RoleTypes.CrewmateGhost)
-            Frame.Role = RoleType.Crewmate;
-        else if (role == RoleTypes.ImpostorGhost)
-            Frame.Role = RoleType.Impostor;
-        else
-            Frame.Role = (role + 1).ForMessage();
-    }
 
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted()
