@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes;
@@ -16,15 +17,13 @@ public static class Extensions
     /// This returns the element at the specified index from the il2cpp list.
     /// JetBrains Rider will complain about an ambiguous indexer if used normally (list[i]).
     /// </summary>
-    public static T At<T>(this Il2CppSystem.Collections.Generic.List<T> list, int index)
-    {
-        if ((uint)index >= (uint)list._size)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
-        }
+    public static T At<T>(this Il2CppSystem.Collections.Generic.List<T> list, int index) => list._items[index];
 
-        return list._items[index];
-    }
+    /// <summary>
+    /// This returns the element at the specified index from the il2cpp list.
+    /// JetBrains Rider will complain about an ambiguous indexer if used normally (list[i]).
+    /// </summary>
+    public static T At<T>(this Il2CppSystem.Collections.Generic.List<T> list, Index index) => list._items[index];
 
     public static IEnumerable<T> OfIl2CppType<T>(this IEnumerable collection) where T : Il2CppObjectBase
     {
@@ -57,5 +56,20 @@ public static class Extensions
         {
             repeatedField.Add(default);
         }
+    }
+
+    public static IEnumerable<T> ReverseSection<T>(this IList<T> list, Range range)
+    {
+        int startIndex = range.Start.IsFromEnd ? list.Count - range.Start.Value : range.Start.Value;
+        int endIndex = range.End.IsFromEnd ? list.Count - range.End.Value : range.End.Value;
+
+        if (startIndex < 0 || endIndex > list.Count || startIndex >= endIndex)
+        {
+            throw new ArgumentException("Invalid range.");
+        }
+
+        return list.Take(startIndex)
+            .Concat(list.Skip(startIndex).Take(endIndex - startIndex).Reverse())
+            .Concat(list.Skip(endIndex));
     }
 }
