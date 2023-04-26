@@ -15,12 +15,10 @@ public sealed class EnterIdCodeSolver : GeneralMinigameSolver<EnterCodeMinigame>
         yield return InGameCursor.Instance.CoMoveTo(minigame.Card);
         yield return minigame.CoShowCard();
 
-        IEnumerable<int> numbers = minigame.targetNumber.ToString().Select(c => c - '0');
+        IEnumerable<int> numbers = minigame.targetNumber.ToString().PadLeft(5, '0').Select(c => c - '0');
         foreach (int number in numbers)
         {
-            if (number == 0) yield return InGameCursor.Instance.CoMoveTo(minigame.ControllerSelectable.At(9));
-            else yield return InGameCursor.Instance.CoMoveTo(minigame.ControllerSelectable.At(number - 1));
-
+            yield return InGameCursor.Instance.CoMoveTo(minigame.ControllerSelectable.At(number > 0 ? number - 1 : 9));
             minigame.EnterDigit(number);
             yield return new WaitForSeconds(0.2f);
         }
