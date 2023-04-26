@@ -46,8 +46,9 @@ public sealed class InGameCursor : MonoBehaviour
         Instance = this;
 
         gameObject.layer = LayerMask.NameToLayer("UI");
+        NeuroUtilities.CacheCamera(Camera.main);
 
-        transform.SetParent(Camera.main!.transform, false);
+        transform.SetParent(NeuroUtilities.CameraMain.transform, false);
         transform.localPosition = new Vector3(0f, 0f, -650);
         Hide();
 

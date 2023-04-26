@@ -31,4 +31,25 @@ public static class NeuroUtilities
     {
         GUILayout.Label(string.Empty, GUI.skin.horizontalSlider);
     }
+
+    public static void CacheCamera(Camera camera)
+    {
+        cache = camera;
+    }
+
+    private static Camera cache;
+
+    public static Camera CameraMain
+    {
+        get
+        {
+            // safety check
+            // until we have our cached version of the camera, use default behavior
+            if (cache == null)
+            {
+                return Camera.main;
+            }
+            return cache;
+        }
+    }
 }

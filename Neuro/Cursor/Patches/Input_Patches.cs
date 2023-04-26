@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Cursor.Patches;
@@ -13,7 +14,7 @@ public static class Input_get_mousePosition
 
         if (!InGameCursor.Instance.IsHidden)
         {
-            __result = Camera.main!.WorldToScreenPoint(InGameCursor.Instance.Position);
+            __result = NeuroUtilities.CameraMain.WorldToScreenPoint(InGameCursor.Instance.Position);
         }
     }
 }
