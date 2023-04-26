@@ -1,6 +1,5 @@
 ﻿using Neuro.Cursor;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Neuro.Utilities;
 using UnityEngine;
@@ -33,7 +32,7 @@ public sealed class CommsSabotagedMiraSolver : IMinigameSolver<AuthGame>, IMinig
                     break;
                 }
             }
-            
+
             if (codeNumber == minigame.system.TargetNumber)
             {
                 yield return InGameCursor.Instance.CoMoveTo(minigame.ControllerSelectable.At(^1));

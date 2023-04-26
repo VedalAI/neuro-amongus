@@ -22,6 +22,9 @@ public static class NeuroUtilities
     }
     private static Material _maskShaderMat;
 
+    public static Camera MainCamera => _mainCamera ? _mainCamera : _mainCamera = Camera.main;
+    private static Camera _mainCamera;
+
     public static void WarnDoubleSingletonInstance([CallerFilePath] string file = null)
     {
         Warning($"Tried to create an instance of {Path.GetFileNameWithoutExtension(file)} when it already exists");
@@ -30,19 +33,5 @@ public static class NeuroUtilities
     public static void GUILayoutDivider()
     {
         GUILayout.Label(string.Empty, GUI.skin.horizontalSlider);
-    }
-
-    private static Camera cache;
-
-    public static Camera CameraMain
-    {
-        get
-        {
-            if (cache == null)
-            {
-                cache = Camera.main;
-            }
-            return cache;
-        }
     }
 }

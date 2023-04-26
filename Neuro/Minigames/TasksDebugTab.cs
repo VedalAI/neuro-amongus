@@ -22,7 +22,7 @@ public sealed class TasksDebugTab : DebugTab
         {
             Minigame minigamePrefab = ShipStatus.Instance.GetComponentsInChildren<SystemConsole>().First(c => c.FreeplayOnly).MinigamePrefab;
             PlayerControl.LocalPlayer.NetTransform.Halt();
-            Minigame minigame = Object.Instantiate(minigamePrefab, NeuroUtilities.CameraMain.transform, false);
+            Minigame minigame = Object.Instantiate(minigamePrefab, NeuroUtilities.MainCamera.transform, false);
             minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
             minigame.Begin(null);
         }
@@ -39,7 +39,7 @@ public sealed class TasksDebugTab : DebugTab
 
                 Console console = ShipStatus.Instance.AllConsoles.First(task.ValidConsole);
 
-                Minigame minigame = Object.Instantiate(task.GetMinigamePrefab(), NeuroUtilities.CameraMain.transform, false);
+                Minigame minigame = Object.Instantiate(task.GetMinigamePrefab(), NeuroUtilities.MainCamera.transform, false);
                 minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
                 minigame.Console = console;
                 minigame.Begin(task);
