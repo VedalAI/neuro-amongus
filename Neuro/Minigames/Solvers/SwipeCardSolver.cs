@@ -23,7 +23,7 @@ public sealed class SwipeCardSolver : GeneralMinigameSolver<CardSlideGame>
             InGameCursor.Instance.StartHoldingLMB(minigame);
             yield return InGameCursor.Instance.CoMoveTo(InGameCursor.Instance.Position + new Vector2(5, 0), 1.2f);
             InGameCursor.Instance.StopHoldingLMB();
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(1f);
             yield return InGameCursor.Instance.CoMoveTo(minigame.col, 1.2f);
         }
 
