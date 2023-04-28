@@ -11,40 +11,58 @@ public class TuneRadioSabotageSolver : IMinigameSolver<TuneRadioMinigame>, IMini
 
     public IEnumerator CompleteMinigame(TuneRadioMinigame minigame)
     {
-        float radius = 0.6f;
-        float angle = 90f;
-        float angleStep = 1f;
+        const float radius = 0.6f;
+        const float angleOffset = 90f * Mathf.Deg2Rad;
+        const float smoothTurnSpeed = 0.15f; //Speed of the dail turning. Smaller is faster.
 
-        Vector3 moveTo = PositionInCircumference(minigame.dial.DialTrans.transform.position, radius, angle);
-        yield return InGameCursor.Instance.CoMoveTo(moveTo);
-        InGameCursor.Instance.StartHoldingLMB(minigame);
+        float angleStep = 11.25f * Mathf.Deg2Rad;
+        if (Random.Range(0, 2) > 0)
+        {
+            angleStep = -angleStep;
+        }
+
+        float angle = minigame.dial.transform.rotation.z + angleOffset;
+        float targetAngle = angle + angleStep;
+        float currentVelocity = 0f;
+        float noiseLevel = minigame.actualSignal.NoiseLevel;
+        bool canSwitch = true;// Only so it will not be stuck switching angles
+
+        yield return InGameCursor.Instance.CoMoveToCircleStart(minigame.dial.DialTrans, radius, angle);
+
+        InGameCursor.Instance.StartHoldingLMB(minigame);        
 
         while (!minigame.finished)
         {
-            if (minigame.targetAngle < minigame.dial.Value)
+            // Lerp was not working for me, Using SmoothDampAngle
+            while (Mathf.Abs(angle - targetAngle) > 0.1f)
             {
-                angle -= angleStep;
-            } else {
-                angle += angleStep;
+                angle = Mathf.SmoothDampAngle(angle, targetAngle, ref currentVelocity, smoothTurnSpeed);
+                yield return InGameCursor.Instance.CoMoveToCircleStart(minigame.dial.DialTrans, radius, angle);
+
+                noiseLevel = minigame.actualSignal.NoiseLevel;
+                if (noiseLevel < 0.1f)
+                {
+                    break;
+                }
             }
 
-            moveTo = PositionInCircumference(minigame.dial.DialTrans.transform.position, radius, angle);
-            yield return InGameCursor.Instance.CoMoveTo(moveTo);
+            if (noiseLevel < 0.1f)
+            {
+                break;
+            }
+            else if (!canSwitch && noiseLevel < 0.7f)
+            {
+                canSwitch = true;
+            }
+            else if (canSwitch && noiseLevel == 1f) // Way off, go other way
+            {
+                canSwitch = false;
+                angleStep = -angleStep;
+            }
+
+            targetAngle = angle + angleStep;
         }
 
         InGameCursor.Instance.StopHoldingLMB();
-    }
-
-    // https://answers.unity.com/questions/759542/get-coordinate-with-angle-and-distance.html
-    protected Vector3 PositionInCircumference(Vector3 center, float radius, float degrees)
-    {
-        float radians = degrees * Mathf.Deg2Rad;
-        float x = Mathf.Cos(radians);
-        float y = Mathf.Sin(radians);
-        Vector3 position = new Vector3(x, y, 0);
-        position *= radius;
-        position += center;
-
-        return position;
     }
 }
