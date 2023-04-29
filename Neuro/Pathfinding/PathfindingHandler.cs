@@ -19,8 +19,8 @@ public sealed class PathfindingHandler : MonoBehaviour
     public int GridBaseWidth { get; set; }
 
     public int GridSize => (int)(GridBaseWidth * GridDensity);
-    public int GridLowerBounds => GridSize / -2;
-    public int GridUpperBounds => GridSize / 2;
+    public int GridLowerBounds => Mathf.RoundToInt(GridSize / -2f);
+    public int GridUpperBounds => Mathf.RoundToInt(GridSize / 2f);
 
     public static PathfindingHandler Instance { get; private set; }
 
@@ -98,22 +98,22 @@ public sealed class PathfindingHandler : MonoBehaviour
             new(-OFFSET, OFFSET), new(0, OFFSET), new(OFFSET, OFFSET)
         };
 
-        for (int x = GridLowerBounds; x < GridUpperBounds; x++)
-        for (int y = GridLowerBounds; y < GridUpperBounds; y++)
+        for (int x = 0; x < GridSize; x++)
+        for (int y = 0; y < GridSize; y++)
         {
             Vector2 point = Vector2.zero;
             bool accessible = false;
             for (int i = 0; i < 9; i++)
             {
                 int b = (i * 4 + 4) % 9; // Noncontinuous linear index through the array
-                if (TryGetAccessiblePoint(x + offsetCoords[b].x, y + offsetCoords[b].y, out point))
+                if (TryGetAccessiblePoint(x - GridUpperBounds + offsetCoords[b].x, y - GridUpperBounds + offsetCoords[b].y, out point))
                 {
                     accessible = true;
                     break;
                 }
             }
 
-            grid[x + GridUpperBounds, y + GridUpperBounds] = new Node(accessible, point, x + GridUpperBounds, y + GridUpperBounds);
+            grid[x, y] = new Node(accessible, point, x, y);
         }
 
         return grid;

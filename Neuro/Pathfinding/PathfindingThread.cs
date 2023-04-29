@@ -119,7 +119,6 @@ public sealed class PathfindingThread : NeuroThread
         // Set all nodes not in closed set to inaccessible
         foreach (Node node in _grid)
         {
-            // TODO: On some densities, node can be null here!!
             if (!closedSet.Contains(node)) node.accessible = false;
         }
     }
