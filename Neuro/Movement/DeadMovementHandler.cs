@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Neuro.Events;
-using Neuro.Minigames;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.Extensions;
