@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Neuro.Movement;
 
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class MovementHandler : MonoBehaviour
 {
     private const float OBSTACLE_PADDING = 0.5f; // The minimum distance betweeen the agent an obstacle
@@ -98,11 +98,5 @@ public sealed class MovementHandler : MonoBehaviour
         _arrow.material = new Material(Shader.Find("Sprites/Default"));
         _arrow.startColor = Color.blue;
         _arrow.endColor = Color.cyan;
-    }
-
-    [EventHandler(EventTypes.GameStarted)]
-    public static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<MovementHandler>();
     }
 }

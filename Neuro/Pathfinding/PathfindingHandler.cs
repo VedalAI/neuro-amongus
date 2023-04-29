@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Neuro.Pathfinding;
 
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class PathfindingHandler : MonoBehaviour
 {
     public const float GRID_DENSITY = 5f;
@@ -128,10 +128,4 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     [HideFromIl2Cpp]
     public Vector2[] GetPath(Component target, bool removeCloseNodes = true) => GetPath(target.transform.position, target.GetInstanceID(), removeCloseNodes);
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<PathfindingHandler>();
-    }
 }

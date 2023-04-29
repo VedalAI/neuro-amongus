@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Neuro.Recording;
 
 // TODO: ReportFindings was removed, we need to implement separate communication with language model
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class Recorder : MonoBehaviour
 {
     public static Recorder Instance { get; private set; }
@@ -76,11 +76,5 @@ public sealed class Recorder : MonoBehaviour
         message.WriteTo(_fileStream);
         // Warning($"Recorded: {message}");
         _fileStream.Flush();
-    }
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<Recorder>();
     }
 }

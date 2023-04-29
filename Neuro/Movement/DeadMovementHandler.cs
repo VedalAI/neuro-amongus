@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Neuro.Movement;
 
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class DeadMovementHandler : MonoBehaviour
 {
     private PlayerControl followPlayer;
@@ -112,11 +112,5 @@ public sealed class DeadMovementHandler : MonoBehaviour
     {
         // We don't return impostors because there's no logic to avoid the killer or to stop following the target if they do something sus, so just pick a crewmate instaed. Guess it's fine to have PsychicNeuro sometimes ¯\_(ツ)_/¯
         return PlayerControl.AllPlayerControls._items.Where(p => p && !p.Data.Disconnected && !p.Data.IsDead && !p.Data.Role.IsImpostor).Random();
-    }
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<DeadMovementHandler>();
     }
 }

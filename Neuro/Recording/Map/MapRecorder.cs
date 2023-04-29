@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Neuro.Recording.Map;
 
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class MapRecorder : MonoBehaviour
 {
     public static MapRecorder Instance { get; private set; }
@@ -67,11 +67,5 @@ public sealed class MapRecorder : MonoBehaviour
     private float Closest(Vent vent)
     {
         return PathfindingHandler.Instance.GetPathLength(vent);
-    }
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<MapRecorder>();
     }
 }

@@ -1,5 +1,4 @@
 using HarmonyLib;
-using Neuro.Movement;
 
 namespace Neuro.Minigames.Patches;
 
