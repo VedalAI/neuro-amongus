@@ -22,6 +22,9 @@ public static class NeuroUtilities
     }
     private static Material _maskShaderMat;
 
+    public static Camera MainCamera => _mainCamera ? _mainCamera : _mainCamera = Camera.main;
+    private static Camera _mainCamera;
+
     public static void WarnDoubleSingletonInstance([CallerFilePath] string file = null)
     {
         Warning($"Tried to create an instance of {Path.GetFileNameWithoutExtension(file)} when it already exists");
