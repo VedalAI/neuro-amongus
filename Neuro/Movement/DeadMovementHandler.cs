@@ -62,8 +62,13 @@ public sealed class DeadMovementHandler : MonoBehaviour
 
             case CrewmateGhostRole:
             case ImpostorGhostRole:
-                MovementHandler.Instance.ForcedMoveDirection = Vector2.zero;
-                PlayerControl.LocalPlayer.Data.Role.UseAbility();
+                if (followPlayer is null || followPlayer.Data.IsDead)
+                {
+                    followPlayer = GetRandomAlivePlayer();
+                    Info($"Now following {followPlayer.name}");
+                }
+
+                MoveToPosition(followPlayer.GetTruePosition(), 1.0f);
                 break;
 
             default:
@@ -92,16 +97,13 @@ public sealed class DeadMovementHandler : MonoBehaviour
         Console closestConsole = null;
         float closestDistance = 999f;
 
-        foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>().Where(t => !t.IsComplete))
+        foreach (Console console in NeuroUtilities.GetOpenableConsoles(false))
         {
-            foreach (Console console in task.FindConsoles()._items.Where(c => c && MinigameHandler.ShouldOpenConsole(c, task.MinigamePrefab, task)))
+            float distance = Vector2.Distance(console.transform.position, PlayerControl.LocalPlayer.GetTruePosition());
+            if (distance < closestDistance)
             {
-                float distance = Vector2.Distance(console.transform.position, PlayerControl.LocalPlayer.GetTruePosition());
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestConsole = console;
-                }
+                closestDistance = distance;
+                closestConsole = console;
             }
         }
 
