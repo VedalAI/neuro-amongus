@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using Neuro.Cursor;
+using Neuro.Utilities;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -14,10 +15,9 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
     }
 
     public IEnumerator CompleteMinigame(AirshipUploadGame minigame, NormalPlayerTask task)
-    {    
+    {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Phone);
         InGameCursor.Instance.StartHoldingLMB(minigame);
-        Camera camera = Camera.main;
         Vector2 target;
 
         // before we know where poor is, just try random points on the screen
@@ -25,7 +25,7 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
         while (!poorFound)
         {
             Vector2 start = minigame.Phone.transform.position;
-            target = camera.ScreenToWorldPoint(new Vector2(Random.Range(10, Screen.width - 10), Random.Range(10, Screen.height - 10)));
+            target = NeuroUtilities.MainCamera.ScreenToWorldPoint(new Vector2(Random.Range(10, Screen.width - 10), Random.Range(10, Screen.height - 10)));
             float time = Vector2.Distance(start, target) / 6f;
             for (float t = 0; t < time; t += Time.deltaTime)
             {
