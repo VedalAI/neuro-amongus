@@ -77,7 +77,7 @@ public sealed class CommunicationHandler : MonoBehaviour
             _shouldSendHeader = false;
             // Warning($"Sent: {Frame.Now}");
 
-            Info(Frame.Now());
+            //Info(Frame.Now());
 
             _shouldSend = false;
         }

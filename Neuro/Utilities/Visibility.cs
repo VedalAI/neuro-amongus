@@ -9,7 +9,7 @@ public static class Visibility
     // TODO: Improve (idea: send raycast from camera to target)
     private static bool IsVisible(Vector2 rayStart, Vector2 rayEnd)
     {
-        Vector3 viewport = Camera.main!.WorldToViewportPoint(rayEnd);
+        Vector3 viewport = NeuroUtilities.MainCamera.WorldToViewportPoint(rayEnd);
         bool visible = viewport.x is > 0 and < 1 && viewport.y is > 0 and < 1;
         if (!visible) return false;
 
