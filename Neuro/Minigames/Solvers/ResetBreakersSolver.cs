@@ -29,7 +29,7 @@ public sealed class ResetBreakersSolver : IMinigameSolver<ElecLeverGame, NormalP
         if (task.Data[task.taskStep] == minigame.ConsoleId)
         {
             yield return InGameCursor.Instance.CoMoveTo(minigame.Handle);
-            InGameCursor.Instance.StartHoldingLMB(minigame.Handle);
+            InGameCursor.Instance.StartHoldingLMB(minigame);
             Vector3 down = minigame.transform.TransformPoint(minigame.Handle.transform.localPosition + new Vector3(0f, -3f, 0f));
             yield return InGameCursor.Instance.CoMoveTo(down);
             yield return new WaitForSeconds(0.1f);

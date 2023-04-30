@@ -34,7 +34,7 @@ def save_decoded_gymbag(file_path: str, frames: List[Frame]):
     Path(path.dirname(file_path)).mkdir(parents=True, exist_ok=True)
     with open(file_path, "w") as file:
         # Snake casing matches the dataclasses, and we need to include default values cuz otherwise they are not included and raise an error when accessing
-        json.dump([f.to_pydict(casing=Casing.SNAKE, include_default_values=True) for f in frames], file)
+        json.dump([f.to_dict(casing=Casing.SNAKE, include_default_values=True) for f in frames], file)
 
 
 def load_decoded_gymbag(file_path: str) -> List[Frame]:

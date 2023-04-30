@@ -19,8 +19,8 @@ public sealed class PathfindingHandler : MonoBehaviour
     public int GridBaseWidth { get; set; }
 
     public int GridSize => (int)(GridBaseWidth * GridDensity);
-    public int GridLowerBounds => GridSize / -2;
-    public int GridUpperBounds => GridSize / 2;
+    public int GridLowerBounds => Mathf.RoundToInt(GridSize / -2f);
+    public int GridUpperBounds => Mathf.RoundToInt(GridSize / 2f);
 
     public static PathfindingHandler Instance { get; private set; }
 
@@ -55,6 +55,7 @@ public sealed class PathfindingHandler : MonoBehaviour
     {
         switch (ShipStatus.Instance.GetTypeForMessage())
         {
+            case MapType.Dleks:
             case MapType.Skeld:
                 GridDensity = 4.489812374114990234375f;
                 GridBaseWidth = 58;
@@ -72,6 +73,12 @@ public sealed class PathfindingHandler : MonoBehaviour
 
             case MapType.Airship:
                 GridDensity = 4.333333f;
+                GridBaseWidth = 100;
+                break;
+
+            default:
+                Warning("The map requested lacks fine-tuned grid sizes! Defaulting to backup values.");
+                GridDensity = 4.5f;
                 GridBaseWidth = 100;
                 break;
         }
@@ -100,8 +107,8 @@ public sealed class PathfindingHandler : MonoBehaviour
             new(-OFFSET, OFFSET), new(0, OFFSET), new(OFFSET, OFFSET)
         };
 
-        for (int x = GridLowerBounds; x < GridUpperBounds; x++)
-        for (int y = GridLowerBounds; y < GridUpperBounds; y++)
+        for (int x = 0; x < GridSize; x++)
+        for (int y = 0; y < GridSize; y++)
         {
             Vector2 point = Vector2.zero;
             Ladder ladder = null;
@@ -109,14 +116,14 @@ public sealed class PathfindingHandler : MonoBehaviour
             for (int i = 0; i < 9; i++)
             {
                 int b = (i * 4 + 4) % 9; // Noncontinuous linear index through the array
-                if (TryGetAccessiblePoint(x + offsetCoords[b].x, y + offsetCoords[b].y, out point, out ladder))
+                if (TryGetAccessiblePoint(x - GridUpperBounds + offsetCoords[b].x, y - GridUpperBounds + offsetCoords[b].y, out point, out ladder))
                 {
                     accessible = true;
                     break;
                 }
             }
 
-            Node node = new(accessible, point, x + GridUpperBounds, y + GridUpperBounds);
+            Node node = new(accessible, point, x, y);
 
             if (ladder)
             {
@@ -124,7 +131,7 @@ public sealed class PathfindingHandler : MonoBehaviour
                 node.transportTargetId = ladder.Destination.GetInstanceID();
             }
 
-            grid[x + GridUpperBounds, y + GridUpperBounds] = node;
+            grid[x, y] = node;
         }
 
         return grid;
@@ -181,12 +188,12 @@ public sealed class PathfindingHandler : MonoBehaviour
     public Vector2 GetFirstNodeInPath(Component target) => GetFirstNodeInPath(target.transform.position, target.GetInstanceID());
 
     [HideFromIl2Cpp]
-    private Vector2[] GetPath(Vector2 start, Vector2 target, string identifier)
+    private Vector2[] GetPath(Vector2 start, Vector2 target, string identifier, bool removeCloseNodes = true)
     {
         if (string.IsNullOrEmpty(identifier)) throw new ArgumentException("Identifier cannot be null or empty");
 
         _thread.RequestPath(start, target, identifier);
-        if (!_thread.TryGetPath(identifier, out Vector2[] path, out _)) return Array.Empty<Vector2>();
+        if (!_thread.TryGetPath(identifier, out Vector2[] path, out _, removeCloseNodes)) return Array.Empty<Vector2>();
 
         if (path.Length == 0) return Array.Empty<Vector2>();
 
@@ -197,10 +204,10 @@ public sealed class PathfindingHandler : MonoBehaviour
     public Vector2[] GetPath(Vector2 target, string identifier, bool removeCloseNodes = true) => GetPath(_localPlayerPosition, target, identifier, removeCloseNodes);
 
     [HideFromIl2Cpp]
-    public Vector2[] GetPath(Vector2 target, int identifier) => GetPath(target, identifier.ToString());
+    public Vector2[] GetPath(Vector2 target, int identifier, bool removeCloseNodes = true) => GetPath(target, identifier.ToString(), removeCloseNodes);
 
     [HideFromIl2Cpp]
-    public Vector2[] GetPath(Component target) => GetPath(target.transform.position, target.GetInstanceID());
+    public Vector2[] GetPath(Component target, bool removeCloseNodes = true) => GetPath(target.transform.position, target.GetInstanceID(), removeCloseNodes);
 
     [EventHandler(EventTypes.GameStarted)]
     private static void OnGameStarted()

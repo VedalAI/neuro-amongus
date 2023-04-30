@@ -36,23 +36,24 @@ public sealed class PathfindingThread : NeuroThread
         _requests[identifier] = (start, target);
     }
 
-    public bool TryGetPath(string identifier, out Vector2[] path, out float length)
+    public bool TryGetPath(string identifier, out Vector2[] path, out float length, bool removeCloseNodes = true)
     {
         bool tried = _results.TryGetValue(identifier, out (Vector2, Vector2, Vector2[] path, float length) result);
         path = result.path;
         length = result.length;
-        if (path != null)
+        if (removeCloseNodes && path != null)
         {
             while (path.Length > 1 && Vector2.Distance(PlayerControl.LocalPlayer.GetTruePosition(), path[0]) < 0.5f)
             {
                 path = path.Skip(1).ToArray();
             }
-            _results[identifier] = result with { path = path };
+            // _results[identifier] = result with { path = path };
         }
 
         return tried;
     }
 
+    // TODO: Instead of pathing to the closest node to the destination, path to the closest node to the player that is close enough to the destination
     protected override async void RunThread()
     {
         while (true)
@@ -116,7 +117,6 @@ public sealed class PathfindingThread : NeuroThread
         // Set all nodes not in closed set to inaccessible
         foreach (Node node in _grid)
         {
-            // TODO: On some densities, node can be null here!!
             if (!closedSet.Contains(node)) node.accessible = false;
         }
     }
@@ -320,13 +320,20 @@ public sealed class PathfindingThread : NeuroThread
     {
         if (!_visualPointParent) return;
 
-        GameObject nodeVisualPoint = new("Gizmo (Visual Point)");
-        nodeVisualPoint.transform.parent = _visualPointParent;
-        nodeVisualPoint.transform.position = position;
+        Vector3 calculatedPosition = new(position.x, position.y, position.y / 1000f + 0.0005f);
+
+        GameObject nodeVisualPoint = new("Gizmo (Visual Point)")
+        {
+            transform =
+            {
+                position = calculatedPosition,
+                parent = _visualPointParent
+            }
+        };
 
         LineRenderer renderer = nodeVisualPoint.AddComponent<LineRenderer>();
-        renderer.SetPosition(0, position);
-        renderer.SetPosition(1, position + new Vector2(0, widthMultiplier));
+        renderer.SetPosition(0, calculatedPosition);
+        renderer.SetPosition(1, calculatedPosition + new Vector3(0, widthMultiplier));
         renderer.widthMultiplier = widthMultiplier;
         renderer.positionCount = 2;
         renderer.material = NeuroUtilities.MaskShaderMat;
