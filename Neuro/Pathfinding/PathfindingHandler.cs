@@ -53,6 +53,7 @@ public sealed class PathfindingHandler : MonoBehaviour
     {
         switch (ShipStatus.Instance.GetTypeForMessage())
         {
+            case MapType.Dleks:
             case MapType.Skeld:
                 GridDensity = 4.489812374114990234375f;
                 GridBaseWidth = 58;
@@ -70,6 +71,12 @@ public sealed class PathfindingHandler : MonoBehaviour
 
             case MapType.Airship:
                 GridDensity = 4.333333f;
+                GridBaseWidth = 100;
+                break;
+
+            default:
+                Warning("The map requested lacks fine-tuned grid sizes! Defaulting to backup values.");
+                GridDensity = 4.5f;
                 GridBaseWidth = 100;
                 break;
         }
@@ -122,7 +129,7 @@ public sealed class PathfindingHandler : MonoBehaviour
     private bool TryGetAccessiblePoint(float x, float y, out Vector2 point)
     {
         float nodeRadius = 1 / GridDensity;
-        point = new(x / GridDensity, y / GridDensity);
+        point = new Vector2(x / GridDensity, y / GridDensity);
 
         Collider2D[] cols = Physics2D.OverlapCircleAll(point, nodeRadius, Constants.ShipAndAllObjectsMask);
         int validColsCount = cols.Count(col =>
