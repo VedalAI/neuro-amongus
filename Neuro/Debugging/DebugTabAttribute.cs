@@ -16,6 +16,7 @@ public sealed class DebugTabAttribute : Attribute
             .Where(t => t.IsAssignableTo(typeof(DebugTab)))
             .Select(Activator.CreateInstance)
             .OfType<DebugTab>()
+            .OrderBy(t => t.Name)
             .ToList();
     }
 

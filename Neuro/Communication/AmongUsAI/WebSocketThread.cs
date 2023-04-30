@@ -22,6 +22,8 @@ public sealed class WebSocketThread : NeuroThread
             {
                 Thread.Sleep(5000);
 
+                if (!CommunicationHandler.Instance.enabled) continue;
+
                 if (Socket == null || (Socket.Poll(1000, SelectMode.SelectRead) && Socket.Available == 0) || !Socket.Connected)
                 {
                     Warning("Connecting to socket");
