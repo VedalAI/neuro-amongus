@@ -148,18 +148,18 @@ public sealed class PathfindingHandler : MonoBehaviour
                 case Ladder ladder:
                     node = new Node(point, new Vector2Int(x, y), accessible)
                     {
-                        color = Color.green,
-                        transportSelfId = ladder.GetInstanceID(),
-                        transportTargetId = ladder.Destination.GetInstanceID()
+                        Color = Color.green,
+                        TransportSelfId = ladder.GetInstanceID(),
+                        TransportTargetId = ladder.Destination.GetInstanceID()
                     };
                     break;
 
                 case PlatformConsole platform:
                     node = new PlatformNode(point, new Vector2Int(x, y), accessible, platform)
                     {
-                        color = Color.blue,
-                        transportSelfId = platform.GetInstanceID(),
-                        transportTargetId = FindObjectsOfType<PlatformConsole>().First(p => p.GetInstanceID() != platform.GetInstanceID()).GetInstanceID()
+                        Color = Color.blue,
+                        TransportSelfId = platform.GetInstanceID(),
+                        TransportTargetId = FindObjectsOfType<PlatformConsole>().First(p => p.GetInstanceID() != platform.GetInstanceID()).GetInstanceID()
                     };
                     break;
 

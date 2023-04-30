@@ -1,7 +1,4 @@
-﻿using System.Numerics;
-using UnityEngine;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
+﻿using UnityEngine;
 
 namespace Neuro.Pathfinding.DataStructures;
 
@@ -27,4 +24,15 @@ public sealed class PlatformNode : Node
     }
     private Vector3 _lastPosition;
     private bool _lastResult;
+
+    public override Node Clone()
+    {
+        return new PlatformNode(WorldPosition, GridPosition, IsAccessible, _platform)
+        {
+            Color = Color,
+            TransportSelfId = TransportSelfId,
+            TransportTargetId = TransportTargetId,
+            TransportNeighborsCache = TransportNeighborsCache
+        };
+    }
 }

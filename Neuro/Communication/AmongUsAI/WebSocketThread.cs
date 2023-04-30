@@ -13,7 +13,7 @@ public sealed class WebSocketThread : NeuroThread
     public Socket Socket { get; private set; }
     public event Action OnConnect = delegate { };
 
-    protected override void RunThread()
+    protected override void RunThread(int id)
     {
         while (true)
         {

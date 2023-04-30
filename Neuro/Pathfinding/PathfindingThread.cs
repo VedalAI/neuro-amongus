@@ -11,18 +11,23 @@ namespace Neuro.Pathfinding;
 
 public sealed class PathfindingThread : NeuroThread
 {
+    private const int THREAD_COUNT = 3;
+
     private readonly ConcurrentQueue<string> _queue = new();
     private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target)> _requests = new();
     private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target, Vector2[] path, float length)> _results = new();
 
-    private readonly Node[,] _grid;
+    private readonly Dictionary<int, Node[,]> _grid = new();
     private readonly Transform _visualPointParent;
 
-    public PathfindingThread(Node[,] grid,  IEnumerable<Vector2> accessiblePositions, Transform visualPointParent)
+    public PathfindingThread(Node[,] grid,  List<Vector2> accessiblePositions, Transform visualPointParent) : base(THREAD_COUNT)
     {
-        _grid = grid;
         _visualPointParent = visualPointParent;
-        FloodFill(accessiblePositions);
+        for (int i = 0; i < THREAD_COUNT; i++)
+        {
+            _grid[i] = CloneNodeGrid(grid);
+            FloodFill(accessiblePositions, i);
+        }
     }
 
     public void RequestPath(Vector2 start, Vector2 target, string identifier)
@@ -54,7 +59,7 @@ public sealed class PathfindingThread : NeuroThread
     }
 
     // TODO: Instead of pathing to the closest node to the destination, path to the closest node to the player that is close enough to the destination
-    protected override void RunThread()
+    protected override void RunThread(int id)
     {
         while (true)
         {
@@ -62,14 +67,24 @@ public sealed class PathfindingThread : NeuroThread
             {
                 Thread.Sleep(250);
 
+                Warning(_queue.Count + " " + _requests.Count);
                 while (!_queue.IsEmpty)
                 {
+                    Warning("Starting");
                     if (!_queue.TryDequeue(out string identifier)) continue;
+                    Warning("Dequeued " + identifier + ", new length: " + _queue.Count);
                     if (!_requests.TryGetValue(identifier, out (Vector2 start, Vector2 target) vec)) continue;
+                    Warning("Found request " + vec.start + " -> " + vec.target + " | current length: " + _requests.Count);
                     _requests.TryRemove(identifier, out _);
+                    Warning("New requests length: " + _requests.Count);
 
-                    Vector2[] path = FindPath(vec.start, vec.target);
+                    Vector2[] path = FindPath(vec.start, vec.target, id);
+                    Warning("Path found, " + path.Length + " nodes");
                     _results[identifier] = (vec.start, vec.target, path, CalculateLength(path));
+                    Warning("Path cached, calculated length is " + _results[identifier].length);
+
+                    Thread.Yield();
+                    Warning("Yielded");
                 }
             }
             catch (ThreadInterruptedException)
@@ -85,15 +100,15 @@ public sealed class PathfindingThread : NeuroThread
         }
     }
 
-    private void FloodFill(IEnumerable<Vector2> accessiblePositions)
+    private void FloodFill(List<Vector2> accessiblePositions, int threadId)
     {
         List<Node> openSet = new();
         HashSet<Node> closedSet = new();
 
         foreach (Vector2 accessiblePosition in accessiblePositions)
         {
-            Node startingNode = NodeFromWorldPoint(accessiblePosition);
-            startingNode.color = Color.yellow;
+            Node startingNode = NodeFromWorldPoint(accessiblePosition, threadId);
+            startingNode.Color = Color.yellow;
             openSet.Add(startingNode);
 
             while (openSet.Count > 0)
@@ -102,7 +117,7 @@ public sealed class PathfindingThread : NeuroThread
                 openSet.Remove(node);
                 closedSet.Add(node);
 
-                foreach (Node neighbour in GetNeighbours(node, false))
+                foreach (Node neighbour in GetNeighbours(node, false, threadId))
                 {
                     if (!neighbour.IsAccessible || closedSet.Contains(neighbour)) continue;
                     if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
@@ -110,24 +125,27 @@ public sealed class PathfindingThread : NeuroThread
             }
         }
 
-        foreach (Node node in closedSet.ToList())
+        if (threadId == 0)
         {
-            CreateNodeVisualPoint(node);
+            foreach (Node node in closedSet.ToList())
+            {
+                CreateNodeVisualPoint(node);
+            }
         }
 
         // Set all nodes not in closed set to inaccessible
-        foreach (Node node in _grid)
+        foreach (Node node in _grid[threadId])
         {
             if (!closedSet.Contains(node)) node.IsAccessible = false;
         }
     }
 
-    private Vector2[] FindPath(Vector2 start, Vector2 target)
+    private Vector2[] FindPath(Vector2 start, Vector2 target, int threadId)
     {
         bool pathSuccess = false;
 
-        Node startNode = FindClosestNode(start);
-        Node targetNode = FindClosestNode(target);
+        Node startNode = FindClosestNode(start, threadId);
+        Node targetNode = FindClosestNode(target, threadId);
 
         if (startNode is not { IsAccessible: true } ||
             targetNode is not { IsAccessible: true } ||
@@ -150,7 +168,7 @@ public sealed class PathfindingThread : NeuroThread
                 break;
             }
 
-            foreach (Node neighbour in GetNeighbours(currentNode, true))
+            foreach (Node neighbour in GetNeighbours(currentNode, true, threadId))
             {
                 if (!neighbour.IsAccessible || closedSet.Contains(neighbour)) continue;
 
@@ -191,9 +209,9 @@ public sealed class PathfindingThread : NeuroThread
         return length;
     }
 
-    private Node FindClosestNode(Vector2 position)
+    private Node FindClosestNode(Vector2 position, int threadId)
     {
-        Node closestNode = NodeFromWorldPoint(position);
+        Node closestNode = NodeFromWorldPoint(position, threadId);
 
         Queue<Node> queue = new();
         List<Node> nodes = new();
@@ -205,7 +223,7 @@ public sealed class PathfindingThread : NeuroThread
             closestNode = queue.Dequeue();
             float closestDistance = float.PositiveInfinity;
             Node closestNeighbour = null;
-            foreach (Node neighbour in GetNeighbours(closestNode, true))
+            foreach (Node neighbour in GetNeighbours(closestNode, true, threadId))
             {
                 if (neighbour.IsAccessible)
                 {
@@ -232,7 +250,7 @@ public sealed class PathfindingThread : NeuroThread
         return closestNode;
     }
 
-    private Node NodeFromWorldPoint(Vector2 position)
+    private Node NodeFromWorldPoint(Vector2 position, int threadId)
     {
         position *= PathfindingHandler.Instance.GridDensity;
         float clampedX = Math.Clamp(position.x, PathfindingHandler.Instance.GridLowerBounds, PathfindingHandler.Instance.GridUpperBounds);
@@ -241,10 +259,10 @@ public sealed class PathfindingThread : NeuroThread
         int xIndex = (int) Math.Round(clampedX + PathfindingHandler.Instance.GridUpperBounds);
         int yIndex = (int) Math.Round(clampedY + PathfindingHandler.Instance.GridUpperBounds);
 
-        return _grid[xIndex, yIndex];
+        return _grid[threadId][xIndex, yIndex];
     }
 
-    private List<Node> GetNeighbours(Node node, bool includeTransport)
+    private List<Node> GetNeighbours(Node node, bool includeTransport, int threadId)
     {
         List<Node> neighbours = new();
 
@@ -258,21 +276,21 @@ public sealed class PathfindingThread : NeuroThread
             int checkY = node.GridPosition.y + y;
 
             if (checkX >= 0 && checkX < PathfindingHandler.Instance.GridSize &&
-                checkY >= 0 && checkY < PathfindingHandler.Instance.GridSize) neighbours.Add(_grid[checkX, checkY]);
+                checkY >= 0 && checkY < PathfindingHandler.Instance.GridSize) neighbours.Add(_grid[threadId][checkX, checkY]);
         }
 
-        if (!includeTransport || !node.IsTransportActive || node.transportSelfId == 0) return neighbours;
+        if (!includeTransport || !node.IsTransportActive || node.TransportSelfId == 0) return neighbours;
 
-        if (node.transportNeighborsCache == null)
+        if (node.TransportNeighborsCache == null)
         {
-            node.transportNeighborsCache = new List<Node>();
-            foreach (Node otherNode in _grid)
+            node.TransportNeighborsCache = new List<Node>();
+            foreach (Node otherNode in _grid[threadId])
             {
-                if (otherNode.transportSelfId == node.transportTargetId) node.transportNeighborsCache.Add(otherNode);
+                if (otherNode.TransportSelfId == node.TransportTargetId) node.TransportNeighborsCache.Add(otherNode);
             }
         }
 
-        neighbours.AddRange(node.transportNeighborsCache);
+        neighbours.AddRange(node.TransportNeighborsCache);
 
         return neighbours;
     }
@@ -298,7 +316,7 @@ public sealed class PathfindingThread : NeuroThread
         for (int i = 0; i < path.Count - 1; i++)
         {
             Vector2 directionNew = new(path[i].WorldPosition.x - path[i + 1].WorldPosition.x, path[i].WorldPosition.y - path[i + 1].WorldPosition.y);
-            if (directionNew != directionOld || path[i].transportSelfId != 0 || path[i + 1].transportSelfId != 0)
+            if (directionNew != directionOld || path[i].TransportSelfId != 0 || path[i + 1].TransportSelfId != 0)
             {
                 waypoints.Add(path[i].WorldPosition);
             }
@@ -321,7 +339,7 @@ public sealed class PathfindingThread : NeuroThread
     }
 
     // TODO: Create 'Gizmos' debug tab with this and paths and stuff maybe
-    private void CreateNodeVisualPoint(Node node) => CreateVisualPoint(node.WorldPosition, node.color, 0.1f);
+    private void CreateNodeVisualPoint(Node node) => CreateVisualPoint(node.WorldPosition, node.Color, 0.1f);
 
     private void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
     {
@@ -346,5 +364,18 @@ public sealed class PathfindingThread : NeuroThread
         renderer.material = NeuroUtilities.MaskShaderMat;
         renderer.startColor = color;
         renderer.endColor = color;
+    }
+
+    private static Node[,] CloneNodeGrid(Node[,] input)
+    {
+        Node[,] newGrid = new Node[PathfindingHandler.Instance.GridSize, PathfindingHandler.Instance.GridSize];
+
+        for (int x = 0; x < PathfindingHandler.Instance.GridSize; x++)
+        for (int y = 0; y < PathfindingHandler.Instance.GridSize; y++)
+        {
+            newGrid[x, y] = input[x, y].Clone();
+        }
+
+        return newGrid;
     }
 }

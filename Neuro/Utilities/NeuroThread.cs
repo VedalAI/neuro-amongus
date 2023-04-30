@@ -1,35 +1,46 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using Il2CppInterop.Runtime;
 
 namespace Neuro.Utilities;
 
 public abstract class NeuroThread
 {
-    private readonly Thread _thread;
+    private readonly List<Thread> _threads = new();
 
-    protected NeuroThread()
+    protected NeuroThread(int count = 1)
     {
-        _thread = new Thread(() =>
+        for (int i = 0; i < count; i++)
         {
-            Thread.BeginThreadAffinity();
-            IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
-            RunThread();
-            Thread.EndThreadAffinity();
-        });
+            int id = i;
+            _threads.Add(new Thread(() =>
+            {
+                Thread.BeginThreadAffinity();
+                IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
+                RunThread(id);
+                Thread.EndThreadAffinity();
+            }));
+        }
     }
 
     public void Start()
     {
-        if (!_thread.IsAlive)
+        foreach (Thread thread in _threads)
         {
-            _thread.Start();
+            if (!thread.IsAlive)
+            {
+                thread.Start();
+            }
         }
     }
 
     public void Stop()
     {
-        _thread.Interrupt();
+        foreach (Thread thread in _threads)
+        {
+            thread.Interrupt();
+        }
     }
 
-    protected abstract void RunThread();
+    protected abstract void RunThread(int id);
 }

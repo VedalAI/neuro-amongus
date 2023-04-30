@@ -9,6 +9,11 @@ public class Node : IHeapItem<Node>
     public Vector2Int GridPosition { get; }
     public bool IsAccessible { get; set; }
 
+    public Color Color { get; set; } = Color.red;
+
+    public int TransportSelfId { get; init; }
+    public int TransportTargetId { get; init; }
+    public List<Node> TransportNeighborsCache { get; set; }
     public virtual bool IsTransportActive => true;
 
     public Node(Vector2 worldPosition, Vector2Int gridPosition, bool isAccessible)
@@ -19,16 +24,9 @@ public class Node : IHeapItem<Node>
     }
 
     public int HeapIndex { get; set; }
-
     public Node parent;
     public int gCost;
     public int hCost;
-
-    public Color color = Color.red;
-
-    public int transportSelfId;
-    public int transportTargetId;
-    public List<Node> transportNeighborsCache;
 
     private int _fCost => gCost + hCost;
 
@@ -37,5 +35,16 @@ public class Node : IHeapItem<Node>
         int compare = _fCost.CompareTo(other._fCost);
         if (compare == 0) compare = hCost.CompareTo(other.hCost);
         return -compare;
+    }
+
+    public virtual Node Clone()
+    {
+        return new Node(WorldPosition, GridPosition, IsAccessible)
+        {
+            Color = Color,
+            TransportSelfId = TransportSelfId,
+            TransportTargetId = TransportTargetId,
+            TransportNeighborsCache = TransportNeighborsCache
+        };
     }
 }
