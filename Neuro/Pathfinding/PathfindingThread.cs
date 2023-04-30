@@ -106,8 +106,6 @@ public sealed class PathfindingThread : NeuroThread
                 {
                     if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
                     if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
-
-                    neighbour.parent = node;
                 }
             }
         }
