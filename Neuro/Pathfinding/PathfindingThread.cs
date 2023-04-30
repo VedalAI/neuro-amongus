@@ -46,7 +46,7 @@ public sealed class PathfindingThread : NeuroThread
         {
             while (path.Length > 1 && Vector2.Distance(PlayerControl.LocalPlayer.GetTruePosition(), path[0]) < 0.5f)
             {
-                path = path.Skip(1).ToArray();
+                path = path[1..];
             }
             // _results[identifier] = result with { path = path };
         }
@@ -290,18 +290,21 @@ public sealed class PathfindingThread : NeuroThread
 
     private static Vector2[] SimplifyPath(List<Node> path)
     {
-        List<Vector2> waypoints = new() {path[0].worldPosition};
+        List<Vector2> waypoints = new();
         Vector2 directionOld = Vector2.zero;
-        for (int i = 1; i < path.Count; i++)
+        for (int i = 0; i < path.Count - 1; i++)
         {
-            Vector2 directionNew = new(path[i - 1].worldPosition.x - path[i].worldPosition.x, path[i - 1].worldPosition.y - path[i].worldPosition.y);
-            if (directionNew != directionOld || path[i].transportSelfId != 0)
+            Vector2 directionNew = new(path[i].worldPosition.x - path[i + 1].worldPosition.x, path[i].worldPosition.y - path[i + 1].worldPosition.y);
+            if (directionNew != directionOld || path[i].transportSelfId != 0 || path[i + 1].transportSelfId != 0)
             {
                 waypoints.Add(path[i].worldPosition);
             }
 
             directionOld = directionNew;
         }
+
+        // add last waypoint
+        waypoints.Add(path[^1].worldPosition);
 
         return waypoints.ToArray();
     }
