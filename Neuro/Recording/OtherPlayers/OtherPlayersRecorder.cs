@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Neuro.Recording.OtherPlayers;
 
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class OtherPlayersRecorder : MonoBehaviour
 {
     public static OtherPlayersRecorder Instance { get; private set; }
@@ -33,7 +33,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance) return;
+        if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
@@ -69,11 +69,5 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
 
             data.ResetAfterMeeting();
         }
-    }
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<OtherPlayersRecorder>();
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Neuro.Interactions;
 
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class InteractionsHandler : MonoBehaviour
 {
     public static InteractionsHandler Instance { get; private set; }
@@ -85,11 +85,5 @@ public sealed class InteractionsHandler : MonoBehaviour
         {
             Warning($"Shouldn't open console id {console.ConsoleId} for minigame {task.GetMinigamePrefab().GetIl2CppType().Name}");
         }
-    }
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<InteractionsHandler>();
     }
 }

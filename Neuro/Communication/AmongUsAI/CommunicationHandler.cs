@@ -62,6 +62,12 @@ public sealed class CommunicationHandler : MonoBehaviour
         // TODO: We should send meeting data!
         if (MeetingHud.Instance || Minigame.Instance || !Frame.CanGenerate) return;
 
+        if (PlayerControl.LocalPlayer.Data.IsDead)
+        {
+            DeadMovementHandler.Instance.Move();
+            return;
+        }
+
         if (_thread.Socket.Available > 0)
         {
             int received = _thread.Socket.Receive(_buffer, SocketFlags.None);
@@ -77,8 +83,6 @@ public sealed class CommunicationHandler : MonoBehaviour
             Send(Frame.Now(_shouldSendHeader));
             _shouldSendHeader = false;
             // Warning($"Sent: {Frame.Now}");
-
-            //Info(Frame.Now());
 
             _shouldSend = false;
         }

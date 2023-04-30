@@ -6,7 +6,7 @@ using HarmonyLib;
 
 namespace Neuro.Events;
 
-[AttributeUsage(AttributeTargets.Method)]
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
 public sealed class EventHandlerAttribute : Attribute
 {
     static EventHandlerAttribute()
