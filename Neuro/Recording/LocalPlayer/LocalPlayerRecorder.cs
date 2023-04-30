@@ -9,7 +9,7 @@ using Vector2 = UnityEngine.Vector2;
 
 namespace Neuro.Recording.LocalPlayer;
 
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class LocalPlayerRecorder : MonoBehaviour
 {
     public static LocalPlayerRecorder Instance { get; private set; }
@@ -67,10 +67,4 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     public void RecordKill() => Frame.DidKill = true;
     public void RecordSabotage(SystemTypes type) => Frame.SabotageUsed = type.ForMessage();
     public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = room.ForMessage();
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<LocalPlayerRecorder>();
-    }
 }

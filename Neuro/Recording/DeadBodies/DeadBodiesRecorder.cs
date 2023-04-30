@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Neuro.Recording.DeadBodies;
 
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class DeadBodiesRecorder : MonoBehaviour
 {
     public static DeadBodiesRecorder Instance { get; private set; }
@@ -35,7 +35,7 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance) return;
+        if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
         foreach (DeadBody deadBody in ComponentCache<DeadBody>.Cached)
         {
@@ -52,11 +52,5 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
     public void ResetAfterMeeting()
     {
         Frame.DeadBodies.Clear();
-    }
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<DeadBodiesRecorder>();
     }
 }
