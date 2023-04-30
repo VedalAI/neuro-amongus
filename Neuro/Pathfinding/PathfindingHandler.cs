@@ -42,6 +42,13 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     private void OnDestroy()
     {
+        System.Console.WriteLine("[PATHFINDING] Trying to shut down (destroyed)...");
+        _thread.Stop();
+    }
+
+    private void OnApplicationQuit()
+    {
+        System.Console.WriteLine("[PATHFINDING] Trying to shut down...");
         _thread.Stop();
     }
 
