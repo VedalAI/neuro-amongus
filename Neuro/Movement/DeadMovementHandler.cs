@@ -47,7 +47,7 @@ public sealed class DeadMovementHandler : MonoBehaviour
             case GuardianAngelRole role:
                 if (followPlayer is null || followPlayer.Data.IsDead)
                 {
-                    followPlayer = GetRandomAlivePlayer();
+                    followPlayer = GetRandomAlivePlayer(false);
                     Info($"Now following {followPlayer.name}");
                 }
 
@@ -63,7 +63,7 @@ public sealed class DeadMovementHandler : MonoBehaviour
             case ImpostorGhostRole:
                 if (followPlayer is null || followPlayer.Data.IsDead)
                 {
-                    followPlayer = GetRandomAlivePlayer();
+                    followPlayer = GetRandomAlivePlayer(true);
                     Info($"Now following {followPlayer.name}");
                 }
 
@@ -109,9 +109,10 @@ public sealed class DeadMovementHandler : MonoBehaviour
         return closestConsole;
     }
 
-    private static PlayerControl GetRandomAlivePlayer()
+    private static PlayerControl GetRandomAlivePlayer(bool impostors)
     {
         // We don't return impostors because there's no logic to avoid the killer or to stop following the target if they do something sus, so just pick a crewmate instaed. Guess it's fine to have PsychicNeuro sometimes ¯\_(ツ)_/¯
-        return PlayerControl.AllPlayerControls._items.Where(p => p && !p.Data.Disconnected && !p.Data.IsDead && !p.Data.Role.IsImpostor).Random();
+        return PlayerControl.AllPlayerControls._items
+            .Where(p => p && !p.Data.Disconnected && !p.Data.IsDead && impostors == p.Data.Role.IsImpostor).Random();
     }
 }
