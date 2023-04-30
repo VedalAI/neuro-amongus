@@ -13,7 +13,6 @@ public sealed class WebSocketThread : NeuroThread
     public Socket Socket { get; private set; }
     public event Action OnConnect = delegate { };
 
-    // TODO: Fix thread sometimes being stuck not closing the game
     protected override async void RunThread()
     {
         while (true)
