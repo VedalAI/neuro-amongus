@@ -16,6 +16,8 @@ public class Node : IHeapItem<Node>
     public Node parent;
     public Vector2 worldPosition;
 
+    public Color color = Color.red;
+
     public int transportSelfId;
     public int transportTargetId;
 

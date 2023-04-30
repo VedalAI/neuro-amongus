@@ -24,7 +24,7 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public static PathfindingHandler Instance { get; private set; }
 
-    private static Vector2 _localPlayerPosition => PlayerControl.LocalPlayer.transform.position;
+    private static Vector2 _localPlayerPosition => (Vector2) PlayerControl.LocalPlayer.transform.position + PlayerControl.LocalPlayer.Collider.offset / 2;
 
     public PathfindingHandler(IntPtr ptr) : base(ptr) { }
 
@@ -118,12 +118,12 @@ public sealed class PathfindingHandler : MonoBehaviour
         for (int y = 0; y < GridSize; y++)
         {
             Vector2 point = Vector2.zero;
-            Ladder ladder = null;
+            Component transport = null;
             bool accessible = false;
             for (int i = 0; i < 9; i++)
             {
                 int b = (i * 4 + 4) % 9; // Noncontinuous linear index through the array
-                if (TryGetAccessiblePoint(x - GridUpperBounds + offsetCoords[b].x, y - GridUpperBounds + offsetCoords[b].y, out point, out ladder))
+                if (TryGetAccessiblePoint(x - GridUpperBounds + offsetCoords[b].x, y - GridUpperBounds + offsetCoords[b].y, out point, out transport))
                 {
                     accessible = true;
                     break;
@@ -132,10 +132,19 @@ public sealed class PathfindingHandler : MonoBehaviour
 
             Node node = new(accessible, point, x, y);
 
-            if (ladder)
+            switch (transport)
             {
-                node.transportSelfId = ladder.GetInstanceID();
-                node.transportTargetId = ladder.Destination.GetInstanceID();
+                case Ladder ladder:
+                    node.color = Color.green;
+                    node.transportSelfId = ladder.GetInstanceID();
+                    node.transportTargetId = ladder.Destination.GetInstanceID();
+                    break;
+
+                case PlatformConsole platform:
+                    node.color = Color.blue;
+                    node.transportSelfId = platform.GetInstanceID();
+                    node.transportTargetId = FindObjectsOfType<PlatformConsole>().First(p => p.GetInstanceID() != platform.GetInstanceID()).GetInstanceID();
+                    break;
             }
 
             grid[x, y] = node;
@@ -144,7 +153,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         return grid;
     }
 
-    private bool TryGetAccessiblePoint(float x, float y, out Vector2 point, out Ladder ladder)
+    private bool TryGetAccessiblePoint(float x, float y, out Vector2 point, out Component usable)
     {
         float nodeRadius = 1 / GridDensity;
         point = new Vector2(x / GridDensity, y / GridDensity);
@@ -153,8 +162,9 @@ public sealed class PathfindingHandler : MonoBehaviour
         Collider2D[] overlappingColliders = Physics2D.OverlapCircleAll(point, nodeRadius, Constants.ShipAndAllObjectsMask);
 
         // OUT the ladder that it's overlapping, if any
-        ladder = null;
-        if (overlappingColliders.Select(c => c.GetComponentInParent<Ladder>()).FirstOrDefault(l => l) is { } foundLadder) ladder = foundLadder;
+        usable = null;
+        if (overlappingColliders.Select(c => c.GetComponentInParent<Ladder>()).FirstOrDefault(l => l) is { } foundLadder) usable = foundLadder;
+        if (overlappingColliders.Select(c => c.GetComponentInParent<PlatformConsole>()).FirstOrDefault(p => p) is { } foundPlatform) usable = foundPlatform;
 
         // Return whether or not this point is accessible
         return overlappingColliders.All(col => col.isTrigger || col.GetComponentInParent<SomeKindaDoor>());

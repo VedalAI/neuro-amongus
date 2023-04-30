@@ -314,7 +314,7 @@ public sealed class PathfindingThread : NeuroThread
         return 14 * Math.Min(dstX, dstY) + 10 * Math.Abs(dstX - dstY);
     }
 
-    private void CreateNodeVisualPoint(Node node) => CreateVisualPoint(node.worldPosition, node.transportTargetId == 0 ? Color.red : Color.green, 0.1f);
+    private void CreateNodeVisualPoint(Node node) => CreateVisualPoint(node.worldPosition, node.color, 0.1f);
 
     private void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
     {
