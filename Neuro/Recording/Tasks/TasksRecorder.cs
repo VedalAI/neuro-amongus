@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Neuro.Recording.Tasks;
 
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class TasksRecorder : MonoBehaviour
 {
     public static TasksRecorder Instance { get; private set; }
@@ -34,7 +34,7 @@ public sealed class TasksRecorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance) return;
+        if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
         /*Console closestConsole = null;
         float closestDistance = 999f;*/
@@ -67,11 +67,5 @@ public sealed class TasksRecorder : MonoBehaviour
 
         PlayerTask sabotage = PlayerControl.LocalPlayer.myTasks._items.FirstOrDefault(s => PlayerTask.TaskIsEmergency(s) && !s.IsComplete);
         Frame.Sabotage = sabotage ? TaskData.Create(sabotage) : null;
-    }
-
-    [EventHandler(EventTypes.GameStarted)]
-    private static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<TasksRecorder>();
     }
 }
