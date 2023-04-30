@@ -23,7 +23,7 @@ public sealed class CommunicationHandler : MonoBehaviour
     private volatile bool _shouldSendHeader = true;
     private bool _shouldSend = true;
 
-    public bool IsConnected => _thread.Socket.Connected;
+    public bool IsConnected => _thread.Socket?.Connected ?? false;
 
     private void Awake()
     {
@@ -35,12 +35,13 @@ public sealed class CommunicationHandler : MonoBehaviour
         }
 
         Instance = this;
+
+        _thread = new WebSocketThread();
+        _thread.OnConnect += () => _shouldSendHeader = true;
     }
 
     private void Start()
     {
-        _thread = new WebSocketThread();
-        _thread.OnConnect += () => _shouldSendHeader = true;
         _thread.Start();
     }
 
