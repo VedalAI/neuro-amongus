@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
 using UnityEngine;
@@ -19,11 +20,11 @@ public sealed class PathfindingThread : NeuroThread
     private readonly Node[,] _grid;
     private readonly Transform _visualPointParent;
 
-    public PathfindingThread(Node[,] grid, Vector2 accessiblePosition, Transform visualPointParent = null)
+    public PathfindingThread(Node[,] grid,  IEnumerable<Vector2> accessiblePositions, Transform visualPointParent)
     {
         _grid = grid;
         _visualPointParent = visualPointParent;
-        FloodFill(accessiblePosition);
+        FloodFill(accessiblePositions);
     }
 
     public void RequestPath(Vector2 start, Vector2 target, string identifier)
@@ -86,26 +87,30 @@ public sealed class PathfindingThread : NeuroThread
         }
     }
 
-    private void FloodFill(Vector2 accessiblePosition)
+    private void FloodFill(IEnumerable<Vector2> accessiblePositions)
     {
-        Node startingNode = NodeFromWorldPoint(accessiblePosition);
-
         List<Node> openSet = new();
         HashSet<Node> closedSet = new();
-        openSet.Add(startingNode);
 
-        while (openSet.Count > 0)
+        foreach (Vector2 accessiblePosition in accessiblePositions)
         {
-            Node node = openSet[0];
-            openSet.Remove(node);
-            closedSet.Add(node);
+            Node startingNode = NodeFromWorldPoint(accessiblePosition);
+            startingNode.color = Color.yellow;
+            openSet.Add(startingNode);
 
-            foreach (Node neighbour in GetNeighbours(node, false))
+            while (openSet.Count > 0)
             {
-                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
-                if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
+                Node node = openSet[0];
+                openSet.Remove(node);
+                closedSet.Add(node);
 
-                neighbour.parent = node;
+                foreach (Node neighbour in GetNeighbours(node, false))
+                {
+                    if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
+                    if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
+
+                    neighbour.parent = node;
+                }
             }
         }
 

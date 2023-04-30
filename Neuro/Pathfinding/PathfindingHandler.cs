@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
@@ -96,8 +97,19 @@ public sealed class PathfindingHandler : MonoBehaviour
         if (_visualPointParent) _visualPointParent.Destroy();
         _visualPointParent = new GameObject("Visual Point Parent");
 
+        List<Vector2> accessiblePositions = new()
+        {
+            ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius
+        };
+
+        if (ShipStatus.Instance.GetTypeForMessage() == MapType.Airship)
+        {
+            accessiblePositions.Add(ShipStatus.Instance.AllConsoles.First(c => c.TaskTypes.Contains(TaskTypes.EnterIdCode)).transform.position + new Vector3(0, -0.5f));
+            accessiblePositions.Add(ShipStatus.Instance.AllConsoles.First(c => c.TaskTypes.Contains(TaskTypes.StopCharles) && c.ConsoleId == 1).transform.position + new Vector3(0, -0.5f));
+        }
+
         _thread?.Stop();
-        _thread = new PathfindingThread(GenerateNodeGrid(), ShipStatus.Instance.MeetingSpawnCenter + Vector2.down * ShipStatus.Instance.SpawnRadius, _visualPointParent.transform);
+        _thread = new PathfindingThread(GenerateNodeGrid(), accessiblePositions, _visualPointParent.transform);
         _thread.Start();
     }
 
