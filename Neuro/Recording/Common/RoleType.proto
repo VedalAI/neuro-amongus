@@ -9,4 +9,6 @@ enum RoleType {
     Engineer = 4;
     GuardianAngel = 5;
     Shapeshifter = 6;
+    CrewmateGhost = 7;
+    ImpostorGhost = 8;
 }

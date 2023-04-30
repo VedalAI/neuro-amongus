@@ -12,6 +12,7 @@ class GameData:
         self.tasks = [def_taskdata() for _ in range(10)]
         self.sabotage = def_taskdata()
         self.last_velocity = def_vector2()
+        self.raycasts = [0] * 8
 
     def update_frame(self, frame: Frame):
         # if frame.local_player.velocity.x == 0 and frame.local_player.velocity.y == 0:
@@ -22,6 +23,7 @@ class GameData:
             if self.velocity:
                 self.last_velocity = self.velocity
             self.velocity = frame.local_player.velocity
+            self.raycasts = frame.local_player.raycast_obstacle_distances
 
         if frame.tasks:
             self.tasks = pad_list(frame.tasks.tasks, 10, def_taskdata)
@@ -41,10 +43,13 @@ class GameData:
         
         velocity_data = convert_type(self.last_velocity)
         
+        raycast_data = convert_type(self.raycasts)
+        
         return np.hstack([
             velocity_data,
             *tasks_data,
-            sabotage_data
+            sabotage_data,
+            *raycast_data
         ])
 
     def get_y(self):

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
@@ -53,14 +54,13 @@ public sealed class PathfindingThread : NeuroThread
     }
 
     // TODO: Instead of pathing to the closest node to the destination, path to the closest node to the player that is close enough to the destination
-    protected override async void RunThread()
+    protected override void RunThread()
     {
         while (true)
         {
             try
             {
-                await Task.Delay(250, CancellationToken);
-                Il2CppAttach();
+                Thread.Sleep(250);
 
                 while (!_queue.IsEmpty)
                 {
@@ -70,16 +70,16 @@ public sealed class PathfindingThread : NeuroThread
 
                     Vector2[] path = FindPath(vec.start, vec.target);
                     _results[identifier] = (vec.start, vec.target, path, CalculateLength(path));
-
-                    CancellationToken.ThrowIfCancellationRequested();
                 }
             }
-            catch (OperationCanceledException)
+            catch (ThreadInterruptedException)
             {
+                System.Console.WriteLine("[PATHFINDING] Caught thread interrupted");
                 return;
             }
             catch (Exception e)
             {
+                System.Console.WriteLine("[PATHFINDING] Caught another exception: " + e);
                 Error(e);
             }
         }

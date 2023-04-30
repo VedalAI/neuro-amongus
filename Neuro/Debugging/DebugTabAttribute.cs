@@ -6,7 +6,7 @@ using HarmonyLib;
 
 namespace Neuro.Debugging;
 
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class DebugTabAttribute : Attribute
 {
     static DebugTabAttribute()
@@ -16,6 +16,7 @@ public sealed class DebugTabAttribute : Attribute
             .Where(t => t.IsAssignableTo(typeof(DebugTab)))
             .Select(Activator.CreateInstance)
             .OfType<DebugTab>()
+            .OrderBy(t => t.Name)
             .ToList();
     }
 

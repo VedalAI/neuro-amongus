@@ -17,15 +17,13 @@ public static class Extensions
     /// This returns the element at the specified index from the il2cpp list.
     /// JetBrains Rider will complain about an ambiguous indexer if used normally (list[i]).
     /// </summary>
-    public static T At<T>(this Il2CppSystem.Collections.Generic.List<T> list, int index)
-    {
-        if ((uint)index >= (uint)list._size)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
-        }
+    public static T At<T>(this Il2CppSystem.Collections.Generic.List<T> list, int index) => list._items[index];
 
-        return list._items[index];
-    }
+    /// <summary>
+    /// This returns the element at the specified index from the il2cpp list.
+    /// JetBrains Rider will complain about an ambiguous indexer if used normally (list[i]).
+    /// </summary>
+    public static T At<T>(this Il2CppSystem.Collections.Generic.List<T> list, Index index) => list._items[index];
 
     public static IEnumerable<T> OfIl2CppType<T>(this IEnumerable collection) where T : Il2CppObjectBase
     {

@@ -1,17 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
+using Neuro.Communication.AmongUsAI;
+using Neuro.Pathfinding;
 
 namespace Neuro.Movement;
 
-[RegisterInIl2Cpp]
+[RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class MovementHandler : MonoBehaviour
 {
-    private const float OBSTACLE_PADDING = 0.5f; // The minimum distance betweeen the agent an obstacle
-    private const float PADDING_STRENGTH = 0.5f; // The speed at which the agent will be pushed away from the obstacle. 1 is max.
-
     public static MovementHandler Instance { get; private set; }
 
     public MovementHandler(IntPtr ptr) : base(ptr)
@@ -36,50 +36,64 @@ public sealed class MovementHandler : MonoBehaviour
         CreateArrow();
     }
 
+    private readonly Queue<Vector2> _positionHistory = new();
+    private float _unstuckTimer = 0f;
+
+    private void FixedUpdate()
+    {
+        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer || !CommunicationHandler.Instance.IsConnected) return;
+
+        if (_positionHistory.Count > 100) _positionHistory.Dequeue();
+        _positionHistory.Enqueue(PlayerControl.LocalPlayer.GetTruePosition());
+        if (_positionHistory.Count < 50) return;
+
+        // Get the average position of the last 100 frames
+        Vector2 averagePosition = Vector2.zero;
+        foreach (Vector2 position in _positionHistory) averagePosition += position;
+        averagePosition /= _positionHistory.Count;
+
+        if ((averagePosition - PlayerControl.LocalPlayer.GetTruePosition()).magnitude < 0.1f)
+        {
+            // player is stuck
+            _unstuckTimer = 2f;
+        }
+    }
+
     public void GetForcedMoveDirection(ref Vector2 direction)
     {
         if (direction != Vector2.zero) return;
+
         direction = ForcedMoveDirection.normalized; // TODO: We need to adjust this based on player speed setting
 
-        /*RepeatedField<float> raycastResults = LocalPlayerRecorder.Instance.Frame.RaycastObstacleDistances;
-        for (int i = 0; i < raycastResults.Count; i++)
+        if (_unstuckTimer > 0f)
         {
-            if (raycastResults[i] < OBSTACLE_PADDING)
+            _unstuckTimer -= Time.fixedDeltaTime;
+            // pathfind to nearest task
+
+            Info($"Stuck, C# taking over! {_unstuckTimer:F2}s remaining");
+
+            Console closestConsole = null;
+            float closestDistance = 999f;
+
+            foreach (Console console in NeuroUtilities.GetOpenableConsoles(true))
             {
-                direction -= LocalPlayerRecorder.RaycastDirections[i] * (OBSTACLE_PADDING - raycastResults[i]) * 1 / OBSTACLE_PADDING * PADDING_STRENGTH;
-            }
-        }*/
-
-        /* TODO: I tried to fix the issues with the obstacle padding but it didn't work for tight corridors
-        // if we're close to a wall, add bias to move away from it
-        RepeatedField<float> raycastResults = LocalPlayerRecorder.Instance.Frame.RaycastObstacleDistances;
-        for (int i = 0; i < raycastResults.Count; i++)
-        {
-            // We need to multiply the padding distance for diagonal rays by sqrt(2)
-            float myPadding = OBSTACLE_PADDING * LocalPlayerRecorder.RaycastDirections[i].magnitude;
-
-            // If we are in a tight corridor, reduce the padding so we have a tunnel
-            float myEncroaching = Math.Max(0, myPadding - raycastResults[i]);
-            float oppositeEncroaching = Math.Max(0, myPadding - raycastResults[(i + 4) % raycastResults.Count]);
-            float calculatedPadding = Math.Clamp(0, (myEncroaching + oppositeEncroaching) / 2f - 0.1f, myPadding);
-
-            // If two consecutive diagonal raycasts hit something, we don't apply their effect because it will be applied by the straight raycast
-            if (i % 2 != 0)
-            {
-                float otherDiagonal1 = raycastResults[(i + 2) % raycastResults.Count];
-                float otherDiagonal2 = raycastResults[(i + 6) % raycastResults.Count];
-
-                if (otherDiagonal1 < calculatedPadding) continue;
-                if (otherDiagonal2 < calculatedPadding) continue;
+                float distance = PathfindingHandler.Instance.GetPathLength(console);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestConsole = console;
+                }
             }
 
-            if (raycastResults[i] < calculatedPadding)
+            if (closestConsole != null)
             {
-                Warning($"Pushing player from direction {i} by {(calculatedPadding - raycastResults[i]) * 1 / calculatedPadding * PADDING_STRENGTH} units");
-                direction -= LocalPlayerRecorder.RaycastDirections[i] * (calculatedPadding - raycastResults[i]) * 1/calculatedPadding * PADDING_STRENGTH;
+                Vector2[] path = PathfindingHandler.Instance.GetPath(closestConsole, false);
+                if (path is {Length: > 0})
+                {
+                    direction = (path[0] - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+                }
             }
         }
-        */
 
         LineRenderer renderer = _arrow;
         renderer.SetPosition(0, PlayerControl.LocalPlayer.GetTruePosition());
@@ -98,11 +112,5 @@ public sealed class MovementHandler : MonoBehaviour
         _arrow.material = new Material(Shader.Find("Sprites/Default"));
         _arrow.startColor = Color.blue;
         _arrow.endColor = Color.cyan;
-    }
-
-    [EventHandler(EventTypes.GameStarted)]
-    public static void OnGameStarted()
-    {
-        ShipStatus.Instance.gameObject.AddComponent<MovementHandler>();
     }
 }
