@@ -35,6 +35,8 @@ public partial class TaskData
         return data;
     }
 
+    // TODO: Delete path after task is finished
+    // TODO: Fix path Z index
     private static void DrawPath(Vector2[] path, int id)
     {
         GameObject.Destroy(GameObject.Find("Neuro Path " + id));

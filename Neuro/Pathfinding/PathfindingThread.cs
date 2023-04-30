@@ -3,8 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Utilities;
 using UnityEngine;
@@ -134,6 +132,7 @@ public sealed class PathfindingThread : NeuroThread
         Node targetNode = FindClosestNode(target);
 
         if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<Vector2>();
+        if (startNode == targetNode) return Array.Empty<Vector2>();
 
         Heap<Node> openSet = new(PathfindingHandler.Instance.GridSize * PathfindingHandler.Instance.GridSize);
         HashSet<Node> closedSet = new();
@@ -322,6 +321,7 @@ public sealed class PathfindingThread : NeuroThread
         return 14 * Math.Min(dstX, dstY) + 10 * Math.Abs(dstX - dstY);
     }
 
+    // TODO: Create 'Gizmos' debug tab with this and paths and stuff maybe
     private void CreateNodeVisualPoint(Node node) => CreateVisualPoint(node.worldPosition, node.color, 0.1f);
 
     private void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
