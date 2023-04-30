@@ -104,7 +104,7 @@ public sealed class PathfindingThread : NeuroThread
 
                 foreach (Node neighbour in GetNeighbours(node, false))
                 {
-                    if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
+                    if (!neighbour.IsAccessible || closedSet.Contains(neighbour)) continue;
                     if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
                 }
             }
@@ -118,7 +118,7 @@ public sealed class PathfindingThread : NeuroThread
         // Set all nodes not in closed set to inaccessible
         foreach (Node node in _grid)
         {
-            if (!closedSet.Contains(node)) node.accessible = false;
+            if (!closedSet.Contains(node)) node.IsAccessible = false;
         }
     }
 
@@ -129,8 +129,9 @@ public sealed class PathfindingThread : NeuroThread
         Node startNode = FindClosestNode(start);
         Node targetNode = FindClosestNode(target);
 
-        if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<Vector2>();
-        if (startNode == targetNode) return Array.Empty<Vector2>();
+        if (startNode is not { IsAccessible: true } ||
+            targetNode is not { IsAccessible: true } ||
+            startNode == targetNode) {return Array.Empty<Vector2>();}
 
         Heap<Node> openSet = new(PathfindingHandler.Instance.GridSize * PathfindingHandler.Instance.GridSize);
         HashSet<Node> closedSet = new();
@@ -151,7 +152,7 @@ public sealed class PathfindingThread : NeuroThread
 
             foreach (Node neighbour in GetNeighbours(currentNode, true))
             {
-                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
+                if (!neighbour.IsAccessible || closedSet.Contains(neighbour)) continue;
 
                 int newMovementCostToNeighbour = currentNode.gCost + GetDistanceCost(currentNode, neighbour);
 
@@ -199,16 +200,16 @@ public sealed class PathfindingThread : NeuroThread
         queue.Enqueue(closestNode);
         nodes.Add(closestNode);
 
-        while (!closestNode.accessible)
+        while (!closestNode.IsAccessible)
         {
             closestNode = queue.Dequeue();
             float closestDistance = float.PositiveInfinity;
             Node closestNeighbour = null;
             foreach (Node neighbour in GetNeighbours(closestNode, true))
             {
-                if (neighbour.accessible)
+                if (neighbour.IsAccessible)
                 {
-                    float distance = Vector2.Distance(position, neighbour.worldPosition);
+                    float distance = Vector2.Distance(position, neighbour.WorldPosition);
                     if (distance < closestDistance)
                     {
                         closestNeighbour = neighbour;
@@ -253,14 +254,14 @@ public sealed class PathfindingThread : NeuroThread
             if (x == 0 && y == 0)
                 continue;
 
-            int checkX = node.gridX + x;
-            int checkY = node.gridY + y;
+            int checkX = node.GridPosition.x + x;
+            int checkY = node.GridPosition.y + y;
 
             if (checkX >= 0 && checkX < PathfindingHandler.Instance.GridSize &&
                 checkY >= 0 && checkY < PathfindingHandler.Instance.GridSize) neighbours.Add(_grid[checkX, checkY]);
         }
 
-        if (!includeTransport || node.transportSelfId == 0) return neighbours;
+        if (!includeTransport || !node.IsTransportActive || node.transportSelfId == 0) return neighbours;
 
         if (node.transportNeighborsCache == null)
         {
@@ -296,31 +297,31 @@ public sealed class PathfindingThread : NeuroThread
         Vector2 directionOld = Vector2.zero;
         for (int i = 0; i < path.Count - 1; i++)
         {
-            Vector2 directionNew = new(path[i].worldPosition.x - path[i + 1].worldPosition.x, path[i].worldPosition.y - path[i + 1].worldPosition.y);
+            Vector2 directionNew = new(path[i].WorldPosition.x - path[i + 1].WorldPosition.x, path[i].WorldPosition.y - path[i + 1].WorldPosition.y);
             if (directionNew != directionOld || path[i].transportSelfId != 0 || path[i + 1].transportSelfId != 0)
             {
-                waypoints.Add(path[i].worldPosition);
+                waypoints.Add(path[i].WorldPosition);
             }
 
             directionOld = directionNew;
         }
 
         // add last waypoint
-        waypoints.Add(path[^1].worldPosition);
+        waypoints.Add(path[^1].WorldPosition);
 
         return waypoints.ToArray();
     }
 
     private static int GetDistanceCost(Node a, Node b)
     {
-        int dstX = Math.Abs(a.gridX - b.gridX);
-        int dstY = Math.Abs(a.gridY - b.gridY);
+        int dstX = Math.Abs(a.GridPosition.x - b.GridPosition.x);
+        int dstY = Math.Abs(a.GridPosition.y - b.GridPosition.y);
 
         return 14 * Math.Min(dstX, dstY) + 10 * Math.Abs(dstX - dstY);
     }
 
     // TODO: Create 'Gizmos' debug tab with this and paths and stuff maybe
-    private void CreateNodeVisualPoint(Node node) => CreateVisualPoint(node.worldPosition, node.color, 0.1f);
+    private void CreateNodeVisualPoint(Node node) => CreateVisualPoint(node.WorldPosition, node.color, 0.1f);
 
     private void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
     {
