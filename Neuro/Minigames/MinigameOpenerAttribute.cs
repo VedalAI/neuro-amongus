@@ -7,7 +7,7 @@ using Il2CppInterop.Runtime;
 
 namespace Neuro.Minigames;
 
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 public class MinigameOpenerAttribute : Attribute
 {
     static MinigameOpenerAttribute()
