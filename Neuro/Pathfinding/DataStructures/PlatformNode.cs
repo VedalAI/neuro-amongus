@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Numerics;
+using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 namespace Neuro.Pathfinding.DataStructures;
 
@@ -12,5 +15,16 @@ public sealed class PlatformNode : Node
         _platform = platform;
     }
 
-    public override bool IsTransportActive => Vector2.Distance(_platform.Platform.transform.position, _platform.transform.position) < 2f;
+    public override bool IsTransportActive
+    {
+        get
+        {
+            Vector3 currentPosition = _platform.Platform.transform.position;
+            if (currentPosition == _lastPosition) return _lastResult;
+
+            return _lastResult = Vector2.Distance(_lastPosition = currentPosition, _platform.transform.position) < 2f;
+        }
+    }
+    private Vector3 _lastPosition;
+    private bool _lastResult;
 }
