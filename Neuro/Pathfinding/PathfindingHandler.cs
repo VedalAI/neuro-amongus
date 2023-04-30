@@ -24,6 +24,8 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public static PathfindingHandler Instance { get; private set; }
 
+    private static Vector2 _localPlayerPosition => PlayerControl.LocalPlayer.transform.position;
+
     public PathfindingHandler(IntPtr ptr) : base(ptr) { }
 
     private PathfindingThread _thread;
@@ -102,38 +104,46 @@ public sealed class PathfindingHandler : MonoBehaviour
         for (int y = GridLowerBounds; y < GridUpperBounds; y++)
         {
             Vector2 point = Vector2.zero;
+            Ladder ladder = null;
             bool accessible = false;
             for (int i = 0; i < 9; i++)
             {
                 int b = (i * 4 + 4) % 9; // Noncontinuous linear index through the array
-                if (TryGetAccessiblePoint(x + offsetCoords[b].x, y + offsetCoords[b].y, out point))
+                if (TryGetAccessiblePoint(x + offsetCoords[b].x, y + offsetCoords[b].y, out point, out ladder))
                 {
                     accessible = true;
                     break;
                 }
             }
 
-            grid[x + GridUpperBounds, y + GridUpperBounds] = new Node(accessible, point, x + GridUpperBounds, y + GridUpperBounds);
+            Node node = new(accessible, point, x + GridUpperBounds, y + GridUpperBounds);
+
+            if (ladder)
+            {
+                node.transportSelfId = ladder.GetInstanceID();
+                node.transportTargetId = ladder.Destination.GetInstanceID();
+            }
+
+            grid[x + GridUpperBounds, y + GridUpperBounds] = node;
         }
 
         return grid;
     }
 
-    private bool TryGetAccessiblePoint(float x, float y, out Vector2 point)
+    private bool TryGetAccessiblePoint(float x, float y, out Vector2 point, out Ladder ladder)
     {
         float nodeRadius = 1 / GridDensity;
-        point = new(x / GridDensity, y / GridDensity);
+        point = new Vector2(x / GridDensity, y / GridDensity);
 
-        Collider2D[] cols = Physics2D.OverlapCircleAll(point, nodeRadius, Constants.ShipAndAllObjectsMask);
-        int validColsCount = cols.Count(col =>
-            !col.isTrigger &&
-            !col.GetComponentInParent<Vent>() &&
-            !col.GetComponentInParent<SomeKindaDoor>()
-        );
+        // Get the colliders overlapping this point
+        Collider2D[] overlappingColliders = Physics2D.OverlapCircleAll(point, nodeRadius, Constants.ShipAndAllObjectsMask);
 
-        // TODO: Add edge case for Airship ladders
+        // OUT the ladder that it's overlapping, if any
+        ladder = null;
+        if (overlappingColliders.Select(c => c.GetComponentInParent<Ladder>()).FirstOrDefault(l => l) is { } foundLadder) ladder = foundLadder;
 
-        return validColsCount == 0;
+        // Return whether or not this point is accessible
+        return overlappingColliders.All(col => col.isTrigger || col.GetComponentInParent<SomeKindaDoor>());
     }
 
     private float GetPathLength(Vector2 start, Vector2 target, string identifier)
@@ -146,7 +156,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         return length;
     }
 
-    public float GetPathLength(Vector2 target, string identifier) => GetPathLength(PlayerControl.LocalPlayer.GetTruePosition(), target, identifier);
+    public float GetPathLength(Vector2 target, string identifier) => GetPathLength(_localPlayerPosition, target, identifier);
 
     public float GetPathLength(Vector2 target, int identifier) => GetPathLength(target, identifier.ToString());
 
@@ -164,7 +174,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         return path[0];
     }
 
-    public Vector2 GetFirstNodeInPath(Vector2 target, string identifier) => GetFirstNodeInPath(PlayerControl.LocalPlayer.GetTruePosition(), target, identifier);
+    public Vector2 GetFirstNodeInPath(Vector2 target, string identifier) => GetFirstNodeInPath(_localPlayerPosition, target, identifier);
 
     public Vector2 GetFirstNodeInPath(Vector2 target, int identifier) => GetFirstNodeInPath(target, identifier.ToString());
 
@@ -184,7 +194,7 @@ public sealed class PathfindingHandler : MonoBehaviour
     }
 
     [HideFromIl2Cpp]
-    public Vector2[] GetPath(Vector2 target, string identifier) => GetPath(PlayerControl.LocalPlayer.GetTruePosition(), target, identifier);
+    public Vector2[] GetPath(Vector2 target, string identifier, bool removeCloseNodes = true) => GetPath(_localPlayerPosition, target, identifier, removeCloseNodes);
 
     [HideFromIl2Cpp]
     public Vector2[] GetPath(Vector2 target, int identifier) => GetPath(target, identifier.ToString());

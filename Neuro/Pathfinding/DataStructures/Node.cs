@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Neuro.Pathfinding.DataStructures;
 
@@ -14,6 +15,11 @@ public class Node : IHeapItem<Node>
 
     public Node parent;
     public Vector2 worldPosition;
+
+    public int transportSelfId;
+    public int transportTargetId;
+
+    public List<Node> transportNeighborsCache;
 
     public Node(bool _accessible, Vector2 _worldPosition, int _gridX, int _gridY)
     {
