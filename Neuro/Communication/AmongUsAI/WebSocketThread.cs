@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Neuro.Utilities;
 
@@ -14,37 +15,38 @@ public sealed class WebSocketThread : NeuroThread
     public event Action OnConnect = delegate { };
 
     // TODO: Fix thread sometimes being stuck not closing the game
-    protected override async void RunThread()
+    protected override void RunThread()
     {
         while (true)
         {
             try
             {
-                await Task.Delay(5000, CancellationToken);
-                Il2CppAttach();
+                Thread.Sleep(5000);
 
                 if (Socket == null || (Socket.Poll(1000, SelectMode.SelectRead) && Socket.Available == 0) || !Socket.Connected)
                 {
                     Warning("Connecting to socket");
                     Socket?.Close();
                     Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    await Socket.ConnectAsync(_endPoint, CancellationToken);
-                    Il2CppAttach();
+                    Socket.Connect(_endPoint);
                     OnConnect?.Invoke();
                 }
             }
-            catch (OperationCanceledException)
+            catch (ThreadInterruptedException)
             {
-                Socket?.Shutdown(SocketShutdown.Both);
-                Socket?.Close();
+                System.Console.WriteLine("[WEBSOCKET] Caught thread interrupted");
+                // Socket?.Shutdown(SocketShutdown.Both);
+                // Socket?.Close();
                 return;
             }
             catch (SocketException e)
             {
+                System.Console.WriteLine("[WEBSOCKET] Caught SOCKET exception");
                 Error(e.Message);
             }
             catch (Exception e)
             {
+                System.Console.WriteLine("[WEBSOCKET] Caught another exception: " + e);
                 Error(e);
             }
         }

@@ -44,8 +44,9 @@ public sealed class CommunicationHandler : MonoBehaviour
         _thread.Start();
     }
 
-    private void OnDestroy()
+    private void OnApplicationQuit()
     {
+        System.Console.WriteLine("[WEBSOCKET] Trying to shut down...");
         _thread.Stop();
     }
 
