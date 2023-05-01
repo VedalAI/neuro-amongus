@@ -99,17 +99,17 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
                 positionsToSearch.RemoveWhere(p =>
                 {
                     float dist = Vector2.Distance(minigame.Phone.transform.position, p);
-                    if (!minigame.Poor.IsTouching(minigame.Hotspot) && dist < minigame.Poor.bounds.extents.magnitude * 0.8f)
+                    if (!minigame.Poor.IsTouching(minigame.Hotspot) && minigame.Poor.bounds.Contains(p))
                     {
                         things[p].Destroy();
                         return true;
                     }
-                    if (minigame.Poor.IsTouching(minigame.Hotspot) && dist > minigame.Poor.bounds.extents.magnitude * 2.2f)
+                    if (minigame.Poor.IsTouching(minigame.Hotspot) && !minigame.Poor.bounds.Contains(p))
                     {
                         things[p].Destroy();
                         return true;
                     }
-                    if (minigame.Good.IsTouching(minigame.Hotspot) && dist > minigame.Good.bounds.extents.magnitude * 2.2f)
+                    if (minigame.Good.IsTouching(minigame.Hotspot) && !minigame.Good.bounds.Contains(p))
                     {
                         things[p].Destroy();
                         return true;
