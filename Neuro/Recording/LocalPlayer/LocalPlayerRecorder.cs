@@ -67,4 +67,11 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     public void RecordKill() => Frame.DidKill = true;
     public void RecordSabotage(SystemTypes type) => Frame.SabotageUsed = type.ForMessage();
     public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = room.ForMessage();
+
+    public void Cleanup()
+    {
+        Frame.DidReport = Frame.DidVent = Frame.DidKill = false;
+        Frame.SabotageUsed = SystemType.NoneSystemType;
+        Frame.DoorsUsed = SystemType.NoneSystemType;
+    }
 }
