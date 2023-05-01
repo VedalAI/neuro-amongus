@@ -20,6 +20,8 @@ public sealed class TasksDebugTab : DebugTab
     {
         if (GUILayout.Button("Open Task Picker"))
         {
+            if (Minigame.Instance) Minigame.Instance.ForceClose();
+
             Minigame minigamePrefab = ShipStatus.Instance.GetComponentsInChildren<SystemConsole>().First(c => c.FreeplayOnly).MinigamePrefab;
             PlayerControl.LocalPlayer.NetTransform.Halt();
             Minigame minigame = Object.Instantiate(minigamePrefab, NeuroUtilities.MainCamera.transform, false);
