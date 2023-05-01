@@ -31,22 +31,42 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
 
         while (!minigame.Poor.IsTouching(minigame.Hotspot))
         {
+            if (poorPositions.Count == 0)
+            {
+                yield return InGameCursor.Instance.CoMoveTo(minigame.Hotspot);
+                yield break;
+            }
+
             yield return MoveToUpgradingSignal(minigame, poorPositions, positionVisuals, minigame.Poor);
         }
 
+        UpdateVisualsColor(positionVisuals, allPositions, Color.gray);
         HashSet<Vector2> goodPositions = FilterPositionsByCollider(allPositions, minigame.Poor);
         UpdateVisualsColor(positionVisuals, goodPositions, Color.green);
 
         while (!minigame.Good.IsTouching(minigame.Hotspot))
         {
+            if (goodPositions.Count == 0)
+            {
+                yield return InGameCursor.Instance.CoMoveTo(minigame.Hotspot);
+                yield break;
+            }
+
             yield return MoveToUpgradingSignal(minigame, goodPositions, positionVisuals, minigame.Good);
         }
 
+        UpdateVisualsColor(positionVisuals, allPositions, Color.gray);
         HashSet<Vector2> perfectPositions = FilterPositionsByCollider(allPositions, minigame.Good);
         UpdateVisualsColor(positionVisuals, perfectPositions, Color.yellow);
 
         while (!minigame.Perfect.IsTouching(minigame.Hotspot))
         {
+            if (perfectPositions.Count == 0)
+            {
+                yield return InGameCursor.Instance.CoMoveTo(minigame.Hotspot);
+                yield break;
+            }
+
             yield return MoveToUpgradingSignal(minigame, perfectPositions, positionVisuals, minigame.Perfect);
         }
 
