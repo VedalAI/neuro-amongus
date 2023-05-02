@@ -12,7 +12,7 @@ public sealed class OpenWaterwaysSolver : GeneralMinigameSolver<WaterWheelGame>
         Transform wheelTransform = minigame.Wheel.transform;
         Vector2 wheelPosition = wheelTransform.position;
 
-        yield return InGameCursor.Instance.CoMoveToCircleStart(wheelPosition, 2f, 0);
+        yield return InGameCursor.Instance.CoMoveToPositionOnCircle(wheelPosition, 2f, 0);
         InGameCursor.Instance.StartHoldingLMB(minigame);
         do
         {

@@ -35,7 +35,7 @@ public class UnlockSafeSolver : IMinigameSolver, IMinigameOpener
             Info($"dR: {desiredRotation}");
 
             const float RADIUS = 0.8f;
-            yield return InGameCursor.Instance.CoMoveToCircleStart(tumblerPosition, RADIUS, startAngle);
+            yield return InGameCursor.Instance.CoMoveToPositionOnCircle(tumblerPosition, RADIUS, startAngle);
             yield return new WaitForSeconds(1f);
 
             InGameCursor.Instance.StartHoldingLMB(minigame);
