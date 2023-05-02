@@ -12,7 +12,6 @@ public class UnlockSafeSolver : IMinigameSolver, IMinigameOpener
     public IEnumerator CompleteMinigame(Minigame minigame, PlayerTask task)
     {
         if (!task) yield break;
-        // throw new System.Exception();
 
         var safeMinigame = minigame.Cast<SafeMinigame>();
         yield return EnterTumblerCode(safeMinigame);
@@ -31,26 +30,17 @@ public class UnlockSafeSolver : IMinigameSolver, IMinigameOpener
         for (int i = 0; i < combo.Length; i++)
         {
             int desiredRotation = combo[i] * 45;
-            Info($"sA: {startAngle}");
-            Info($"dR: {desiredRotation}");
 
-            const float RADIUS = 0.8f;
+            const float RADIUS = 0.85f;
             yield return InGameCursor.Instance.CoMoveToPositionOnCircle(tumblerPosition, RADIUS, startAngle);
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.3f);
 
-            InGameCursor.Instance.StartHoldingLMB(minigame);
-            if (Mathf.Sign(desiredRotation) < 0)
+            if (!InGameCursor.Instance.IsLeftButtonPressed) InGameCursor.Instance.StartHoldingLMB(minigame);
+            do
             {
-                Info("n");
-                yield return InGameCursor.Instance.CoMoveCircle(tumblerPosition, RADIUS, startAngle, -desiredRotation, 3f);
-                startAngle = -desiredRotation;
-            }
-            else
-            {
-                Info("p");
-                yield return InGameCursor.Instance.CoMoveCircle(tumblerPosition, RADIUS, startAngle, desiredRotation, 3f);
-                startAngle = desiredRotation;
-            }
+                yield return InGameCursor.Instance.CoMoveCircle(tumblerPosition, RADIUS, startAngle, startAngle + 3 * Mathf.Sign(desiredRotation * -1), 0.01f);
+                startAngle += 3 * Mathf.Sign(desiredRotation * -1);
+            } while (!minigame.AngleNear(tumblerTransform.eulerAngles.z + 45, Mathf.Sign(desiredRotation), desiredRotation, 2f));
 
             yield return new WaitForSeconds(0.2f);
         }
