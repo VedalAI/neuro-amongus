@@ -5,59 +5,72 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SafeMinigame))]
-public class UnlockSafeSolver : IMinigameSolver<SafeMinigame>, IMinigameOpener
+public class UnlockSafeSolver : IMinigameSolver, IMinigameOpener
 {
     public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
-    public IEnumerator CompleteMinigame(SafeMinigame minigame)
+    public IEnumerator CompleteMinigame(Minigame minigame, PlayerTask task)
+    {
+        if (!task) yield break;
+        // throw new System.Exception();
+
+        var safeMinigame = minigame.Cast<SafeMinigame>();
+        yield return EnterTumblerCode(safeMinigame);
+
+        yield return SpinUnlockSpinner(safeMinigame);
+    }
+
+    private static IEnumerator EnterTumblerCode(SafeMinigame minigame)
     {
         int[] combo = minigame.combo;
         Transform tumblerTransform = minigame.Tumbler.transform;
-        Transform spinnerTransform = minigame.Spinner.transform;
         Vector2 tumblerPosition = tumblerTransform.position;
-        Vector2 spinnerPosition = spinnerTransform.position;
-        Vector2 mousePosition = tumblerPosition;
-        float time = 0f;
+        float startAngle = tumblerTransform.eulerAngles.z;
 
-        // TODO: Why doesn't this work sometimes??
         // Input the combination to the tumbler
         for (int i = 0; i < combo.Length; i++)
         {
             int desiredRotation = combo[i] * 45;
-            int direction = i == 1
-                ? -1
-                : 1;
+            Info($"sA: {startAngle}");
+            Info($"dR: {desiredRotation}");
 
-            do
+            const float RADIUS = 0.8f;
+            yield return InGameCursor.Instance.CoMoveToCircleStart(tumblerPosition, RADIUS, startAngle);
+            yield return new WaitForSeconds(1f);
+
+            InGameCursor.Instance.StartHoldingLMB(minigame);
+            if (Mathf.Sign(desiredRotation) < 0)
             {
-                time += Time.deltaTime * direction;
-
-                yield return InGameCursor.Instance.CoMoveTo(mousePosition, 10);
-
-                const int SPEED_MULTIPLIER = 5;
-                mousePosition.x = tumblerPosition.x + Mathf.Sin(time * SPEED_MULTIPLIER) * 0.75f;
-                mousePosition.y = tumblerPosition.y + Mathf.Cos(time * SPEED_MULTIPLIER) * 0.75f;
-
-                if (!InGameCursor.Instance.IsLeftButtonPressed) InGameCursor.Instance.StartHoldingLMB(minigame);
-            } while (!minigame.AngleNear(tumblerTransform.eulerAngles.z + 45, direction, desiredRotation, 2f));
+                Info("n");
+                yield return InGameCursor.Instance.CoMoveCircle(tumblerPosition, RADIUS, startAngle, -desiredRotation, 3f);
+                startAngle = -desiredRotation;
+            }
+            else
+            {
+                Info("p");
+                yield return InGameCursor.Instance.CoMoveCircle(tumblerPosition, RADIUS, startAngle, desiredRotation, 3f);
+                startAngle = desiredRotation;
+            }
 
             yield return new WaitForSeconds(0.2f);
         }
 
-        // Spin the unlock spinner
         InGameCursor.Instance.StopHoldingLMB();
-        mousePosition = spinnerPosition;
+    }
+
+    private static IEnumerator SpinUnlockSpinner(SafeMinigame minigame)
+    {
+        Transform spinnerTransform = minigame.Spinner.transform;
+        Vector2 spinnerPosition = spinnerTransform.position;
+
+        float lastAngle = 0f;
         do
         {
-            time += Time.deltaTime;
-            yield return InGameCursor.Instance.CoMoveTo(mousePosition);
-
-            const int SPEED_MULTIPLIER = 30;
-            mousePosition.x = spinnerPosition.x + Mathf.Sin(time * SPEED_MULTIPLIER) * 1.6f;
-            mousePosition.y = spinnerPosition.y + Mathf.Cos(time * SPEED_MULTIPLIER) * 1.6f;
+            yield return InGameCursor.Instance.CoMoveCircle(spinnerPosition, 1.6f, lastAngle, lastAngle + 8, 0.01f);
+            lastAngle += 8;
 
             // Continually grab and let go of the spinner to toss it
-            if (time * 4 % 1 > 0.5f) InGameCursor.Instance.StopHoldingLMB();
+            if (Time.time * 4 % 1 > 0.5f) InGameCursor.Instance.StopHoldingLMB();
             else if (!InGameCursor.Instance.IsLeftButtonPressed) InGameCursor.Instance.StartHoldingLMB(minigame);
         } while (Mathf.Abs(minigame.spinDel) < 720f);
 
