@@ -104,6 +104,15 @@ public sealed class InGameCursor : MonoBehaviour
     public void SnapToCenter(bool stopMovement = true)
         => SnapTo(transform.parent.position, stopMovement);
 
+    public void SnapToPositionOnCircle(Vector2 center, float radius, float angle, bool stopMovement = true)
+        => SnapTo(GetPositionOnCircle(center, radius, angle), stopMovement);
+
+    public void SnapToPositionOnCircle(Component center, float radius, float angle, bool stopMovement = true)
+        => SnapToPositionOnCircle(center.transform.position, radius, angle, stopMovement);
+
+    public void SnapToPositionOnCircle(GameObject center, float radius, float angle, bool stopMovement = true)
+        => SnapToPositionOnCircle(center.transform.position, radius, angle, stopMovement);
+
     [HideFromIl2Cpp]
     public IEnumerator CoMoveTo(Vector2 targetPosition, float speed = 1f)
     {
@@ -152,43 +161,39 @@ public sealed class InGameCursor : MonoBehaviour
     public IEnumerator CoMoveToCenter(float speed = 1f) => CoMoveTo(transform.parent.position, speed);
 
     [HideFromIl2Cpp]
-    public IEnumerator CoMoveToCircleStart(Vector2 origin, float radius, float startAngle, float speed = 1f)
+    public IEnumerator CoMoveToPositionOnCircle(Vector2 center, float radius, float angle, float speed = 1f)
     {
-        Vector2 positionOnCircle = origin + new Vector2(Mathf.Cos(startAngle), Mathf.Sin(startAngle)) * radius;
-        yield return CoMoveTo(positionOnCircle, speed);
+        yield return CoMoveTo(GetPositionOnCircle(center, radius, angle), speed);
     }
 
     [HideFromIl2Cpp]
-    public IEnumerator CoMoveToCircleStart(Component origin, float radius, float startAngle, float speed = 1f)
-        => CoMoveToCircleStart(origin.transform.position, radius, startAngle, speed);
+    public IEnumerator CoMoveToPositionOnCircle(Component center, float radius, float angle, float speed = 1f)
+        => CoMoveToPositionOnCircle(center.transform.position, radius, angle, speed);
 
     [HideFromIl2Cpp]
-    public IEnumerator CoMoveToCircleStart(GameObject origin, float radius, float startAngle, float speed = 1f)
-        => CoMoveToCircleStart(origin.transform.position, radius, startAngle, speed);
+    public IEnumerator CoMoveToPositionOnCircle(GameObject center, float radius, float angle, float speed = 1f)
+        => CoMoveToPositionOnCircle(center.transform.position, radius, angle, speed);
 
     [HideFromIl2Cpp]
-    public IEnumerator CoMoveCircle(Vector2 origin, float radius, float startAngle, float targetAngle, float duration)
+    public IEnumerator CoMoveCircle(Vector2 center, float radius, float startAngle, float targetAngle, float duration)
     {
-        yield return CoMoveToCircleStart(origin, radius, startAngle);
+        yield return CoMoveToPositionOnCircle(center, radius, startAngle);
 
         for (float t = 0; t < duration; t += Time.deltaTime)
         {
             float angle = Mathf.Lerp(startAngle, targetAngle, t / duration);
-            float angleInRadians = angle * Mathf.Deg2Rad;
-
-            Vector2 positionOnCircle = origin + new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians)) * radius;
-            SnapTo(positionOnCircle);
+            SnapTo(GetPositionOnCircle(center, radius, angle));
             yield return null;
         }
     }
 
     [HideFromIl2Cpp]
-    public IEnumerator CoMoveCircle(Component origin, float radius, float startAngle, float targetAngle, float duration)
-        => CoMoveCircle(origin.transform.position, radius, startAngle, targetAngle, duration);
+    public IEnumerator CoMoveCircle(Component center, float radius, float startAngle, float targetAngle, float duration)
+        => CoMoveCircle(center.transform.position, radius, startAngle, targetAngle, duration);
 
     [HideFromIl2Cpp]
-    public IEnumerator CoMoveCircle(GameObject origin, float radius, float startAngle, float targetAngle, float duration)
-        => CoMoveCircle(origin.transform.position, radius, startAngle, targetAngle, duration);
+    public IEnumerator CoMoveCircle(GameObject center, float radius, float startAngle, float targetAngle, float duration)
+        => CoMoveCircle(center.transform.position, radius, startAngle, targetAngle, duration);
 
     public void Hide()
     {
@@ -242,5 +247,10 @@ public sealed class InGameCursor : MonoBehaviour
     public void StopHoldingLMB()
     {
         _clickLock = null;
+    }
+
+    public static Vector2 GetPositionOnCircle(Vector2 center, float radius, float angle)
+    {
+        return center + new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius;
     }
 }
