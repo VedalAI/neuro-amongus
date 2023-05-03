@@ -44,7 +44,7 @@ public class Node : IHeapItem<Node>
             Color = Color,
             TransportSelfId = TransportSelfId,
             TransportTargetId = TransportTargetId,
-            TransportNeighborsCache = TransportNeighborsCache
+            TransportNeighborsCache = new List<Node>(TransportNeighborsCache)
         };
     }
 }
