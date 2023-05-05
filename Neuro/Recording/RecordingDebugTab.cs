@@ -54,6 +54,7 @@ public sealed class RecordingDebugTab : DebugTab
         {
             Label(2, $"- D({door.Position.TotalDistance:F2}), O({door.IsOpen})");
         }
+
         Label(1, $"{nameof(MapFrame.NearbyVents)} ({MapRecorder.Instance.Frame.NearbyVents.Count})");
         foreach (VentData vent in MapRecorder.Instance.Frame.NearbyVents)
         {
@@ -75,12 +76,13 @@ public sealed class RecordingDebugTab : DebugTab
 
     private void Label(int indent, string label, Color color)
     {
-        GUILayout.BeginHorizontal();
-        GUILayout.Space(20 * indent);
-        Color originalColor = GUI.contentColor;
-        GUI.contentColor = color;
-        GUILayout.Label(label);
-        GUI.contentColor = originalColor;
-        GUILayout.EndHorizontal();
+        using (new HorizontalScope())
+        {
+            GUILayout.Space(20 * indent);
+            Color originalColor = GUI.contentColor;
+            GUI.contentColor = color;
+            GUILayout.Label(label);
+            GUI.contentColor = originalColor;
+        }
     }
 }

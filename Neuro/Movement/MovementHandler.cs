@@ -63,7 +63,8 @@ public sealed class MovementHandler : MonoBehaviour
     {
         if (direction != Vector2.zero) return;
 
-        direction = ForcedMoveDirection.normalized; // TODO: We need to adjust this based on player speed setting
+        // TODO: We need to adjust this based on player speed setting // TODO: It seems like this already what's happening, but the player still is faster(?)
+        direction = ForcedMoveDirection.normalized;
 
         if (_unstuckTimer > 0f)
         {

@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using UnityEngine;
+﻿using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -25,6 +24,7 @@ public sealed class PlatformNode : Node
             return _lastResult = Vector2.Distance(_lastPosition = currentPosition, _platform.transform.position) < 2f;
         }
     }
+
     private Vector3 _lastPosition;
     private bool _lastResult;
 }
