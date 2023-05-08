@@ -41,7 +41,7 @@ public sealed class MovementHandler : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer || !CommunicationHandler.Instance.IsConnected) return;
+        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer || CommunicationHandler.Instance == null || !CommunicationHandler.Instance.IsConnected) return;
 
         if (_positionHistory.Count > 100) _positionHistory.Dequeue();
         _positionHistory.Enqueue(PlayerControl.LocalPlayer.GetTruePosition());

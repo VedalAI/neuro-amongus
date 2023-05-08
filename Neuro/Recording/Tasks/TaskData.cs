@@ -29,7 +29,8 @@ public partial class TaskData
 
             // TODO: Move this thing out of here
             Vector2[] path = PathfindingHandler.Instance.GetPath(consoleOfInterest, false);
-            DrawPath(path, consoleOfInterest.GetInstanceID());
+            if(NeuroPlugin.Debug)
+                DrawPath(path, consoleOfInterest.GetInstanceID());
         }
 
         return data;
