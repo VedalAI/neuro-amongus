@@ -1,7 +1,6 @@
 ﻿using Neuro.Debugging;
 using Neuro.Pathfinding;
 using Neuro.Recording.LocalPlayer;
-using Neuro.Recording.Tasks;
 using Neuro.Utilities;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
@@ -18,20 +17,20 @@ public sealed class GizmosDebugTab : DebugTab
 
     private static bool _enableNodes
     {
-        get => CachedPlayerPrefs.GetBool(nameof(_enableNodes), true);
-        set => CachedPlayerPrefs.SetBool(nameof(_enableNodes), value);
+        get => CachedPlayerPrefs.GetBool("_enableNodes", true);
+        set => CachedPlayerPrefs.SetBool("_enableNodes", value);
     }
 
     public static bool EnableTaskPaths
     {
-        get => CachedPlayerPrefs.GetBool(nameof(EnableTaskPaths), true);
-        set => CachedPlayerPrefs.SetBool(nameof(EnableTaskPaths), value);
+        get => CachedPlayerPrefs.GetBool("EnableTaskPaths", true);
+        set => CachedPlayerPrefs.SetBool("EnableTaskPaths", value);
     }
 
     private static bool _enableObstacles
     {
-        get => CachedPlayerPrefs.GetBool(nameof(_enableObstacles), false);
-        set => CachedPlayerPrefs.SetBool(nameof(_enableObstacles), value);
+        get => CachedPlayerPrefs.GetBool("_enableObstacles", false);
+        set => CachedPlayerPrefs.SetBool("_enableObstacles", value);
     }
 
     public override void BuildUI()
