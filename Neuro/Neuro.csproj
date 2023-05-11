@@ -18,7 +18,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Platform)' == 'Full'">
-        <DefineConstants>FULL</DefineConstants>
+        <DefineConstants>$(DefineConstants);FULL</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
