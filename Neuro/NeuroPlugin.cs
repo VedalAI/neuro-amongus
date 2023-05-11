@@ -5,6 +5,7 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Neuro.Communication.AmongUsAI;
 using Neuro.Debugging;
+using Neuro.Recording;
 using Neuro.Utilities;
 using Reactor;
 
@@ -26,6 +27,7 @@ public partial class NeuroPlugin : BasePlugin
 
         AddComponent<CommunicationHandler>();
         AddComponent<DebugWindow>();
+        AddComponent<Uploader>();
 
         ResourceManager.CacheSprite("Cursor", 130);
     }

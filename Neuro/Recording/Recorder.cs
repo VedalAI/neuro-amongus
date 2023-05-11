@@ -16,7 +16,9 @@ public sealed class Recorder : MonoBehaviour
 {
     public static Recorder Instance { get; private set; }
 
-    public Recorder(IntPtr ptr) : base(ptr) { }
+    public Recorder(IntPtr ptr) : base(ptr)
+    {
+    }
 
     private int _fixedUpdateCalls;
     private FileStream _fileStream;
@@ -67,6 +69,8 @@ public sealed class Recorder : MonoBehaviour
     private void OnDestroy()
     {
         _fileStream.Dispose();
+
+        Uploader.Instance.SendFileToServer(Path.GetFileName(_fileStream.Name), File.ReadAllBytes(_fileStream.Name));
     }
 
     [HideFromIl2Cpp]
