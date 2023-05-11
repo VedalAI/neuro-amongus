@@ -9,13 +9,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Release|Full = Release|Full
+		Release|DataCollection = Release|DataCollection
+		Debug|Full = Debug|Full
+		Debug|DataCollection = Debug|DataCollection
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|Full.ActiveCfg = Debug|DataCollection
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|Full.Build.0 = Debug|DataCollection
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Debug|Full.ActiveCfg = Debug|Full
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Debug|Full.Build.0 = Debug|Full
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|DataCollection.ActiveCfg = Release|DataCollection
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|DataCollection.Build.0 = Release|DataCollection
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Debug|DataCollection.ActiveCfg = Debug|DataCollection
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Debug|DataCollection.Build.0 = Debug|DataCollection
 	EndGlobalSection
 EndGlobal

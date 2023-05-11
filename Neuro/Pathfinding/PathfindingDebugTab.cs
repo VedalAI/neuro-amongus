@@ -1,4 +1,5 @@
 ﻿using Neuro.Debugging;
+using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Pathfinding;
@@ -18,33 +19,31 @@ public sealed class PathfindingDebugTab : DebugTab
 
     public override void BuildUI()
     {
-        GUILayout.BeginHorizontal();
-        GUILayout.Label($"Density: {_density:F6}");
-        GUILayout.FlexibleSpace();
-        _overrideDensity = GUILayout.Toggle(_overrideDensity, "Override");
-        GUILayout.EndHorizontal();
-
-        if (!_overrideDensity)
+        using (new HorizontalScope())
         {
-            GUI.enabled = false;
-            _density = PathfindingHandler.Instance.GridDensity;
+            GUILayout.Label($"Density: {_density:F6}");
+            GUILayout.FlexibleSpace();
+            _overrideDensity = GUILayout.Toggle(_overrideDensity, "Override");
         }
-        _density = GUILayout.HorizontalSlider(_density, 3, 7);
-        GUI.enabled = true;
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label($"Base Width: {_baseWidth}");
-        GUILayout.FlexibleSpace();
-        _overrideBaseWidth = GUILayout.Toggle(_overrideBaseWidth, "Override");
-        GUILayout.EndHorizontal();
-
-        if (!_overrideBaseWidth)
+        using (new DisabledScope(!_overrideDensity))
         {
-            GUI.enabled = false;
-            _baseWidth = PathfindingHandler.Instance.GridBaseWidth;
+            if (!_overrideDensity) _density = PathfindingHandler.Instance.GridDensity;
+            _density = GUILayout.HorizontalSlider(_density, 3, 7);
         }
-        _baseWidth = Mathf.RoundToInt(GUILayout.HorizontalSlider(_baseWidth, 55, 150));
-        GUI.enabled = true;
+
+        using (new HorizontalScope())
+        {
+            GUILayout.Label($"Base Width: {_baseWidth}");
+            GUILayout.FlexibleSpace();
+            _overrideBaseWidth = GUILayout.Toggle(_overrideBaseWidth, "Override");
+        }
+
+        using (new DisabledScope(!_overrideBaseWidth))
+        {
+            if (!_overrideBaseWidth) _baseWidth = PathfindingHandler.Instance.GridBaseWidth;
+            _baseWidth = Mathf.RoundToInt(GUILayout.HorizontalSlider(_baseWidth, 55, 150));
+        }
 
         GUILayout.Label($"Size: {_baseWidth * _density:F0}");
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -39,9 +40,10 @@ public sealed class MovementHandler : MonoBehaviour
     private readonly Queue<Vector2> _positionHistory = new();
     private float _unstuckTimer = 0f;
 
+    [Conditional("FULL")]
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer || CommunicationHandler.Instance == null || !CommunicationHandler.Instance.IsConnected) return;
+        if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer || !CommunicationHandler.Instance.IsConnected) return;
 
         if (_positionHistory.Count > 100) _positionHistory.Dequeue();
         _positionHistory.Enqueue(PlayerControl.LocalPlayer.GetTruePosition());
@@ -63,7 +65,8 @@ public sealed class MovementHandler : MonoBehaviour
     {
         if (direction != Vector2.zero) return;
 
-        direction = ForcedMoveDirection.normalized; // TODO: We need to adjust this based on player speed setting
+        // TODO: We need to adjust this based on player speed setting // TODO: It seems like this already what's happening, but the player still is faster(?)
+        direction = ForcedMoveDirection.normalized;
 
         if (_unstuckTimer > 0f)
         {

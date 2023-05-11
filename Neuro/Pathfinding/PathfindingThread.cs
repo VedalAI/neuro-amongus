@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Neuro.Pathfinding.DataStructures;
@@ -18,7 +19,7 @@ public sealed class PathfindingThread : NeuroThread
     private readonly Node[,] _grid;
     private readonly Transform _visualPointParent;
 
-    public PathfindingThread(Node[,] grid,  IEnumerable<Vector2> accessiblePositions, Transform visualPointParent)
+    public PathfindingThread(Node[,] grid, IEnumerable<Vector2> accessiblePositions, Transform visualPointParent)
     {
         _grid = grid;
         _visualPointParent = visualPointParent;
@@ -110,11 +111,9 @@ public sealed class PathfindingThread : NeuroThread
             }
         }
 
-        if(NeuroPlugin.Debug) {
-            foreach (Node node in closedSet.ToList())
-            {
-                CreateNodeVisualPoint(node);
-            }
+        foreach (Node node in closedSet.ToList())
+        {
+            CreateNodeVisualPoint(node);
         }
 
         // Set all nodes not in closed set to inaccessible
@@ -131,9 +130,12 @@ public sealed class PathfindingThread : NeuroThread
         Node startNode = FindClosestNode(start);
         Node targetNode = FindClosestNode(target);
 
-        if (startNode is not { IsAccessible: true } ||
-            targetNode is not { IsAccessible: true } ||
-            startNode == targetNode) {return Array.Empty<Vector2>();}
+        if (startNode is not {IsAccessible: true} ||
+            targetNode is not {IsAccessible: true} ||
+            startNode == targetNode)
+        {
+            return Array.Empty<Vector2>();
+        }
 
         Heap<Node> openSet = new(PathfindingHandler.Instance.GridSize * PathfindingHandler.Instance.GridSize);
         HashSet<Node> closedSet = new();
@@ -322,7 +324,7 @@ public sealed class PathfindingThread : NeuroThread
         return 14 * Math.Min(dstX, dstY) + 10 * Math.Abs(dstX - dstY);
     }
 
-    // TODO: Create 'Gizmos' debug tab with this and paths and stuff maybe
+    [Conditional("FULL")]
     private void CreateNodeVisualPoint(Node node) => CreateVisualPoint(node.WorldPosition, node.color, 0.1f);
 
     private void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)

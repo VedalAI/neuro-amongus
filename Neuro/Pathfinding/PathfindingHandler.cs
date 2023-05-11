@@ -19,18 +19,21 @@ public sealed class PathfindingHandler : MonoBehaviour
     public float GridDensity { get; set; }
     public int GridBaseWidth { get; set; }
 
-    public int GridSize => (int)(GridBaseWidth * GridDensity);
+    public int GridSize => (int) (GridBaseWidth * GridDensity);
     public int GridLowerBounds => Mathf.RoundToInt(GridSize / -2f);
     public int GridUpperBounds => Mathf.RoundToInt(GridSize / 2f);
+
+    public GameObject VisualPointParent { get; private set; }
 
     public static PathfindingHandler Instance { get; private set; }
 
     private static Vector2 _localPlayerPosition => (Vector2) PlayerControl.LocalPlayer.transform.position + PlayerControl.LocalPlayer.Collider.offset / 2;
 
-    public PathfindingHandler(IntPtr ptr) : base(ptr) { }
+    public PathfindingHandler(IntPtr ptr) : base(ptr)
+    {
+    }
 
     private PathfindingThread _thread;
-    private GameObject _visualPointParent;
 
     private void Awake()
     {
@@ -94,8 +97,8 @@ public sealed class PathfindingHandler : MonoBehaviour
 
     public void InitializeThread()
     {
-        if (_visualPointParent) _visualPointParent.Destroy();
-        _visualPointParent = new GameObject("Visual Point Parent");
+        if (VisualPointParent) VisualPointParent.Destroy();
+        VisualPointParent = new GameObject("Visual Point Parent");
 
         List<Vector2> accessiblePositions = new()
         {
@@ -109,7 +112,7 @@ public sealed class PathfindingHandler : MonoBehaviour
         }
 
         _thread?.Stop();
-        _thread = new PathfindingThread(GenerateNodeGrid(), accessiblePositions, _visualPointParent.transform);
+        _thread = new PathfindingThread(GenerateNodeGrid(), accessiblePositions, VisualPointParent.transform);
         _thread.Start();
     }
 

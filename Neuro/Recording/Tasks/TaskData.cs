@@ -1,8 +1,13 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Diagnostics;
+using System.Linq;
+using BepInEx.Unity.IL2CPP.Utils;
+using Neuro.Gizmos;
 using Neuro.Minigames;
 using Neuro.Pathfinding;
 using Neuro.Recording.Common;
 using Neuro.Utilities;
+using Reactor.Utilities.Extensions;
 using UnityEngine;
 using Random = System.Random;
 using Vector2 = UnityEngine.Vector2;
@@ -27,25 +32,29 @@ public partial class TaskData
         {
             data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest));
 
+            if (!GizmosDebugTab.EnableTaskPaths) continue;
+
             // TODO: Move this thing out of here
-            Vector2[] path = PathfindingHandler.Instance.GetPath(consoleOfInterest, false);
-            if(NeuroPlugin.Debug)
-                DrawPath(path, consoleOfInterest.GetInstanceID());
+            DrawPath(PathfindingHandler.Instance.GetPath(consoleOfInterest, false), consoleOfInterest.GetInstanceID());
         }
 
         return data;
     }
 
-    // TODO: Delete path after task is finished
     // TODO: Fix path Z index
+    [Conditional("FULL")]
     private static void DrawPath(Vector2[] path, int id)
     {
         GameObject.Destroy(GameObject.Find("Neuro Path " + id));
-        GameObject test = new("Neuro Path " + id);
-        //Info(test.transform);
-        test.transform.position = PlayerControl.LocalPlayer.transform.position;
+        GameObject pathObj = new("Neuro Path " + id)
+        {
+            transform =
+            {
+                position = PlayerControl.LocalPlayer.transform.position
+            }
+        };
 
-        LineRenderer renderer = test.AddComponent<LineRenderer>();
+        LineRenderer renderer = pathObj.AddComponent<LineRenderer>();
         renderer.positionCount = path.Length;
         for (int i = 0; i < path.Length; i++)
         {
@@ -57,10 +66,18 @@ public partial class TaskData
 
         Random random = new(id);
         renderer.startColor = new Color(random.NextSingle(), random.NextSingle(), random.NextSingle());
+
+        pathObj.AddComponent<DivertPowerMetagame>().StartCoroutine(DestroyAfter(pathObj, 5));
     }
 
     private static float Closest(Console console)
     {
         return PathfindingHandler.Instance.GetPathLength(console);
+    }
+
+    private static IEnumerator DestroyAfter(GameObject obj, float timeoutSeconds)
+    {
+        yield return new WaitForSeconds(timeoutSeconds);
+        obj.Destroy();
     }
 }
