@@ -16,6 +16,8 @@ public sealed class CommunicationHandler : MonoBehaviour
 {
     public static CommunicationHandler Instance { get; private set; }
 
+    public static bool IsPresentAndConnected => Instance && Instance.IsConnected;
+
     public CommunicationHandler(IntPtr ptr) : base(ptr)
     {
     }
