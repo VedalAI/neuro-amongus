@@ -13,36 +13,41 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-        <ILRepackTargetConfigurations>Debug;Release</ILRepackTargetConfigurations>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>DataCollection;Full</Platforms>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Platform)' == 'Full'">
+        <DefineConstants>FULL</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.3.28" />
-        <PackageReference Include="BepInEx.AutoPlugin" Version="1.1.0" />
-        <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.0.1" />
-        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.668" />
-        <PackageReference Include="Google.Protobuf" Version="3.22.1" />
-        <PackageReference Include="Grpc.Tools" Version="2.53.0" />
-        <PackageReference Include="Reactor" Version="2.1.0" />
+        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.3.28"/>
+        <PackageReference Include="BepInEx.AutoPlugin" Version="1.1.0"/>
+        <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.0.1"/>
+        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.668"/>
+        <PackageReference Include="Google.Protobuf" Version="3.22.1"/>
+        <PackageReference Include="Grpc.Tools" Version="2.53.0"/>
+        <PackageReference Include="Reactor" Version="2.1.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="**\Resources\**" />
-        <EmbeddedResource Include="$(NuGetPackageRoot)google.protobuf\3.22.1\lib\net5.0\Google.Protobuf.dll" LinkBase="Resources" />
+        <EmbeddedResource Include="**\Resources\**"/>
+        <EmbeddedResource Include="$(NuGetPackageRoot)google.protobuf\3.22.1\lib\net5.0\Google.Protobuf.dll" LinkBase="Resources"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="**\*.proto" GrpcServices="None" />
+        <Protobuf Include="**\*.proto" GrpcServices="None"/>
         <Compile Update="@(Protobuf->'%(RelativeDir)%(Filename).cs')">
             <DependentUpon>%(Filename).proto</DependentUpon>
         </Compile>
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="zzz_excluded\**" />
+        <Compile Remove="zzz_excluded\**"/>
     </ItemGroup>
 
     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
-        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(AmongUs)/BepInEx/plugins/" UseSymboliclinksIfPossible="true" />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(AmongUs)/BepInEx/plugins/" UseSymboliclinksIfPossible="true"/>
     </Target>
 </Project>

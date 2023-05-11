@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Neuro.Events;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
@@ -39,6 +40,7 @@ public sealed class MovementHandler : MonoBehaviour
     private readonly Queue<Vector2> _positionHistory = new();
     private float _unstuckTimer = 0f;
 
+    [Conditional("FULL")]
     private void FixedUpdate()
     {
         if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer || !CommunicationHandler.Instance.IsConnected) return;

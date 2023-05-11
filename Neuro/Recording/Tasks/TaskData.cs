@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using System.Linq;
 using BepInEx.Unity.IL2CPP.Utils;
 using Neuro.Gizmos;
@@ -42,6 +43,7 @@ public partial class TaskData
     }
 
     // TODO: Fix path Z index
+    [Conditional("FULL")]
     private static void DrawPath(Vector2[] path, int id)
     {
         GameObject.Destroy(GameObject.Find("Neuro Path " + id));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Neuro.Events;
 using Neuro.Minigames;
 using Neuro.Utilities;
@@ -28,6 +29,7 @@ public sealed class InteractionsHandler : MonoBehaviour
         Instance = this;
     }
 
+    [Conditional("FULL")]
     public void UseTarget(IUsable usable)
     {
         if (MeetingHud.Instance || Minigame.Instance || usable == null) return;
@@ -75,6 +77,7 @@ public sealed class InteractionsHandler : MonoBehaviour
             Warning($"Unable to find task from console id {console.ConsoleId}");
             return;
         }
+
         Minigame minigame = task.GetMinigamePrefab();
 
         if (MinigameHandler.ShouldOpenConsole(console, minigame, task))

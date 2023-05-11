@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using Google.Protobuf;
@@ -16,7 +17,9 @@ public sealed class CommunicationHandler : MonoBehaviour
 {
     public static CommunicationHandler Instance { get; private set; }
 
-    public CommunicationHandler(IntPtr ptr) : base(ptr) { }
+    public CommunicationHandler(IntPtr ptr) : base(ptr)
+    {
+    }
 
     private readonly byte[] _buffer = new byte[1024];
     private WebSocketThread _thread;

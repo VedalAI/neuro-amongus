@@ -1,4 +1,5 @@
 ﻿global using static Reactor.Utilities.Logger<Neuro.NeuroPlugin>;
+using System.Diagnostics;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
@@ -25,10 +26,16 @@ public partial class NeuroPlugin : BasePlugin
     {
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
 
+        AddFullComponents();
+
+        ResourceManager.CacheSprite("Cursor", 130);
+    }
+
+    [Conditional("FULL")]
+    private void AddFullComponents()
+    {
         AddComponent<CommunicationHandler>();
         AddComponent<DebugWindow>();
         AddComponent<Uploader>();
-
-        ResourceManager.CacheSprite("Cursor", 130);
     }
 }
