@@ -50,7 +50,7 @@ public sealed class Recorder : MonoBehaviour
         // TODO: We should record meeting data!
         if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
-        if (CommunicationHandler.Instance.IsConnected)
+        if (CommunicationHandler.IsPresentAndConnected)
         {
             Warning("Connected to socket, stopping Recorder");
             Destroy(this);
