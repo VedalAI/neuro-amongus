@@ -27,6 +27,7 @@ public partial class NeuroPlugin : BasePlugin
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
 
         AddFullComponents();
+        AddComponent<Uploader>();
 
         ResourceManager.CacheSprite("Cursor", 130);
     }
@@ -36,6 +37,5 @@ public partial class NeuroPlugin : BasePlugin
     {
         AddComponent<CommunicationHandler>();
         AddComponent<DebugWindow>();
-        AddComponent<Uploader>();
     }
 }
