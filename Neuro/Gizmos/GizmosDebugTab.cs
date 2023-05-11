@@ -15,22 +15,22 @@ public sealed class GizmosDebugTab : DebugTab
 
     private readonly LineRenderer[] _obstacleRenderers = new LineRenderer[8];
 
-    private static bool _enableNodes
-    {
-        get => CachedPlayerPrefs.GetBool("_enableNodes", true);
-        set => CachedPlayerPrefs.SetBool("_enableNodes", value);
-    }
-
     public static bool EnableTaskPaths
     {
         get => CachedPlayerPrefs.GetBool("EnableTaskPaths", true);
         set => CachedPlayerPrefs.SetBool("EnableTaskPaths", value);
     }
 
+    private static bool _enableNodes
+    {
+        get => CachedPlayerPrefs.GetBool("EnableNodes", true);
+        set => CachedPlayerPrefs.SetBool("EnableNodes", value);
+    }
+
     private static bool _enableObstacles
     {
-        get => CachedPlayerPrefs.GetBool("_enableObstacles", false);
-        set => CachedPlayerPrefs.SetBool("_enableObstacles", value);
+        get => CachedPlayerPrefs.GetBool("EnableObstacles", false);
+        set => CachedPlayerPrefs.SetBool("EnableObstacles", value);
     }
 
     public override void BuildUI()
