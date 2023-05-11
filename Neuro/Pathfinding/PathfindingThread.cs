@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Neuro.Pathfinding.DataStructures;
@@ -9,7 +10,6 @@ using UnityEngine;
 
 namespace Neuro.Pathfinding;
 
-// TODO: [BUG] Sometimes when very close to an object, the distance will be returned as -1
 public sealed class PathfindingThread : NeuroThread
 {
     private readonly ConcurrentQueue<string> _queue = new();
@@ -17,11 +17,13 @@ public sealed class PathfindingThread : NeuroThread
     private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target, Vector2[] path, float length)> _results = new();
 
     private readonly Node[,] _grid;
+    private readonly Transform _visualPointParent;
 
-    public PathfindingThread(Node[,] grid, Vector2 accessiblePosition)
+    public PathfindingThread(Node[,] grid, IEnumerable<Vector2> accessiblePositions, Transform visualPointParent)
     {
         _grid = grid;
-        FloodFill(accessiblePosition);
+        _visualPointParent = visualPointParent;
+        FloodFill(accessiblePositions);
     }
 
     public void RequestPath(Vector2 start, Vector2 target, string identifier)
@@ -44,7 +46,7 @@ public sealed class PathfindingThread : NeuroThread
         {
             while (path.Length > 1 && Vector2.Distance(PlayerControl.LocalPlayer.GetTruePosition(), path[0]) < 0.5f)
             {
-                path = path.Skip(1).ToArray();
+                path = path[1..];
             }
             // _results[identifier] = result with { path = path };
         }
@@ -84,38 +86,40 @@ public sealed class PathfindingThread : NeuroThread
         }
     }
 
-    private void FloodFill(Vector2 accessiblePosition)
+    private void FloodFill(IEnumerable<Vector2> accessiblePositions)
     {
-        Node startingNode = NodeFromWorldPoint(accessiblePosition);
-
         List<Node> openSet = new();
         HashSet<Node> closedSet = new();
-        openSet.Add(startingNode);
 
-        while (openSet.Count > 0)
+        foreach (Vector2 accessiblePosition in accessiblePositions)
         {
-            Node node = openSet[0];
-            openSet.Remove(node);
-            closedSet.Add(node);
+            Node startingNode = NodeFromWorldPoint(accessiblePosition);
+            startingNode.color = Color.yellow;
+            openSet.Add(startingNode);
 
-            foreach (Node neighbour in GetNeighbours(node))
+            while (openSet.Count > 0)
             {
-                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
-                if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
+                Node node = openSet[0];
+                openSet.Remove(node);
+                closedSet.Add(node);
 
-                neighbour.parent = node;
+                foreach (Node neighbour in GetNeighbours(node, false))
+                {
+                    if (!neighbour.IsAccessible || closedSet.Contains(neighbour)) continue;
+                    if (!openSet.Contains(neighbour)) openSet.Add(neighbour);
+                }
             }
         }
 
         foreach (Node node in closedSet.ToList())
         {
-            CreateNodeVisualPoint(node.worldPosition);
+            CreateNodeVisualPoint(node);
         }
 
         // Set all nodes not in closed set to inaccessible
         foreach (Node node in _grid)
         {
-            if (!closedSet.Contains(node)) node.accessible = false;
+            if (!closedSet.Contains(node)) node.IsAccessible = false;
         }
     }
 
@@ -126,10 +130,14 @@ public sealed class PathfindingThread : NeuroThread
         Node startNode = FindClosestNode(start);
         Node targetNode = FindClosestNode(target);
 
+        if (startNode is not {IsAccessible: true} ||
+            targetNode is not {IsAccessible: true} ||
+            startNode == targetNode)
+        {
+            return Array.Empty<Vector2>();
+        }
 
-        if (startNode is not { accessible: true } || targetNode is not { accessible: true }) return Array.Empty<Vector2>();
-
-        Heap<Node> openSet = new(PathfindingHandler.GRID_SIZE * PathfindingHandler.GRID_SIZE);
+        Heap<Node> openSet = new(PathfindingHandler.Instance.GridSize * PathfindingHandler.Instance.GridSize);
         HashSet<Node> closedSet = new();
 
         openSet.Add(startNode);
@@ -146,9 +154,9 @@ public sealed class PathfindingThread : NeuroThread
                 break;
             }
 
-            foreach (Node neighbour in GetNeighbours(currentNode))
+            foreach (Node neighbour in GetNeighbours(currentNode, true))
             {
-                if (!neighbour.accessible || closedSet.Contains(neighbour)) continue;
+                if (!neighbour.IsAccessible || closedSet.Contains(neighbour)) continue;
 
                 int newMovementCostToNeighbour = currentNode.gCost + GetDistanceCost(currentNode, neighbour);
 
@@ -196,16 +204,16 @@ public sealed class PathfindingThread : NeuroThread
         queue.Enqueue(closestNode);
         nodes.Add(closestNode);
 
-        while (!closestNode.accessible)
+        while (!closestNode.IsAccessible)
         {
             closestNode = queue.Dequeue();
             float closestDistance = float.PositiveInfinity;
             Node closestNeighbour = null;
-            foreach (Node neighbour in GetNeighbours(closestNode))
+            foreach (Node neighbour in GetNeighbours(closestNode, true))
             {
-                if (neighbour.accessible)
+                if (neighbour.IsAccessible)
                 {
-                    float distance = Vector2.Distance(position, neighbour.worldPosition);
+                    float distance = Vector2.Distance(position, neighbour.WorldPosition);
                     if (distance < closestDistance)
                     {
                         closestNeighbour = neighbour;
@@ -230,17 +238,17 @@ public sealed class PathfindingThread : NeuroThread
 
     private Node NodeFromWorldPoint(Vector2 position)
     {
-        position *= PathfindingHandler.GRID_DENSITY;
-        float clampedX = Math.Clamp(position.x, PathfindingHandler.GRID_LOWER_BOUNDS, PathfindingHandler.GRID_UPPER_BOUNDS);
-        float clampedY = Math.Clamp(position.y, PathfindingHandler.GRID_LOWER_BOUNDS, PathfindingHandler.GRID_UPPER_BOUNDS);
+        position *= PathfindingHandler.Instance.GridDensity;
+        float clampedX = Math.Clamp(position.x, PathfindingHandler.Instance.GridLowerBounds, PathfindingHandler.Instance.GridUpperBounds);
+        float clampedY = Math.Clamp(position.y, PathfindingHandler.Instance.GridLowerBounds, PathfindingHandler.Instance.GridUpperBounds);
 
-        int xIndex = (int) Math.Round(clampedX + PathfindingHandler.GRID_UPPER_BOUNDS);
-        int yIndex = (int) Math.Round(clampedY + PathfindingHandler.GRID_UPPER_BOUNDS);
+        int xIndex = (int) Math.Round(clampedX + PathfindingHandler.Instance.GridUpperBounds);
+        int yIndex = (int) Math.Round(clampedY + PathfindingHandler.Instance.GridUpperBounds);
 
         return _grid[xIndex, yIndex];
     }
 
-    private List<Node> GetNeighbours(Node node)
+    private List<Node> GetNeighbours(Node node, bool includeTransport)
     {
         List<Node> neighbours = new();
 
@@ -250,11 +258,25 @@ public sealed class PathfindingThread : NeuroThread
             if (x == 0 && y == 0)
                 continue;
 
-            int checkX = node.gridX + x;
-            int checkY = node.gridY + y;
+            int checkX = node.GridPosition.x + x;
+            int checkY = node.GridPosition.y + y;
 
-            if (checkX is >= 0 and < PathfindingHandler.GRID_SIZE && checkY is >= 0 and < PathfindingHandler.GRID_SIZE) neighbours.Add(_grid[checkX, checkY]);
+            if (checkX >= 0 && checkX < PathfindingHandler.Instance.GridSize &&
+                checkY >= 0 && checkY < PathfindingHandler.Instance.GridSize) neighbours.Add(_grid[checkX, checkY]);
         }
+
+        if (!includeTransport || !node.IsTransportActive || node.transportSelfId == 0) return neighbours;
+
+        if (node.transportNeighborsCache == null)
+        {
+            node.transportNeighborsCache = new List<Node>();
+            foreach (Node otherNode in _grid)
+            {
+                if (otherNode.transportSelfId == node.transportTargetId) node.transportNeighborsCache.Add(otherNode);
+            }
+        }
+
+        neighbours.AddRange(node.transportNeighborsCache);
 
         return neighbours;
     }
@@ -269,55 +291,54 @@ public sealed class PathfindingThread : NeuroThread
             currentNode = currentNode.parent;
         }
 
-        Vector2[] waypoints = path.Select(p => p.worldPosition).ToArray();
-        new Span<Vector2>(waypoints).Reverse();
-
-        return SimplifyPath(waypoints);
+        path.Reverse();
+        return SimplifyPath(path);
     }
 
-    static Vector2[] SimplifyPath(Vector2[] path)
+    private static Vector2[] SimplifyPath(List<Node> path)
     {
         List<Vector2> waypoints = new();
         Vector2 directionOld = Vector2.zero;
-        for (int i = 1; i < path.Length; i++)
+        for (int i = 0; i < path.Count - 1; i++)
         {
-            Vector2 directionNew = new Vector2(path[i - 1].x - path[i].x, path[i - 1].y - path[i].y);
-            if (directionNew != directionOld)
+            Vector2 directionNew = new(path[i].WorldPosition.x - path[i + 1].WorldPosition.x, path[i].WorldPosition.y - path[i + 1].WorldPosition.y);
+            if (directionNew != directionOld || path[i].transportSelfId != 0 || path[i + 1].transportSelfId != 0)
             {
-                waypoints.Add(path[i]);
+                waypoints.Add(path[i].WorldPosition);
             }
 
             directionOld = directionNew;
         }
 
-        // add last waypoint, if it exists
-        if (path.Length > 0)
-        {
-            waypoints.Add(path[^1]);
-        }
+        // add last waypoint
+        waypoints.Add(path[^1].WorldPosition);
 
         return waypoints.ToArray();
     }
 
     private static int GetDistanceCost(Node a, Node b)
     {
-        int dstX = Math.Abs(a.gridX - b.gridX);
-        int dstY = Math.Abs(a.gridY - b.gridY);
+        int dstX = Math.Abs(a.GridPosition.x - b.GridPosition.x);
+        int dstY = Math.Abs(a.GridPosition.y - b.GridPosition.y);
 
         return 14 * Math.Min(dstX, dstY) + 10 * Math.Abs(dstX - dstY);
     }
 
-    private static void CreateNodeVisualPoint(Vector2 position) => CreateVisualPoint(position, Color.red, 0.1f);
+    [Conditional("FULL")]
+    private void CreateNodeVisualPoint(Node node) => CreateVisualPoint(node.WorldPosition, node.color, 0.1f);
 
-    private static void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
+    private void CreateVisualPoint(Vector2 position, Color color, float widthMultiplier)
     {
+        if (!_visualPointParent) return;
+
         Vector3 calculatedPosition = new(position.x, position.y, position.y / 1000f + 0.0005f);
 
         GameObject nodeVisualPoint = new("Gizmo (Visual Point)")
         {
             transform =
             {
-                position = calculatedPosition
+                position = calculatedPosition,
+                parent = _visualPointParent
             }
         };
 

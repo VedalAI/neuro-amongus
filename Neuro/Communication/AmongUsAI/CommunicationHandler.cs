@@ -16,14 +16,16 @@ public sealed class CommunicationHandler : MonoBehaviour
 {
     public static CommunicationHandler Instance { get; private set; }
 
-    public CommunicationHandler(IntPtr ptr) : base(ptr) { }
+    public CommunicationHandler(IntPtr ptr) : base(ptr)
+    {
+    }
 
     private readonly byte[] _buffer = new byte[1024];
     private WebSocketThread _thread;
     private volatile bool _shouldSendHeader = true;
     private bool _shouldSend = true;
 
-    public bool IsConnected => _thread.Socket.Connected;
+    public bool IsConnected => _thread.Socket?.Connected ?? false;
 
     private void Awake()
     {
@@ -35,12 +37,13 @@ public sealed class CommunicationHandler : MonoBehaviour
         }
 
         Instance = this;
+
+        _thread = new WebSocketThread();
+        _thread.OnConnect += () => _shouldSendHeader = true;
     }
 
     private void Start()
     {
-        _thread = new WebSocketThread();
-        _thread.OnConnect += () => _shouldSendHeader = true;
         _thread.Start();
     }
 

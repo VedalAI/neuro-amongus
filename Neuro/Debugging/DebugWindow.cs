@@ -11,8 +11,9 @@ public sealed class DebugWindow : MonoBehaviour
 {
     private DebugTab _selectedTab;
     private bool _enabled = true;
+
     private readonly DragWindow _window;
-    private Vector2 positionOnScrollbar = Vector2.zero;
+    // private Vector2 positionOnScrollbar = Vector2.zero;
 
     private int _frameCount;
     private float _fpsUpdateTime;
@@ -67,45 +68,43 @@ public sealed class DebugWindow : MonoBehaviour
     {
         try
         {
-            GUILayout.BeginVertical();
-
-            GUILayout.Label($"FPS: {_fps:F2}", GUILayout.Width(75));
-
-            GUILayout.BeginHorizontal();
-
-            foreach (DebugTab tab in DebugTabAttribute.Tabs)
+            using (new VerticalScope())
             {
-                bool tabHidden = !tab.IsEnabled;
-                if (tabHidden)
+                GUILayout.Label($"FPS: {_fps:F2}", GUILayout.Width(75));
+
+                using (new HorizontalScope())
                 {
-                    GUI.enabled = false;
-                    if (_selectedTab == tab) _selectedTab = null;
+                    foreach (DebugTab tab in DebugTabAttribute.Tabs)
+                    {
+                        bool tabHidden = !tab.IsEnabled;
+                        if (tabHidden)
+                        {
+                            GUI.enabled = false;
+                            if (_selectedTab == tab) _selectedTab = null;
+                        }
+
+                        bool isSelected = _selectedTab == tab;
+                        if (isSelected != GUILayout.Toggle(isSelected, tab.Name, GUI.skin.button))
+                        {
+                            _selectedTab = !isSelected ? tab : null;
+                            //New tab selected, reset the scrollbar position.
+                            // positionOnScrollbar = Vector2.zero;
+                        }
+
+                        if (tabHidden) GUI.enabled = true;
+                    }
                 }
 
-                bool isSelected = _selectedTab == tab;
-                if (isSelected != GUILayout.Toggle(isSelected, tab.Name, GUI.skin.button))
+                if (_selectedTab is {IsEnabled: true})
                 {
-                    _selectedTab = !isSelected ? tab : null;
-                    //New tab selected, reset the scrollbar position.
-                    positionOnScrollbar = Vector2.zero;
+                    NeuroUtilities.GUILayoutDivider();
+
+                    //Create a scrollbarview for all tabs that suddenly become bigger than what fits.
+                    // positionOnScrollbar = GUILayout.BeginScrollView(positionOnScrollbar, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Height(Screen.height/2));
+                    _selectedTab?.BuildUI(); //Build UI.
+                    // GUILayout.EndScrollView();
                 }
-
-                if (tabHidden) GUI.enabled = true;
             }
-
-            GUILayout.EndHorizontal();
-
-            if (_selectedTab is { IsEnabled: true })
-            {
-                //Create header for our tab
-                NeuroUtilities.GUILayoutDivider();
-                //Create a scrollbarview for all tabs that suddenly become bigger than what fits.
-                positionOnScrollbar = GUILayout.BeginScrollView(positionOnScrollbar, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Height(Screen.height/2));
-                  _selectedTab?.BuildUI();  //Build UI.
-                GUILayout.EndScrollView();
-            }
-
-            GUILayout.EndVertical();
         }
         catch (Exception e)
         {
