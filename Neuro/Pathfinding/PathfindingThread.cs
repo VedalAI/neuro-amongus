@@ -111,11 +111,9 @@ public sealed class PathfindingThread : NeuroThread
             }
         }
 
-        if(NeuroPlugin.Debug) {
-            foreach (Node node in closedSet.ToList())
-            {
-                CreateNodeVisualPoint(node);
-            }
+        foreach (Node node in closedSet.ToList())
+        {
+            CreateNodeVisualPoint(node);
         }
 
         // Set all nodes not in closed set to inaccessible

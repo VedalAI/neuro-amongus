@@ -32,7 +32,7 @@ public sealed class InteractionsHandler : MonoBehaviour
     [Conditional("FULL")]
     public void UseTarget(IUsable usable)
     {
-        if (!NeuroPlugin.Neuro || MeetingHud.Instance || Minigame.Instance || usable == null) return;
+        if (MeetingHud.Instance || Minigame.Instance || usable == null) return;
 
         // TODO: Allow neural network to specifiy intention of interacting with usables
         switch (usable.Il2CppCastToTopLevel())

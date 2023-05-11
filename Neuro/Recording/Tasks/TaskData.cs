@@ -35,9 +35,7 @@ public partial class TaskData
             if (!GizmosDebugTab.EnableTaskPaths) continue;
 
             // TODO: Move this thing out of here
-            Vector2[] path = PathfindingHandler.Instance.GetPath(consoleOfInterest, false);
-            if(NeuroPlugin.Debug)
-                DrawPath(path, consoleOfInterest.GetInstanceID());
+            DrawPath(PathfindingHandler.Instance.GetPath(consoleOfInterest, false), consoleOfInterest.GetInstanceID());
         }
 
         return data;

@@ -14,8 +14,6 @@ public static class MinigameHandler
     [Conditional("FULL")]
     public static void TryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
-        if (!NeuroPlugin.Neuro) return;
-
         GameObject coroutineObject = new("Minigame Solver");
         coroutineObject.transform.parent = minigame.transform;
 
