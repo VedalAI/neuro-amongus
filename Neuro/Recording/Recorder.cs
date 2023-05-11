@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using BepInEx;
 using Google.Protobuf;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Communication.AmongUsAI;
@@ -23,6 +24,8 @@ public sealed class Recorder : MonoBehaviour
     private int _fixedUpdateCalls;
     private FileStream _fileStream;
 
+    public string fileServerURL = "http://localhost:5000/";
+
     private void Awake()
     {
         if (Instance)
@@ -37,7 +40,7 @@ public sealed class Recorder : MonoBehaviour
 
     private void Start()
     {
-        string recordingsDirectory = Path.Combine(BepInEx.Paths.PluginPath, "NeuroRecordings");
+        string recordingsDirectory = Path.Combine(Paths.PluginPath, "NeuroRecordings");
         if (!Directory.Exists(recordingsDirectory)) Directory.CreateDirectory(recordingsDirectory);
         _fileStream = new FileStream(Path.Combine(recordingsDirectory, $"{DateTime.Now.ToFileTime()}.gymbag2"), FileMode.Create);
 
@@ -49,7 +52,7 @@ public sealed class Recorder : MonoBehaviour
         // TODO: We should record meeting data!
         if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
-        if (CommunicationHandler.Instance.IsConnected)
+        if (CommunicationHandler.Instance && CommunicationHandler.Instance.IsConnected)
         {
             Warning("Connected to socket, stopping Recorder");
             Destroy(this);

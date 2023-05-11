@@ -60,7 +60,7 @@ public sealed class DebugWindow : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!_enabled) return;
+        if (!_enabled || !NeuroPlugin.Debug) return;
         _window.OnGUI();
     }
 

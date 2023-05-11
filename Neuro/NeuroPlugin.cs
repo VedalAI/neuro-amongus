@@ -17,6 +17,12 @@ namespace Neuro;
 [BepInDependency(ReactorPlugin.Id)]
 public partial class NeuroPlugin : BasePlugin
 {
+    // If this is false, we just do the recording and no AI
+    public static bool Neuro = false;
+
+    // Used for drawing some debug information
+    public static bool Debug = false;
+
     static NeuroPlugin()
     {
         DependencyResolver.InjectResources();
