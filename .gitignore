@@ -295,4 +295,4 @@ dmypy.json
 cython_debug/
 
 AI/recordings
-.vscode
+.vscode/settings.json

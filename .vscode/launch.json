@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Mod (Full)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "preLaunchTask": "build_full",
+            "program": "${env:AmongUs}\\Among Us.exe",
+            "args": [],
+            "cwd": "${env:AmongUs}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Run Mod (Data Collection)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "preLaunchTask": "build_datacollection",
+            "program": "${env:AmongUs}\\Among Us.exe",
+            "args": [],
+            "cwd": "${env:AmongUs}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ]
+}

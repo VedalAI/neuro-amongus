@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using BepInEx.Unity.IL2CPP.Utils;
+using Il2CppInterop.Runtime.Attributes;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -35,11 +36,13 @@ public sealed class Uploader : MonoBehaviour
         Instance = this;
     }
 
+    [HideFromIl2Cpp]
     public void SendFileToServer(string fileName, byte[] fileBytes)
     {
         this.StartCoroutine(CoSendFileToServer(fileName, fileBytes));
     }
 
+    [HideFromIl2Cpp]
     private IEnumerator CoSendFileToServer(string fileName, byte[] fileBytes)
     {
         HttpClient client = new();
