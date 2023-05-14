@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Neuro.Events;
 using Neuro.Minigames;
+using Neuro.Minigames.Solvers;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -49,6 +50,10 @@ public sealed class InteractionsHandler : MonoBehaviour
                 door.Use();
                 break;
 
+            case SystemConsole system:
+                UseSystemConsole(system);
+                break;
+
             // case Ladder ladder:
             //     break;
 
@@ -59,9 +64,6 @@ public sealed class InteractionsHandler : MonoBehaviour
             //     break;
 
             // case PlatformConsole platform:
-            //     break;
-
-            // case SystemConsole system:
             //     break;
 
             // case Vent vent:
@@ -87,6 +89,27 @@ public sealed class InteractionsHandler : MonoBehaviour
         else
         {
             Warning($"Shouldn't open console id {console.ConsoleId} for minigame {task.GetMinigamePrefab().GetIl2CppType().Name}");
+        }
+    }
+
+    public void UseSystemConsole(SystemConsole console)
+    {
+        if (console.MinigamePrefab.TryCast<EmergencyMinigame>())
+        {
+            if (EmergencySolver.ShouldOpenEmergency())
+            {
+                console.Use();
+            }
+            else
+            {
+                Warning("Shouldn't open emergency button");
+            }
+        }
+        else
+        {
+            // as stated in EmergencySolver, we currently have no plans to open SystemConsoles besides the emergency button
+            // so ignore everything else
+            Warning($"Ignoring non-emergency button console");
         }
     }
 }

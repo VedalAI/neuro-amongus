@@ -15,7 +15,7 @@ public sealed class InsertKeysSolver : GeneralMinigameSolver<KeyMinigame>
         InGameCursor.Instance.StopHoldingLMB();
         yield return new WaitForSeconds(0.1f);
 
-        yield return InGameCursor.Instance.CoMoveToCircleStart(minigame.key, 0.5f, 90, 0.5f);
+        yield return InGameCursor.Instance.CoMoveToPositionOnCircle(minigame.key, 0.5f, 90, 0.5f);
         InGameCursor.Instance.StartHoldingLMB(minigame);
         yield return InGameCursor.Instance.CoMoveCircle(minigame.key, 0.5f, 90, 0, 0.2f);
         InGameCursor.Instance.StopHoldingLMB();

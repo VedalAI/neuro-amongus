@@ -8,6 +8,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(ElecLeverGame))]
 public sealed class ResetBreakersSolver : IMinigameSolver<ElecLeverGame, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
 {
+    // TODO: If we know 6 consoles, then the 7th is implied
     public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
         // We use bytes 7-13 of task.Data to implement memory about which consoles have been seen
