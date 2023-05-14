@@ -9,19 +9,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Release|Full = Release|Full
-		Release|DataCollection = Release|DataCollection
-		Debug|Full = Debug|Full
-		Debug|DataCollection = Debug|DataCollection
+		ReleaseFull|AnyCPU = ReleaseFull|AnyCPU
+		ReleaseDataCollection|AnyCPU = ReleaseDataCollection|AnyCPU
+		DebugFull|AnyCPU = DebugFull|AnyCPU
+		DebugDataCollection|AnyCPU = DebugDataCollection|AnyCPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|Full.ActiveCfg = Debug|DataCollection
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|Full.Build.0 = Debug|DataCollection
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Debug|Full.ActiveCfg = Debug|Full
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Debug|Full.Build.0 = Debug|Full
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|DataCollection.ActiveCfg = Release|DataCollection
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Release|DataCollection.Build.0 = Release|DataCollection
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Debug|DataCollection.ActiveCfg = Debug|DataCollection
-		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.Debug|DataCollection.Build.0 = Debug|DataCollection
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.ReleaseFull|AnyCPU.ActiveCfg = ReleaseFull|AnyCPU
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.ReleaseFull|AnyCPU.Build.0 = ReleaseFull|AnyCPU
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.DebugFull|AnyCPU.ActiveCfg = DebugFull|AnyCPU
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.DebugFull|AnyCPU.Build.0 = DebugFull|AnyCPU
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.ReleaseDataCollection|AnyCPU.ActiveCfg = ReleaseDataCollection|AnyCPU
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.ReleaseDataCollection|AnyCPU.Build.0 = ReleaseDataCollection|AnyCPU
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.DebugDataCollection|AnyCPU.ActiveCfg = DebugDataCollection|AnyCPU
+		{11FBC798-BAF5-4EE5-9511-BE6DB0592F99}.DebugDataCollection|AnyCPU.Build.0 = DebugDataCollection|AnyCPU
 	EndGlobalSection
 EndGlobal

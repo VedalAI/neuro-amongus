@@ -23,5 +23,10 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: Neuro.dll
-          path: Neuro/bin/Release/Neuro.dll
+          name: Neuro-Full.dll
+          path: Neuro/bin/ReleaseFull/Neuro.dll
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Neuro-DataCollection.dll
+          path: Neuro/bin/ReleaseDataCollection/Neuro.dll
