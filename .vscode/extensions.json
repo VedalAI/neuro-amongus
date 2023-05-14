@@ -2,6 +2,7 @@
     "recommendations": [
         "ms-vscode.cpptools",
         "ms-dotnettools.csharp",
-        "ms-python.python"
+        "ms-python.python",
+        "zxh404.vscode-proto3"
     ]
 }
