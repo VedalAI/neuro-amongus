@@ -1,0 +1,8 @@
+InstallerExtensions.dll comes from here: https://github.com/SubnauticaModding/QModManager/blob/2593fda9eba8afc34288573862d6e1bae419ef69/Build/InstallerExtensions.dll
+
+Too lazy to actually get the source code, make a project, and do it properly, so all you get is a random DLL in the repo
+
+Although the entire dll is literally just this: https://github.com/SubnauticaModding/QModManager/blob/2593fda9eba8afc34288573862d6e1bae419ef69/Installer/Extensions.cs
+
+I needed C# path comparison cuz ISS one is dumb
+

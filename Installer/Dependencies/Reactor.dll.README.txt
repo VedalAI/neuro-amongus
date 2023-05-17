@@ -1,0 +1,1 @@
+Reactor.dll is version 2.1.0 and was downloaded from https://github.com/NuclearPowered/Reactor/releases/tag/2.1.0
