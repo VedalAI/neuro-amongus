@@ -302,7 +302,7 @@ begin
           ComponentFiles[0] := ExpandConstant('{app}\.doorstop_version');
           ComponentFiles[1] := ExpandConstant('{app}\doorstop_config.ini');
           ComponentFiles[2] := ExpandConstant('{app}\winhttp.dll');
-        end
+        end;
         
         if CheckListBox.Checked[2] then
         begin
