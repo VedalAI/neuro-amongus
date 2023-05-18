@@ -3,6 +3,7 @@ option csharp_namespace = "Neuro.Recording.LocalPlayer";
 
 import "Recording/Common/SystemType.proto";
 import "Recording/Common/Vector2.proto";
+import "Recording/LocalPlayer/UsableData.proto";
 
 message LocalPlayerFrame {
     bool DidReport = 1;
@@ -13,4 +14,8 @@ message LocalPlayerFrame {
     repeated float RaycastObstacleDistances = 6;
     Vector2 Position = 7;
     Vector2 Velocity = 8;
+    float KillCooldown = 9;
+    bool DidInteract = 10;
+    bool InVent = 11;
+    optional UsableData UsableTarget = 12;
 }

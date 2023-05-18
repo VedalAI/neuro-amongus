@@ -21,3 +21,18 @@ public static class PlayerControl_CmdCheckMurder
         LocalPlayerRecorder.Instance.RecordKill();
     }
 }
+
+// check other players recorder
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.UseClosest))]
+public static class PlayerControl_UseClosest
+{
+    [HarmonyPrefix]
+    public static void Prefix(PlayerControl __instance) // only invoked for local player
+    {
+        if (__instance.closest != null)
+        {
+            LocalPlayerRecorder.Instance.RecordInteract();
+        }
+    }
+}

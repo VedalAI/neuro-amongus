@@ -16,6 +16,7 @@ public sealed class EmergencySolver : IMinigameSolver<EmergencyMinigame>
         return (!PlayerControl.LocalPlayer.myTasks._items.Any(PlayerTask.TaskIsEmergency)) &&
                 PlayerControl.LocalPlayer.RemainingEmergencies > 0 &&
                 // TODO: let AI govern when we want to call meeting so we dont just call a meeting every time we walk past
+                // Random.RandomRange(0f, 1f) < 0.1f &&
                 ShipStatus.Instance.Timer >= 30f &&
                 ShipStatus.Instance.EmergencyCooldown <= 0f;
     }

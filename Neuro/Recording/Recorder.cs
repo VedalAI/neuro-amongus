@@ -47,7 +47,6 @@ public sealed class Recorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // TODO: We should record meeting data!
         if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
         if (CommunicationHandler.IsPresentAndConnected)
@@ -56,9 +55,6 @@ public sealed class Recorder : MonoBehaviour
             Destroy(this);
             return;
         }
-
-        // TODO: Record local impostor data: kill cooldown, venting stuff, etc
-        // TODO: Record local player interactions data: opened task, opened door
 
         _fixedUpdateCalls++;
         if (_fixedUpdateCalls < 5) return;
@@ -69,14 +65,16 @@ public sealed class Recorder : MonoBehaviour
 
     private void OnDestroy()
     {
-        _fileStream.Dispose();
-
         // Ignore small files
-        if (_fileStream.Length < 16384)
+        if (_fileStream.Length < 100000) // ~100KB
         {
+            Warning("Recording is too small, deleting.");
             File.Delete(_fileStream.Name);
+            _fileStream.Dispose();
             return;
         }
+        
+        _fileStream.Dispose();
 
         Uploader.Instance.SendFileToServer(Path.GetFileName(_fileStream.Name), File.ReadAllBytes(_fileStream.Name));
     }

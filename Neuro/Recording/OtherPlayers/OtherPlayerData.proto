@@ -10,4 +10,5 @@ message OtherPlayerData {
     uint32 TimesSawVent = 4;
     float RoundTimeVisible = 5;
     float GameTimeVisible = 6;
+    bool IsVisible = 7;
 }

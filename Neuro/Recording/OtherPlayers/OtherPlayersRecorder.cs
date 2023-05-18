@@ -38,16 +38,20 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
         foreach (PlayerControl playerControl in PlayerControl.AllPlayerControls)
         {
             if (playerControl.AmOwner || playerControl.Data.IsDead) continue;
-            if (!Visibility.IsVisible(playerControl.GetTruePosition())) continue;
 
             if (Frame.LastSeenPlayers.FirstOrDefault(p => p.Id == playerControl.PlayerId) is not { } player)
             {
-                OtherPlayerData newData = OtherPlayerData.Create(playerControl);
-                Frame.LastSeenPlayers.Add(newData);
+                player = OtherPlayerData.Create(playerControl);
+                Frame.LastSeenPlayers.Add(player);
             }
-            else
+
+            if (Visibility.IsVisible(playerControl.GetTruePosition()))
             {
                 player.UpdateVisible(playerControl);
+            } 
+            else
+            {
+                player.IsVisible = false;
             }
         }
     }

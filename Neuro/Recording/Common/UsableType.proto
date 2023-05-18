@@ -1,0 +1,14 @@
+syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.Common";
+
+enum UsableType {
+    None_UsableType = 0;
+    Console = 1;
+    DecontaminationDoor = 2;
+    SabotageDoor = 3;
+    Ladder = 4;
+    InsignificantDoor = 5; // stuff like the bathroom stall doors on airship
+    FlyingPlatform = 6;
+    SystemConsole = 7;
+    Vent = 8;
+}

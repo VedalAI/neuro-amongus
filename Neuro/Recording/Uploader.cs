@@ -49,31 +49,6 @@ public sealed class Uploader : MonoBehaviour
 
         client.DefaultRequestHeaders.Add("User-Agent", "Neuro/1.0");
 
-        // Get request
-        Task<HttpResponseMessage> getTask = client.GetAsync(FILE_SERVER_URL);
-        yield return new WaitForTask(getTask);
-
-        if (!getTask.IsCompletedSuccessfully)
-        {
-            Warning("Could not fetch token.");
-            yield break;
-        }
-
-        // Get token
-        Task<string> result = getTask.Result.Content.ReadAsStringAsync();
-        yield return new WaitForTask(result);
-
-        string token = result.Result;
-        Info($"Received token: {token}");
-
-        // SHA256 hash of token
-        SHA256 sha256 = SHA256.Create();
-        byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(token));
-        string hashString = BitConverter.ToString(hash).Replace("-", "").ToLower();
-
-        // add hash to header
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", hashString);
-
         // send file as multipart form data
         MultipartFormDataContent form = new();
         form.Add(new ByteArrayContent(fileBytes), "file", fileName);
@@ -84,6 +59,7 @@ public sealed class Uploader : MonoBehaviour
         if (task.IsCompletedSuccessfully)
         {
             Info("Data file sent to the server.");
+            Info("Server returned status code: " + task.Result.StatusCode);
         }
         else
         {

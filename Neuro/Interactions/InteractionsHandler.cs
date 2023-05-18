@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Neuro.Events;
 using Neuro.Minigames;
 using Neuro.Minigames.Solvers;
+using Neuro.Recording.LocalPlayer;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -43,10 +44,12 @@ public sealed class InteractionsHandler : MonoBehaviour
                 break;
 
             case DeconControl decon:
+                LocalPlayerRecorder.Instance.RecordInteract();
                 decon.Use();
                 break;
 
             case DoorConsole door:
+                LocalPlayerRecorder.Instance.RecordInteract();
                 door.Use();
                 break;
 
@@ -84,6 +87,7 @@ public sealed class InteractionsHandler : MonoBehaviour
 
         if (MinigameHandler.ShouldOpenConsole(console, minigame, task))
         {
+            LocalPlayerRecorder.Instance.RecordInteract();
             console.Use();
         }
         else
@@ -98,6 +102,7 @@ public sealed class InteractionsHandler : MonoBehaviour
         {
             if (EmergencySolver.ShouldOpenEmergency())
             {
+                LocalPlayerRecorder.Instance.RecordInteract();
                 console.Use();
             }
             else
