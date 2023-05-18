@@ -71,6 +71,13 @@ public sealed class Recorder : MonoBehaviour
     {
         _fileStream.Dispose();
 
+        // Ignore small files
+        if (_fileStream.Length < 16384)
+        {
+            File.Delete(_fileStream.Name);
+            return;
+        }
+
         Uploader.Instance.SendFileToServer(Path.GetFileName(_fileStream.Name), File.ReadAllBytes(_fileStream.Name));
     }
 
