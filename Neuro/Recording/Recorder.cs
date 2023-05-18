@@ -22,6 +22,7 @@ public sealed class Recorder : MonoBehaviour
     }
 
     private int _fixedUpdateCalls;
+    private string _filePath;
     private FileStream _fileStream;
 
     private void Awake()
@@ -40,7 +41,8 @@ public sealed class Recorder : MonoBehaviour
     {
         string recordingsDirectory = Path.Combine(Paths.PluginPath, "NeuroRecordings");
         if (!Directory.Exists(recordingsDirectory)) Directory.CreateDirectory(recordingsDirectory);
-        _fileStream = new FileStream(Path.Combine(recordingsDirectory, $"{DateTime.Now.ToFileTime()}.gymbag2"), FileMode.Create);
+        _filePath = Path.Combine(recordingsDirectory, $"{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}.gymbag2");
+        _fileStream = new FileStream(_filePath, FileMode.Create);
 
         WriteAndFlush(Frame.Now(true));
     }
@@ -69,14 +71,14 @@ public sealed class Recorder : MonoBehaviour
         if (_fileStream.Length < 100000) // ~100KB
         {
             Warning("Recording is too small, deleting.");
-            File.Delete(_fileStream.Name);
             _fileStream.Dispose();
+            File.Delete(_filePath);
             return;
         }
-        
+
         _fileStream.Dispose();
 
-        Uploader.Instance.SendFileToServer(Path.GetFileName(_fileStream.Name), File.ReadAllBytes(_fileStream.Name));
+        Uploader.Instance.SendFileToServer(Path.GetFileName(_filePath), File.ReadAllBytes(_filePath!));
     }
 
     [HideFromIl2Cpp]
