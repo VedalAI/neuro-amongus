@@ -16,7 +16,7 @@ namespace Neuro.Recording;
 [RegisterInIl2Cpp]
 public sealed class Uploader : MonoBehaviour
 {
-    public const string FILE_SERVER_URL = "http://localhost:5000/";
+    public const string FILE_SERVER_URL = "http://amongus.neurosama.com";
 
     public static Uploader Instance { get; private set; }
 
