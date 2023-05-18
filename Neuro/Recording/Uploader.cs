@@ -47,6 +47,8 @@ public sealed class Uploader : MonoBehaviour
     {
         HttpClient client = new();
 
+        client.DefaultRequestHeaders.Add("User-Agent", "Neuro/1.0");
+
         // Get request
         Task<HttpResponseMessage> getTask = client.GetAsync(FILE_SERVER_URL);
         yield return new WaitForTask(getTask);
