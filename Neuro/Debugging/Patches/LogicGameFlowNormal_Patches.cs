@@ -2,6 +2,7 @@
 
 namespace Neuro.Debugging.Patches;
 
+#if FULL
 [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
 public static class LogicGameFlowNormal_CheckEndCriteria
 {
@@ -11,3 +12,4 @@ public static class LogicGameFlowNormal_CheckEndCriteria
         return false;
     }
 }
+#endif

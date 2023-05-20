@@ -30,7 +30,7 @@ public static class PlayerControl_UseClosest
     [HarmonyPrefix]
     public static void Prefix(PlayerControl __instance) // only invoked for local player
     {
-        if (__instance.closest != null)
+        if (__instance.closest != null && LocalPlayerRecorder.Instance)
         {
             LocalPlayerRecorder.Instance.RecordInteract();
         }
