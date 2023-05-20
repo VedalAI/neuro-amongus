@@ -45,11 +45,13 @@ public sealed class RecordingDebugTab : DebugTab
         Label(1, $"{nameof(LocalPlayerFrame.SabotageUsed)}: {LocalPlayerRecorder.Instance.Frame.SabotageUsed}");
         Label(1, $"{nameof(LocalPlayerFrame.DoorsUsed)}: {LocalPlayerRecorder.Instance.Frame.DoorsUsed}");
         Label(1, $"{nameof(LocalPlayerFrame.KillCooldown)}: {LocalPlayerRecorder.Instance.Frame.KillCooldown}");
+        Label(1, $"{nameof(LocalPlayerFrame.UsableTarget)}: T({LocalPlayerRecorder.Instance.Frame.UsableTarget.Type}), D{LocalPlayerRecorder.Instance.Frame.UsableTarget.Direction}");
     }
 
     private void BuildMapRecorderUI()
     {
         GUILayout.Label(nameof(MapFrame));
+
         Label(1, $"{nameof(MapFrame.NearbyDoors)} ({MapRecorder.Instance.Frame.NearbyDoors.Count})");
         foreach (DoorData door in MapRecorder.Instance.Frame.NearbyDoors)
         {
@@ -61,6 +63,7 @@ public sealed class RecordingDebugTab : DebugTab
         {
             Label(2, $"- D({vent.Position.TotalDistance:F2})");
         }
+
         Label(1, $"{nameof(MapFrame.MeetingButton)} - D({MapRecorder.Instance.Frame.MeetingButton.TotalDistance:F2})");
     }
 
