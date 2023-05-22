@@ -9,7 +9,7 @@ The plan is to first allow this plugin to record data from the game, which will 
 ## How to run
 
 - Install BepInEx [https://docs.reactor.gg/quick_start/install_bepinex](https://docs.reactor.gg/quick_start/install_bepinex)
-- - The current release is using [BepInEx-Unity.IL2CPP-win-x86-6.0.0-be.668](https://builds.bepinex.dev/projects/bepinex_be)
+  - The current release is using [BepInEx-Unity.IL2CPP-win-x86-6.0.0-be.668](https://builds.bepinex.dev/projects/bepinex_be)
 - Install Reactor [https://docs.reactor.gg/quick_start/install_reactor](https://docs.reactor.gg/quick_start/install_reactor)
 - Ensure you have the .NET 6.0 SDK [https://dotnet.microsoft.com/download/dotnet/6.0](https://dotnet.microsoft.com/download/dotnet/6.0)
 - Build the plugin using an IDE of your choice, I'm using Visual Studio but JetBrains Rider is a better alternative
