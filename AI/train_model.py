@@ -23,8 +23,8 @@ def main():
     train_dataset = AmongUsDataset(train_data, device)
     val_dataset = AmongUsDataset(val_data, device)
 
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=32, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=4, pin_memory=True, persistent_workers=True)
+    val_loader = DataLoader(val_dataset, batch_size=32, shuffle=True, num_workers=4, pin_memory=True, persistent_workers=True)
 
     for epoch in range(100):
         # train
