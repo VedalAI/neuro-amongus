@@ -7,7 +7,6 @@ from nn.dataset import AmongUsDataset
 from nn.model import LSTMModel
 from util.loader import read_all_recordings
 
-
 def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = LSTMModel().to(device)
@@ -16,9 +15,9 @@ def main():
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-    game_data = read_all_recordings()
-    # game_data.shuffle()
-    train_data, val_data = game_data.split(0.8)
+    games = read_all_recordings()
+    # split into train and val
+    train_data, val_data = games[:int(len(games) * 0.8)], games[int(len(games) * 0.8):]
 
     train_dataset = AmongUsDataset(train_data, device)
     val_dataset = AmongUsDataset(val_data, device)
@@ -44,7 +43,6 @@ def main():
             print(loss)
 
     torch.save(model.state_dict(), os.path.dirname(__file__) + "/model.pt")
-
 
 if __name__ == "__main__":
     main()

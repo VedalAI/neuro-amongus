@@ -4,7 +4,7 @@ import os
 import torch
 import numpy as np
 
-from data.game_data import GameData
+from data.game_state import GameState
 from data.proto import Frame, NnOutput, Vector2
 from nn.model import LSTMModel, Model
 
@@ -26,7 +26,7 @@ def main():
         with conn:
             print("Connected by", addr)
 
-            game_data = GameData()
+            game_state = GameState()
             x_history = []
             while True:
                 data = conn.recv(1024)
@@ -35,9 +35,9 @@ def main():
                     break
 
                 frame = Frame().parse(data)
-                game_data.update_frame(frame)
+                game_state.update_frame(frame)
 
-                x = game_data.get_x()
+                x = game_state.get_x()
 
                 # print(x)
 

@@ -6,7 +6,7 @@ from data.proto import Frame
 from data.proto_defaults import def_taskdata, def_vector2, def_positiondata, pad_list
 
 
-class GameData:
+class GameState:
     def __init__(self):
         self.velocity = def_vector2()
         self.tasks = [def_taskdata() for _ in range(10)]
