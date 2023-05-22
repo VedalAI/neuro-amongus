@@ -46,10 +46,7 @@ def save_processed_game(file_path: str, game: Game):
 
 
 def load_processed_game(file_path: str) -> Game:
-    with open(file_path, "r") as file:
-        # we don't convert the loaded dictionaries to actual Frame objects to improve load time
-        # instead we wrap it in an AttrDict which allows dict.attribute access by forwarding it to dict["attribute"]
-        #return [AttrDict(f) for f in json.load(file)]  # type: ignore
+    with open(file_path, "rb") as file:
         return pickle.load(file)
     
 def load_game(file) -> Game:
@@ -79,7 +76,8 @@ def read_all_recordings() -> List[Game]:
     print("Loading recordings from disk... (this may take a bit)")
 
     result = listdir(RECORDINGS_PATH)
-    with Pool(20) as p:
+    #result = list(map(load_game, result))
+    with Pool(10) as p:
         result = p.map(load_game, result)
 
     print("Done loading recordings")

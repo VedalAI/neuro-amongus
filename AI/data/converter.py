@@ -2,7 +2,6 @@ import numpy as np
 
 from data.proto import TaskData, PositionData, Vector2, MapType, RoleType, SystemType, TaskType
 
-
 def convert_bool(data):
     return [1.0 if data else 0.0]
 
@@ -44,7 +43,7 @@ def convert_type(data):
         str: convert_str,
         PositionData: convert_positiondata,
         TaskData: convert_taskdata,
-        Vector2: convert_vector2,
+        Vector2: convert_vector2
     }
 
     for cls, func in type_mapping.items():
