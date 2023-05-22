@@ -9,4 +9,6 @@ message HeaderFrame {
     bool IsImpostor = 2;
     RoleType Role = 3;
     repeated uint32 OtherImpostors = 4;
+    uint32 Version = 5;
+    bool IsFreeplay = 6;
 }
