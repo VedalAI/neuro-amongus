@@ -2,6 +2,10 @@ from typing import Callable, List, TypeVar
 
 from data.proto import DeadBodyData, Vector2, PositionData, TaskData, TaskType, UsableData, DoorData, VentData, VentDataConnectingVentData, OtherPlayerData
 
+from .converter import convert_type
+
+import numpy as np
+
 T = TypeVar("T")
 
 
@@ -43,6 +47,14 @@ def def_otherplayerdata():
 
 def pad_list(lst: List[T], length: int, padding_value: Callable[[], T]):
     try:
-        return lst + [padding_value() if callable(padding_value) else padding_value for _ in range(len(lst), length)]
+        l = np.concatenate((lst, np.array([convert_type(padding_value()) if callable(padding_value) else convert_type(padding_value) for _ in range(len(lst), length)])))
+        #if padding_value == def_taskdata:
+        #    print("padded")
+            #print(l)
+        #if padding_value == def_positiondata:
+        #    print("padded")
+            #print(l)
+        return l
     except:
-        return [padding_value() if callable(padding_value) else padding_value for _ in range(length)]
+        l = np.array([convert_type(padding_value()) if callable(padding_value) else convert_type(padding_value) for _ in range(length)])
+        return l

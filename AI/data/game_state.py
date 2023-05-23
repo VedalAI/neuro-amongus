@@ -10,73 +10,89 @@ class ShittyFrameException(Exception):
 
 
 class GameState():
-    def __init__(self, frame: Frame, last_game_state: "GameState" = None, header: HeaderFrame = None):
-        self.frame = frame
-        self.frame.header = header
-
-        if not self.frame.local_player:
-            raise ShittyFrameException
-
-        if self.frame.local_player.velocity.x == 0 and self.frame.local_player.velocity.y == 0 and not (self.frame.local_player.did_kill or self.frame.local_player.did_report or self.frame.local_player.did_vent): # TODO not killing/sabotaging
-            raise ShittyFrameException
+    def __init__(self, frame: Frame, last_game_state: "GameState" = None, header: HeaderFrame = None, check_frames: bool = True):
+        #self.data = frame
+        #self.data["header = header
         
-        if self.frame.local_player.in_vent:
-            raise ShittyFrameException
+        #print(frame.local_player.did_report)
+        
+        if check_frames:
+            if not frame.local_player:
+                raise ShittyFrameException
 
-        self.last_velocity = last_game_state.frame.local_player.velocity if last_game_state else def_vector2()
-    
-        #self.data = convert_type(self.frame)
-    
-    # def __getstate__(self):
-    #     for frame in self.frame:
-    #         frame.to_dict(c)
-    
+            if frame.local_player.velocity.x == 0 and frame.local_player.velocity.y == 0 and not (frame.local_player.did_kill or frame.local_player.did_report or frame.local_player.did_vent):
+                raise ShittyFrameException
+            
+            if frame.local_player.in_vent:
+                raise ShittyFrameException
+        
+        self.data = convert_type(frame)
+        self.header = convert_type(header)
+        
+        self.last_velocity = last_game_state.data["local_player"]["velocity"] if last_game_state else convert_type(def_vector2())
     
     def get_x(self):
-        self.frame.dead_bodies.dead_bodies = pad_list(self.frame.dead_bodies.dead_bodies, 3, def_deadbodydata)
-        self.frame.header.other_impostors = pad_list(self.frame.header.other_impostors, 2, -1)
-        self.frame.map.nearby_doors = pad_list(self.frame.map.nearby_doors, 3, def_doordata)
-        self.frame.map.nearby_vents = pad_list(self.frame.map.nearby_vents, 3, def_ventdata)
-        self.frame.other_players.last_seen_players = pad_list(self.frame.other_players.last_seen_players, 14, def_otherplayerdata)
-        self.frame.tasks.tasks = pad_list(self.frame.tasks.tasks, 10, def_taskdata)
-
-        for vent in self.frame.map.nearby_vents:
-            vent.connecting_vents = pad_list(vent.connecting_vents, 3, def_connectingventdata)
-
-        for task in self.frame.tasks.tasks:
-            task.consoles_of_interest = pad_list(task.consoles_of_interest, 2, def_positiondata)
+        self.data["dead_bodies"]["dead_bodies"] = pad_list(self.data["dead_bodies"]["dead_bodies"], 3, def_deadbodydata)
+        self.header["other_impostors"] = pad_list(self.header["other_impostors"], 2, -1)
+        self.data["map"]["nearby_doors"] = pad_list(self.data["map"]["nearby_doors"], 3, def_doordata)
+        self.data["map"]["nearby_vents"] = pad_list(self.data["map"]["nearby_vents"], 3, def_ventdata)
+        self.data["other_players"]["last_seen_players"] = pad_list(self.data["other_players"]["last_seen_players"], 14, def_otherplayerdata)
         
-        self.frame.tasks.sabotage = self.frame.tasks.sabotage if self.frame.tasks.sabotage else def_taskdata()
-        self.frame.tasks.sabotage.consoles_of_interest = pad_list(self.frame.tasks.sabotage.consoles_of_interest, 2, def_positiondata)
+        tasks = np.array([pad_list(t, 2, def_positiondata) for t in self.data["tasks"]["tasks"]])
+        self.data["tasks"]["tasks"] = tasks
         
-        tasks_data = [convert_type(task) for task in self.frame.tasks.tasks]
-        # tasks_data_unsorted = tasks_data.copy()
+        self.data["tasks"]["tasks"] = pad_list(self.data["tasks"]["tasks"], 10, def_taskdata)
+
+        for vent in self.data["map"]["nearby_vents"]:
+            vent["connecting_vents"] = pad_list(vent["connecting_vents"], 3, def_connectingventdata)
+
+        self.data["tasks"]["sabotage"] = self.data["tasks"]["sabotage"] if self.data["tasks"]["sabotage"] is not None else convert_type(def_taskdata())
+        #self.data["tasks"]["sabotage"] = pad_list(self.data["tasks"]["sabotage"]["consoles_of_interest"], 2, def_positiondata)
+        
+        self.data["tasks"]["sabotage"] = pad_list(self.data["tasks"]["sabotage"], 2, def_positiondata)
+        
+        # tasks_data = [convert_type(task) for task in self.data["tasks.tasks]
+        tasks_data = self.data["tasks"]["tasks"]
+        # tasks_data_unsorted = tasks_data["copy()
         # sort tasks by distance
+        
+        #if len(tasks_data) != 10:
+        #    print(len(tasks_data))
+        
+        tasks_data = np.vstack(tasks_data)
+        
+        #print(np.array(tasks_data).shape)
+        
+        #for task in tasks_data:
+        #    task = pad_list(task, 1, def_taskdata())
+            
+        if len(tasks_data[0]) != 3:
+            tasks_data = [task[0] for task in tasks_data]
+        
         tasks_data = [[math.inf, task[1], task[2], task[0]] if task[0] == -1 else task for task in tasks_data]
         tasks_data.sort(key=lambda x: x[0])
         tasks_data = [[task[1], task[2]] for task in tasks_data]
-        sabotage_data = convert_type(self.frame.tasks.sabotage)
         
-        velocity_data = convert_type(self.last_velocity)
+        #print(len(tasks_data))
+        #print(len(self.data["tasks"]["sabotage"]))
         
-        raycast_data = convert_type(self.frame.local_player.raycast_obstacle_distances)
-        
-        imposter = convert_type(1 if self.frame.header.role == RoleType.Impostor or self.frame.header.role == RoleType.Shapeshifter else 0)
-        print(self.frame.local_player)
-        
-        kill_cooldown = convert_type(self.frame.local_player.kill_cooldown)
+        if len(self.data["tasks"]["sabotage"]) != 2:
+            print(len(self.data["tasks"]["sabotage"]))
         
         return np.hstack([
-            imposter,
-            kill_cooldown,
-            velocity_data,
+            convert_type(1 if self.header["role"][0] == int(RoleType.Impostor) or self.header["role"][0] == int(RoleType.Shapeshifter) else 0),
+            self.data["local_player"]["kill_cooldown"],
+            *convert_type(self.last_velocity),
             *tasks_data,
-            sabotage_data,
-            *raycast_data
+            *self.data["tasks"]["sabotage"],
+            *self.data["local_player"]["raycast_obstacle_distances"]
         ])
 
     def get_y(self):
-        velocity_data = convert_type(self.frame.local_player.velocity)
+        velocity_data = convert_type(self.data["local_player"]["velocity"])
+        
+        if isinstance(velocity_data[0], list):
+            velocity_data = [velocity_data[0][0], velocity_data[1][0]]
         
         # up, down, left, right
         output = np.array([0, 0, 0, 0])
@@ -90,14 +106,10 @@ class GameState():
             output[2] = 1
         elif velocity_data[1] < -0.5:
             output[3] = 1
-            
-        report = convert_type(self.frame.local_player.did_report)
-        vent = convert_type(self.frame.local_player.did_vent)
-        kill = convert_type(self.frame.local_player.did_kill)
 
         return np.hstack([
             output,
-            report,
-            vent,
-            kill
+            self.data["local_player"]["did_report"],
+            self.data["local_player"]["did_vent"],
+            self.data["local_player"]["did_kill"]
         ])

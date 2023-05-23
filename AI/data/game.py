@@ -18,20 +18,7 @@ class Game:
                 self.states.append(state)
             except ShittyFrameException:
                 # print("Shitty frame, skipping")
-                continue
-            
-    # def __getstate__(self):
-    #     for key, value in self.__dict__.items():
-    #         if key == "states":
-    #             states = []
-    #             for state in value:
-    #                 states.append(state.__getstate__())
-    #             return states
-    #         else:
-    #             return value
-        
-    # def __setstate__(self, state):
-        
+                continue  
 
     def get_x(self, shuffle=False):
         # return np.vstack([state.get_x() for state in self.states])

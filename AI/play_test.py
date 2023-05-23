@@ -26,7 +26,8 @@ def main():
         with conn:
             print("Connected by", addr)
 
-            game_state = GameState()
+            last_game_state = None
+            header = None
             x_history = []
             while True:
                 data = conn.recv(1024)
@@ -35,9 +36,13 @@ def main():
                     break
 
                 frame = Frame().parse(data)
-                game_state.update_frame(frame)
+                if header is None:
+                    header = frame.header
+                    
+                state = GameState(frame, last_game_state, header, check_frames=False)
+                last_game_state = state
 
-                x = game_state.get_x()
+                x = state.get_x()
 
                 # print(x)
 
@@ -56,6 +61,8 @@ def main():
                 x_history_tensor = torch.tensor(np.array([x_history]), dtype=torch.float32, device=device)
                 y = model(x_history_tensor).detach().cpu().numpy()[0]
                 y = [float(o) for o in y]
+                
+                print(y)
 
                 new_y = [0, 0]
                 if y[0] > 0.5:

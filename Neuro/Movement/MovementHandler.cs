@@ -88,12 +88,14 @@ public sealed class MovementHandler : MonoBehaviour
                 }
             }
 
+            Info(closestConsole != null ? $"Closest console: {closestConsole.name} ({closestDistance:F2})" : "No console found");
+
             if (closestConsole != null)
             {
                 Vector2[] path = PathfindingHandler.Instance.GetPath(closestConsole, false);
-                if (path is {Length: > 0})
+                if (path is {Length: > 1})
                 {
-                    direction = (path[0] - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+                    direction = (path[1] - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
                 }
             }
         }

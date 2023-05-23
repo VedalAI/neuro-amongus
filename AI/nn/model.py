@@ -31,8 +31,12 @@ class LSTMModel(torch.nn.Module):
     def __init__(self):
         super(LSTMModel, self).__init__()
         # INPUTS (66)
-        # tasks: 10x 2 positiondatas = 10x 2x 3 floats = 60
+        # imposter 1
+        # kill cooldown 1
+        # velocity 2
+        # tasks: 10x 2x 2 positiondatas = 40
         # sabotage: 2 positiondatas = 1x 2x 3 floats = 6
+        # raycast_obstacle_distances: 8 floats = 8
 
         # OUTPUTS (2)
         # velocity: 2 floats = 2
@@ -40,16 +44,16 @@ class LSTMModel(torch.nn.Module):
         self.hidden_dim = 64
         self.layers = 2
 
-        self.fc1 = torch.nn.Linear(36, self.hidden_dim)
+        self.fc1 = torch.nn.Linear(4, self.hidden_dim)
 
         self.lstm = torch.nn.LSTM(self.hidden_dim, self.hidden_dim, self.layers)
 
-        self.fc2 = torch.nn.Linear(self.hidden_dim, 4)
+        self.fc2 = torch.nn.Linear(self.hidden_dim, 7)
 
     def forward(self, x):
         hidden = self.init_hidden(x.shape[1], x.device)
 
-        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc1(x[:, :, 2:6]))
 
         x, hidden = self.lstm(x, hidden)
 
