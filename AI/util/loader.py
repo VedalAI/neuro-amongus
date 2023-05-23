@@ -90,6 +90,10 @@ def load_game(file) -> Game:
             
             print("Saving neural network format...")
             save_data(data_file_path, data)
+            
+        if len(data[0]) == 0 or len(data[1]) == 0:
+            print("Empty data in file: " + data_file_path)
+            return None
 
         return data
 

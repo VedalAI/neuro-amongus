@@ -6,7 +6,7 @@ The purpose of this plugin is to allow Neuro-sama, the AI VTuber, to play Among 
 
 The plan is to first allow this plugin to record data from the game, which will then be used to train a neural network which Neuro will use.
 
-## How to run
+## How to run the plugin
 
 - Install BepInEx [https://docs.reactor.gg/quick_start/install_bepinex](https://docs.reactor.gg/quick_start/install_bepinex)
   - The current release is using [BepInEx-Unity.IL2CPP-win-x86-6.0.0-be.668](https://builds.bepinex.dev/projects/bepinex_be)
@@ -15,6 +15,10 @@ The plan is to first allow this plugin to record data from the game, which will 
 - Build the plugin using an IDE of your choice, I'm using Visual Studio but JetBrains Rider is a better alternative
 - Add the built Neuro.dll to your plugins folder (I'd recommend adding `<OutputPath>PATH_TO_AMONG_US_FOLDER\Among Us\BepInEx\plugins</OutputPath>` to the PropertyGroup section of the [Neuro.csproj](Neuro/Neuro.csproj) file) 
 - Run Among Us
+
+## How to run the AI
+- Ensure requirements are installed
+- Use this for betterproto `pip install git+https://github.com/thrive-labs/python-betterproto.git@add-pickle-methods`
 
 ## Contributing
 

@@ -30,7 +30,7 @@ def main():
             header = None
             x_history = []
             while True:
-                data = conn.recv(1024)
+                data = conn.recv(2048)
                 if not data:
                     print("no data")
                     break
@@ -63,15 +63,19 @@ def main():
                 y = [float(o) for o in y]
                 
                 print(y)
+                
+                threshold = min(0.5, np.max(y[0:3]) - 0.01)
+                
+                print(threshold)
 
                 new_y = [0, 0]
-                if y[0] > 0.5:
+                if y[0] > threshold:
                     new_y[0] += 1
-                if y[1] > 0.5:
+                if y[1] > threshold:
                     new_y[0] -= 1
-                if y[2] > 0.5:
+                if y[2] > threshold:
                     new_y[1] += 1
-                if y[3] > 0.5:
+                if y[3] > threshold:
                     new_y[1] -= 1
 
                 output = NnOutput()
