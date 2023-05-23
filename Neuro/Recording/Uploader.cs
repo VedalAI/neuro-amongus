@@ -42,25 +42,29 @@ public sealed class Uploader : MonoBehaviour
     [HideFromIl2Cpp]
     private IEnumerator CoSendFileToServer(string fileName, byte[] fileBytes)
     {
-        HttpClient client = new();
+        using HttpClient client = new();
 
         client.DefaultRequestHeaders.Add("User-Agent", "Neuro/1.0");
 
         // send file as multipart form data
-        MultipartFormDataContent form = new();
+        using MultipartFormDataContent form = new();
         form.Add(new ByteArrayContent(fileBytes), "file", fileName);
 
         Task<HttpResponseMessage> task = client.PostAsync(FILE_SERVER_URL, form);
         yield return new WaitForTask(task);
 
-        if (task.IsCompletedSuccessfully)
+        if (task.IsCompletedSuccessfully && task.Result.IsSuccessStatusCode)
         {
             Info("Data file sent to the server.");
-            Info("Server returned status code: " + task.Result.StatusCode);
         }
         else
         {
             Error("Could not send data file to the server.'");
+        }
+
+        if (task.IsCompletedSuccessfully)
+        {
+            Info("Server returned: " + task.Result.ReasonPhrase + ", code: " + task.Result.StatusCode);
         }
     }
 }
