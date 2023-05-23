@@ -10,10 +10,14 @@ public partial class HeaderFrame
 
         HeaderFrame frame = new()
         {
+            Version = 2,
             Map = ShipStatus.Instance.GetTypeForMessage(),
+            IsFreeplay = TutorialManager.InstanceExists,
             Role = PlayerControl.LocalPlayer.Data.Role.Role.ForMessage(),
             IsImpostor = PlayerControl.LocalPlayer.Data.Role.IsImpostor
         };
+
+        Warning("IS FREEPLAY: " + frame.IsFreeplay);
 
         if (frame.IsImpostor)
         {

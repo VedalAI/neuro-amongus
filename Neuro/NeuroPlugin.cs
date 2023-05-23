@@ -1,10 +1,12 @@
 ﻿global using static Reactor.Utilities.Logger<Neuro.NeuroPlugin>;
+using System.Diagnostics;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Neuro.Communication.AmongUsAI;
 using Neuro.Debugging;
+using Neuro.Recording;
 using Neuro.Utilities;
 using Reactor;
 
@@ -24,9 +26,16 @@ public partial class NeuroPlugin : BasePlugin
     {
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), Id);
 
-        AddComponent<CommunicationHandler>();
-        AddComponent<DebugWindow>();
+        AddFullComponents();
+        AddComponent<Uploader>();
 
         ResourceManager.CacheSprite("Cursor", 130);
+    }
+
+    [Conditional("FULL")]
+    private void AddFullComponents()
+    {
+        AddComponent<CommunicationHandler>();
+        AddComponent<DebugWindow>();
     }
 }

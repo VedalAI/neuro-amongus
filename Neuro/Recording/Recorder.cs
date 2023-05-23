@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using BepInEx;
 using Google.Protobuf;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Communication.AmongUsAI;
@@ -16,9 +17,12 @@ public sealed class Recorder : MonoBehaviour
 {
     public static Recorder Instance { get; private set; }
 
-    public Recorder(IntPtr ptr) : base(ptr) { }
+    public Recorder(IntPtr ptr) : base(ptr)
+    {
+    }
 
     private int _fixedUpdateCalls;
+    private string _filePath;
     private FileStream _fileStream;
 
     private void Awake()
@@ -35,27 +39,24 @@ public sealed class Recorder : MonoBehaviour
 
     private void Start()
     {
-        string recordingsDirectory = Path.Combine(BepInEx.Paths.PluginPath, "NeuroRecordings");
+        string recordingsDirectory = Path.Combine(Paths.PluginPath, "NeuroRecordings");
         if (!Directory.Exists(recordingsDirectory)) Directory.CreateDirectory(recordingsDirectory);
-        _fileStream = new FileStream(Path.Combine(recordingsDirectory, $"{DateTime.Now.ToFileTime()}.gymbag2"), FileMode.Create);
+        _filePath = Path.Combine(recordingsDirectory, $"{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}.gymbag2");
+        _fileStream = new FileStream(_filePath, FileMode.Create);
 
         WriteAndFlush(Frame.Now(true));
     }
 
     private void FixedUpdate()
     {
-        // TODO: We should record meeting data!
         if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
-        if (CommunicationHandler.Instance.IsConnected)
+        if (CommunicationHandler.IsPresentAndConnected)
         {
             Warning("Connected to socket, stopping Recorder");
             Destroy(this);
             return;
         }
-
-        // TODO: Record local impostor data: kill cooldown, venting stuff, etc
-        // TODO: Record local player interactions data: opened task, opened door
 
         _fixedUpdateCalls++;
         if (_fixedUpdateCalls < 5) return;
@@ -66,7 +67,18 @@ public sealed class Recorder : MonoBehaviour
 
     private void OnDestroy()
     {
+        // Ignore small files
+        if (_fileStream.Length < 100000) // ~100KB
+        {
+            Warning("Recording is too small, deleting.");
+            _fileStream.Dispose();
+            File.Delete(_filePath);
+            return;
+        }
+
         _fileStream.Dispose();
+
+        Uploader.Instance.SendFileToServer(Path.GetFileName(_filePath), File.ReadAllBytes(_filePath!));
     }
 
     [HideFromIl2Cpp]

@@ -10,17 +10,17 @@ public partial class OtherPlayerData
         return new OtherPlayerData
         {
             Id = player.PlayerId,
-            LastSeenPosition = player.GetTruePosition(),
+            LastSeenPosition = player.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition(),
             LastSeenTime = Time.fixedTime,
             TimesSawVent = 0,
             RoundTimeVisible = 0,
-            GameTimeVisible = 0
+            GameTimeVisible = 0,
+            IsVisible = true
         };
     }
 
     public void UpdateVisible(PlayerControl owner)
     {
-        // TODO: Only trigger once per vent
         if (owner.MyPhysics.Animations.IsPlayingEnterVentAnimation() || owner.MyPhysics.Animations.IsPlayingExitVentAnimation())
         {
             TimesSawVent++;
@@ -28,10 +28,11 @@ public partial class OtherPlayerData
 
         if (owner.inVent) return;
 
-        LastSeenPosition = owner.GetTruePosition();
+        LastSeenPosition = owner.GetTruePosition() - PlayerControl.LocalPlayer.GetTruePosition();
         LastSeenTime = Time.fixedTime;
         RoundTimeVisible += Time.fixedDeltaTime;
         GameTimeVisible += Time.fixedDeltaTime;
+        IsVisible = true;
     }
 
     public void ResetAfterMeeting()

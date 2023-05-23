@@ -295,3 +295,6 @@ dmypy.json
 cython_debug/
 
 AI/recordings
+.vscode/settings.json
+.mailmap
+**/Reactor.*.dll

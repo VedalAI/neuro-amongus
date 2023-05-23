@@ -1,12 +1,12 @@
 ﻿namespace Neuro.Pathfinding.DataStructures;
 
-public class Heap<T> where T : IHeapItem<T>
+public sealed class Heap<T> where T : IHeapItem<T>
 {
-    private readonly T[] items;
+    private readonly T[] _items;
 
     public Heap(int maxHeapSize)
     {
-        items = new T[maxHeapSize];
+        _items = new T[maxHeapSize];
     }
 
     public int Count { get; private set; }
@@ -14,18 +14,18 @@ public class Heap<T> where T : IHeapItem<T>
     public void Add(T item)
     {
         item.HeapIndex = Count;
-        items[Count] = item;
+        _items[Count] = item;
         SortUp(item);
         Count++;
     }
 
     public T RemoveFirst()
     {
-        T firstItem = items[0];
+        T firstItem = _items[0];
         Count--;
-        items[0] = items[Count];
-        items[0].HeapIndex = 0;
-        SortDown(items[0]);
+        _items[0] = _items[Count];
+        _items[0].HeapIndex = 0;
+        SortDown(_items[0]);
         return firstItem;
     }
 
@@ -36,7 +36,7 @@ public class Heap<T> where T : IHeapItem<T>
 
     public bool Contains(T item)
     {
-        return Equals(items[item.HeapIndex], item);
+        return Equals(_items[item.HeapIndex], item);
     }
 
     private void SortDown(T item)
@@ -52,12 +52,12 @@ public class Heap<T> where T : IHeapItem<T>
 
             if (childIndexRight < Count)
             {
-                if (items[childIndexLeft].CompareTo(items[childIndexRight]) < 0)
+                if (_items[childIndexLeft].CompareTo(_items[childIndexRight]) < 0)
                     swapIndex = childIndexRight;
             }
 
-            if (item.CompareTo(items[swapIndex]) < 0)
-                Swap(item, items[swapIndex]);
+            if (item.CompareTo(_items[swapIndex]) < 0)
+                Swap(item, _items[swapIndex]);
             else
                 return;
         }
@@ -69,7 +69,7 @@ public class Heap<T> where T : IHeapItem<T>
 
         while (true)
         {
-            T parentItem = items[parentIndex];
+            T parentItem = _items[parentIndex];
             if (item.CompareTo(parentItem) > 0)
                 Swap(item, parentItem);
             else
@@ -81,8 +81,8 @@ public class Heap<T> where T : IHeapItem<T>
 
     private void Swap(T itemA, T itemB)
     {
-        items[itemA.HeapIndex] = itemB;
-        items[itemB.HeapIndex] = itemA;
+        _items[itemA.HeapIndex] = itemB;
+        _items[itemB.HeapIndex] = itemA;
         (itemA.HeapIndex, itemB.HeapIndex) = (itemB.HeapIndex, itemA.HeapIndex);
     }
 }

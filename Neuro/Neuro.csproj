@@ -9,11 +9,26 @@
         <TargetFramework>net6.0</TargetFramework>
         <LangVersion>latest</LangVersion>
 
-        <DebugType>embedded</DebugType>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-        <ILRepackTargetConfigurations>Debug;Release</ILRepackTargetConfigurations>
+        <Configurations>DebugDataCollection;DebugFull;ReleaseDataCollection;ReleaseFull</Configurations>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$(Configuration.EndsWith('Full'))">
+        <DefineConstants>$(DefineConstants);FULL;</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$(DefineConstants.Contains(';FULL;'))">
+        <Optimize>false</Optimize>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>embedded</DebugType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="!$(DefineConstants.Contains(';FULL;'))">
+        <Optimize>true</Optimize>
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>none</DebugType>
     </PropertyGroup>
 
     <ItemGroup>

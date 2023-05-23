@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using Neuro.Events;
 using Neuro.Minigames;
 using Neuro.Minigames.Solvers;
+using Neuro.Recording.LocalPlayer;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -29,6 +31,7 @@ public sealed class InteractionsHandler : MonoBehaviour
         Instance = this;
     }
 
+    [Conditional("FULL")]
     public void UseTarget(IUsable usable)
     {
         if (MeetingHud.Instance || Minigame.Instance || usable == null) return;
@@ -41,10 +44,12 @@ public sealed class InteractionsHandler : MonoBehaviour
                 break;
 
             case DeconControl decon:
+                LocalPlayerRecorder.Instance.RecordInteract();
                 decon.Use();
                 break;
 
             case DoorConsole door:
+                LocalPlayerRecorder.Instance.RecordInteract();
                 door.Use();
                 break;
 
@@ -77,10 +82,12 @@ public sealed class InteractionsHandler : MonoBehaviour
             Warning($"Unable to find task from console id {console.ConsoleId}");
             return;
         }
+
         Minigame minigame = task.GetMinigamePrefab();
 
         if (MinigameHandler.ShouldOpenConsole(console, minigame, task))
         {
+            LocalPlayerRecorder.Instance.RecordInteract();
             console.Use();
         }
         else
@@ -95,6 +102,7 @@ public sealed class InteractionsHandler : MonoBehaviour
         {
             if (EmergencySolver.ShouldOpenEmergency())
             {
+                LocalPlayerRecorder.Instance.RecordInteract();
                 console.Use();
             }
             else

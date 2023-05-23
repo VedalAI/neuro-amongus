@@ -18,7 +18,6 @@ public sealed class RecordingDebugTab : DebugTab
 
     public override void BuildUI()
     {
-        Label(0, "Yellow values not reset after each frame like they're supposed to!", Color.yellow);
         NeuroUtilities.GUILayoutDivider();
         BuildDeadBodiesRecorderUI();
         BuildLocalPlayerRecorderUI();
@@ -39,26 +38,33 @@ public sealed class RecordingDebugTab : DebugTab
     private void BuildLocalPlayerRecorderUI()
     {
         GUILayout.Label(nameof(LocalPlayerFrame));
-        Label(1, $"{nameof(LocalPlayerFrame.DidReport)}: {LocalPlayerRecorder.Instance.Frame.DidReport}", Color.yellow);
-        Label(1, $"{nameof(LocalPlayerFrame.DidVent)}: {LocalPlayerRecorder.Instance.Frame.DidVent}", Color.yellow);
-        Label(1, $"{nameof(LocalPlayerFrame.DidKill)}: {LocalPlayerRecorder.Instance.Frame.DidKill}", Color.yellow);
-        Label(1, $"{nameof(LocalPlayerFrame.SabotageUsed)}: {LocalPlayerRecorder.Instance.Frame.SabotageUsed}", Color.yellow);
-        Label(1, $"{nameof(LocalPlayerFrame.DoorsUsed)}: {LocalPlayerRecorder.Instance.Frame.DoorsUsed}", Color.yellow);
+        Label(1, $"{nameof(LocalPlayerFrame.DidReport)}: {LocalPlayerRecorder.Instance.Frame.DidReport}");
+        Label(1, $"{nameof(LocalPlayerFrame.DidVent)}: {LocalPlayerRecorder.Instance.Frame.DidVent}");
+        Label(1, $"{nameof(LocalPlayerFrame.DidKill)}: {LocalPlayerRecorder.Instance.Frame.DidKill}");
+        Label(1, $"{nameof(LocalPlayerFrame.DidInteract)}: {LocalPlayerRecorder.Instance.Frame.DidInteract}");
+        Label(1, $"{nameof(LocalPlayerFrame.SabotageUsed)}: {LocalPlayerRecorder.Instance.Frame.SabotageUsed}");
+        Label(1, $"{nameof(LocalPlayerFrame.DoorsUsed)}: {LocalPlayerRecorder.Instance.Frame.DoorsUsed}");
+        Label(1, $"{nameof(LocalPlayerFrame.KillCooldown)}: {LocalPlayerRecorder.Instance.Frame.KillCooldown}");
+        Label(1, $"{nameof(LocalPlayerFrame.UsableTarget)}: T({LocalPlayerRecorder.Instance.Frame.UsableTarget.Type}), D{LocalPlayerRecorder.Instance.Frame.UsableTarget.Direction}");
     }
 
     private void BuildMapRecorderUI()
     {
         GUILayout.Label(nameof(MapFrame));
+
         Label(1, $"{nameof(MapFrame.NearbyDoors)} ({MapRecorder.Instance.Frame.NearbyDoors.Count})");
         foreach (DoorData door in MapRecorder.Instance.Frame.NearbyDoors)
         {
             Label(2, $"- D({door.Position.TotalDistance:F2}), O({door.IsOpen})");
         }
+
         Label(1, $"{nameof(MapFrame.NearbyVents)} ({MapRecorder.Instance.Frame.NearbyVents.Count})");
         foreach (VentData vent in MapRecorder.Instance.Frame.NearbyVents)
         {
             Label(2, $"- D({vent.Position.TotalDistance:F2})");
         }
+
+        Label(1, $"{nameof(MapFrame.MeetingButton)} - D({MapRecorder.Instance.Frame.MeetingButton.TotalDistance:F2})");
     }
 
     private void BuildOtherPlayersRecorderUI()
@@ -67,7 +73,7 @@ public sealed class RecordingDebugTab : DebugTab
         Label(1, $"{nameof(OtherPlayersFrame.LastSeenPlayers)} ({OtherPlayersRecorder.Instance.Frame.LastSeenPlayers.Count})");
         foreach (OtherPlayerData player in OtherPlayersRecorder.Instance.Frame.LastSeenPlayers.OrderBy(d => d.Id))
         {
-            Label(2, $"- ID({player.Id}), P{player.LastSeenPosition}, T({player.RoundTimeVisible:F2})");
+            Label(2, $"- ID({player.Id}), V({player.IsVisible}), P{player.LastSeenPosition}, T({player.RoundTimeVisible:F2})");
         }
     }
 
@@ -75,12 +81,13 @@ public sealed class RecordingDebugTab : DebugTab
 
     private void Label(int indent, string label, Color color)
     {
-        GUILayout.BeginHorizontal();
-        GUILayout.Space(20 * indent);
-        Color originalColor = GUI.contentColor;
-        GUI.contentColor = color;
-        GUILayout.Label(label);
-        GUI.contentColor = originalColor;
-        GUILayout.EndHorizontal();
+        using (new HorizontalScope())
+        {
+            GUILayout.Space(20 * indent);
+            Color originalColor = GUI.contentColor;
+            GUI.contentColor = color;
+            GUILayout.Label(label);
+            GUI.contentColor = originalColor;
+        }
     }
 }
