@@ -50,15 +50,17 @@ def save_data(file_path: str, data):
         pickle.dump(data, file)
         
 def load_data(file_path: str):
-    with open(file_path, "rb") as file:
-        return pickle.load(file)
+    try:
+        with open(file_path, "rb") as file:
+            return pickle.load(file)
+    except EOFError:
+        raise Exception("Error loading data from file: " + file_path)
 
 def load_processed_game(file_path: str) -> Game:
-    with open(file_path, "rb") as file:
-        return pickle.load(file)
+    return load_data(file_path)
     
 def load_game(file) -> Game:
-    if file.endswith(".gymbag2"):
+    if str(file).endswith(".gymbag2"):
         file_path = path.join(RECORDINGS_PATH, file)
         
         # load the game, calculate number of possible frame sequence pairings
@@ -69,6 +71,13 @@ def load_game(file) -> Game:
         if path.exists(data_file_path):
             print(f"Loading: {path.relpath(data_file_path, BASE_PATH)}")
             data = load_data(data_file_path)
+            
+            # decoded_file_path = path.join(RECORDINGS_PATH, "decoded", path.splitext(file)[0] + ".pickle")
+            # game = load_processed_game(decoded_file_path)
+            # if len(game.states) == 0:
+            #     return None
+            #if game.states[0].header["is_freeplay"] == [1]:
+            #    return None
         else:
             decoded_file_path = path.join(RECORDINGS_PATH, "decoded", path.splitext(file)[0] + ".pickle")
             if path.exists(decoded_file_path):
@@ -91,11 +100,17 @@ def load_game(file) -> Game:
             print("Saving neural network format...")
             save_data(data_file_path, data)
             
+        if data is None:
+            print("Error loading data from file: " + data_file_path)
+            raise Exception("Error loading data from file: " + data_file_path)
+            
         if len(data[0]) == 0 or len(data[1]) == 0:
             print("Empty data in file: " + data_file_path)
             return None
 
         return data
+    else:
+        return None
 
 def read_all_recordings() -> List[Game]:
     print("Loading recordings from disk... (this may take a bit)")
