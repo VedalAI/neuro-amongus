@@ -10,7 +10,7 @@ class ShittyFrameException(Exception):
 
 
 class GameState():
-    def __init__(self, frame: Frame, last_game_state: "GameState" = None, header: HeaderFrame = None, check_frames: bool = True):
+    def __init__(self, frame: Frame, last_game_state: "GameState" = None, header: HeaderFrame = None, check_frames: bool = True, use_last_velocity: bool = True):
         #self.data = frame
         #self.data["header = header
         
@@ -29,8 +29,11 @@ class GameState():
         self.data = convert_type(frame)
         self.header = convert_type(header)
         
-        self.last_velocity = last_game_state.data["local_player"]["velocity"] if last_game_state else convert_type(def_vector2())
-    
+        if use_last_velocity:
+            self.last_velocity = last_game_state.data["local_player"]["velocity"] if last_game_state else convert_type(def_vector2())
+        else:
+            self.last_velocity = self.data["local_player"]["velocity"]
+        
     def get_x(self):
         self.data["dead_bodies"]["dead_bodies"] = pad_list(self.data["dead_bodies"]["dead_bodies"], 3, def_deadbodydata)
         self.header["other_impostors"] = pad_list(self.header["other_impostors"], 2, -1)

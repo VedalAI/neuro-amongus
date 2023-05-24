@@ -8,6 +8,7 @@ from data.game_state import GameState
 from data.proto import Frame, NnOutput, Vector2
 from nn.model import LSTMModel, Model
 
+from data.game import WINDOW_LENGTH
 
 def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -27,6 +28,7 @@ def main():
             print("Connected by", addr)
 
             last_game_state = None
+            last_velocity = [0, 0]
             header = None
             x_history = []
             while True:
@@ -39,6 +41,8 @@ def main():
                 if frame.header is not None:
                     header = frame.header
                     
+                if last_game_state is not None:
+                    last_game_state.data["local_player"]["velocity"] = last_velocity
                 state = GameState(frame, last_game_state, header, check_frames=False)
                 last_game_state = state
 
@@ -48,11 +52,11 @@ def main():
 
                 x_history.append(x)
                 # max length of 10
-                if len(x_history) > 10:
+                if len(x_history) > WINDOW_LENGTH:
                     x_history.pop(0)
 
                 # pad with zeros if not enough data
-                while len(x_history) < 10:
+                while len(x_history) < WINDOW_LENGTH:
                     x_history.insert(0, np.zeros_like(x_history[0]))
 
                 # print(x_history)
@@ -80,6 +84,12 @@ def main():
 
                 output = NnOutput()
                 output.desired_move_direction = Vector2(x=new_y[0], y=new_y[1])
+                
+                # normalize
+                if new_y[0] != 0 and new_y[1] != 0:
+                    new_y[0] /= np.sqrt(2)
+                    new_y[1] /= np.sqrt(2)
+                last_velocity = new_y
 
                 print(new_y)
 
