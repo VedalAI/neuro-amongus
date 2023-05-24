@@ -9,8 +9,13 @@ namespace Neuro.Recording;
 
 public partial class Frame
 {
+    public static bool ForceNextHeader { get; set; }
+
     public static Frame Now(bool includeHeader = false)
     {
+        includeHeader |= ForceNextHeader;
+        ForceNextHeader = false;
+
         try
         {
             return new Frame

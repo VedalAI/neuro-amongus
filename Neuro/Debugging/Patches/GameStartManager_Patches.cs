@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
+﻿#if FULL
+using System.Diagnostics;
 using HarmonyLib;
 
 namespace Neuro.Debugging.Patches;
 
-#if FULL
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Update))]
 public static class GameStartManager_Update_Patch
 {
