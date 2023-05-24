@@ -38,8 +38,7 @@ class GameState():
         self.data["map"]["nearby_vents"] = pad_list(self.data["map"]["nearby_vents"], 3, def_ventdata)
         self.data["other_players"]["last_seen_players"] = pad_list(self.data["other_players"]["last_seen_players"], 14, def_otherplayerdata)
         
-        tasks = np.array([pad_list(t, 2, def_positiondata) for t in self.data["tasks"]["tasks"]])
-        self.data["tasks"]["tasks"] = tasks
+        self.data["tasks"]["tasks"] = np.array([pad_list(t, 2, def_positiondata) for t in self.data["tasks"]["tasks"]])
         
         self.data["tasks"]["tasks"] = pad_list(self.data["tasks"]["tasks"], 10, def_taskdata)
 
@@ -79,14 +78,15 @@ class GameState():
         if len(self.data["tasks"]["sabotage"]) != 2:
             print(len(self.data["tasks"]["sabotage"]))
         
-        return np.hstack([
-            convert_type(1 if self.header["role"][0] == int(RoleType.Impostor) or self.header["role"][0] == int(RoleType.Shapeshifter) else 0),
+        x = np.hstack([
+            self.header["is_impostor"],
             self.data["local_player"]["kill_cooldown"],
             *convert_type(self.last_velocity),
             *tasks_data,
             *self.data["tasks"]["sabotage"],
             *self.data["local_player"]["raycast_obstacle_distances"]
         ])
+        return x
 
     def get_y(self):
         velocity_data = convert_type(self.data["local_player"]["velocity"])

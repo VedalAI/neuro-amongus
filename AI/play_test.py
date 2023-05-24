@@ -36,7 +36,7 @@ def main():
                     break
 
                 frame = Frame().parse(data)
-                if header is None:
+                if frame.header is not None:
                     header = frame.header
                     
                 state = GameState(frame, last_game_state, header, check_frames=False)

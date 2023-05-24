@@ -28,8 +28,25 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=128, shuffle=True)
     
+    print("Example input shape: ", train_dataset[0][0].shape)
+    print("Example output shape: ", train_dataset[0][1].shape)
+    print("Example input: ", train_dataset[0][0])
+    print("Example output: ", train_dataset[0][1])
+    
+    new_y = [0, 0]
+    if train_dataset[0][1][0] > .5:
+        new_y[0] += 1
+    if train_dataset[0][1][1] > .5:
+        new_y[0] -= 1
+    if train_dataset[0][1][2] > .5:
+        new_y[1] += 1
+    if train_dataset[0][1][3] > .5:
+        new_y[1] -= 1
+        
+    print("Example output (converted): ", new_y)
+    
     try:
-        for epoch in range(200):
+        for epoch in range(100):
             # train
             model.train()
             training_loss = 0
