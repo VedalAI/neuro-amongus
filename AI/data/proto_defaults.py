@@ -48,15 +48,19 @@ def def_otherplayerdata():
 def pad_list(lst: List[T], length: int, padding_value: Callable[[], T]):
     if len(lst) == length:
         return lst
+    if len(lst) > length:
+        return lst[:length]
     if len(lst) != 0:
-        to_concatenate = np.array([convert_type(padding_value()) if callable(padding_value) else convert_type(padding_value) for _ in range(len(lst), length)])
-        l = np.concatenate((lst, to_concatenate))
-        #if padding_value == def_taskdata:
-        #    print("padded")
-            #print(l)
-        #if padding_value == def_positiondata:
-        #    print("padded")
-            #print(l)
+        try:
+            to_concatenate = np.array([convert_type(padding_value()) if callable(padding_value) else convert_type(padding_value) for _ in range(len(lst), length)])
+            l = np.concatenate((lst, to_concatenate))
+        except ValueError as e:
+            print("Error padding list: " + str(e))
+            print("Length: " + str(length))
+            print("Padding value: " + str(padding_value))
+            print("List: " + str(lst))
+            print("to_concatenate: " + str(to_concatenate))
+            raise e
         return l
     else:
         l = np.array([convert_type(padding_value()) if callable(padding_value) else convert_type(padding_value) for _ in range(length)])
