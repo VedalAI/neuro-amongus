@@ -46,8 +46,11 @@ def def_otherplayerdata():
 
 
 def pad_list(lst: List[T], length: int, padding_value: Callable[[], T]):
-    try:
-        l = np.concatenate((lst, np.array([convert_type(padding_value()) if callable(padding_value) else convert_type(padding_value) for _ in range(len(lst), length)])))
+    if len(lst) == length:
+        return lst
+    if len(lst) != 0:
+        to_concatenate = np.array([convert_type(padding_value()) if callable(padding_value) else convert_type(padding_value) for _ in range(len(lst), length)])
+        l = np.concatenate((lst, to_concatenate))
         #if padding_value == def_taskdata:
         #    print("padded")
             #print(l)
@@ -55,6 +58,6 @@ def pad_list(lst: List[T], length: int, padding_value: Callable[[], T]):
         #    print("padded")
             #print(l)
         return l
-    except:
+    else:
         l = np.array([convert_type(padding_value()) if callable(padding_value) else convert_type(padding_value) for _ in range(length)])
         return l
