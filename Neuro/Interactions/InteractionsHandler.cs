@@ -57,8 +57,12 @@ public sealed class InteractionsHandler : MonoBehaviour
                 UseSystemConsole(system);
                 break;
 
-            // case Ladder ladder:
-            //     break;
+            case Ladder ladder:
+                // Check if the player is facing the destination of the ladder because the position of the ladder is below/above the actual ladder
+                if (isPlayerFacingPosition(ladder.Destination.transform.position)) {
+                    PlayerControl.LocalPlayer.UseClosest();
+                }
+                break;
 
             // case MapConsole admin:
             //     break;
@@ -72,6 +76,13 @@ public sealed class InteractionsHandler : MonoBehaviour
             // case Vent vent:
             //     break;
         }
+    }
+
+    private bool isPlayerFacingPosition(Vector2 position, float angle=45) {
+        if (Vector2.Angle(MovementHandler.Instance.ForcedMoveDirection, position - (Vector2)PlayerControl.LocalPlayer.transform.position) < angle) {
+            return true;
+        }
+        return false;
     }
 
     public void UseConsole(Console console)
