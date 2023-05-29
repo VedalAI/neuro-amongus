@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Neuro.Events;
 using Neuro.Minigames;
 using Neuro.Minigames.Solvers;
+using Neuro.Movement;
 using Neuro.Recording.LocalPlayer;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
