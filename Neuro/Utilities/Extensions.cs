@@ -44,7 +44,7 @@ public static class Extensions
     public static T Il2CppCastToTopLevel<T>(this T obj) where T : Il2CppSystem.Object
     {
         if (obj == null) return null;
-        return (T)_castMethod.MakeGenericMethod(obj.GetIl2CppType().ToSystemType()).Invoke(obj, null);
+        return (T) _castMethod.MakeGenericMethod(obj.GetIl2CppType().ToSystemType()).Invoke(obj, null);
     }
 
     public static Il2CppSystem.Object Il2CppCastToTopLevel(this Il2CppObjectBase obj)
@@ -71,5 +71,15 @@ public static class Extensions
         return list.Take(startIndex)
             .Concat(list.Skip(startIndex).Take(endIndex - startIndex).Reverse())
             .Concat(list.Skip(endIndex));
+    }
+
+    /// <summary>
+    /// Convert a System List to an Il2Cpp List
+    /// </summary>
+    public static Il2CppSystem.Collections.Generic.List<T> ToIl2CppList<T>(this List<T> systemList)
+    {
+        Il2CppSystem.Collections.Generic.List<T> iList = new();
+        foreach (T item in systemList) iList.Add(item);
+        return iList;
     }
 }
