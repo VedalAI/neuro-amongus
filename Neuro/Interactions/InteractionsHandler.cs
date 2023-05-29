@@ -59,10 +59,11 @@ public sealed class InteractionsHandler : MonoBehaviour
                 break;
 
             case Ladder ladder:
-                // Check if the player is facing the destination of the ladder because the position of the ladder is below/above the actual ladder
-                if (isPlayerFacingPosition(ladder.Destination.transform.position)) {
-                    PlayerControl.LocalPlayer.UseClosest();
-                }
+                if (ladder.Destination.transform.position.y > ladder.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f) {
+                    ladder.Use();
+                } else if (ladder.Destination.transform.position.y < ladder.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == -1.0f) {
+                    ladder.Use();
+                } 
                 break;
 
             // case MapConsole admin:
