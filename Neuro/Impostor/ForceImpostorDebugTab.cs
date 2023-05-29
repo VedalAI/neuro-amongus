@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Neuro.Impostor;
 
+[DebugTab]
 public class ForceImpostorDebugTab : DebugTab
 {
     public override string Name => "Force impostor";
