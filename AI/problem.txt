@@ -1,8 +1,0 @@
-ai is averaging all possible outputs but the reality is there are lots of possiblities that the
-agent could do at any given time. therefore we should have some architecture where we can sample
-from the output to allow picking a specific action.
-
-possible solutions:
-- Increase the sequence length: Instead of using only the last 10 frames, you can consider increasing the sequence length. By providing the model with a longer history of frames, it can better understand the context and make more informed decisions.
-- Adjust the prediction horizon: Rather than predicting only the immediate next action, you can modify the task to predict actions further into the future. For example, instead of predicting the next frame's action, you can predict the action for the next few frames. This can encourage the model to consider longer-term strategies and make consistent decisions over multiple time steps.
-- Implement teacher forcing: During training, you candddddddddddd use teacher forcing, where you provide the ground truth actions for a few initial time steps and then start using the model's own predictions as input for subsequent time steps. This technique can help stabilize training and guide the model towards consistent predictions.
