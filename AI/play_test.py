@@ -84,6 +84,9 @@ def main():
 
                 output = NnOutput()
                 output.desired_move_direction = Vector2(x=new_y[0], y=new_y[1])
+                output.report = y[4] > 1e-05
+                output.kill = y[5] > 1e-05
+                output.vent = y[6] > 1e-05
                 
                 # normalize
                 if new_y[0] != 0 and new_y[1] != 0:

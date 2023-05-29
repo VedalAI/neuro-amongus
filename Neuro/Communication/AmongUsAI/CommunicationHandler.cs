@@ -106,5 +106,11 @@ public sealed class CommunicationHandler : MonoBehaviour
     {
         // Info(output);
         MovementHandler.Instance.ForcedMoveDirection = output.DesiredMoveDirection;
+        if(output.Report)
+            HudManager.Instance.ReportButton.DoClick();
+        if(output.Kill)
+            HudManager.Instance.KillButton.DoClick();
+        if(output.Vent)
+            HudManager.Instance.ImpostorVentButton.DoClick();
     }
 }

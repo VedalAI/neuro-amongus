@@ -6,4 +6,7 @@ import "Recording/Common/Vector2.proto";
 // TODO: Include more data in the neural network output
 message NNOutput {
     Vector2 DesiredMoveDirection = 1;
+    bool Report = 2;
+    bool Vent = 3;
+    bool Kill = 4;
 }

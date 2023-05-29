@@ -116,8 +116,10 @@ def read_all_recordings() -> List[Game]:
     print("Loading recordings from disk... (this may take a bit)")
 
     result = listdir(RECORDINGS_PATH)
+    
     #result = list(map(load_game, result))
-    with Pool(16) as p:
+    
+    with Pool(12) as p:
         result = p.map(load_game, result)
 
     print("Done loading recordings")
