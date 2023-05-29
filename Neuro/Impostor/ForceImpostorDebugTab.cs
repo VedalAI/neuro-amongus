@@ -14,7 +14,7 @@ public class ForceImpostorDebugTab : DebugTab
     public static bool Enabled { get; set; }
     public static List<string> CurrentlySelected { get; } = new();
 
-    public override bool IsEnabled => AmongUsClient.Instance.AmHost;
+    public override bool IsEnabled => AmongUsClient.Instance && AmongUsClient.Instance.AmHost && GameManager.Instance && GameManager.Instance.IsNormal();
 
     public override void BuildUI()
     {
