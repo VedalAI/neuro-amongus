@@ -50,10 +50,8 @@ public sealed class InteractionsHandler : MonoBehaviour
                 break;
 
             case DoorConsole door:
-                if (PlayerControl.LocalPlayer.MyPhysics.Velocity.y > 0) break;
-
                 // horizontal door
-                if (door.MyDoor.myCollider.size.x > door.MyDoor.myCollider.size.y ) {
+                if (door.MyDoor.myCollider.size.x > door.MyDoor.myCollider.size.y && PlayerControl.LocalPlayer.MyPhysics.Velocity.y == 0) {
                     if (door.transform.position.y > PlayerControl.LocalPlayer.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f) {
                         LocalPlayerRecorder.Instance.RecordInteract();
                         door.Use();
@@ -64,7 +62,7 @@ public sealed class InteractionsHandler : MonoBehaviour
                 }
                 
                 // vertical door
-                else if (door.MyDoor.myCollider.size.x < door.MyDoor.myCollider.size.y ) {
+                else if (door.MyDoor.myCollider.size.x < door.MyDoor.myCollider.size.y && PlayerControl.LocalPlayer.MyPhysics.Velocity.x == 0) {
                     if (door.transform.position.x > PlayerControl.LocalPlayer.transform.position.x && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f) {
                         LocalPlayerRecorder.Instance.RecordInteract();
                         door.Use();
@@ -97,7 +95,7 @@ public sealed class InteractionsHandler : MonoBehaviour
             //     break;
 
             case PlatformConsole platform:
-                if (PlayerControl.LocalPlayer.MyPhysics.Velocity.y > 0) break;
+                if (PlayerControl.LocalPlayer.MyPhysics.Velocity.x > 0) break;
                 if (platform.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f) {
                     LocalPlayerRecorder.Instance.RecordInteract();
                     platform.Use();
