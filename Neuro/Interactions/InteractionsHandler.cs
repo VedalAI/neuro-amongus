@@ -71,8 +71,15 @@ public sealed class InteractionsHandler : MonoBehaviour
             // case OpenDoorConsole simpleDoor:
             //     break;
 
-            // case PlatformConsole platform:
-            //     break;
+            case PlatformConsole platform:
+                if (platform.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f) {
+                    platform.Use();
+                } else if(!platform.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == -1.0f) {
+                    platform.Use();
+                }
+                break;
+
+
 
             // case Vent vent:
             //     break;
