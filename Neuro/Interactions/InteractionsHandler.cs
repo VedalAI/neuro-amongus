@@ -59,6 +59,7 @@ public sealed class InteractionsHandler : MonoBehaviour
                 break;
 
             case Ladder ladder:
+                if (PlayerControl.LocalPlayer.MyPhysics.Velocity.y > 0) break;
                 if (ladder.Destination.transform.position.y > ladder.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f) {
                     ladder.Use();
                 } else if (ladder.Destination.transform.position.y < ladder.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == -1.0f) {
@@ -73,6 +74,7 @@ public sealed class InteractionsHandler : MonoBehaviour
             //     break;
 
             case PlatformConsole platform:
+                if (PlayerControl.LocalPlayer.MyPhysics.Velocity.y > 0) break;
                 if (platform.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f) {
                     platform.Use();
                 } else if(!platform.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == -1.0f) {
@@ -85,14 +87,6 @@ public sealed class InteractionsHandler : MonoBehaviour
             // case Vent vent:
             //     break;
         }
-    }
-
-    private bool isPlayerFacingPosition(Vector2 position, float angle=45) {
-        if (MovementHandler.Instance.ForcedMoveDirection == Vector2.zero) return false;
-        if (Vector2.Angle(MovementHandler.Instance.ForcedMoveDirection, position - (Vector2)PlayerControl.LocalPlayer.transform.position) < angle) {
-            return true;
-        }
-        return false;
     }
 
     public void UseConsole(Console console)
