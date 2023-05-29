@@ -42,7 +42,7 @@ def def_ventdata():
 
 
 def def_otherplayerdata():
-    return OtherPlayerData(id=-1, last_seen_position=def_positiondata(), last_seen_time=-1, times_saw_vent=0, round_time_visible=0, game_time_visible=0, is_visible=False)
+    return OtherPlayerData(id=-1, last_seen_position=def_vector2(), last_seen_time=-1, times_saw_vent=0, round_time_visible=0, game_time_visible=0, is_visible=False)
 
 
 def pad_list(lst: List[T], length: int, padding_value: Callable[[], T]):

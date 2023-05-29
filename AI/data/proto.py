@@ -171,6 +171,9 @@ class NnOutput(betterproto.Message):
     """TODO: Include more data in the neural network output"""
 
     desired_move_direction: "Vector2" = betterproto.message_field(1)
+    report: bool = betterproto.bool_field(2)
+    vent: bool = betterproto.bool_field(3)
+    kill: bool = betterproto.bool_field(4)
 
 
 @dataclass(eq=False, repr=False)
