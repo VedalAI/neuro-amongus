@@ -50,8 +50,29 @@ public sealed class InteractionsHandler : MonoBehaviour
                 break;
 
             case DoorConsole door:
-                LocalPlayerRecorder.Instance.RecordInteract();
-                door.Use();
+                if (PlayerControl.LocalPlayer.MyPhysics.Velocity.y > 0) break;
+
+                // horizontal door
+                if (door.MyDoor.myCollider.size.x > door.MyDoor.myCollider.size.y ) {
+                    if (door.transform.position.y > PlayerControl.LocalPlayer.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f) {
+                        LocalPlayerRecorder.Instance.RecordInteract();
+                        door.Use();
+                    } else if (door.transform.position.y < PlayerControl.LocalPlayer.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == -1.0f) {
+                        LocalPlayerRecorder.Instance.RecordInteract();
+                        door.Use();
+                    }
+                }
+                
+                // vertical door
+                else if (door.MyDoor.myCollider.size.x < door.MyDoor.myCollider.size.y ) {
+                    if (door.transform.position.x > PlayerControl.LocalPlayer.transform.position.x && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f) {
+                        LocalPlayerRecorder.Instance.RecordInteract();
+                        door.Use();
+                    } else if (door.transform.position.x < PlayerControl.LocalPlayer.transform.position.x && MovementHandler.Instance.ForcedMoveDirection.x == -1.0f) {
+                        LocalPlayerRecorder.Instance.RecordInteract();
+                        door.Use();
+                    }
+                }
                 break;
 
             case SystemConsole system:
@@ -61,8 +82,10 @@ public sealed class InteractionsHandler : MonoBehaviour
             case Ladder ladder:
                 if (PlayerControl.LocalPlayer.MyPhysics.Velocity.y > 0) break;
                 if (ladder.Destination.transform.position.y > ladder.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f) {
+                    LocalPlayerRecorder.Instance.RecordInteract();
                     ladder.Use();
                 } else if (ladder.Destination.transform.position.y < ladder.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == -1.0f) {
+                    LocalPlayerRecorder.Instance.RecordInteract();
                     ladder.Use();
                 } 
                 break;
@@ -76,8 +99,10 @@ public sealed class InteractionsHandler : MonoBehaviour
             case PlatformConsole platform:
                 if (PlayerControl.LocalPlayer.MyPhysics.Velocity.y > 0) break;
                 if (platform.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f) {
+                    LocalPlayerRecorder.Instance.RecordInteract();
                     platform.Use();
                 } else if(!platform.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == -1.0f) {
+                    LocalPlayerRecorder.Instance.RecordInteract();
                     platform.Use();
                 }
                 break;
