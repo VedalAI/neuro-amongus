@@ -80,6 +80,7 @@ public sealed class InteractionsHandler : MonoBehaviour
     }
 
     private bool isPlayerFacingPosition(Vector2 position, float angle=45) {
+        if (MovementHandler.Instance.ForcedMoveDirection == Vector2.zero) return false;
         if (Vector2.Angle(MovementHandler.Instance.ForcedMoveDirection, position - (Vector2)PlayerControl.LocalPlayer.transform.position) < angle) {
             return true;
         }
