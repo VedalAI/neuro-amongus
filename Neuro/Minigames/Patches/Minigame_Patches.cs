@@ -18,7 +18,6 @@ public static class Minigame_CoStartClose
     [HarmonyPostfix]
     public static void Postfix(Minigame __instance, float duration)
     {
-        Info($"Minigame.CoStartClose: duration: {duration}");
-        MinigameTimeCollection.AddMinigameCloseTimeDelay(__instance, duration);
+        MinigameTimeHandler.Instance.AddMinigameCloseTimeDelay(__instance, duration);
     }
 }

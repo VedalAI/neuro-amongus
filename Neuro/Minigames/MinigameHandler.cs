@@ -45,9 +45,8 @@ public static class MinigameHandler
         yield return solver.CompleteMinigame(minigame, task);
         
         float timeDiff = Time.time - startTime;
-        MinigameTimeCollection.AddMinigameTime(minigame, timeDiff);
-        Info($"{minigame.GetIl2CppType().FullName} console {minigame.ConsoleId} completed in {timeDiff}, task is {(task.IsComplete ? "complete" : "incomplete")}");
-
+        MinigameTimeHandler.Instance.AddMinigameTime(minigame, timeDiff);
+        
         // By this point we expect the solver to have completed the minigame,
         // which means that it will close and be destroyed, so this coroutine
         // will not execute any code below.

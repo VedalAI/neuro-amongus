@@ -1,5 +1,7 @@
 ﻿using Neuro.Debugging;
 using Neuro.Utilities;
+using Steamworks;
+using System.Linq;
 using UnityEngine;
 
 namespace Neuro.Minigames;
@@ -9,17 +11,20 @@ public sealed class MinigameTimesDebugTab : DebugTab
 {
     public override string Name => "Minigame Times";
 
-    public override bool IsEnabled => true; // MinigameTimeCollection.MinigameTimes != null;
+    public override bool IsEnabled => MinigameTimeHandler.Instance;
 
     public override void BuildUI()
     {
-        foreach (var minigameTime in MinigameTimeCollection.MinigameTimes)
+        if (GUILayout.Button("Clear")) MinigameTimeHandler.Instance.Clear();
+        foreach (var minigameTimeKeyValuePair in MinigameTimeHandler.Instance.MinigameTimes)
         {
+            var minTime = minigameTimeKeyValuePair.Value.OrderBy(t => t.Total).First();
+            var maxTime = minigameTimeKeyValuePair.Value.OrderByDescending(t => t.Total).First();
             using (new HorizontalScope())
             {
-                GUILayout.Label($"{minigameTime.Key}");
+                GUILayout.Label($"{minigameTimeKeyValuePair.Key}");
                 GUILayout.FlexibleSpace();
-                GUILayout.Label($"time: {minigameTime.Value.Time:0.00} close time: {minigameTime.Value.CloseTimeDelay:0.00} total: {(minigameTime.Value.Time + minigameTime.Value.CloseTimeDelay):0.00}");
+                GUILayout.Label($"range: {minTime.Total:0.00}s - {maxTime.Total:0.00}s");
             }
         }
     }
