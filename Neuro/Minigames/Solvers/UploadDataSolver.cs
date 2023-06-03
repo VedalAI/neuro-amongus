@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
+using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -10,5 +11,9 @@ public sealed class UploadDataSolver : GeneralMinigameSolver<UploadDataGame>
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Button);
         minigame.Click();
+        while (minigame.PercentText.text != "100%")
+        {
+            yield return new WaitForSeconds(0.25f);
+        }
     }
 }

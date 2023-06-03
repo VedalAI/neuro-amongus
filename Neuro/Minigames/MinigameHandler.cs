@@ -41,7 +41,12 @@ public static class MinigameHandler
         InGameCursor.Instance.HideWhen(() => !minigame);
 
         yield return new WaitForSeconds(0.4f);
+        float startTime = Time.time;
         yield return solver.CompleteMinigame(minigame, task);
+        
+        float timeDiff = Time.time - startTime;
+        MinigameTimeCollection.AddMinigameTime(minigame, timeDiff);
+        Info($"{minigame.GetIl2CppType().FullName} console {minigame.ConsoleId} completed in {timeDiff}, task is {(task.IsComplete ? "complete" : "incomplete")}");
 
         // By this point we expect the solver to have completed the minigame,
         // which means that it will close and be destroyed, so this coroutine
