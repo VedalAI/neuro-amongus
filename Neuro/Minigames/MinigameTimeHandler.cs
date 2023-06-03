@@ -19,7 +19,7 @@ public sealed class MinigameTimeHandler : MonoBehaviour
 
     private string _minigameName;
     private float _startTime;
-    private Func<bool> _stopTimeCondition;
+    private Func<bool> _stopTimerCondition;
 
     public MinigameTimeHandler(IntPtr ptr) : base(ptr)
     {
@@ -39,7 +39,7 @@ public sealed class MinigameTimeHandler : MonoBehaviour
 
     private void Update()
     {
-        if (_stopTimeCondition != null && _stopTimeCondition())
+        if (_stopTimerCondition != null && _stopTimerCondition())
         {
             Stop();
         }
@@ -65,20 +65,16 @@ public sealed class MinigameTimeHandler : MonoBehaviour
         MinigameTimes.Clear();
     }
 
-    public void StartTime(Minigame minigame)
+    public void StartTimer(Minigame minigame, Func<bool> hideCondition)
     {
         _minigameName = minigame.GetIl2CppType().Name;
         _startTime = Time.time;
-    }
-
-    public void StopWhen(Func<bool> condition)
-    {
-        _stopTimeCondition = condition;
+        _stopTimerCondition = hideCondition;
     }
 
     private void Stop()
     {
-        _stopTimeCondition = null;
+        _stopTimerCondition = null;
         AddMinigameTime(Time.time - _startTime);
     }
 }
