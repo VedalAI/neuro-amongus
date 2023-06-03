@@ -11,13 +11,3 @@ public static class Minigame_Begin
         MinigameHandler.TryCompleteMinigame(__instance, task);
     }
 }
-
-[HarmonyPatch(typeof(Minigame), nameof(Minigame.CoStartClose))]
-public static class Minigame_CoStartClose
-{
-    [HarmonyPostfix]
-    public static void Postfix(Minigame __instance, float duration)
-    {
-        MinigameTimeHandler.Instance.AddMinigameCloseTimeDelay(__instance, duration);
-    }
-}

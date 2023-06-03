@@ -18,13 +18,13 @@ public sealed class MinigameTimesDebugTab : DebugTab
         if (GUILayout.Button("Clear")) MinigameTimeHandler.Instance.Clear();
         foreach (var minigameTimeKeyValuePair in MinigameTimeHandler.Instance.MinigameTimes)
         {
-            var minTime = minigameTimeKeyValuePair.Value.OrderBy(t => t.Total).First();
-            var maxTime = minigameTimeKeyValuePair.Value.OrderByDescending(t => t.Total).First();
+            var minTime = minigameTimeKeyValuePair.Value.OrderBy(t => t).First();
+            var maxTime = minigameTimeKeyValuePair.Value.OrderByDescending(t => t).First();
             using (new HorizontalScope())
             {
                 GUILayout.Label($"{minigameTimeKeyValuePair.Key}");
                 GUILayout.FlexibleSpace();
-                GUILayout.Label($"range: {minTime.Total:0.00}s - {maxTime.Total:0.00}s");
+                GUILayout.Label($"range: {minTime:0.00}s - {maxTime:0.00}s");
             }
         }
     }

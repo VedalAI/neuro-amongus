@@ -12,23 +12,14 @@ namespace Neuro.Minigames;
 [RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class MinigameTimeHandler : MonoBehaviour
 {
-    public class MinigameTimeInstance
-    {
-        public float Time;
-        public float CloseTimeDelay;
-        public float Total { get => Time + CloseTimeDelay; }
-
-        public MinigameTimeInstance()
-        {
-            Time = 0.0f;
-            CloseTimeDelay = 0.0f;
-        }
-    }
-
     public static MinigameTimeHandler Instance { get; private set; }
 
     [HideFromIl2Cpp]
-    public Dictionary<string, List<MinigameTimeInstance>> MinigameTimes { get; } = new Dictionary<string, List<MinigameTimeInstance>>();
+    public Dictionary<string, List<float>> MinigameTimes { get; } = new Dictionary<string, List<float>>();
+
+    private string _minigameName;
+    private float _startTime;
+    private Func<bool> _stopTimeCondition;
 
     public MinigameTimeHandler(IntPtr ptr) : base(ptr)
     {
@@ -46,48 +37,48 @@ public sealed class MinigameTimeHandler : MonoBehaviour
         Instance = this;
     }
 
-    public void AddMinigameTime(Minigame minigame, float time)
+    private void Update()
     {
-        string name = minigame.GetIl2CppType().Name;
-        if (MinigameTimes.TryGetValue(name, out List<MinigameTimeInstance> list))
+        if (_stopTimeCondition != null && _stopTimeCondition())
         {
-            if (list.Last().Time > 0.0f)
-            {
-                MinigameTimes[name].Add(new MinigameTimeInstance() { Time = time });
-            }
-            else
-            {
-                list.Last().Time = time;
-            }
-        }
-        else
-        {
-            MinigameTimes[name] = new List<MinigameTimeInstance>() { new MinigameTimeInstance() { Time = time } };
+            Stop();
         }
     }
 
-    public void AddMinigameCloseTimeDelay(Minigame minigame, float time)
+    private void AddMinigameTime(float time)
     {
-        string name = minigame.GetIl2CppType().Name;
-        if (MinigameTimes.TryGetValue(name, out List<MinigameTimeInstance> list))
+        if (MinigameTimes.TryGetValue(_minigameName, out List<float> list))
         {
-            if (list.Last().CloseTimeDelay > 0.0f)
+            if (list.Last() > 0.0f)
             {
-                MinigameTimes[name].Add(new MinigameTimeInstance() { CloseTimeDelay = time });
-            }
-            else
-            {
-                list.Last().CloseTimeDelay = time;
+                MinigameTimes[_minigameName].Add(time);
             }
         }
         else
         {
-            MinigameTimes[name] = new List<MinigameTimeInstance>() { new MinigameTimeInstance() { CloseTimeDelay = time } };
+            MinigameTimes[_minigameName] = new List<float>() { time };
         }
     }
 
     public void Clear()
     {
         MinigameTimes.Clear();
+    }
+
+    public void StartTime(Minigame minigame)
+    {
+        _minigameName = minigame.GetIl2CppType().Name;
+        _startTime = Time.time;
+    }
+
+    public void StopWhen(Func<bool> condition)
+    {
+        _stopTimeCondition = condition;
+    }
+
+    private void Stop()
+    {
+        _stopTimeCondition = null;
+        AddMinigameTime(Time.time - _startTime);
     }
 }
