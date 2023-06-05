@@ -52,7 +52,7 @@ def main():
             training_loss = 0
             for x, y in train_loader:
                 optimizer.zero_grad()
-                y_pred = model(x)
+                y_pred = model(x)[0]
                 loss = criterion(y_pred, y)
                 loss.backward()
                 
@@ -65,7 +65,7 @@ def main():
             total_loss = 0
             model.eval()
             for x, y in val_loader:
-                y_pred = model(x)
+                y_pred = model(x)[0]
                 loss = criterion(y_pred, y)
                 total_loss += loss.item()
             print(f"Epoch {epoch} validation loss: {total_loss / len(val_loader)}")
