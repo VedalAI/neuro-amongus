@@ -54,8 +54,9 @@ class LSTMModel(torch.nn.Module):
         
         self.fc3 = torch.nn.Linear(int(self.hidden_dim / 2), 7)
 
-    def forward(self, x):
-        hidden = self.init_hidden(x.shape[1], x.device)
+    def forward(self, x, hidden=None):
+        if hidden is None:
+            hidden = self.init_hidden(x.shape[1], x.device)
 
         x = torch.relu(self.fc1(x))
 
@@ -70,7 +71,7 @@ class LSTMModel(torch.nn.Module):
         
         x = torch.sigmoid(self.fc3(x))
 
-        return x
+        return x, hidden
 
         # x, (ht, ct) = self.lstm(x, hidden)
 
