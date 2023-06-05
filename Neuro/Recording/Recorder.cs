@@ -45,6 +45,7 @@ public sealed class Recorder : MonoBehaviour
         _fileStream = new FileStream(_filePath, FileMode.Create);
 
         WriteAndFlush(Frame.Now(true));
+        Frame.Cleanup();
     }
 
     private void FixedUpdate()
@@ -63,6 +64,7 @@ public sealed class Recorder : MonoBehaviour
         _fixedUpdateCalls = 0;
 
         WriteAndFlush(Frame.Now());
+        Frame.Cleanup();
     }
 
     private void OnDestroy()

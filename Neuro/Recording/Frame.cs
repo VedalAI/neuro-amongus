@@ -16,22 +16,20 @@ public partial class Frame
         includeHeader |= ForceNextHeader;
         ForceNextHeader = false;
 
-        try
+        return new Frame
         {
-            return new Frame
-            {
-                DeadBodies = DeadBodiesRecorder.Instance.Frame,
-                Header = includeHeader ? HeaderFrame.Generate() : null,
-                LocalPlayer = LocalPlayerRecorder.Instance.Frame,
-                Map = MapRecorder.Instance.Frame,
-                OtherPlayers = OtherPlayersRecorder.Instance.Frame,
-                Tasks = TasksRecorder.Instance.Frame,
-            };
-        }
-        finally
-        {
-            LocalPlayerRecorder.Instance.Cleanup();
-        }
+            DeadBodies = DeadBodiesRecorder.Instance.Frame,
+            Header = includeHeader ? HeaderFrame.Generate() : null,
+            LocalPlayer = LocalPlayerRecorder.Instance.Frame,
+            Map = MapRecorder.Instance.Frame,
+            OtherPlayers = OtherPlayersRecorder.Instance.Frame,
+            Tasks = TasksRecorder.Instance.Frame,
+        };
+    }
+
+    public static void Cleanup()
+    {
+        LocalPlayerRecorder.Instance.Cleanup();
     }
 
     public static bool CanGenerate => ShipStatus.Instance && PlayerControl.LocalPlayer &&
