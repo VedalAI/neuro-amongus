@@ -25,9 +25,11 @@ class Game:
     def get_x(self, shuffle=False):
         # return np.vstack([state.get_x() for state in self.states])
         # updated to return sequences of states of length WINDOW_LENGTH
-        return np.array([np.vstack([self.states[i + j].get_x() for j in range(50)]) for i in range(len(self.states) - 50)])
+        state_xs = [state.get_x() for state in self.states]
+        return np.array([np.vstack([state_xs[i + j] for j in range(50)]) for i in range(len(self.states) - 50)])
 
     def get_y(self, shuffle=False):
         # return np.vstack([state.get_y() for state in self.states])
         # updated to the corresponding y value
-        return np.array([self.states[i + 50].get_y() for i in range(len(self.states) - 50)])
+        state_ys = [state.get_y() for state in self.states]
+        return np.array([state_ys[i + 50] for i in range(len(self.states) - 50)])
