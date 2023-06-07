@@ -40,8 +40,8 @@ public static class MinigameHandler
 
         InGameCursor.Instance.HideWhen(() => !minigame);
 
-        yield return new WaitForSeconds(0.4f);
         MinigameTimeHandler.Instance.StartTimer(minigame, () => !minigame);
+        yield return new WaitForSeconds(0.4f);
         yield return solver.CompleteMinigame(minigame, task);
         
         // By this point we expect the solver to have completed the minigame,
