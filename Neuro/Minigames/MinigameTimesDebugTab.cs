@@ -21,7 +21,7 @@ public sealed class MinigameTimesDebugTab : DebugTab
             var maxTime = minigameTimeKeyValuePair.Value.OrderByDescending(t => t).First();
             using (new HorizontalScope())
             {
-                GUILayout.Label($"{minigameTimeKeyValuePair.Key}");
+                GUILayout.Label($"{minigameTimeKeyValuePair.Key.Type} {minigameTimeKeyValuePair.Key.Step}");
                 GUILayout.FlexibleSpace();
                 GUILayout.Label($"range: {minTime:0.00}s - {maxTime:0.00}s");
             }

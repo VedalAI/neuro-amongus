@@ -14,10 +14,37 @@ public sealed class MinigameTimeHandler : MonoBehaviour
 {
     public static MinigameTimeHandler Instance { get; private set; }
 
-    [HideFromIl2Cpp]
-    public Dictionary<string, List<float>> MinigameTimes { get; } = new Dictionary<string, List<float>>();
+    public class MinigameTimeKey : IEquatable<MinigameTimeKey>
+    {
+        public TaskTypes Type { get; private set; }
+        public int Step { get; private set; }
 
-    private string _minigameName;
+        public MinigameTimeKey(TaskTypes type, int step)
+        {
+            Type = type;
+            Step = step;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as MinigameTimeKey);
+        }
+
+        public bool Equals(MinigameTimeKey obj)
+        {
+            return obj != null && obj.Type == Type && obj.Step == Step;
+        }
+
+        public override int GetHashCode()
+        {
+            return Type.GetHashCode() + Step.GetHashCode();
+        }
+    }
+
+    [HideFromIl2Cpp]
+    public Dictionary<MinigameTimeKey, List<float>> MinigameTimes { get; } = new Dictionary<MinigameTimeKey, List<float>>();
+
+    private MinigameTimeKey _minigameKey;
     private float _startTime;
     private Func<bool> _stopTimerCondition;
 
@@ -47,17 +74,15 @@ public sealed class MinigameTimeHandler : MonoBehaviour
 
     private void AddMinigameTime(float time)
     {
-        if (MinigameTimes.TryGetValue(_minigameName, out List<float> list))
+        if (MinigameTimes.TryGetValue(_minigameKey, out List<float> list))
         {
-            if (list.Last() > 0.0f)
-            {
-                MinigameTimes[_minigameName].Add(time);
-            }
+            list.Add(time);
         }
         else
         {
-            MinigameTimes[_minigameName] = new List<float>() { time };
+            MinigameTimes[_minigameKey] = new List<float>() { time };
         }
+        _minigameKey = null;
     }
 
     public void Clear()
@@ -67,14 +92,20 @@ public sealed class MinigameTimeHandler : MonoBehaviour
 
     public void StartTimer(Minigame minigame, Func<bool> hideCondition)
     {
-        _minigameName = minigame.GetIl2CppType().Name;
-        _startTime = Time.time;
-        _stopTimerCondition = hideCondition;
+        if (minigame.MyTask)
+        {
+            _minigameKey = new MinigameTimeKey(minigame.MyTask.TaskType, minigame.MyTask.TaskStep);
+            _startTime = Time.time;
+            _stopTimerCondition = hideCondition;
+        }
     }
 
     private void Stop()
     {
         _stopTimerCondition = null;
-        AddMinigameTime(Time.time - _startTime);
+        if (_minigameKey != null)
+        {
+            AddMinigameTime(Time.time - _startTime);
+        }
     }
 }
