@@ -10,7 +10,7 @@ public partial class HeaderFrame
 
         HeaderFrame frame = new()
         {
-            Version = 2,
+            Version = 3,
             Map = ShipStatus.Instance.GetTypeForMessage(),
             IsFreeplay = TutorialManager.InstanceExists,
             Role = PlayerControl.LocalPlayer.Data.Role.Role.ForMessage(),

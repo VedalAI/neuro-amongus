@@ -6,8 +6,8 @@ namespace Neuro.Recording.Header.Patches;
 public static class PlayerControl_SetRole
 {
     [HarmonyPostfix]
-    public static void Postfix()
+    public static void Postfix(PlayerControl __instance)
     {
-        Frame.ForceNextHeader = true;
+        if (__instance.AmOwner) Frame.ForceNextHeader = true;
     }
 }
