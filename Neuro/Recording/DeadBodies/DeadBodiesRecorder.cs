@@ -17,8 +17,7 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
     {
     }
 
-    [HideFromIl2Cpp]
-    public DeadBodiesFrame Frame { get; } = new();
+    [HideFromIl2Cpp] public DeadBodiesFrame Frame { get; } = new();
 
     private void Awake()
     {
@@ -37,13 +36,25 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
     {
         if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
+        Collider2D closestActive = null;
+        foreach (Collider2D collider2D in Physics2D.OverlapCircleAll(PlayerControl.LocalPlayer.GetTruePosition(), PlayerControl.LocalPlayer.MaxReportDistance, Constants.PlayersOnlyMask))
+        {
+            if (collider2D.tag == "DeadBody")
+            {
+                closestActive = collider2D;
+                break;
+            }
+        }
+
         foreach (DeadBody deadBody in ComponentCache<DeadBody>.Cached)
         {
-            if (!Visibility.IsVisible(deadBody.TruePosition)) continue;
-
             if (Frame.DeadBodies.All(d => d.ParentId != deadBody.ParentId))
             {
-                Frame.DeadBodies.Add(DeadBodyData.Create(deadBody));
+                if (Visibility.IsVisible(deadBody.TruePosition) ||
+                    (HudManager.Instance.ReportButton.canInteract && deadBody.myCollider.GetInstanceID() == closestActive!?.GetInstanceID()))
+                {
+                    Frame.DeadBodies.Add(DeadBodyData.Create(deadBody));
+                }
             }
         }
     }

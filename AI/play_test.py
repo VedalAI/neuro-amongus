@@ -30,6 +30,7 @@ def main():
             last_game_state = None
             last_velocity = [0, 0]
             header = None
+            hidden = None
             x_history = []
             while True:
                 data = conn.recv(2048)
@@ -63,7 +64,8 @@ def main():
                 # print(np.array([x_history]).shape)
 
                 x_history_tensor = torch.tensor(np.array([x_history]), dtype=torch.float32, device=device)
-                y = model(x_history_tensor).detach().cpu().numpy()[0]
+                y, hidden = model(x_history_tensor, hidden)
+                y = y.detach().cpu().numpy()[0]
                 y = [float(o) for o in y]
                 
                 print(y)
@@ -84,6 +86,9 @@ def main():
 
                 output = NnOutput()
                 output.desired_move_direction = Vector2(x=new_y[0], y=new_y[1])
+                output.report = y[4] > 1e-05
+                output.kill = y[5] > 1e-05
+                output.vent = y[6] > 1e-05
                 
                 # normalize
                 if new_y[0] != 0 and new_y[1] != 0:

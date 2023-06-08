@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
+using AmongUs.GameOptions;
 using Google.Protobuf;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Movement;
@@ -86,6 +87,7 @@ public sealed class CommunicationHandler : MonoBehaviour
         if (_shouldSend)
         {
             Send(Frame.Now(_shouldSendHeader));
+            Frame.Cleanup();
             _shouldSendHeader = false;
             // Warning($"Sent: {Frame.Now}");
 
@@ -106,5 +108,12 @@ public sealed class CommunicationHandler : MonoBehaviour
     {
         // Info(output);
         MovementHandler.Instance.ForcedMoveDirection = output.DesiredMoveDirection;
+        if (output.Report) HudManager.Instance.ReportButton.DoClick();
+        if (output.Kill && HudManager.Instance.KillButton) HudManager.Instance.KillButton.DoClick();
+        if (output.Vent)
+        {
+            if (HudManager.Instance.ImpostorVentButton) HudManager.Instance.ImpostorVentButton.DoClick();
+            if (HudManager.Instance.AbilityButton && PlayerControl.LocalPlayer.Data.RoleType == RoleTypes.Engineer) HudManager.Instance.AbilityButton.DoClick();
+        }
     }
 }

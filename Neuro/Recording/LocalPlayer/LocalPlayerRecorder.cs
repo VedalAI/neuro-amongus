@@ -69,9 +69,9 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     public void RecordReport() => Frame.DidReport = true;
     public void RecordVent() => Frame.DidVent = true;
     public void RecordKill() => Frame.DidKill = true;
+    public void RecordInteract() => Frame.DidInteract = true;
     public void RecordSabotage(SystemTypes type) => Frame.SabotageUsed = type.ForMessage();
     public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = room.ForMessage();
-    public void RecordInteract() => Frame.DidInteract = true;
 
     public void Cleanup()
     {

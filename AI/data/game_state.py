@@ -53,6 +53,15 @@ class GameState():
         
         self.data["tasks"]["sabotage"] = pad_list(self.data["tasks"]["sabotage"], 2, def_positiondata)
         
+        other_players_data = self.data["other_players"]["last_seen_players"]
+        other_players_data = [[d["is_visible"][0], d["last_seen_position"][0], d["last_seen_position"][1]] for d in other_players_data]
+        
+        dead_bodies_data = self.data["dead_bodies"]["dead_bodies"]
+        dead_bodies_data = [[convert_type(d["parent_id"][0] > -1)[0], d["position"][0], d["position"][1]] for d in dead_bodies_data]
+        
+        vent_data = self.data["map"]["nearby_vents"]
+        vent_data = [[d["position"][0], d["position"][1]] for d in vent_data]
+        
         # tasks_data = [convert_type(task) for task in self.data["tasks.tasks]
         tasks_data = self.data["tasks"]["tasks"]
         # tasks_data_unsorted = tasks_data["copy()
@@ -87,6 +96,9 @@ class GameState():
             *convert_type(self.last_velocity),
             *tasks_data,
             *self.data["tasks"]["sabotage"],
+            *other_players_data,
+            *dead_bodies_data,
+            *vent_data,
             *self.data["local_player"]["raycast_obstacle_distances"]
         ])
         return x

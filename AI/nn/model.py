@@ -44,9 +44,9 @@ class LSTMModel(torch.nn.Module):
         # velocity: 2 floats = 2
 
         self.hidden_dim = 128
-        self.layers = 4
+        self.layers = 2
 
-        self.fc1 = torch.nn.Linear(58, self.hidden_dim)
+        self.fc1 = torch.nn.Linear(115, self.hidden_dim)
 
         self.lstm = torch.nn.LSTM(self.hidden_dim, self.hidden_dim, self.layers)
 
@@ -54,8 +54,9 @@ class LSTMModel(torch.nn.Module):
         
         self.fc3 = torch.nn.Linear(int(self.hidden_dim / 2), 7)
 
-    def forward(self, x):
-        hidden = self.init_hidden(x.shape[1], x.device)
+    def forward(self, x, hidden=None):
+        if hidden is None:
+            hidden = self.init_hidden(x.shape[1], x.device)
 
         x = torch.relu(self.fc1(x))
 
@@ -65,9 +66,12 @@ class LSTMModel(torch.nn.Module):
 
         x = torch.relu(self.fc2(x))
         
+        # dropout
+        x = torch.nn.Dropout(p=0.25)(x)
+        
         x = torch.sigmoid(self.fc3(x))
 
-        return x
+        return x, hidden
 
         # x, (ht, ct) = self.lstm(x, hidden)
 
