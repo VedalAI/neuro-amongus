@@ -50,7 +50,7 @@ public sealed class Recorder : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (MeetingHud.Instance || Minigame.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
+        if (MeetingHud.Instance || Minigame.Instance || ExileController.Instance || PlayerControl.LocalPlayer.Data.IsDead) return;
 
         if (CommunicationHandler.IsPresentAndConnected)
         {
