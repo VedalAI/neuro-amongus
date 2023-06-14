@@ -41,7 +41,7 @@ public sealed class ImpostorHandler : MonoBehaviour
     private IEnumerator CoStartVentOut(Vent original)
     {
         Vent[] possibleVents = GetAvailableNearbyVents(original);
-        Vent current = possibleVents[UnityEngine.Random.RandomRangeInt(0, possibleVents.Length)];
+        Vent current = possibleVents[^1];
         yield return new WaitForSeconds(UnityEngine.Random.RandomRange(0.8f, 1.2f));
         if (!original.TryMoveToVent(current, out string error))
         {
@@ -58,7 +58,7 @@ public sealed class ImpostorHandler : MonoBehaviour
                 if (player.IsVisible && !now.Header.OtherImpostors.Contains(player.Id))
                 {
                     Info($"Spotted a crewmate, trying a different exit vent...");
-                    Vent next = GetAvailableNearbyVents(current)[UnityEngine.Random.RandomRangeInt(0, possibleVents.Length)];
+                    Vent next = GetAvailableNearbyVents(current)[^1];
                     if (!current.TryMoveToVent(next, out error))
                     {
                         Error($"Failed to move to vent {next.Id}, reason: {error}");
