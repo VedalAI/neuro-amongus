@@ -9,7 +9,7 @@ namespace Neuro.Impostor;
 [DebugTab]
 public class ForceImpostorDebugTab : DebugTab
 {
-    public override string Name => "Force impostor";
+    public override string Name => "Impostor";
 
     public static bool Enabled { get; set; }
     public static List<string> CurrentlySelected { get; } = new();

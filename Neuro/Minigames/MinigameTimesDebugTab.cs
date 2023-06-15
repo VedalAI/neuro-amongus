@@ -8,7 +8,7 @@ namespace Neuro.Minigames;
 [DebugTab]
 public sealed class MinigameTimesDebugTab : DebugTab
 {
-    public override string Name => "Minigame Times";
+    public override string Name => "Minigames";
 
     public override bool IsEnabled => MinigameTimeHandler.Instance;
 
