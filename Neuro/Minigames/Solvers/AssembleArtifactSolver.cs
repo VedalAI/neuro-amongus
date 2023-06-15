@@ -12,14 +12,13 @@ public sealed class AssembleArtifactSolver : GeneralMinigameSolver<CrystalMiniga
         CrystalBehaviour[] crystals = minigame.CrystalPieces;
         Transform[] crystalSlots = minigame.CrystalSlots;
 
-        WaitForSeconds wait = new(0.2f);
         for (int i = 0; i < crystals.Length; i++)
         {
-            yield return wait;
             yield return InGameCursor.Instance.CoMoveTo(crystals[i]);
             InGameCursor.Instance.StartHoldingLMB(minigame);
             yield return InGameCursor.Instance.CoMoveTo(crystalSlots[i]);
             InGameCursor.Instance.StopHoldingLMB();
+            yield return new WaitForSeconds(0.2f);
         }
     }
 }
