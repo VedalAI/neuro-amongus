@@ -6,9 +6,20 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(Weather1Game))]
-public sealed class FixWeatherNodeSolver : GeneralMinigameSolver<Weather1Game>
+[MinigameSolver(typeof(WeatherSwitchGame))]
+public sealed class FixWeatherNodeSolver : IMinigameSolver<Minigame>, IMinigameOpener
 {
-    public override IEnumerator CompleteMinigame(Weather1Game minigame, NormalPlayerTask task)
+    public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
+
+    public IEnumerator CompleteMinigame(Minigame minigame)
+    {
+        if (minigame.TryCast<Weather1Game>() is { } part1)
+            yield return CompleteStage1(part1);
+        else
+            yield return CompleteStage2(minigame.Cast<WeatherSwitchGame>());
+    }
+
+    private IEnumerator CompleteStage1(Weather1Game minigame)
     {
         IEnumerable<Vector3Int> solution = SolveMaze(minigame);
 
@@ -24,6 +35,14 @@ public sealed class FixWeatherNodeSolver : GeneralMinigameSolver<Weather1Game>
         }
 
         InGameCursor.Instance.StopHoldingLMB();
+    }
+
+    private IEnumerator CompleteStage2(WeatherSwitchGame minigame)
+    {
+        WeatherControl desiredSwitch = minigame.Controls[minigame.WeatherTask.NodeId];
+
+        yield return InGameCursor.Instance.CoMoveTo(desiredSwitch.Switch);
+        yield return InGameCursor.Instance.CoPressLMB();
     }
 
     private static IEnumerable<Vector3Int> SolveMaze(Weather1Game minigame)
