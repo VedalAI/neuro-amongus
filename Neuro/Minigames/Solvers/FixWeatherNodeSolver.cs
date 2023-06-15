@@ -17,8 +17,8 @@ public sealed class FixWeatherNodeSolver : GeneralMinigameSolver<Weather1Game>
 
         foreach (Vector3Int tile in solution)
         {
-            Vector3 tileRealPosition = new Vector3((tile.x + 1) * tileBounds.x, (tile.y + 1) * tileBounds.y, 0);
-            yield return InGameCursor.Instance.CoMoveTo(tileRealPosition + mapPos, 0.4f);
+            Vector3 tileRealPosition = new((tile.x + 1) * tileBounds.x, (tile.y + 1) * tileBounds.y, 0);
+            yield return InGameCursor.Instance.CoMoveTo(tileRealPosition + mapPos, 1f);
 
             if (!InGameCursor.Instance.IsLeftButtonPressed) InGameCursor.Instance.StartHoldingLMB(minigame);
         }
@@ -28,7 +28,7 @@ public sealed class FixWeatherNodeSolver : GeneralMinigameSolver<Weather1Game>
 
     private static IEnumerable<Vector3Int> SolveMaze(Weather1Game minigame)
     {
-        BfsNode startTile = new BfsNode { Parent = null, Position = minigame.controlTilePos };
+        BfsNode startTile = new() {Parent = null, Position = minigame.controlTilePos};
         HashSet<Vector3Int> searchedPositions = new();
         Queue<BfsNode> searchQueue = new();
         searchQueue.Enqueue(startTile);
@@ -38,7 +38,7 @@ public sealed class FixWeatherNodeSolver : GeneralMinigameSolver<Weather1Game>
         {
             searchedPositions.Add(tile.Position);
 
-            if (tile.Position is { x: 7, y: -3 })
+            if (tile.Position is {x: 7, y: -3})
             {
                 // The exit tile's position is (7, -3)
                 endTile = tile;
@@ -71,7 +71,7 @@ public sealed class FixWeatherNodeSolver : GeneralMinigameSolver<Weather1Game>
             if (!minigame.PointIsValid(point)) continue;
             if (minigame.BarrierMap.GetTile(point)) continue;
 
-            yield return new BfsNode { Parent = node, Position = point };
+            yield return new BfsNode {Parent = node, Position = point};
         }
     }
 
