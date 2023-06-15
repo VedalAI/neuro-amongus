@@ -9,14 +9,14 @@ namespace Neuro.Impostor.Patches;
 public static class PlayerPhysics_CoEnterVent
 {
     [HarmonyPostfix]
-    public static void Postfix(int id, ref Il2CppSystem.Collections.IEnumerator __result)
+    public static void Postfix(ref Il2CppSystem.Collections.IEnumerator __result)
     {
-        __result = PostfixedEnumerator(__result, id).WrapToIl2Cpp();
+        __result = PostfixedEnumerator(__result).WrapToIl2Cpp();
     }
 
-    private static IEnumerator PostfixedEnumerator(Il2CppSystem.Collections.IEnumerator original, int ventId)
+    private static IEnumerator PostfixedEnumerator(Il2CppSystem.Collections.IEnumerator original)
     {
         yield return original;
-        yield return ImpostorHandler.Instance.CoStartVentOut(ShipStatus.Instance.AllVents.First(v => v.Id == ventId));
+        yield return ImpostorHandler.Instance.CoStartVentOut();
     }
 }
