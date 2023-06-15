@@ -11,113 +11,60 @@ using UnityEngine;
 
 namespace Neuro.Interactions;
 
-[RegisterInIl2Cpp, ShipStatusComponent]
-public sealed class InteractionsHandler : MonoBehaviour
+public static class InteractionsHandler
 {
-    public static InteractionsHandler Instance { get; private set; }
-
-    public InteractionsHandler(IntPtr ptr) : base(ptr)
-    {
-    }
-
-    private void Awake()
-    {
-        if (Instance)
-        {
-            NeuroUtilities.WarnDoubleSingletonInstance();
-            Destroy(this);
-            return;
-        }
-
-        Instance = this;
-    }
-
     [Conditional("FULL")]
-    public void UseTarget(IUsable usable)
+    public static void UseTarget(IUsable usable)
     {
         if (MeetingHud.Instance || Minigame.Instance || usable == null) return;
 
-        // TODO: Allow neural network to specifiy intention of interacting with usables
         switch (usable.Il2CppCastToTopLevel())
         {
+            // Consoles
+
             case Console console:
                 UseConsole(console);
-                break;
-
-            case DeconControl decon:
-                LocalPlayerRecorder.Instance.RecordInteract();
-                decon.Use();
-                break;
-
-            case DoorConsole door:
-                // horizontal door
-                if (door.MyDoor.myCollider.size.x > door.MyDoor.myCollider.size.y && PlayerControl.LocalPlayer.MyPhysics.Velocity.y == 0) {
-                    if (door.transform.position.y > PlayerControl.LocalPlayer.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f) {
-                        LocalPlayerRecorder.Instance.RecordInteract();
-                        door.Use();
-                    } else if (door.transform.position.y < PlayerControl.LocalPlayer.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == -1.0f) {
-                        LocalPlayerRecorder.Instance.RecordInteract();
-                        door.Use();
-                    }
-                }
-                
-                // vertical door
-                else if (door.MyDoor.myCollider.size.x < door.MyDoor.myCollider.size.y && PlayerControl.LocalPlayer.MyPhysics.Velocity.x == 0) {
-                    if (door.transform.position.x > PlayerControl.LocalPlayer.transform.position.x && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f) {
-                        LocalPlayerRecorder.Instance.RecordInteract();
-                        door.Use();
-                    } else if (door.transform.position.x < PlayerControl.LocalPlayer.transform.position.x && MovementHandler.Instance.ForcedMoveDirection.x == -1.0f) {
-                        LocalPlayerRecorder.Instance.RecordInteract();
-                        door.Use();
-                    }
-                }
                 break;
 
             case SystemConsole system:
                 UseSystemConsole(system);
                 break;
 
-            case Ladder ladder:
-                if (PlayerControl.LocalPlayer.MyPhysics.Velocity.y > 0) break;
-                if (ladder.Destination.transform.position.y > ladder.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f) {
-                    LocalPlayerRecorder.Instance.RecordInteract();
-                    ladder.Use();
-                } else if (ladder.Destination.transform.position.y < ladder.transform.position.y && MovementHandler.Instance.ForcedMoveDirection.y == -1.0f) {
-                    LocalPlayerRecorder.Instance.RecordInteract();
-                    ladder.Use();
-                } 
+            // Doors
+
+            case DoorConsole door:
+                UseDoor(door);
                 break;
 
-            // case MapConsole admin:
-            //     break;
+            case DeconControl decon:
+                UseDeconDoor(decon);
+                break;
 
-            // case OpenDoorConsole simpleDoor:
-            //     break;
+            case OpenDoorConsole simpleDoor:
+                UseSimpleDoor(simpleDoor);
+                break;
+
+            // Transportation
+
+            case Ladder ladder:
+                UseLadder(ladder);
+                break;
 
             case PlatformConsole platform:
-                if (PlayerControl.LocalPlayer.MyPhysics.Velocity.x > 0) break;
-                if (platform.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f) {
-                    LocalPlayerRecorder.Instance.RecordInteract();
-                    platform.Use();
-                } else if(!platform.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == -1.0f) {
-                    LocalPlayerRecorder.Instance.RecordInteract();
-                    platform.Use();
-                }
+                UsePlatform(platform);
                 break;
-
-
 
             // case Vent vent:
             //     break;
         }
     }
 
-    public void UseConsole(Console console)
+    private static void UseConsole(Console console)
     {
         PlayerTask task = console.FindTask(PlayerControl.LocalPlayer);
         if (task == null)
         {
-            Warning($"Unable to find task from console id {console.ConsoleId}");
+            // Warning($"Unable to find task from console id {console.ConsoleId}");
             return;
         }
 
@@ -125,34 +72,179 @@ public sealed class InteractionsHandler : MonoBehaviour
 
         if (MinigameHandler.ShouldOpenConsole(console, minigame, task))
         {
-            LocalPlayerRecorder.Instance.RecordInteract();
-            console.Use();
+            Interact(console);
         }
         else
         {
-            Warning($"Shouldn't open console id {console.ConsoleId} for minigame {task.GetMinigamePrefab().GetIl2CppType().Name}");
+            // Warning($"Shouldn't open console id {console.ConsoleId} for minigame {task.GetMinigamePrefab().GetIl2CppType().Name}");
         }
     }
 
-    public void UseSystemConsole(SystemConsole console)
+    private static void UseSystemConsole(SystemConsole console)
     {
         if (console.MinigamePrefab.TryCast<EmergencyMinigame>())
         {
             if (EmergencySolver.ShouldOpenEmergency())
             {
-                LocalPlayerRecorder.Instance.RecordInteract();
-                console.Use();
+                Interact(console);
             }
             else
             {
-                Warning("Shouldn't open emergency button");
+                // Warning("Shouldn't open emergency button");
             }
         }
         else
         {
             // as stated in EmergencySolver, we currently have no plans to open SystemConsoles besides the emergency button
             // so ignore everything else
-            Warning($"Ignoring non-emergency button console");
+            // Warning($"Ignoring non-emergency button console");
         }
+    }
+
+    private static void UseDoor(DoorConsole console)
+    {
+        Vector2 velocity = PlayerControl.LocalPlayer.MyPhysics.Velocity;
+        bool isHorizontal = console.MyDoor.myCollider.size.x > console.MyDoor.myCollider.size.y;
+
+        Vector2 consolePos = console.transform.position;
+        Vector2 playerPos = PlayerControl.LocalPlayer.transform.position;
+
+        // horizontal door
+        if (isHorizontal && velocity.y == 0)
+        {
+            if (consolePos.y > playerPos.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f)
+            {
+                Interact(console);
+            }
+            else if (consolePos.y < playerPos.y && MovementHandler.Instance.ForcedMoveDirection.y == -1.0f)
+            {
+                Interact(console);
+            }
+        }
+
+        // vertical door
+        if (!isHorizontal && velocity.x == 0)
+        {
+            if (consolePos.x > playerPos.x && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f)
+            {
+                Interact(console);
+            }
+            else if (consolePos.x < playerPos.x && MovementHandler.Instance.ForcedMoveDirection.x == -1.0f)
+            {
+                Interact(console);
+            }
+        }
+    }
+
+    private static void UseDeconDoor(DeconControl console)
+    {
+        Vector2 velocity = PlayerControl.LocalPlayer.MyPhysics.Velocity;
+
+        bool isUpperDoor = console.OnUse.m_PersistentCalls.m_Calls._items[0].arguments.boolArgument;
+        PlainDoor targetDoor = (isUpperDoor ? console.System.UpperDoor : console.System.LowerDoor).Cast<PlainDoor>();
+        bool isHorizontal = targetDoor.myCollider.size.x > targetDoor.myCollider.size.y;
+
+        Vector2 consolePos = targetDoor.transform.position;
+        Vector2 playerPos = PlayerControl.LocalPlayer.transform.position;
+
+        // horizontal door
+        if (isHorizontal && velocity.y == 0)
+        {
+            if (consolePos.y > playerPos.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f)
+            {
+                Interact(console);
+            }
+            else if (consolePos.y < playerPos.y && MovementHandler.Instance.ForcedMoveDirection.y == -1.0f)
+            {
+                Interact(console);
+            }
+        }
+
+        // vertical door
+        if (!isHorizontal && velocity.x == 0)
+        {
+            if (consolePos.x > playerPos.x && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f)
+            {
+                Interact(console);
+            }
+            else if (consolePos.x < playerPos.x && MovementHandler.Instance.ForcedMoveDirection.x == -1.0f)
+            {
+                Interact(console);
+            }
+        }
+    }
+
+    private static void UseSimpleDoor(OpenDoorConsole console)
+    {
+        Vector2 velocity = PlayerControl.LocalPlayer.MyPhysics.Velocity;
+        bool isHorizontal = console.MyDoor.myCollider.size.x > console.MyDoor.myCollider.size.y;
+
+        Vector2 consolePos = console.transform.position;
+        Vector2 playerPos = PlayerControl.LocalPlayer.transform.position;
+
+        // horizontal door
+        if (isHorizontal && velocity.y == 0)
+        {
+            if (consolePos.y > playerPos.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f)
+            {
+                Interact(console);
+            }
+            else if (consolePos.y < playerPos.y && MovementHandler.Instance.ForcedMoveDirection.y == -1.0f)
+            {
+                Interact(console);
+            }
+        }
+
+        // vertical door
+        if (!isHorizontal && velocity.x == 0)
+        {
+            if (consolePos.x > playerPos.x && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f)
+            {
+                Interact(console);
+            }
+            else if (consolePos.x < playerPos.x && MovementHandler.Instance.ForcedMoveDirection.x == -1.0f)
+            {
+                Interact(console);
+            }
+        }
+    }
+
+    private static void UseLadder(Ladder console)
+    {
+        if (PlayerControl.LocalPlayer.MyPhysics.Velocity.y != 0) return;
+
+        Vector2 destinationPos = console.Destination.transform.position;
+        Vector2 currentPos = console.transform.position;
+
+        if (destinationPos.y > currentPos.y && MovementHandler.Instance.ForcedMoveDirection.y == 1.0f)
+        {
+            Interact(console);
+        }
+
+        if (destinationPos.y < currentPos.y && MovementHandler.Instance.ForcedMoveDirection.y == -1.0f)
+        {
+            Interact(console);
+        }
+    }
+
+    private static void UsePlatform(PlatformConsole console)
+    {
+        if (PlayerControl.LocalPlayer.MyPhysics.Velocity.x != 0) return;
+
+        if (console.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == 1.0f)
+        {
+            Interact(console);
+        }
+
+        if (!console.Platform.IsLeft && MovementHandler.Instance.ForcedMoveDirection.x == -1.0f)
+        {
+            Interact(console);
+        }
+    }
+
+    private static void Interact(MonoBehaviour usable)
+    {
+        LocalPlayerRecorder.Instance.RecordInteract();
+        usable.Cast<IUsable>().Use();
     }
 }
