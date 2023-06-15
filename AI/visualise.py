@@ -6,10 +6,10 @@ from util.loader import read_all_recordings
 def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    game_data = read_all_recordings()
+    game_state = read_all_recordings()
     
-    x_data = game_data.get_x()
-    y_data = game_data.get_y()
+    x_data = game_state.get_x()
+    y_data = game_state.get_y()
     
     angles = []
     

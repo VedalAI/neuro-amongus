@@ -13,11 +13,12 @@ public sealed class EmergencySolver : IMinigameSolver<EmergencyMinigame>
     // so just use a static function to check if we can use the button
     public static bool ShouldOpenEmergency()
     {
-        return (!PlayerControl.LocalPlayer.myTasks._items.Any(PlayerTask.TaskIsEmergency)) &&
-                PlayerControl.LocalPlayer.RemainingEmergencies > 0 &&
-                // TODO: let AI govern when we want to call meeting so we dont just call a meeting every time we walk past
-                ShipStatus.Instance.Timer >= 30f &&
-                ShipStatus.Instance.EmergencyCooldown <= 0f;
+        return false && (!PlayerControl.LocalPlayer.myTasks._items.Any(PlayerTask.TaskIsEmergency)) &&
+               PlayerControl.LocalPlayer.RemainingEmergencies > 0 &&
+               // TODO: let AI govern when we want to call meeting so we dont just call a meeting every time we walk past
+               // Random.RandomRange(0f, 1f) < 0.1f &&
+               ShipStatus.Instance.Timer >= 30f &&
+               ShipStatus.Instance.EmergencyCooldown <= 0f;
     }
 
     public IEnumerator CompleteMinigame(EmergencyMinigame minigame)

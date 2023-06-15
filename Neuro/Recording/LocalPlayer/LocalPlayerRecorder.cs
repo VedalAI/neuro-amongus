@@ -51,6 +51,8 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     {
         Frame.Position = PlayerControl.LocalPlayer.GetTruePosition();
         Frame.Velocity = PlayerControl.LocalPlayer.MyPhysics.Velocity.normalized;
+        Frame.KillCooldown = PlayerControl.LocalPlayer.killTimer;
+        Frame.InVent = PlayerControl.LocalPlayer.inVent;
 
         for (int i = 0; i < 8; i++)
         {
@@ -60,17 +62,20 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
 
             Frame.RaycastObstacleDistances[i] = raycastHit.distance;
         }
+
+        Frame.UsableTarget = UsableData.Create(PlayerControl.LocalPlayer.closest);
     }
 
     public void RecordReport() => Frame.DidReport = true;
     public void RecordVent() => Frame.DidVent = true;
     public void RecordKill() => Frame.DidKill = true;
+    public void RecordInteract() => Frame.DidInteract = true;
     public void RecordSabotage(SystemTypes type) => Frame.SabotageUsed = type.ForMessage();
     public void RecordDoors(SystemTypes room) => Frame.DoorsUsed = room.ForMessage();
 
     public void Cleanup()
     {
-        Frame.DidReport = Frame.DidVent = Frame.DidKill = false;
+        Frame.DidReport = Frame.DidVent = Frame.DidKill = Frame.DidInteract = false;
         Frame.SabotageUsed = SystemType.NoneSystemType;
         Frame.DoorsUsed = SystemType.NoneSystemType;
     }

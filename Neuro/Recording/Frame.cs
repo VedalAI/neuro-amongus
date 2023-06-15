@@ -9,9 +9,14 @@ namespace Neuro.Recording;
 
 public partial class Frame
 {
+    public static bool ForceNextHeader { get; set; }
+
     public static Frame Now(bool includeHeader = false)
     {
-        try
+        includeHeader |= ForceNextHeader;
+        ForceNextHeader = false;
+
+        return new Frame
         {
             return new Frame
             {
@@ -27,6 +32,11 @@ public partial class Frame
         {
             LocalPlayerRecorder.Instance.Cleanup();
         }
+    }
+
+    public static void Cleanup()
+    {
+        LocalPlayerRecorder.Instance.Cleanup();
     }
 
     public static bool CanGenerate => ShipStatus.Instance && PlayerControl.LocalPlayer &&

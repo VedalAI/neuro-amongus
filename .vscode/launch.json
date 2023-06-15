@@ -1,0 +1,43 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "AI: Playtest",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/AI/play_test.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "AI: Train model",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/AI/train_model.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Mod: Run (Full)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "preLaunchTask": "build_full",
+            "program": "${env:AmongUs}\\Among Us.exe",
+            "args": [],
+            "cwd": "${env:AmongUs}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Mod: Run (Data Collection)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "preLaunchTask": "build_datacollection",
+            "program": "${env:AmongUs}\\Among Us.exe",
+            "args": [],
+            "cwd": "${env:AmongUs}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ]
+}

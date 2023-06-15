@@ -22,8 +22,6 @@ public static class DependencyResolver
             using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
             if (stream == null) return null;
 
-            Info($"Resolved {name} from embedded resources.");
-
             return Assembly.Load(stream.ReadFully());
         };
     }

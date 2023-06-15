@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿#if FULL
+using System.Diagnostics;
+using HarmonyLib;
 
 namespace Neuro.Debugging.Patches;
 
@@ -11,3 +13,4 @@ public static class GameStartManager_Update_Patch
         __instance.MinPlayers = 1;
     }
 }
+#endif

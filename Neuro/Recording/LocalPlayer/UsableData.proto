@@ -1,0 +1,10 @@
+syntax = "proto3";
+option csharp_namespace = "Neuro.Recording.LocalPlayer";
+
+import "Recording/Common/UsableType.proto";
+import "Recording/Common/Vector2.proto";
+
+message UsableData {
+    UsableType Type = 1;
+    Vector2 Direction = 2;
+}

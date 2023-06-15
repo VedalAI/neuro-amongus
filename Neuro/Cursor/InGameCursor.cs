@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace Neuro.Cursor;
 
-// TODO: This class is getting a bit too big, maybe it would be worth splitting it?
 [RegisterInIl2Cpp]
 public sealed class InGameCursor : MonoBehaviour
 {

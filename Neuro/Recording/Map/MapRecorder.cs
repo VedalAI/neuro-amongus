@@ -3,6 +3,7 @@ using System.Linq;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Pathfinding;
+using Neuro.Recording.Common;
 using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
@@ -39,6 +40,7 @@ public sealed class MapRecorder : MonoBehaviour
 
         UpdateNearbyDoors();
         UpdateNearbyVents();
+        UpdateMeetingButton();
     }
 
     private void UpdateNearbyDoors()
@@ -57,6 +59,11 @@ public sealed class MapRecorder : MonoBehaviour
         {
             Frame.NearbyVents.Add(VentData.Create(vent));
         }
+    }
+
+    private void UpdateMeetingButton()
+    {
+        Frame.MeetingButton = PositionData.Create(ShipStatus.Instance.EmergencyButton);
     }
 
     private float Closest(PlainDoor door)
