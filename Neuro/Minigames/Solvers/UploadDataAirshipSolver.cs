@@ -45,7 +45,7 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
                 yield break;
             }
 
-            yield return MoveToUpgradingSignal(minigame, grid, minigame.Poor, true);
+            yield return MoveToUpgradingSignal(minigame, grid, minigame.Poor);
         }
 
         grid.Reset(n => minigame.Poor.OverlapPoint(n.WorldPosition), Color.green);
@@ -58,7 +58,7 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
                 yield break;
             }
 
-            yield return MoveToUpgradingSignal(minigame, grid, minigame.Good, false);
+            yield return MoveToUpgradingSignal(minigame, grid, minigame.Good);
         }
 
         grid.Reset(n => minigame.Good.OverlapPoint(n.WorldPosition), Color.yellow);
@@ -71,15 +71,15 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
                 yield break;
             }
 
-            yield return MoveToUpgradingSignal(minigame, grid, minigame.Perfect, false);
+            yield return MoveToUpgradingSignal(minigame, grid, minigame.Perfect);
         }
 
         InGameCursor.Instance.StopHoldingLMB();
     }
 
-    private static IEnumerator MoveToUpgradingSignal(AirshipUploadGame minigame, Grid grid, Collider2D targetCollider, bool isPoor)
+    private static IEnumerator MoveToUpgradingSignal(AirshipUploadGame minigame, Grid grid, Collider2D targetCollider)
     {
-        Grid.Node targetNode = grid.GetNextTarget(false && !isPoor);
+        Grid.Node targetNode = grid.GetNextTarget();
         Vector2 phoneStartPosition = minigame.Phone.transform.position;
 
         float distance = Vector2.Distance(phoneStartPosition, targetNode.WorldPosition);
@@ -104,7 +104,6 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
         private const int SCREEN_NODE_DISTANCE = 25;
 
         internal readonly HashSet<Node> _nodes;
-        private readonly HashSet<Node> _availableNodesCache = new();
 
         public Grid(AirshipUploadGame minigame)
         {
@@ -136,26 +135,14 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
         {
             foreach (Node node in _nodes)
             {
-                if (predicate(node))
-                {
-                    if (node.Available) node.Enable(resetColor);
-                }
-                else
-                {
-                    node.Disable();
-                }
+                if (predicate(node)) node.Enable(resetColor);
+                else node.Disable();
             }
         }
 
-        public Node GetNextTarget(bool checkNeighbors)
+        public Node GetNextTarget()
         {
-            if (Cleared) return null;
-
-            RefreshAvailableNodesCache();
-
-            return !checkNeighbors
-                ? _nodes.Where(n => n.Available).Random()
-                : _nodes.OrderByDescending(n => CountActiveNeighbors(n, 5)).First();
+            return Cleared ? null : _nodes.Where(n => n.Available).Random();
         }
 
         public void DisableWhere(Func<Node, bool> predicate)
@@ -166,24 +153,10 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
             }
         }
 
-        private void RefreshAvailableNodesCache()
-        {
-            _availableNodesCache.Clear();
-            _availableNodesCache.UnionWith(_nodes.Where(n => n.Available));
-        }
-
-        private int CountActiveNeighbors(Node node, int range)
-        {
-            return _availableNodesCache.Count(n => Math.Max(
-                Math.Abs(node.ScreenPosition.x - n.ScreenPosition.x) / SCREEN_NODE_DISTANCE,
-                Math.Abs(node.ScreenPosition.y - n.ScreenPosition.y) / SCREEN_NODE_DISTANCE) <= range);
-        }
-
         public class Node
         {
             private static readonly Color _disabledColor = Color.gray;
 
-            public Vector2Int ScreenPosition { get; }
             public Vector2 WorldPosition { get; }
             public bool Available { get; private set; } = true;
 
@@ -191,7 +164,6 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
 
             public Node(Vector2Int screenPosition, Transform visualPointParent)
             {
-                ScreenPosition = screenPosition;
                 WorldPosition = NeuroUtilities.MainCamera.ScreenToWorldPoint(new Vector2(screenPosition.x, screenPosition.y));
                 CreateVisual(visualPointParent);
             }
