@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Neuro.Cursor;
+using Neuro.Gizmos;
 using Neuro.Utilities;
 using Reactor.Utilities.Extensions;
 
@@ -22,130 +24,74 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
         yield return InGameCursor.Instance.CoMoveTo(minigame.Phone);
         InGameCursor.Instance.StartHoldingLMB(minigame);
 
-        HashSet<Vector2> allPositions = GenerateAllPositions();
-        Dictionary<Vector2, LineRenderer> positionVisuals = CreatePositionVisuals(minigame, allPositions);
+        Grid grid = new(minigame);
+
+        Vector2 closest = new(10000, 10000);
+        foreach (Grid.Node node in grid._nodes)
+        {
+            if (Vector2.Distance(minigame.Hotspot.transform.position, node.WorldPosition) <
+                Vector2.Distance(minigame.Hotspot.transform.position, closest)) closest = node.WorldPosition;
+        }
+
+        minigame.Hotspot.transform.position = minigame.Hotspot.transform.position with {x = closest.x, y = closest.y};
 
         yield return new WaitForSeconds(0.1f);
 
-        HashSet<Vector2> poorPositions = new(allPositions);
-
         while (!minigame.Poor.IsTouching(minigame.Hotspot))
         {
-            if (poorPositions.Count == 0)
+            if (grid.Cleared)
             {
-                yield return InGameCursor.Instance.CoMoveTo(minigame.Hotspot);
+                yield return CompleteMinigame(minigame, task);
                 yield break;
             }
 
-            yield return MoveToUpgradingSignal(minigame, poorPositions, positionVisuals, minigame.Poor);
+            yield return MoveToUpgradingSignal(minigame, grid, minigame.Poor, true);
         }
 
-        UpdateVisualsColor(positionVisuals, allPositions, Color.gray);
-        HashSet<Vector2> goodPositions = FilterPositionsByCollider(allPositions, minigame.Poor);
-        UpdateVisualsColor(positionVisuals, goodPositions, Color.green);
+        grid.Reset(n => minigame.Poor.OverlapPoint(n.WorldPosition), Color.green);
 
         while (!minigame.Good.IsTouching(minigame.Hotspot))
         {
-            if (goodPositions.Count == 0)
+            if (grid.Cleared)
             {
-                yield return InGameCursor.Instance.CoMoveTo(minigame.Hotspot);
+                yield return CompleteMinigame(minigame, task);
                 yield break;
             }
 
-            yield return MoveToUpgradingSignal(minigame, goodPositions, positionVisuals, minigame.Good);
+            yield return MoveToUpgradingSignal(minigame, grid, minigame.Good, false);
         }
 
-        UpdateVisualsColor(positionVisuals, allPositions, Color.gray);
-        HashSet<Vector2> perfectPositions = FilterPositionsByCollider(allPositions, minigame.Good);
-        UpdateVisualsColor(positionVisuals, perfectPositions, Color.yellow);
+        grid.Reset(n => minigame.Good.OverlapPoint(n.WorldPosition), Color.yellow);
 
         while (!minigame.Perfect.IsTouching(minigame.Hotspot))
         {
-            if (perfectPositions.Count == 0)
+            if (grid.Cleared)
             {
-                yield return InGameCursor.Instance.CoMoveTo(minigame.Hotspot);
+                yield return CompleteMinigame(minigame, task);
                 yield break;
             }
 
-            yield return MoveToUpgradingSignal(minigame, perfectPositions, positionVisuals, minigame.Perfect);
+            yield return MoveToUpgradingSignal(minigame, grid, minigame.Perfect, false);
         }
 
         InGameCursor.Instance.StopHoldingLMB();
     }
 
-    private HashSet<Vector2> GenerateAllPositions()
+    private static IEnumerator MoveToUpgradingSignal(AirshipUploadGame minigame, Grid grid, Collider2D targetCollider, bool isPoor)
     {
-        HashSet<Vector2> allPositions = new();
+        Grid.Node targetNode = grid.GetNextTarget(false && !isPoor);
+        Vector2 phoneStartPosition = minigame.Phone.transform.position;
 
-        for (int x = 0; x < Screen.width; x += 25)
-        {
-            for (int y = 0; y < Screen.height; y += 25)
-            {
-                Vector2 position = NeuroUtilities.MainCamera.ScreenToWorldPoint(new Vector2(x, y));
-                allPositions.Add(position);
-            }
-        }
-
-        return allPositions;
-    }
-
-    private Dictionary<Vector2, LineRenderer> CreatePositionVisuals(AirshipUploadGame minigame, HashSet<Vector2> allPositions)
-    {
-        Dictionary<Vector2, LineRenderer> positionVisuals = new();
-
-        foreach (Vector2 position in allPositions)
-        {
-            GameObject nodeVisualPoint = new("Gizmo (Visual Point)")
-            {
-                transform =
-                {
-                    parent = minigame.transform,
-                    position = position
-                },
-                layer = LayerMask.NameToLayer("UI")
-            };
-            nodeVisualPoint.transform.localPosition = nodeVisualPoint.transform.localPosition with
-            {
-                z = -200
-            };
-            LineRenderer renderer = nodeVisualPoint.AddComponent<LineRenderer>();
-            renderer.SetPosition(0, nodeVisualPoint.transform.position);
-            renderer.SetPosition(1, nodeVisualPoint.transform.position + new Vector3(0, 0.1f));
-            renderer.widthMultiplier = 0.1f;
-            renderer.positionCount = 2;
-            renderer.material = NeuroUtilities.MaskShaderMat;
-            renderer.startColor = Color.red;
-            renderer.endColor = Color.red;
-
-            positionVisuals[position] = renderer;
-        }
-
-        return positionVisuals;
-    }
-
-    private IEnumerator MoveToUpgradingSignal(AirshipUploadGame minigame, HashSet<Vector2> targetPositions, Dictionary<Vector2, LineRenderer> positionVisuals, Collider2D targetCollider)
-    {
-        Vector2 target = targetPositions.Random();
-        float distance = Vector2.Distance(minigame.Phone.transform.position, target);
+        float distance = Vector2.Distance(phoneStartPosition, targetNode.WorldPosition);
         float time = distance / 6f;
 
-        Vector2 originalPosition = minigame.Phone.transform.position;
         for (float t = 0; t < time; t += Time.deltaTime)
         {
-            InGameCursor.Instance.SnapTo(Vector2.Lerp(originalPosition, target, t / time));
-
+            if (!targetNode.Available) break;
             if (targetCollider.IsTouching(minigame.Hotspot)) break;
 
-            targetPositions.RemoveWhere(p =>
-            {
-                if (!targetCollider.IsTouching(minigame.Hotspot) && targetCollider.OverlapPoint(p))
-                {
-                    positionVisuals[p].startColor = positionVisuals[p].endColor = Color.gray;
-                    return true;
-                }
-
-                return false;
-            });
+            InGameCursor.Instance.SnapTo(Vector2.Lerp(phoneStartPosition, targetNode.WorldPosition, t / time));
+            grid.DisableWhere(p => !targetCollider.IsTouching(minigame.Hotspot) && targetCollider.OverlapPoint(p.WorldPosition));
 
             yield return null;
         }
@@ -153,17 +99,138 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
         yield return null;
     }
 
-    private HashSet<Vector2> FilterPositionsByCollider(HashSet<Vector2> allPositions, Collider2D targetCollider)
+    private sealed class Grid
     {
-        return allPositions.Where(targetCollider.OverlapPoint).ToHashSet();
-    }
+        private const int SCREEN_NODE_DISTANCE = 25;
 
-    private void UpdateVisualsColor(Dictionary<Vector2, LineRenderer> positionVisuals, HashSet<Vector2> positions, Color color)
-    {
-        foreach (Vector2 position in positions)
+        internal readonly HashSet<Node> _nodes;
+        private readonly HashSet<Node> _availableNodesCache = new();
+
+        public Grid(AirshipUploadGame minigame)
         {
-            positionVisuals[position].startColor = color;
-            positionVisuals[position].endColor = color;
+            _nodes = new HashSet<Node>();
+
+            GameObject visualPointParentObj = new("Visual Point Parent")
+            {
+                transform =
+                {
+                    parent = minigame.transform,
+                },
+                layer = LayerMask.NameToLayer("UI")
+            };
+            Transform visualPointParent = visualPointParentObj.transform;
+            visualPointParentObj.SetActive(GizmosDebugTab.EnableAirshipUploadNodes);
+
+            for (int x = 0; x < Screen.width; x += SCREEN_NODE_DISTANCE)
+            {
+                for (int y = 0; y < Screen.height; y += SCREEN_NODE_DISTANCE)
+                {
+                    _nodes.Add(new Node(new Vector2Int(x, y), visualPointParent));
+                }
+            }
+        }
+
+        public bool Cleared => _nodes.Count == 0;
+
+        public void Reset(Func<Node, bool> predicate, Color resetColor)
+        {
+            foreach (Node node in _nodes)
+            {
+                if (predicate(node))
+                {
+                    if (node.Available) node.Enable(resetColor);
+                }
+                else
+                {
+                    node.Disable();
+                }
+            }
+        }
+
+        public Node GetNextTarget(bool checkNeighbors)
+        {
+            if (Cleared) return null;
+
+            RefreshAvailableNodesCache();
+
+            return !checkNeighbors
+                ? _nodes.Where(n => n.Available).Random()
+                : _nodes.OrderByDescending(n => CountActiveNeighbors(n, 5)).First();
+        }
+
+        public void DisableWhere(Func<Node, bool> predicate)
+        {
+            foreach (Node node in _nodes.Where(predicate))
+            {
+                node.Disable();
+            }
+        }
+
+        private void RefreshAvailableNodesCache()
+        {
+            _availableNodesCache.Clear();
+            _availableNodesCache.UnionWith(_nodes.Where(n => n.Available));
+        }
+
+        private int CountActiveNeighbors(Node node, int range)
+        {
+            return _availableNodesCache.Count(n => Math.Max(
+                Math.Abs(node.ScreenPosition.x - n.ScreenPosition.x) / SCREEN_NODE_DISTANCE,
+                Math.Abs(node.ScreenPosition.y - n.ScreenPosition.y) / SCREEN_NODE_DISTANCE) <= range);
+        }
+
+        public class Node
+        {
+            private static readonly Color _disabledColor = Color.gray;
+
+            public Vector2Int ScreenPosition { get; }
+            public Vector2 WorldPosition { get; }
+            public bool Available { get; private set; } = true;
+
+            private LineRenderer visual;
+
+            public Node(Vector2Int screenPosition, Transform visualPointParent)
+            {
+                ScreenPosition = screenPosition;
+                WorldPosition = NeuroUtilities.MainCamera.ScreenToWorldPoint(new Vector2(screenPosition.x, screenPosition.y));
+                CreateVisual(visualPointParent);
+            }
+
+            public void Disable()
+            {
+                Available = false;
+                visual.startColor = visual.endColor = _disabledColor;
+            }
+
+            public void Enable(Color color)
+            {
+                Available = true;
+                visual.startColor = visual.endColor = color;
+            }
+
+            private void CreateVisual(Transform parent)
+            {
+                GameObject nodeVisualPoint = new("Gizmo (Visual Point)")
+                {
+                    transform =
+                    {
+                        parent = parent,
+                        position = WorldPosition
+                    },
+                    layer = LayerMask.NameToLayer("UI")
+                };
+                nodeVisualPoint.transform.localPosition = nodeVisualPoint.transform.localPosition with {z = -200};
+                LineRenderer renderer = nodeVisualPoint.AddComponent<LineRenderer>();
+                renderer.SetPosition(0, nodeVisualPoint.transform.position);
+                renderer.SetPosition(1, nodeVisualPoint.transform.position + new Vector3(0, 0.1f));
+                renderer.widthMultiplier = 0.1f;
+                renderer.positionCount = 2;
+                renderer.material = NeuroUtilities.MaskShaderMat;
+                renderer.startColor = Color.red;
+                renderer.endColor = Color.red;
+
+                visual = renderer;
+            }
         }
     }
 }

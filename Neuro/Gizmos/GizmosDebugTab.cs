@@ -27,10 +27,16 @@ public sealed class GizmosDebugTab : DebugTab
         set => CachedPlayerPrefs.SetBool("EnableNodes", value);
     }
 
-    private static bool _enableObstacles
+    private static bool _enableObstacleRaycasts
     {
         get => CachedPlayerPrefs.GetBool("EnableObstacles", false);
         set => CachedPlayerPrefs.SetBool("EnableObstacles", value);
+    }
+
+    public static bool EnableAirshipUploadNodes
+    {
+        get => CachedPlayerPrefs.GetBool("EnableAirshipUploadNodes", false);
+        set => CachedPlayerPrefs.SetBool("EnableAirshipUploadNodes", value);
     }
 
     public override void BuildUI()
@@ -39,7 +45,8 @@ public sealed class GizmosDebugTab : DebugTab
         {
             _enableNodes = GUILayout.Toggle(_enableNodes, "Pathfinding Nodes", GUI.skin.button);
             EnableTaskPaths = GUILayout.Toggle(EnableTaskPaths, "Task Paths", GUI.skin.button);
-            _enableObstacles = GUILayout.Toggle(_enableObstacles, "Obstacle Raycasts", GUI.skin.button);
+            _enableObstacleRaycasts = GUILayout.Toggle(_enableObstacleRaycasts, "Obstacle Raycasts", GUI.skin.button);
+            EnableAirshipUploadNodes = GUILayout.Toggle(EnableAirshipUploadNodes, "Airship Upload Nodes", GUI.skin.button);
         }
     }
 
@@ -85,7 +92,7 @@ public sealed class GizmosDebugTab : DebugTab
             for (int i = 0; i < 8; i++)
             {
                 LineRenderer lineRenderer = _obstacleRenderers[i];
-                lineRenderer.enabled = _enableObstacles;
+                lineRenderer.enabled = _enableObstacleRaycasts;
 
                 lineRenderer.SetPosition(0, playerPos);
                 lineRenderer.SetPosition(1, playerPos + LocalPlayerRecorder.RaycastDirections[i].normalized * LocalPlayerRecorder.Instance.Frame.RaycastObstacleDistances[i]);
