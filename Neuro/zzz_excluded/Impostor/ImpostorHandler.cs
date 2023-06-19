@@ -14,25 +14,8 @@ public class ImpostorHandler : MonoBehaviour
 {
     public ImpostorHandler(IntPtr ptr) : base(ptr) { }
 
-    public List<PlainDoor> NearbyDoors { get; set; } = new List<PlainDoor>();
-
     public bool goingForKill { get; set; } = false;
     public PlayerControl killTarget { get; set; } = null;
-    public bool attemptingVent { get; set; } = false;
-
-    private void FixedUpdate()
-    {
-        if (!ShipStatus.Instance) return;
-        if (MeetingHud.Instance) return;
-        if (!PlayerControl.LocalPlayer) return;
-
-        if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
-        {
-
-            // GetOrKillTarget();
-            // AttemptVent();
-        }
-    }
 
     private void GetOrKillTarget(PlayerControl target = null)
     {
@@ -94,72 +77,6 @@ public class ImpostorHandler : MonoBehaviour
         killTarget = null;
         NeuroPlugin.Instance.Tasks.UpdatePathToTask(NeuroPlugin.Instance.Tasks.GetFurthestTask());
     }
-
-
-    [HideFromIl2Cpp]
-    private void AttemptVent()
-    {
-        // currently will just enter a vent whenever possible
-        // this should be changed to be more situational
-        if (attemptingVent && ClosestVent != null && !PlayerControl.LocalPlayer.inVent && !PlayerControl.LocalPlayer.walkingToVent)
-        {
-            if (HudManager.Instance.ImpostorVentButton.currentTarget.Id == ClosestVent.Id)
-            {
-                // vent.EnterVent() and vent.Use() dont actually put you in the vent for whatever reason so just click the button virtually
-                HudManager.Instance.ImpostorVentButton.DoClick();
-            }
-        }
-    }
-
-    public IEnumerator CoStartVentOut(Vent original)
-    {
-        Info("I entered a vent!");
-        List<Vent> possibleVents = GetAvailableNearbyVents(original);
-        Vent current = possibleVents[UnityEngine.Random.RandomRangeInt(0, possibleVents.Count)];
-        yield return new WaitForSeconds(UnityEngine.Random.RandomRange(0.8f, 1.2f));
-        if (!original.TryMoveToVent(current, out string error))
-        {
-            Error($"Failed to move to vent {current.Id}, reason: {error}");
-        }
-        while (true)
-        {
-            // use a random time between vent moves to make it more realistic
-            yield return new WaitForSeconds(UnityEngine.Random.RandomRange(0.8f, 1.2f));
-            bool playerFound = false;
-            foreach ((PlayerControl player, LastSeenPlayer lastSeen) in NeuroPlugin.Instance.Vision.PlayerLocations)
-            {
-                if (player.AmOwner) continue;
-                if (player.Data.IsDead) continue;
-                if (player.Data.Role.IsImpostor) continue;
-
-                // if we see a player in our radius, try a different vent
-                if (lastSeen.time > Time.timeSinceLevelLoad - (2 * Time.fixedDeltaTime))
-                {
-                    Info($"Spotted {player.name}, trying a different exit vent...");
-                    Vent next = GetAvailableNearbyVents(current)[UnityEngine.Random.RandomRangeInt(0, possibleVents.Count)];
-                    if (!current.TryMoveToVent(next, out error))
-                    {
-                        Error($"Failed to move to vent {next.Id}, reason: {error}");
-                    }
-                    current = next;
-                    playerFound = true;
-                    break;
-                }
-            }
-            // if we dont see anyone, exit the vent we're currently in
-            // also reset the kill target out of the vent to prevent any crossmap targeting
-            if (!playerFound)
-            {
-                HudManager.Instance.ImpostorVentButton.DoClick();
-                killTarget = null;
-                attemptingVent = false;
-                yield break;
-            }
-        }
-    }
-
-    // since some vents can have a variable amount of neighbors, use this helper method to get available ones
-    private List<Vent> GetAvailableNearbyVents(Vent vent) => vent.NearbyVents.Where(v => v).ToList();
 
     public void ResetAfterMeeting()
     {
