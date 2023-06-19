@@ -114,7 +114,7 @@ public sealed class InteractionsHandler : MonoBehaviour
         {
             // as stated in EmergencySolver, we currently have no plans to open SystemConsoles besides the emergency button
             // so ignore everything else
-            Warning($"Ignoring non-emergency button console");
+            // Warning($"Ignoring non-emergency button console");
         }
     }
 }

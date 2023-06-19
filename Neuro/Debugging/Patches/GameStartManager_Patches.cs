@@ -1,5 +1,4 @@
 ﻿#if FULL
-using System.Diagnostics;
 using HarmonyLib;
 
 namespace Neuro.Debugging.Patches;

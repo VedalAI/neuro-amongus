@@ -75,9 +75,14 @@ public partial class TaskData
         return PathfindingHandler.Instance.GetPathLength(console);
     }
 
-    private static IEnumerator DestroyAfter(GameObject obj, float timeoutSeconds)
+    private static IEnumerator DestroyAfter(GameObject obj, int timeoutSeconds)
     {
-        yield return new WaitForSeconds(timeoutSeconds);
+        for (int i = 0; i < timeoutSeconds; i++)
+        {
+            if (!GizmosDebugTab.EnableTaskPaths) break;
+            yield return new WaitForSeconds(1);
+        }
+
         obj.Destroy();
     }
 }

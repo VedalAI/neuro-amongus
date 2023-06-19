@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace Neuro.Minigames;
 
+// TODO: Check all minigames while window unfocused
 public static class MinigameHandler
 {
     // TODO: Implement something (maybe in control panel) to disengage from minigame and/or ignore it for the rest of the match
