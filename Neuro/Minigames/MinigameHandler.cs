@@ -41,9 +41,10 @@ public static class MinigameHandler
 
         InGameCursor.Instance.HideWhen(() => !minigame);
 
+        MinigameTimeHandler.Instance.StartTimer(minigame, () => !minigame);
         yield return new WaitForSeconds(0.4f);
         yield return solver.CompleteMinigame(minigame, task);
-
+        
         // By this point we expect the solver to have completed the minigame,
         // which means that it will close and be destroyed, so this coroutine
         // will not execute any code below.
