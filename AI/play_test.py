@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 
 def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = LSTMModel().to(device)
-    model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model_final.pt"))
+    model = LSTMModel(7).to(device)
+    model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model_final_new.pt"))
     model.eval()
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,7 +40,7 @@ def main():
             hidden = None
             x_history = []
             while True:
-                data = conn.recv(2048)
+                data = conn.recv(2048) # TODO: fix error when disconnecting
                 if not data:
                     print("no data")
                     break
@@ -134,7 +134,7 @@ def main():
                 conn.sendall(bytes(output))
                 
                 plt.pause(0.01)
-                sleep(0.2) # todo: fix
+                #sleep(0.05) # todo: fix
         # except Exception as e:
         #     print(e)
 

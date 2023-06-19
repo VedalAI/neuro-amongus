@@ -5,8 +5,8 @@ from nn.model import LSTMModel
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-base_model = LSTMModel().to(device)
-base_model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model.pt"), strict=False)
+base_model = LSTMModel(7).to(device)
+base_model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model 59.pt"), strict=False)
 
 actions_model = LSTMModel().to(device)
 actions_model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model_finetuned.pt"), strict=False)
@@ -20,4 +20,4 @@ base_model.actions_fc3.weight = actions_model.actions_fc3.weight
 base_model.actions_fc3.bias = actions_model.actions_fc3.bias
 
 # save new model
-torch.save(base_model.state_dict(), os.path.dirname(__file__) + "/model_final.pt")
+torch.save(base_model.state_dict(), os.path.dirname(__file__) + "/model_final_new.pt")

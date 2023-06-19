@@ -40,6 +40,14 @@ public sealed class MovementHandler : MonoBehaviour
     private readonly Queue<Vector2> _positionHistory = new();
     private float _unstuckTimer = 0f;
 
+    private float _waitTimer = 0f;
+
+    public void Wait(float time)
+    {
+        _waitTimer = time;
+    }
+
+
     [Conditional("FULL")]
     private void FixedUpdate()
     {
@@ -67,6 +75,13 @@ public sealed class MovementHandler : MonoBehaviour
 
         // TODO: We need to adjust this based on player speed setting // TODO: It seems like this already what's happening, but the player still is faster(?)
         direction = ForcedMoveDirection.normalized;
+
+        if(_waitTimer > 0f) {
+            _waitTimer -= Time.fixedDeltaTime;
+            _unstuckTimer = 0f;
+            direction = Vector2.zero;
+            return;
+        }
 
         if (_unstuckTimer > 0f)
         {
@@ -96,6 +111,17 @@ public sealed class MovementHandler : MonoBehaviour
                 if (path is {Length: > 1})
                 {
                     direction = (path[1] - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+                    
+                    // Quantize direction into 8 directions
+                    if (direction.x > 0.5f) direction.x = 1f;
+                    else if (direction.x < -0.5f) direction.x = -1f;
+                    else direction.x = 0f;
+
+                    if (direction.y > 0.5f) direction.y = 1f;
+                    else if (direction.y < -0.5f) direction.y = -1f;
+                    else direction.y = 0f;
+
+                    direction = direction.normalized;
                 }
             }
         }

@@ -8,7 +8,9 @@ using Neuro.Movement;
 using Neuro.Recording;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
+using Neuro.Events;
 using Neuro.Utilities;
+using Neuro.Recording.LocalPlayer;
 
 namespace Neuro.Communication.AmongUsAI;
 
@@ -42,6 +44,7 @@ public sealed class CommunicationHandler : MonoBehaviour
         }
 
         Instance = this;
+        EventManager.RegisterHandler(this);
 
         _thread = new WebSocketThread();
         _thread.OnConnect += () => _shouldSendHeader = true;
@@ -113,16 +116,24 @@ public sealed class CommunicationHandler : MonoBehaviour
         MovementHandler.Instance.ForcedMoveDirection = output.DesiredMoveDirection;
         if (output.Report) HudManager.Instance.ReportButton.DoClick();
         if (output.Kill && HudManager.Instance.KillButton) HudManager.Instance.KillButton.DoClick();
-        if (output.Vent)
+        if (output.Vent && !PlayerControl.LocalPlayer.inVent)
         {
-            if (HudManager.Instance.ImpostorVentButton && ventCooldownTimer > 3f) {
+            if (HudManager.Instance.ImpostorVentButton && ventCooldownTimer > 3f)
+            {
                 HudManager.Instance.ImpostorVentButton.DoClick();
                 ventCooldownTimer = 0f;
             }
-            if (HudManager.Instance.AbilityButton && PlayerControl.LocalPlayer.Data.RoleType == RoleTypes.Engineer && ventCooldownTimer > 3f) {
+            if (HudManager.Instance.AbilityButton && PlayerControl.LocalPlayer.Data.RoleType == RoleTypes.Engineer && ventCooldownTimer > 3f)
+            {
                 HudManager.Instance.AbilityButton.DoClick();
                 ventCooldownTimer = 0f;
             }
         }
+    }
+
+    [EventHandler(EventTypes.GameStarted)] // my back hurts from carrying this mod development too much
+    private void ResendHeaderOnNewGame()
+    {
+        _shouldSendHeader = true;
     }
 }

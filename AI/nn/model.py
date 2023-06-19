@@ -30,7 +30,7 @@ class Model(torch.nn.Module):
 
 
 class LSTMModel(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, movement_outputs=4):
         super(LSTMModel, self).__init__()
         # INPUTS (66)
         # imposter 1
@@ -50,7 +50,9 @@ class LSTMModel(torch.nn.Module):
         self.fc1 = torch.nn.Linear(115, self.hidden_dim)
         self.lstm = torch.nn.LSTM(self.hidden_dim, self.hidden_dim, self.layers)
         self.fc2 = torch.nn.Linear(self.hidden_dim, int(self.hidden_dim / 2))
-        self.fc3 = torch.nn.Linear(int(self.hidden_dim / 2), 4)
+        self.fc3 = torch.nn.Linear(int(self.hidden_dim / 2), movement_outputs)
+        
+        self.movement_outputs = movement_outputs
         
         # actions
         self.actions_fc1 = torch.nn.Linear(2 + 6 + (3 * 14) + (3 * 3) + (3 * 2) + 8, self.hidden_dim)
@@ -69,6 +71,9 @@ class LSTMModel(torch.nn.Module):
         movement_x = torch.nn.Dropout(p=0.25)(movement_x)
         movement_x = torch.sigmoid(self.fc3(movement_x))
         
+        if self.movement_outputs != 4:
+            movement_x = movement_x[:, :4]
+        
         # actions
         last_frame_x = x[:, -1, :]
         actions_x = torch.cat((
@@ -81,7 +86,7 @@ class LSTMModel(torch.nn.Module):
         actions_x = torch.nn.Dropout(p=0.25)(actions_x)
         actions_x = torch.sigmoid(self.actions_fc3(actions_x))
         
-        y = torch.cat((movement_x, actions_x), 1)
+        y = torch.cat((movement_x[: :4], actions_x), 1)
 
         return y, hidden
 

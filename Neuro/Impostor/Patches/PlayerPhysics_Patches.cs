@@ -9,8 +9,9 @@ namespace Neuro.Impostor.Patches;
 public static class PlayerPhysics_CoEnterVent
 {
     [HarmonyPostfix]
-    public static void Postfix(ref Il2CppSystem.Collections.IEnumerator __result)
+    public static void Postfix(PlayerPhysics __instance, ref Il2CppSystem.Collections.IEnumerator __result)
     {
+        if (!__instance.AmOwner) return;
         __result = PostfixedEnumerator(__result).WrapToIl2Cpp();
     }
 
