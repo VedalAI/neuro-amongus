@@ -298,3 +298,4 @@ AI/recordings
 .vscode/settings.json
 .mailmap
 **/Reactor.*.dll
+*.pkl

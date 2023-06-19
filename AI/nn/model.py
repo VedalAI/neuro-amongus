@@ -46,38 +46,44 @@ class LSTMModel(torch.nn.Module):
         self.hidden_dim = 128
         self.layers = 2
 
+        # movement
         self.fc1 = torch.nn.Linear(115, self.hidden_dim)
-
         self.lstm = torch.nn.LSTM(self.hidden_dim, self.hidden_dim, self.layers)
-
         self.fc2 = torch.nn.Linear(self.hidden_dim, int(self.hidden_dim / 2))
+        self.fc3 = torch.nn.Linear(int(self.hidden_dim / 2), 4)
         
-        self.fc3 = torch.nn.Linear(int(self.hidden_dim / 2), 7)
+        # actions
+        self.actions_fc1 = torch.nn.Linear(2 + 6 + (3 * 14) + (3 * 3) + (3 * 2) + 8, self.hidden_dim)
+        self.actions_fc2 = torch.nn.Linear(self.hidden_dim, int(self.hidden_dim / 2))
+        self.actions_fc3 = torch.nn.Linear(int(self.hidden_dim / 2), 3)
 
     def forward(self, x, hidden=None):
         if hidden is None:
             hidden = self.init_hidden(x.shape[1], x.device)
 
-        x = torch.relu(self.fc1(x))
-
-        x, hidden = self.lstm(x, hidden)
-
-        x = x[:, -1, :]
-
-        x = torch.relu(self.fc2(x))
+        # movement
+        movement_x = torch.relu(self.fc1(x))
+        movement_x, hidden = self.lstm(movement_x, hidden)
+        movement_x = movement_x[:, -1, :]
+        movement_x = torch.relu(self.fc2(movement_x))
+        movement_x = torch.nn.Dropout(p=0.25)(movement_x)
+        movement_x = torch.sigmoid(self.fc3(movement_x))
         
-        # dropout
-        x = torch.nn.Dropout(p=0.25)(x)
+        # actions
+        last_frame_x = x[:, -1, :]
+        actions_x = torch.cat((
+            last_frame_x[:, 0:2],
+            last_frame_x[:, 44:],
+        ), 1)
+            
+        actions_x = torch.relu(self.actions_fc1(actions_x))
+        actions_x = torch.relu(self.actions_fc2(actions_x))
+        actions_x = torch.nn.Dropout(p=0.25)(actions_x)
+        actions_x = torch.sigmoid(self.actions_fc3(actions_x))
         
-        x = torch.sigmoid(self.fc3(x))
+        y = torch.cat((movement_x, actions_x), 1)
 
-        return x, hidden
-
-        # x, (ht, ct) = self.lstm(x, hidden)
-
-        # output = self.fc2(ht[-1])
-
-        # return output
+        return y, hidden
 
     def init_hidden(self, batch_size, device):
         return (autograd.Variable(torch.randn(self.layers, batch_size, self.hidden_dim, device=device)),

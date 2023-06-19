@@ -29,6 +29,10 @@ class GameState():
         self.data = convert_type(frame)
         self.header = convert_type(header)
         
+        # if last_game_state:
+        #     if frame.local_player.kill_cooldown > last_game_state.data["local_player"]["kill_cooldown"][0]:
+        #         last_game_state.data["local_player"]["did_kill"] = [1.0]
+        
         if use_last_velocity:
             self.last_velocity = last_game_state.data["local_player"]["velocity"] if last_game_state else convert_type(def_vector2())
         else:
@@ -56,8 +60,10 @@ class GameState():
         other_players_data = self.data["other_players"]["last_seen_players"]
         other_players_data = [[d["is_visible"][0], d["last_seen_position"][0], d["last_seen_position"][1]] for d in other_players_data]
         
+        player_position = self.data["local_player"]["position"]
+        
         dead_bodies_data = self.data["dead_bodies"]["dead_bodies"]
-        dead_bodies_data = [[convert_type(d["parent_id"][0] > -1)[0], d["position"][0], d["position"][1]] for d in dead_bodies_data]
+        dead_bodies_data = [[convert_type(d["parent_id"][0] > -1)[0], d["position"][0] - player_position[0], d["position"][1] - player_position[1]] for d in dead_bodies_data]
         
         vent_data = self.data["map"]["nearby_vents"]
         vent_data = [[d["position"][0], d["position"][1]] for d in vent_data]

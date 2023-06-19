@@ -1,5 +1,6 @@
 import socket
 import os
+from time import sleep
 
 import torch
 import numpy as np
@@ -10,14 +11,20 @@ from nn.model import LSTMModel, Model
 
 from data.game import WINDOW_LENGTH
 
+import matplotlib.pyplot as plt
+
 def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = LSTMModel().to(device)
-    model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model.pt"))
+    model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model_final.pt"))
     model.eval()
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(("localhost", 6969))
+    
+    kill_history = []
+    report_history = []
+    vent_history = []
 
     while True:
         # try:
@@ -48,6 +55,8 @@ def main():
                 last_game_state = state
 
                 x = state.get_x()
+                
+                is_imposter = x[0] == 1
 
                 # print(x)
 
@@ -86,9 +95,33 @@ def main():
 
                 output = NnOutput()
                 output.desired_move_direction = Vector2(x=new_y[0], y=new_y[1])
-                output.report = y[4] > 1e-05
-                output.kill = y[5] > 1e-05
-                output.vent = y[6] > 1e-05
+                output.report = y[4] > 0.5
+                output.vent = y[5] > 0.5
+                output.kill = y[6] > 0.5 and is_imposter
+
+                kill_history.append(y[6])
+                # max length of 20
+                if len(kill_history) > 20:
+                    kill_history.pop(0)
+                    
+                report_history.append(y[4])
+                # max length of 20
+                if len(report_history) > 20:
+                    report_history.pop(0)
+
+                vent_history.append(y[5])
+                # max length of 20
+                if len(vent_history) > 20:
+                    vent_history.pop(0)
+                    
+                # plot
+                plt.clf()
+                # set axis limits
+                plt.ylim(0, 1)
+                if is_imposter:
+                    plt.plot(kill_history, label="kill", color="red")
+                plt.plot(report_history, label="report", color="blue")
+                plt.plot(vent_history, label="vent", color="green")
                 
                 # normalize
                 if new_y[0] != 0 and new_y[1] != 0:
@@ -99,6 +132,9 @@ def main():
                 print(new_y)
 
                 conn.sendall(bytes(output))
+                
+                plt.pause(0.01)
+                sleep(0.2) # todo: fix
         # except Exception as e:
         #     print(e)
 

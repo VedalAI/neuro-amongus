@@ -26,6 +26,18 @@ class Game:
         # return np.vstack([state.get_x() for state in self.states])
         # updated to return sequences of states of length WINDOW_LENGTH
         state_xs = [state.get_x() for state in self.states]
+        # for i in range(len(self.states)):
+        #     if self.states[i].data["local_player"]["did_report"][0] == 1:
+        #         print(self.states[i - 1])
+        #         print(self.states[i])
+        #         print(self.states[i + 1])
+        #         print("report", i)
+        #     elif self.states[i].data["local_player"]["did_kill"][0] == 1:
+        #         print(self.states[i - 1])
+        #         print(self.states[i])
+        #         print(self.states[i + 1])
+        #         print("kill", i)
+                
         return np.array([np.vstack([state_xs[i + j] for j in range(WINDOW_LENGTH)]) for i in range(len(self.states) - WINDOW_LENGTH)])
 
     def get_y(self, shuffle=False):

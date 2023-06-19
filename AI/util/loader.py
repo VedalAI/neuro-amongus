@@ -18,21 +18,22 @@ RECORDINGS_PATH = path.join(BASE_PATH, "recordings")
 def deserialize_gymbag(file_path: str) -> List[Frame]:
     frames = []
 
-    with open(file_path, "rb") as file:
-        data = file.read()
-        index = 0
+    try:
+        with open(file_path, "rb") as file:
+            data = file.read()
+            index = 0
 
-        while index < len(data):
-            length = int.from_bytes(data[index:index+4], "little")
-            index += 4
+            while index < len(data):
+                length = int.from_bytes(data[index:index+4], "little")
+                index += 4
 
-            frame = Frame()
-            frame.parse(data[index:index+length])
-            index += length
+                frame = Frame()
+                frame.parse(data[index:index+length])
+                index += length
 
-            frames.append(frame)
-
-    return frames
+                frames.append(frame)
+    finally:
+        return frames
 
 
 def save_processed_game(file_path: str, game: Game):
@@ -86,12 +87,23 @@ def load_game(file) -> Game:
             else:
                 print(f"Parsing: {path.relpath(file_path, BASE_PATH)}")
                 frames = deserialize_gymbag(file_path)
+                if len(frames) == 0:
+                    return None
                 print(f"Updating game data")
                 game = Game(frames)
                 print(f"Saving: {path.relpath(decoded_file_path, BASE_PATH)}")
                 save_processed_game(decoded_file_path, game)
                 
             if game is None:
+                return None
+            
+            if len(game.states) == 0:
+                return None
+            
+            try:
+                if game.states[0].header["version"] != [3]:
+                    return None
+            except KeyError:
                 return None
                 
             print("Converting to neural network format...")
@@ -119,7 +131,7 @@ def read_all_recordings() -> List[Game]:
     
     #result = list(map(load_game, result))
     
-    with Pool(12) as p:
+    with Pool(4) as p:
         result = p.map(load_game, result)
 
     print("Done loading recordings")
