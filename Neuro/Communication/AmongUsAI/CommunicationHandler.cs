@@ -28,6 +28,8 @@ public sealed class CommunicationHandler : MonoBehaviour
     private volatile bool _shouldSendHeader = true;
     private bool _shouldSend = true;
 
+    private float ventCooldownTimer = 0f;
+
     public bool IsConnected => _thread.Socket?.Connected ?? false;
 
     private void Awake()
@@ -58,6 +60,7 @@ public sealed class CommunicationHandler : MonoBehaviour
 
     private void FixedUpdate()
     {
+        ventCooldownTimer += Time.fixedDeltaTime;
         if (_thread.Socket is not {Connected: true})
         {
             // Send data when next connected, in case of reset.
@@ -112,8 +115,14 @@ public sealed class CommunicationHandler : MonoBehaviour
         if (output.Kill && HudManager.Instance.KillButton) HudManager.Instance.KillButton.DoClick();
         if (output.Vent)
         {
-            if (HudManager.Instance.ImpostorVentButton) HudManager.Instance.ImpostorVentButton.DoClick();
-            if (HudManager.Instance.AbilityButton && PlayerControl.LocalPlayer.Data.RoleType == RoleTypes.Engineer) HudManager.Instance.AbilityButton.DoClick();
+            if (HudManager.Instance.ImpostorVentButton && ventCooldownTimer > 3f) {
+                HudManager.Instance.ImpostorVentButton.DoClick();
+                ventCooldownTimer = 0f;
+            }
+            if (HudManager.Instance.AbilityButton && PlayerControl.LocalPlayer.Data.RoleType == RoleTypes.Engineer && ventCooldownTimer > 3f) {
+                HudManager.Instance.AbilityButton.DoClick();
+                ventCooldownTimer = 0f;
+            }
         }
     }
 }
