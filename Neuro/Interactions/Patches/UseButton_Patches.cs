@@ -8,8 +8,8 @@ public static class UseButton_SetTarget
     [HarmonyPrefix]
     public static void Postfix(UseButton __instance)
     {
-        if (!InteractionsHandler.Instance || !__instance.canInteract) return;
+        if (!__instance.canInteract) return;
 
-        InteractionsHandler.Instance.UseTarget(__instance.currentTarget);
+        InteractionsHandler.UseTarget(__instance.currentTarget);
     }
 }
