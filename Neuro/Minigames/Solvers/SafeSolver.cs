@@ -18,7 +18,7 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
 
         yield return InGameCursor.Instance.CoMoveToPositionOnCircle(minigame.Tumbler, TumblerRadius, TumblerAngle);
 
-        // Failsafe (if tumbler starts already at first combo
+        // Failsafe (if tumbler starts already at first combo)
         if (TumblerAngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[0] * 45, 3f))
         {
             currTumblerAngle = TumblerAngle;
