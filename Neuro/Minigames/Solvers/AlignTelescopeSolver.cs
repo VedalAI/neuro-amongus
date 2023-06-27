@@ -9,7 +9,7 @@ public sealed class AlignTelescopeSolver : GeneralMinigameSolver<TelescopeGame>
 {
     public override IEnumerator CompleteMinigame(TelescopeGame minigame, NormalPlayerTask task)
     {
-        yield return InGameCursor.Instance.CoMoveTo(minigame.Reticle.transform.position);
+        yield return InGameCursor.Instance.CoMoveTo(minigame.Reticle);
         InGameCursor.Instance.StartHoldingLMB(minigame);
 
         // Add a bit of human
