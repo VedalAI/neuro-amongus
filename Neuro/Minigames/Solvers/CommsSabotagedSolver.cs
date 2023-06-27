@@ -16,26 +16,37 @@ public sealed class CommsSabotagedSolver : IMinigameSolver<TuneRadioMinigame>, I
         yield return InGameCursor.Instance.CoMoveToPositionOnCircle(minigame.dial.DialTrans, radius, 90f);
         InGameCursor.Instance.StartHoldingLMB(minigame);
 
-        // check the left side of the dial
-        for (float t = 0; t < 1f; t += Time.deltaTime)
+        // if target angle is positive the signal is on the left
+        if (minigame.targetAngle > 0)
         {
-            // exit if we find the solution
-            if (minigame.actualSignal.NoiseLevel <= minigame.Tolerance - 0.03f) yield break;
+            // move through the left side of the dial
+            for (float t = 0; t < 1f; t += Time.deltaTime)
+            {
+                // exit if we find the solution
+                if (minigame.actualSignal.NoiseLevel <= minigame.Tolerance) yield break;
 
-            float angle = Mathf.Lerp(90f, 210f, t);
-            InGameCursor.Instance.SnapToPositionOnCircle(minigame.dial.DialTrans, radius, angle);
-            yield return null;
+                float angle = Mathf.Lerp(90f, 210f, t);
+                InGameCursor.Instance.SnapToPositionOnCircle(minigame.dial.DialTrans, radius, angle);
+                yield return null;
+            }
         }
-
-        // if the correct side is on the right, move to the other side
-        for (float t = 0; t < 2f; t += Time.deltaTime)
+        // if target angle is negative the signal is on the right
+        else if (minigame.targetAngle < 0)
         {
-            // exit if we find the solution
-            if (minigame.actualSignal.NoiseLevel <= minigame.Tolerance) yield break;
+            // move through the right side of the dial
+            for (float t = 0; t < 2f; t += Time.deltaTime)
+            {
+                // exit if we find the solution
+                if (minigame.actualSignal.NoiseLevel <= minigame.Tolerance) yield break;
 
-            float angle = Mathf.Lerp(210f, -210f, t / 2f);
-            InGameCursor.Instance.SnapToPositionOnCircle(minigame.dial.DialTrans, radius, angle);
-            yield return null;
+                float angle = Mathf.Lerp(90f, -30f, t);
+                InGameCursor.Instance.SnapToPositionOnCircle(minigame.dial.DialTrans, radius, angle);
+                yield return null;
+            }
+        }
+        else
+        {
+            yield break;
         }
     }
 }
