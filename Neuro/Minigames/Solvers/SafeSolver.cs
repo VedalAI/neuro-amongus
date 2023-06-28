@@ -9,6 +9,8 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
 {
     public override IEnumerator CompleteMinigame(SafeMinigame minigame, NormalPlayerTask task)
     {
+        if (!task) yield break;
+
         // Tumbler (combo)
         const float TumblerRadius = 0.6f;
         const float TumblerSpeed = 2f;
@@ -19,7 +21,7 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
         yield return InGameCursor.Instance.CoMoveToPositionOnCircle(minigame.Tumbler, TumblerRadius, TumblerAngle);
 
         // Failsafe (if tumbler starts already at first combo)
-        if (TumblerAngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[0] * 45, 3f))
+        if (TumblerAngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float) minigame.combo[0] * 45, 3f))
         {
             currTumblerAngle = TumblerAngle;
             newTumblerAngle = TumblerAngle - 180f;
@@ -30,6 +32,7 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
                 InGameCursor.Instance.SnapToPositionOnCircle(minigame.Tumbler, TumblerRadius, TumblerAngle);
                 yield return null;
             }
+
             InGameCursor.Instance.StopHoldingLMB();
         }
 
@@ -40,7 +43,7 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
         for (float t = 0; t < TumblerSpeed; t += Time.deltaTime)
         {
             // exit if we find the solution
-            if (TumblerAngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[0] * 45, 3f))
+            if (TumblerAngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float) minigame.combo[0] * 45, 3f))
             {
                 InGameCursor.Instance.StopHoldingLMB();
                 minigame.CheckTumblr(0f, minigame.Tumbler.transform.eulerAngles.z, 0, minigame.combo[0] * 45);
@@ -51,6 +54,7 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
             InGameCursor.Instance.SnapToPositionOnCircle(minigame.Tumbler, TumblerRadius, TumblerAngle);
             yield return null;
         }
+
         InGameCursor.Instance.StopHoldingLMB();
 
         // Combo 2
@@ -60,7 +64,7 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
         for (float t = 0; t < TumblerSpeed; t += Time.deltaTime)
         {
             // exit if we find the solution
-            if (TumblerAngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[1] * 45, 3f))
+            if (TumblerAngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float) minigame.combo[1] * 45, 3f))
             {
                 InGameCursor.Instance.StopHoldingLMB();
                 minigame.CheckTumblr(0f, minigame.Tumbler.transform.eulerAngles.z, 1, minigame.combo[1] * 45);
@@ -71,6 +75,7 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
             InGameCursor.Instance.SnapToPositionOnCircle(minigame.Tumbler, TumblerRadius, TumblerAngle);
             yield return null;
         }
+
         InGameCursor.Instance.StopHoldingLMB();
 
         // Combo 3
@@ -80,7 +85,7 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
         for (float t = 0; t < TumblerSpeed; t += Time.deltaTime)
         {
             // exit if we find the solution
-            if (TumblerAngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[2] * 45, 3f))
+            if (TumblerAngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float) minigame.combo[2] * 45, 3f))
             {
                 InGameCursor.Instance.StopHoldingLMB();
                 minigame.CheckTumblr(0f, minigame.Tumbler.transform.eulerAngles.z, 2, minigame.combo[2] * 45);
@@ -91,8 +96,8 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
             InGameCursor.Instance.SnapToPositionOnCircle(minigame.Tumbler, TumblerRadius, TumblerAngle);
             yield return null;
         }
-        InGameCursor.Instance.StopHoldingLMB();
 
+        InGameCursor.Instance.StopHoldingLMB();
 
 
         // Spinner
@@ -123,19 +128,23 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
         {
             actual += 360f;
         }
+
         if (Mathf.Sign(dir) != Mathf.Sign(expected))
         {
             return false;
         }
+
         expected = Mathf.Abs(expected);
         if (actual < 90f && expected > 270f)
         {
             actual += 360f;
         }
+
         if (expected < 90f && actual > 270f)
         {
             expected += 360f;
         }
+
         return actual >= expected - Threshold && actual <= expected + Threshold;
     }
 }
