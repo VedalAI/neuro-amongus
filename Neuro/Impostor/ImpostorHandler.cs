@@ -13,7 +13,9 @@ namespace Neuro.Impostor;
 [RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class ImpostorHandler : MonoBehaviour
 {
-    public ImpostorHandler(IntPtr ptr) : base(ptr) { }
+    public ImpostorHandler(IntPtr ptr) : base(ptr)
+    {
+    }
 
     public static ImpostorHandler Instance { get; private set; }
 
@@ -39,26 +41,36 @@ public sealed class ImpostorHandler : MonoBehaviour
         foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
         {
             if (task == null || task.Locations == null || task.IsComplete || !task.MinigamePrefab) continue;
+            if (PlayerTask.TaskIsEmergency(task)) continue; // Don't fake sabotages
 
             foreach (Console console in task.FindConsoles())
             {
-                if (Vector2.Distance(console.transform.position, PlayerControl.LocalPlayer.GetTruePosition()) < 0.8f)
+                if (Vector2.Distance(console.transform.position, PlayerControl.LocalPlayer.GetTruePosition()) < console.UsableDistance)
                 {
-                    // Minigame minigame = GameObject.Instantiate<Minigame>(task.GetMinigamePrefab());
-                    // minigame.Console = console;
-                    // minigame.Begin(task);
+                    NormalPlayerTask normalTask = task.Cast<NormalPlayerTask>();
 
-                    // TODO: we can't just do task.NextStep because whoever coded minigames did a very bad job and it would be broken
-                    // unless we can just ignore the tasks we don't want to fake
+                    switch (task.TaskType)
+                    {
+                        // These tasks can't be faked properly as impostor using the current system, so instead we pretend they are done after the first step
+                        case TaskTypes.AlignEngineOutput:
+                        case TaskTypes.CleanO2Filter:
+                        case TaskTypes.ClearAsteroids:
+                        case TaskTypes.FuelEngines: // TODO: Fake fuel maybe?
+                        case TaskTypes.OpenWaterways: // TODO: Fake waterways maybe?
+                        case TaskTypes.PickUpTowels:
+                        case TaskTypes.PutAwayPistols:
+                        case TaskTypes.PutAwayRifles:
+                        case TaskTypes.ResetBreakers:
+                        case TaskTypes.SortRecords:
+                        case TaskTypes.StartFans:
+                            normalTask.Complete();
+                            break;
 
-                    // i cant be arsed to explain
-                    // just trust me when i say its not working
-                    // https://cdn.7tv.app/emote/62af89d111218d43c4aae647/4x.webp
+                        default:
+                            normalTask.NextStep();
+                            break;
+                    }
 
-                    // Set the task as complete
-                    task.Cast<NormalPlayerTask>().NextStep();
-                    
-                    // Stand still for a bit
                     MovementHandler.Instance.Wait(3f);
                 }
             }
@@ -69,13 +81,13 @@ public sealed class ImpostorHandler : MonoBehaviour
     public IEnumerator CoStartVentOut()
     {
         // TODO: make sure this doesnt get stuck in an infinite loop
-        
+
         previousVent = Vent.currentVent;
         while (true)
         {
-            top:; // this code had a severe lack of gotos
-
             yield return CoTryMoveToVent();
+
+            bool spottedCrewmateOrBody = false;
 
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
@@ -86,26 +98,31 @@ public sealed class ImpostorHandler : MonoBehaviour
                 if (Visibility.IsVisible(player.GetTruePosition()))
                 {
                     Info("Spotted a crewmate, trying another vent");
-                    goto top; //LMAO
+                    spottedCrewmateOrBody = true;
+                    break;
                 }
             }
+
+            if (spottedCrewmateOrBody) continue;
 
             foreach (DeadBody body in ComponentCache<DeadBody>.Cached)
             {
                 if (Visibility.IsVisible(body.TruePosition))
                 {
                     Info("Spotted a body, trying another vent");
-                    goto top; //LMAO
+                    spottedCrewmateOrBody = true;
+                    break;
                 }
             }
-            
+
+            if (spottedCrewmateOrBody) continue;
+
             break;
         }
-        
+
         HudManager.Instance.ImpostorVentButton.DoClick();
         InGameCursor.Instance.Hide();
         previousVent = null;
-        yield break;
     }
 
     [HideFromIl2Cpp]
@@ -119,6 +136,7 @@ public sealed class ImpostorHandler : MonoBehaviour
             Info($"No available vents, skipping vent move.");
             yield break;
         }
+
         previousVent = Vent.currentVent;
         yield return InGameCursor.Instance.CoMoveTo(Vent.currentVent.Buttons[targetButtonIndex]);
         yield return InGameCursor.Instance.CoPressLMB();
@@ -140,11 +158,12 @@ public sealed class ImpostorHandler : MonoBehaviour
                 system.IsImpostorInsideVent(vent.Id)) continue;
             return i;
         }
+
         return -1;
     }
 
     [EventHandler(EventTypes.MeetingStarted)]
-    private static void HideCursor() 
+    private static void HideCursor()
     {
         InGameCursor.Instance.Hide();
     }
