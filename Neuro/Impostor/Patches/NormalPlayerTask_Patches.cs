@@ -12,8 +12,6 @@ namespace Neuro.Impostor.Patches;
 [HarmonyPatch(typeof(WeatherNodeTask), nameof(WeatherNodeTask.AppendTaskText))]
 public static class NormalPlayerTask_AppendTaskText
 {
-    // TODO: Certain tasks update StartAt, maybe we can collapse task list when we are impostor?
-
     [HarmonyPrefix]
     public static void Prefix(NormalPlayerTask __instance, ref (int step, NormalPlayerTask.TimerState timerState) __state)
     {
