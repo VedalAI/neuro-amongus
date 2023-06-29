@@ -13,7 +13,9 @@ namespace Neuro.Impostor;
 [RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class ImpostorHandler : MonoBehaviour
 {
-    public ImpostorHandler(IntPtr ptr) : base(ptr) { }
+    public ImpostorHandler(IntPtr ptr) : base(ptr)
+    {
+    }
 
     public static ImpostorHandler Instance { get; private set; }
 
@@ -39,6 +41,7 @@ public sealed class ImpostorHandler : MonoBehaviour
         foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
         {
             if (task == null || task.Locations == null || task.IsComplete || !task.MinigamePrefab) continue;
+            if (PlayerTask.TaskIsEmergency(task)) continue;
 
             foreach (Console console in task.FindConsoles())
             {
@@ -57,7 +60,7 @@ public sealed class ImpostorHandler : MonoBehaviour
 
                     // Set the task as complete
                     task.Cast<NormalPlayerTask>().NextStep();
-                    
+
                     // Stand still for a bit
                     MovementHandler.Instance.Wait(3f);
                 }
@@ -69,11 +72,11 @@ public sealed class ImpostorHandler : MonoBehaviour
     public IEnumerator CoStartVentOut()
     {
         // TODO: make sure this doesnt get stuck in an infinite loop
-        
+
         previousVent = Vent.currentVent;
         while (true)
         {
-            top:; // this code had a severe lack of gotos
+            top: ; // this code had a severe lack of gotos
 
             yield return CoTryMoveToVent();
 
@@ -98,10 +101,10 @@ public sealed class ImpostorHandler : MonoBehaviour
                     goto top; //LMAO
                 }
             }
-            
+
             break;
         }
-        
+
         HudManager.Instance.ImpostorVentButton.DoClick();
         InGameCursor.Instance.Hide();
         previousVent = null;
@@ -119,6 +122,7 @@ public sealed class ImpostorHandler : MonoBehaviour
             Info($"No available vents, skipping vent move.");
             yield break;
         }
+
         previousVent = Vent.currentVent;
         yield return InGameCursor.Instance.CoMoveTo(Vent.currentVent.Buttons[targetButtonIndex]);
         yield return InGameCursor.Instance.CoPressLMB();
@@ -140,11 +144,12 @@ public sealed class ImpostorHandler : MonoBehaviour
                 system.IsImpostorInsideVent(vent.Id)) continue;
             return i;
         }
+
         return -1;
     }
 
     [EventHandler(EventTypes.MeetingStarted)]
-    private static void HideCursor() 
+    private static void HideCursor()
     {
         InGameCursor.Instance.Hide();
     }
