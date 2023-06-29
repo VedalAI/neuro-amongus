@@ -76,13 +76,15 @@ public sealed class MovementHandler : MonoBehaviour
         // TODO: We need to adjust this based on player speed setting // TODO: It seems like this already what's happening, but the player still is faster(?)
         direction = ForcedMoveDirection.normalized;
 
-        if(_waitTimer > 0f) {
+        if (_waitTimer > 0f)
+        {
             _waitTimer -= Time.fixedDeltaTime;
             _unstuckTimer = 0f;
             direction = Vector2.zero;
             return;
         }
 
+        // TODO: Fix this (sometimes it triggers when moving back and forth even though the agent isn't actually stuck)
         if (_unstuckTimer > 0f)
         {
             _unstuckTimer -= Time.fixedDeltaTime;
@@ -111,7 +113,7 @@ public sealed class MovementHandler : MonoBehaviour
                 if (path is {Length: > 1})
                 {
                     direction = (path[1] - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
-                    
+
                     // Quantize direction into 8 directions
                     if (direction.x > 0.5f) direction.x = 1f;
                     else if (direction.x < -0.5f) direction.x = -1f;

@@ -20,7 +20,7 @@ public sealed class AlignTelescopeSolver : GeneralMinigameSolver<TelescopeGame>
         // Check if target is already in view (cracked planet)
         if (Vector2.Distance(minigame.Background.transform.localPosition, -minigame.TargetItem.transform.localPosition) <= viewDist)
         {
-            yield return InGameCursor.Instance.CoMoveTo(InGameCursor.Instance.Position - (Vector2)minigame.Background.transform.localPosition - (Vector2)minigame.TargetItem.transform.localPosition, snapSpeed);
+            yield return InGameCursor.Instance.CoMoveTo(InGameCursor.Instance.Position - (Vector2) minigame.Background.transform.localPosition - (Vector2) minigame.TargetItem.transform.localPosition, snapSpeed);
             InGameCursor.Instance.StopHoldingLMB();
             yield break;
         }
@@ -28,18 +28,18 @@ public sealed class AlignTelescopeSolver : GeneralMinigameSolver<TelescopeGame>
         float randAngle = Random.RandomRange(0f, 360f);
         Vector2 position = InGameCursor.Instance.Position;
         const float radius = 5.5f;
-        const float speed = 10f;
+        const float speed = 5;
         Vector2 offset = new Vector2(-0.8f, -0.8f);
 
         while (!task.IsComplete)
         {
-            yield return InGameCursor.Instance.CoMoveToPositionOnCircle(position + offset, radius, randAngle, 0.3f);
+            yield return InGameCursor.Instance.CoMoveToPositionOnCircle(position + offset, radius, randAngle, 0.7f);
             for (float t = 0; t < speed; t += Time.deltaTime)
             {
                 // if in view snap to target
                 if (Vector2.Distance(minigame.Background.transform.localPosition, -minigame.TargetItem.transform.localPosition) <= viewDist)
                 {
-                    yield return InGameCursor.Instance.CoMoveTo(InGameCursor.Instance.Position - (Vector2)minigame.Background.transform.localPosition - (Vector2)minigame.TargetItem.transform.localPosition, snapSpeed);
+                    yield return InGameCursor.Instance.CoMoveTo(InGameCursor.Instance.Position - (Vector2) minigame.Background.transform.localPosition - (Vector2) minigame.TargetItem.transform.localPosition, snapSpeed);
                     InGameCursor.Instance.StopHoldingLMB();
                     yield break;
                 }
