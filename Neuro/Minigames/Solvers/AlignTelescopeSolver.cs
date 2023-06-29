@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
 using UnityEngine;
+using static Rewired.ComponentControls.Effects.RotateAroundAxis;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -9,31 +11,42 @@ public sealed class AlignTelescopeSolver : GeneralMinigameSolver<TelescopeGame>
 {
     public override IEnumerator CompleteMinigame(TelescopeGame minigame, NormalPlayerTask task)
     {
+        const float viewDist = 3.5f;
+        const float snapSpeed = 0.5f;
+
         yield return InGameCursor.Instance.CoMoveTo(minigame.Reticle);
         InGameCursor.Instance.StartHoldingLMB(minigame);
 
-        float speed = 0.2f;
-
-        // Randomly order the targets
-        var targets = minigame.Items;
-        int count = targets.Count;
-        int last = count - 1;
-        for (var i = 0; i < last; ++i)
+        // Check if target is already in view (cracked planet)
+        if (Vector2.Distance(minigame.Background.transform.localPosition, -minigame.TargetItem.transform.localPosition) <= viewDist)
         {
-            var r = Random.Range(i, count);
-            (targets[r], targets[i]) = (targets[i], targets[r]);
+            yield return InGameCursor.Instance.CoMoveTo(InGameCursor.Instance.Position - (Vector2)minigame.Background.transform.localPosition - (Vector2)minigame.TargetItem.transform.localPosition, snapSpeed);
+            InGameCursor.Instance.StopHoldingLMB();
+            yield break;
         }
 
-        // Loop through the targets until minigame completes
+        float randAngle = Random.RandomRange(0f, 360f);
+        Vector2 position = InGameCursor.Instance.Position;
+        const float radius = 5.5f;
+        const float speed = 10f;
+        Vector2 offset = new Vector2(-0.8f, -0.8f);
+
         while (!task.IsComplete)
         {
-            Vector2 position = minigame.initialPos;
-            foreach (var target in targets)
+            yield return InGameCursor.Instance.CoMoveToPositionOnCircle(position + offset, radius, randAngle, 0.3f);
+            for (float t = 0; t < speed; t += Time.deltaTime)
             {
-                // Cursor controls background so it needs to be moved opposite of the target
-                yield return InGameCursor.Instance.CoMoveTo(InGameCursor.Instance.Position + position - (Vector2)target.transform.localPosition, speed);
-                position = (Vector2)target.transform.localPosition;
-                yield return new WaitForSeconds(0.5f);
+                // if in view snap to target
+                if (Vector2.Distance(minigame.Background.transform.localPosition, -minigame.TargetItem.transform.localPosition) <= viewDist)
+                {
+                    yield return InGameCursor.Instance.CoMoveTo(InGameCursor.Instance.Position - (Vector2)minigame.Background.transform.localPosition - (Vector2)minigame.TargetItem.transform.localPosition, snapSpeed);
+                    InGameCursor.Instance.StopHoldingLMB();
+                    yield break;
+                }
+
+                float angle = Mathf.Lerp(randAngle, randAngle + 360f, t / speed);
+                InGameCursor.Instance.SnapToPositionOnCircle(position + offset, radius, angle);
+                yield return null;
             }
         }
 
