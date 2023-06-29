@@ -86,26 +86,29 @@ public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
 
             InGameCursor.Instance.StopHoldingLMB();
 
-            // Combo 3
-            currTumblerAngle = TumblerAngle;
-            newTumblerAngle = TumblerAngle - 360f;
-            InGameCursor.Instance.StartHoldingLMB(minigame);
-            for (float t = 0; t < TumblerSpeed; t += Time.deltaTime)
+            if (minigame.latched[0])
             {
-                // exit if we find the solution
-                if (minigame.AngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[2] * 45, 3f))
+                // Combo 3
+                currTumblerAngle = TumblerAngle;
+                newTumblerAngle = TumblerAngle - 360f;
+                InGameCursor.Instance.StartHoldingLMB(minigame);
+                for (float t = 0; t < TumblerSpeed; t += Time.deltaTime)
                 {
-                    InGameCursor.Instance.StopHoldingLMB();
-                    minigame.CheckTumblr(0f, minigame.Tumbler.transform.eulerAngles.z, 2, minigame.combo[2] * 45);
-                    break;
+                    // exit if we find the solution
+                    if (minigame.AngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[2] * 45, 3f))
+                    {
+                        InGameCursor.Instance.StopHoldingLMB();
+                        minigame.CheckTumblr(0f, minigame.Tumbler.transform.eulerAngles.z, 2, minigame.combo[2] * 45);
+                        break;
+                    }
+
+                    TumblerAngle = Mathf.Lerp(currTumblerAngle, newTumblerAngle, t / TumblerSpeed);
+                    InGameCursor.Instance.SnapToPositionOnCircle(minigame.Tumbler, TumblerRadius, TumblerAngle);
+                    yield return null;
                 }
 
-                TumblerAngle = Mathf.Lerp(currTumblerAngle, newTumblerAngle, t / TumblerSpeed);
-                InGameCursor.Instance.SnapToPositionOnCircle(minigame.Tumbler, TumblerRadius, TumblerAngle);
-                yield return null;
+                InGameCursor.Instance.StopHoldingLMB();
             }
-
-            InGameCursor.Instance.StopHoldingLMB();
         }
     }
 
