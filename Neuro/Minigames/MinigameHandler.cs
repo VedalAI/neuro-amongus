@@ -8,10 +8,10 @@ using UnityEngine;
 
 namespace Neuro.Minigames;
 
-// TODO: Check all minigames while window unfocused
+// TODO: Fix tasks when window unfocused
 public static class MinigameHandler
 {
-    // TODO: Implement something (maybe in control panel) to disengage from minigame and/or ignore it for the rest of the match
+    // TODO: Prevent softlock if minigame solver fails
     [Conditional("FULL")]
     public static void TryCompleteMinigame(Minigame minigame, PlayerTask task)
     {
@@ -44,7 +44,7 @@ public static class MinigameHandler
         MinigameTimeHandler.Instance.StartTimer(minigame, () => !minigame);
         yield return new WaitForSeconds(0.4f);
         yield return solver.CompleteMinigame(minigame, task);
-        
+
         // By this point we expect the solver to have completed the minigame,
         // which means that it will close and be destroyed, so this coroutine
         // will not execute any code below.

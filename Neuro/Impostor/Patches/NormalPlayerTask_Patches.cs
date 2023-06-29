@@ -35,3 +35,25 @@ public static class NormalPlayerTask_AppendTaskText
         __instance.TimerStarted = __state.timerState;
     }
 }
+
+[HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.NextStep))]
+public static class NormalPlayerTask_NextStep
+{
+    [HarmonyPrefix]
+    public static void Prefix(NormalPlayerTask __instance, ref bool __state)
+    {
+        if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor) return;
+
+        __state = __instance.ShowTaskStep;
+
+        __instance.ShowTaskStep = false;
+    }
+
+    [HarmonyPostfix]
+    public static void Postfix(NormalPlayerTask __instance, bool __state)
+    {
+        if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor) return;
+
+        __instance.ShowTaskStep = __state;
+    }
+}
