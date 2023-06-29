@@ -34,14 +34,12 @@ public partial class TaskData
 
             if (!GizmosDebugTab.EnableTaskPaths) continue;
 
-            // TODO: Move this thing out of here
             DrawPath(PathfindingHandler.Instance.GetPath(consoleOfInterest, false), consoleOfInterest.GetInstanceID());
         }
 
         return data;
     }
 
-    // TODO: Fix path Z index
     [Conditional("FULL")]
     private static void DrawPath(Vector2[] path, int id)
     {

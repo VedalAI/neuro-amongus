@@ -6,7 +6,6 @@ public static class Visibility
 {
     public static bool IsVisible(Vector2 target) => IsVisible(PlayerControl.LocalPlayer.GetTruePosition(), target);
 
-    // TODO: Improve (idea: send raycast from camera to target)
     private static bool IsVisible(Vector2 rayStart, Vector2 rayEnd)
     {
         Vector3 viewport = NeuroUtilities.MainCamera.WorldToViewportPoint(rayEnd);

@@ -11,7 +11,6 @@ using UnityEngine;
 
 namespace Neuro.Recording;
 
-// TODO: ReportFindings was removed, we need to implement separate communication with language model
 [RegisterInIl2Cpp, ShipStatusComponent]
 public sealed class Recorder : MonoBehaviour
 {

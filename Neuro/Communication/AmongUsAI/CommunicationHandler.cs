@@ -71,7 +71,6 @@ public sealed class CommunicationHandler : MonoBehaviour
             return;
         }
 
-        // TODO: We should send meeting data!
         if (MeetingHud.Instance || Minigame.Instance || !Frame.CanGenerate) return;
 
         if (PlayerControl.LocalPlayer.Data.IsDead)
@@ -123,6 +122,7 @@ public sealed class CommunicationHandler : MonoBehaviour
                 HudManager.Instance.ImpostorVentButton.DoClick();
                 ventCooldownTimer = 0f;
             }
+
             if (HudManager.Instance.AbilityButton && PlayerControl.LocalPlayer.Data.RoleType == RoleTypes.Engineer && ventCooldownTimer > 3f)
             {
                 HudManager.Instance.AbilityButton.DoClick();

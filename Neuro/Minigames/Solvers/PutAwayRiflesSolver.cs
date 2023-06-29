@@ -10,7 +10,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(StowArms))]
 public sealed class PutAwayRiflesSolver : IMinigameSolver<StowArms, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
 {
-    // TODO: Make sure this doesnt cause the pathfinding agent to fuck off while its waiting for this (jittering)
+    // TODO: Make sure this doesnt cause the pathfinding agent to jitter
     public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
         // If it's not a StoreArmsTaskConsole, then it's a regular Console so it's part 2 which we always want to open
@@ -55,7 +55,7 @@ public sealed class PutAwayRiflesSolver : IMinigameSolver<StowArms, NormalPlayer
 
     private static byte[] ToBytes(int timesUsed, float lastTime)
     {
-        return new[] { (byte) timesUsed }.Concat(BitConverter.GetBytes(lastTime)).ToArray();
+        return new[] {(byte) timesUsed}.Concat(BitConverter.GetBytes(lastTime)).ToArray();
     }
 
     private static void FromBytes(byte[] bytes, out int timesUsed, out float lastTime)

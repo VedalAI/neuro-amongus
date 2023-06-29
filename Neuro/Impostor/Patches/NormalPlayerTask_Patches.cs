@@ -12,8 +12,6 @@ namespace Neuro.Impostor.Patches;
 [HarmonyPatch(typeof(WeatherNodeTask), nameof(WeatherNodeTask.AppendTaskText))]
 public static class NormalPlayerTask_AppendTaskText
 {
-    // TODO: Certain tasks update StartAt, maybe we can collapse task list when we are impostor?
-
     [HarmonyPrefix]
     public static void Prefix(NormalPlayerTask __instance, ref (int step, NormalPlayerTask.TimerState timerState) __state)
     {
@@ -33,5 +31,27 @@ public static class NormalPlayerTask_AppendTaskText
 
         __instance.taskStep = __state.step;
         __instance.TimerStarted = __state.timerState;
+    }
+}
+
+[HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.NextStep))]
+public static class NormalPlayerTask_NextStep
+{
+    [HarmonyPrefix]
+    public static void Prefix(NormalPlayerTask __instance, ref bool __state)
+    {
+        if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor) return;
+
+        __state = __instance.ShowTaskStep;
+
+        __instance.ShowTaskStep = false;
+    }
+
+    [HarmonyPostfix]
+    public static void Postfix(NormalPlayerTask __instance, bool __state)
+    {
+        if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor) return;
+
+        __instance.ShowTaskStep = __state;
     }
 }
