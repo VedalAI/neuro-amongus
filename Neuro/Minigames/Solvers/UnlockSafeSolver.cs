@@ -1,12 +1,15 @@
 ﻿using System.Collections;
+using HarmonyLib;
 using Neuro.Cursor;
 using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
-[MinigameSolver(typeof(SafeMinigame))]
+[MinigameSolver(typeof(SafeMinigame)), HarmonyPatch]
 public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
 {
+    private static bool _enablePatch = true;
+
     public override IEnumerator CompleteMinigame(SafeMinigame minigame, NormalPlayerTask task)
     {
         if (!task) yield break;
@@ -29,7 +32,7 @@ public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
             InGameCursor.Instance.StartHoldingLMB(minigame);
 
             // Failsafe (if tumbler starts already at first combo)
-            if (minigame.AngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[0] * 45, 3f))
+            if (AngleNear(minigame, minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float) minigame.combo[0] * 45, 3f))
             {
                 currTumblerAngle = TumblerAngle;
                 newTumblerAngle = TumblerAngle - 180f;
@@ -48,7 +51,7 @@ public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
             for (float t = 0; t < TumblerSpeed; t += Time.deltaTime)
             {
                 // exit if we find the solution
-                if (minigame.AngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[0] * 45, 3f))
+                if (AngleNear(minigame, minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float) minigame.combo[0] * 45, 3f))
                 {
                     minigame.lastTumDir = 1;
                     minigame.CheckTumblr(0f, minigame.Tumbler.transform.eulerAngles.z, 0, minigame.combo[0] * 45);
@@ -61,14 +64,15 @@ public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
                 yield return null;
             }
 
-            if (minigame.vibration[0]) {
+            if (minigame.vibration[0])
+            {
                 // Combo 2
                 currTumblerAngle = TumblerAngle;
                 newTumblerAngle = TumblerAngle + 720f;
                 for (float t = 0; t < TumblerSpeed; t += Time.deltaTime)
                 {
                     // exit if we find the solution
-                    if (minigame.AngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[1] * 45, 3f))
+                    if (AngleNear(minigame, minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float) minigame.combo[1] * 45, 3f))
                     {
                         minigame.lastTumDir = -1;
                         minigame.CheckTumblr(0f, minigame.Tumbler.transform.eulerAngles.z, 1, minigame.combo[1] * 45);
@@ -90,7 +94,7 @@ public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
                 for (float t = 0; t < TumblerSpeed; t += Time.deltaTime)
                 {
                     // exit if we find the solution
-                    if (minigame.AngleNear(minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float)minigame.combo[2] * 45, 3f))
+                    if (AngleNear(minigame, minigame.Tumbler.transform.eulerAngles.z + 45f, minigame.lastTumDir, (float) minigame.combo[2] * 45, 3f))
                     {
                         minigame.lastTumDir = 1;
                         minigame.CheckTumblr(0f, minigame.Tumbler.transform.eulerAngles.z, 2, minigame.combo[2] * 45);
@@ -125,12 +129,32 @@ public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
                 yield break;
             }
 
-            SpinnerTumblerAngle += Time.deltaTime * 10f;
+            SpinnerTumblerAngle += Time.deltaTime * 50f;
             InGameCursor.Instance.SnapToPositionOnCircle(minigame.Spinner, SpinnerRadius, SpinnerTumblerAngle);
 
             if (minigame.spinVel < 200f) minigame.spinVel = 200f;
 
             yield return null;
         }
+    }
+
+    private static bool AngleNear(SafeMinigame minigame, float actual, float dir, float expected, float Threshold)
+    {
+        try
+        {
+            _enablePatch = false;
+            return minigame.AngleNear(actual, dir, expected, Threshold);
+        }
+        finally
+        {
+            _enablePatch = true;
+        }
+    }
+
+    [HarmonyPatch(typeof(SafeMinigame), nameof(SafeMinigame.AngleNear)), HarmonyPrefix]
+    public static bool AngleNearPatch(SafeMinigame __instance, out bool __result)
+    {
+        __result = true;
+        return !_enablePatch;
     }
 }
