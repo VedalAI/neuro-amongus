@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(SafeMinigame))]
-public sealed class SafeSolver : GeneralMinigameSolver<SafeMinigame>
+public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
 {
     public override IEnumerator CompleteMinigame(SafeMinigame minigame, NormalPlayerTask task)
     {
