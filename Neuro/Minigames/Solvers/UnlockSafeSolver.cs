@@ -129,7 +129,7 @@ public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
                 yield break;
             }
 
-            SpinnerTumblerAngle += Time.deltaTime * 50f;
+            SpinnerTumblerAngle += Time.deltaTime * 100f;
             InGameCursor.Instance.SnapToPositionOnCircle(minigame.Spinner, SpinnerRadius, SpinnerTumblerAngle);
 
             if (minigame.spinVel < 200f) minigame.spinVel = 200f;
