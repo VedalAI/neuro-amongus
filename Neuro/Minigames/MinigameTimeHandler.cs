@@ -16,8 +16,7 @@ public sealed class MinigameTimeHandler : MonoBehaviour
 
     public record MinigameTimeKey(TaskTypes Type, int Step, NormalPlayerTask.TimerState TimerState);
 
-    [HideFromIl2Cpp]
-    public Dictionary<MinigameTimeKey, List<float>> MinigameTimes { get; } = new Dictionary<MinigameTimeKey, List<float>>();
+    [HideFromIl2Cpp] public Dictionary<MinigameTimeKey, List<float>> MinigameTimes { get; } = new Dictionary<MinigameTimeKey, List<float>>();
 
     private MinigameTimeKey _minigameKey;
     private float _startTime;
@@ -55,7 +54,7 @@ public sealed class MinigameTimeHandler : MonoBehaviour
         }
         else
         {
-            MinigameTimes[_minigameKey] = new List<float>() { time };
+            MinigameTimes[_minigameKey] = new List<float>() {time};
         }
     }
 
@@ -64,14 +63,15 @@ public sealed class MinigameTimeHandler : MonoBehaviour
         MinigameTimes.Clear();
     }
 
+    [HideFromIl2Cpp]
     public void StartTimer(Minigame minigame, Func<bool> hideCondition)
     {
-        if (minigame.MyTask)
-        {
-            _minigameKey = new MinigameTimeKey(minigame.MyNormTask.TaskType, minigame.MyNormTask.TaskStep, minigame.MyNormTask.TimerStarted);
-            _startTime = Time.time;
-            _stopTimerCondition = hideCondition;
-        }
+        if (!minigame.MyTask) return;
+        if (PlayerTask.TaskIsEmergency(minigame.MyTask)) return;
+
+        _minigameKey = new MinigameTimeKey(minigame.MyNormTask.TaskType, minigame.MyNormTask.TaskStep, minigame.MyNormTask.TimerStarted);
+        _startTime = Time.time;
+        _stopTimerCondition = hideCondition;
     }
 
     private void Stop()

@@ -18,5 +18,5 @@ public interface IMinigameSolver<in TMinigame, in TTask> : IMinigameSolver where
 {
     IEnumerator CompleteMinigame(TMinigame minigame, TTask task);
 
-    IEnumerator IMinigameSolver.CompleteMinigame(Minigame minigame, PlayerTask task) => CompleteMinigame(minigame.Cast<TMinigame>(), task.Cast<TTask>());
+    IEnumerator IMinigameSolver.CompleteMinigame(Minigame minigame, PlayerTask task) => CompleteMinigame(minigame.Cast<TMinigame>(), task!?.Cast<TTask>());
 }
