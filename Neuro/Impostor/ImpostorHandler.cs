@@ -52,17 +52,16 @@ public sealed class ImpostorHandler : MonoBehaviour
                     switch (task.TaskType)
                     {
                         // These tasks can't be faked properly as impostor using the current system, so instead we pretend they are done after the first step
-                        case TaskTypes.AlignEngineOutput:
+                        case TaskTypes.AlignEngineOutput: // Only fakes one engine
                         case TaskTypes.CleanO2Filter:
                         case TaskTypes.ClearAsteroids:
-                        case TaskTypes.FuelEngines: // TODO: Fake fuel maybe?
-                        case TaskTypes.OpenWaterways: // TODO: Fake waterways maybe?
-                        case TaskTypes.PickUpTowels:
-                        case TaskTypes.PutAwayPistols:
-                        case TaskTypes.PutAwayRifles:
-                        case TaskTypes.ResetBreakers:
-                        case TaskTypes.SortRecords:
-                        case TaskTypes.StartFans:
+                        case TaskTypes.FuelEngines: // Only fakes grabbing the gas can one time
+                        case TaskTypes.OpenWaterways: // Only fakes one of the wheels
+                        case TaskTypes.PickUpTowels: // Essentially ignored
+                        case TaskTypes.PutAwayPistols: // Essentially ignored
+                        case TaskTypes.PutAwayRifles: // Essentially ignored
+                        case TaskTypes.ResetBreakers: // Only fakes one of the breakers
+                        case TaskTypes.SortRecords: // Only fakes the first step
                             normalTask.Complete();
                             break;
 

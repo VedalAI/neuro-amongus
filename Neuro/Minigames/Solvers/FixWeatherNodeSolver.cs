@@ -42,7 +42,7 @@ public sealed class FixWeatherNodeSolver : IMinigameSolver<Minigame>, IMinigameO
         WeatherControl desiredSwitch = minigame.Controls[minigame.WeatherTask.NodeId];
 
         yield return InGameCursor.Instance.CoMoveTo(desiredSwitch.Switch);
-        yield return InGameCursor.Instance.CoPressLMB();
+        yield return InGameCursor.Instance.CoPressLMB(); // TODO: Sometimes doesn't work :(
     }
 
     private static IEnumerable<Vector3Int> SolveMaze(Weather1Game minigame)

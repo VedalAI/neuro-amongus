@@ -1,4 +1,5 @@
-﻿using Neuro.Debugging;
+﻿using System.Collections.Generic;
+using Neuro.Debugging;
 using Neuro.Utilities;
 using System.Linq;
 using UnityEngine;
@@ -15,15 +16,29 @@ public sealed class MinigameTimesDebugTab : DebugTab
     public override void BuildUI()
     {
         if (GUILayout.Button("Clear")) MinigameTimeHandler.Instance.Clear();
-        foreach (var minigameTimeKeyValuePair in MinigameTimeHandler.Instance.MinigameTimes)
+        if (GUILayout.Button("Log"))
         {
-            var minTime = minigameTimeKeyValuePair.Value.OrderBy(t => t).First();
-            var maxTime = minigameTimeKeyValuePair.Value.OrderByDescending(t => t).First();
+            foreach ((MinigameTimeHandler.MinigameTimeKey minigameTime, List<float> times) in MinigameTimeHandler.Instance.MinigameTimes)
+            {
+                float minTime = times.MinBy(t => t);
+                float maxTime = times.MaxBy(t => t);
+                float avgTime = times.Average(t => t);
+                System.Console.Write($"{minigameTime.Type}(Step {minigameTime.Step}) {minigameTime.TimerState}");
+                System.Console.Write("     ");
+                System.Console.WriteLine($"range: {minTime:0.00}s - {maxTime:0.00}s (avg: {avgTime:0.00}s)");
+            }
+        }
+
+        foreach ((MinigameTimeHandler.MinigameTimeKey minigameTime, List<float> times) in MinigameTimeHandler.Instance.MinigameTimes)
+        {
+            float minTime = times.MinBy(t => t);
+            float maxTime = times.MaxBy(t => t);
+            float avgTime = times.Average(t => t);
             using (new HorizontalScope())
             {
-                GUILayout.Label($"{minigameTimeKeyValuePair.Key.Type}(Step {minigameTimeKeyValuePair.Key.Step}) {minigameTimeKeyValuePair.Key.TimerState}");
+                GUILayout.Label($"{minigameTime.Type}(Step {minigameTime.Step}) {minigameTime.TimerState}");
                 GUILayout.FlexibleSpace();
-                GUILayout.Label($"range: {minTime:0.00}s - {maxTime:0.00}s");
+                GUILayout.Label($"range: {minTime:0.00}s - {maxTime:0.00}s (avg: {avgTime:0.00}s)");
             }
         }
     }

@@ -37,7 +37,7 @@ public sealed class DeadMovementHandler : MonoBehaviour
         if (closestConsole)
         {
             Vector2 target = closestConsole.transform.position;
-            if (closestConsole.onlyFromBelow) target.y -= 0.5f;
+            if (closestConsole.onlyFromBelow) target.y -= 0.5f; // TODO: this fails on divert power in the sensor room on mira if coming from above
             MoveToPosition(target);
             return;
         }
@@ -57,6 +57,7 @@ public sealed class DeadMovementHandler : MonoBehaviour
                     role.UseAbility();
                     Info($"Protected {followPlayer.name}");
                 }
+
                 break;
 
             case CrewmateGhostRole:

@@ -7,7 +7,7 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(CourseMinigame))]
 public sealed class ChartCourseSolver : GeneralMinigameSolver<CourseMinigame>
 {
-    public override IEnumerator CompleteMinigame(CourseMinigame minigame, NormalPlayerTask task)
+    public override IEnumerator CompleteMinigame(CourseMinigame minigame, NormalPlayerTask task) // TODO: Make sure this works Aware
     {
         // for some reason this minigame uses localPositions for everything so we have to convert them into world positions
 

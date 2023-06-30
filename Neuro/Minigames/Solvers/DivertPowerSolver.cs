@@ -19,7 +19,7 @@ public sealed class DivertPowerSolver : IMinigameSolver<Minigame>, IMinigameOpen
             yield return CompleteStage2(minigame.Cast<AcceptDivertPowerGame>());
     }
 
-    private IEnumerator CompleteStage1(DivertPowerMinigame minigame)
+    private IEnumerator CompleteStage1(DivertPowerMinigame minigame) // TODO: fIX THIS IS BROKEN SOMETINMES
     {
         Collider2D slider = minigame.Sliders[minigame.sliderId];
 
