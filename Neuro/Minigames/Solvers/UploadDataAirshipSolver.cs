@@ -19,12 +19,16 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
         yield return InGameCursor.Instance.CoMoveTo(minigame.Phone);
         InGameCursor.Instance.StartHoldingLMB(minigame);
 
-        float randAngle = Random.RandomRange(0f, 360f);
+        float angle = Random.RandomRange(0f, 360f);
         Vector2 position = InGameCursor.Instance.Position;
         const float radius = 2.5f;
-        const float speed = 5f;
-        yield return InGameCursor.Instance.CoMoveToPositionOnCircle(position, radius, randAngle, 0.5f);
-        for (float t = 0; t < speed; t += Time.deltaTime)
+        const float speed = 60f;
+
+        bool flip = false;
+        bool poorFlag = false;
+
+        yield return InGameCursor.Instance.CoMoveToPositionOnCircle(position, radius, angle, 0.5f);
+        while (!task.IsComplete)
         {
             // if perfect stop
             if (minigame.Hotspot.IsTouching(minigame.Perfect))
@@ -33,11 +37,20 @@ public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame,
                 yield break;
             }
 
-            float angle = Mathf.Lerp(randAngle, randAngle + 360f, t / speed);
+            // bounce back if edge of zone is reached
+            if (minigame.Hotspot.IsTouching(minigame.Poor))
+            {
+                poorFlag = true;
+            }
+            else if (poorFlag)
+            {
+                poorFlag = false;
+                flip = !flip;
+            }
+
+            angle += Time.deltaTime * speed * (flip ? -1 : 1);
             InGameCursor.Instance.SnapToPositionOnCircle(position, radius, angle);
             yield return null;
         }
-
-        //yield return InGameCursor.Instance.CoMoveTo(InGameCursor.Instance.Position + (Vector2)minigame.Hotspot.transform.localPosition, 0.2f);
     }
 }
