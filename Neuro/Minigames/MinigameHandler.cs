@@ -8,7 +8,6 @@ using UnityEngine;
 
 namespace Neuro.Minigames;
 
-// TODO: Fix tasks when window unfocused
 public static class MinigameHandler
 {
     // TODO: Prevent softlock if minigame solver fails
