@@ -24,10 +24,8 @@ public partial class TaskData
             Type = task.TaskType.ForMessage(),
         };
 
-        // TODO: minigameHasNoSolver is only used for recording training data for tasks with no solvers, we need to remove that once all tasks have solvers
-        bool minigameHasNoSolver = !MinigameOpenerAttribute.MinigameOpeners.TryGetValue(task.MinigamePrefab.GetIl2CppType().FullName, out _);
         foreach (Console consoleOfInterest in task.FindConsoles()._items
-                     .Where(c => c && (minigameHasNoSolver || MinigameHandler.ShouldOpenConsole(c, task.MinigamePrefab, task)))
+                     .Where(c => c && MinigameHandler.ShouldOpenConsole(c, task.MinigamePrefab, task))
                      .OrderBy(Closest).Take(2))
         {
             data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest));
