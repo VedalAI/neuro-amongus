@@ -33,12 +33,6 @@ public sealed class GizmosDebugTab : DebugTab
         set => CachedPlayerPrefs.SetBool("EnableObstacles", value);
     }
 
-    public static bool EnableAirshipUploadNodes
-    {
-        get => CachedPlayerPrefs.GetBool("EnableAirshipUploadNodes", false);
-        set => CachedPlayerPrefs.SetBool("EnableAirshipUploadNodes", value);
-    }
-
     public override void BuildUI()
     {
         using (new HorizontalScope())
@@ -46,7 +40,6 @@ public sealed class GizmosDebugTab : DebugTab
             _enableNodes = GUILayout.Toggle(_enableNodes, "Pathfinding Nodes", GUI.skin.button);
             EnableTaskPaths = GUILayout.Toggle(EnableTaskPaths, "Task Paths", GUI.skin.button);
             _enableObstacleRaycasts = GUILayout.Toggle(_enableObstacleRaycasts, "Obstacle Raycasts", GUI.skin.button);
-            EnableAirshipUploadNodes = GUILayout.Toggle(EnableAirshipUploadNodes, "Airship Upload Nodes", GUI.skin.button);
         }
     }
 
