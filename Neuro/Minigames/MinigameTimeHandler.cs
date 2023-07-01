@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Neuro.Minigames;
 
-[RegisterInIl2Cpp, ShipStatusComponent]
+[RegisterInIl2Cpp, FullShipStatusComponent]
 public sealed class MinigameTimeHandler : MonoBehaviour
 {
     public static MinigameTimeHandler Instance { get; private set; }

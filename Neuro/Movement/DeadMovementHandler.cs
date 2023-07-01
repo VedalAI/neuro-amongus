@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Neuro.Movement;
 
-[RegisterInIl2Cpp, ShipStatusComponent]
+[RegisterInIl2Cpp, FullShipStatusComponent]
 public sealed class DeadMovementHandler : MonoBehaviour
 {
     private PlayerControl followPlayer;

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if FULL
+using HarmonyLib;
 
 namespace Neuro.Impostor.Patches;
 
@@ -13,3 +14,4 @@ public static class TaskPanelBehaviour_Update
         __instance.open = false;
     }
 }
+#endif

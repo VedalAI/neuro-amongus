@@ -10,7 +10,7 @@ using Neuro.Pathfinding;
 
 namespace Neuro.Movement;
 
-[RegisterInIl2Cpp, ShipStatusComponent]
+[RegisterInIl2Cpp, FullShipStatusComponent]
 public sealed class MovementHandler : MonoBehaviour
 {
     public static MovementHandler Instance { get; private set; }
@@ -68,6 +68,7 @@ public sealed class MovementHandler : MonoBehaviour
         }
     }
 
+    [Conditional("FULL")]
     public void GetForcedMoveDirection(ref Vector2 direction)
     {
         if (direction != Vector2.zero) return;

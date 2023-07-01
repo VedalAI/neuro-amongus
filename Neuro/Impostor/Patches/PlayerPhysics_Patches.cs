@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if FULL
+using HarmonyLib;
 using System.Collections;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 
@@ -20,3 +21,4 @@ public static class PlayerPhysics_CoEnterVent
         yield return ImpostorHandler.Instance.CoStartVentOut();
     }
 }
+#endif

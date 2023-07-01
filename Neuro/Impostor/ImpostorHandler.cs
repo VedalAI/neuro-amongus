@@ -10,7 +10,7 @@ using Neuro.Movement;
 
 namespace Neuro.Impostor;
 
-[RegisterInIl2Cpp, ShipStatusComponent]
+[RegisterInIl2Cpp, FullShipStatusComponent]
 public sealed class ImpostorHandler : MonoBehaviour
 {
     public ImpostorHandler(IntPtr ptr) : base(ptr)
