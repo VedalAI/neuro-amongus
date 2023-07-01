@@ -52,3 +52,13 @@ public static class NormalPlayerTask_NextStep
         __instance.ShowTaskStep = __state;
     }
 }
+
+[HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.UpdateArrow))]
+public static class NormalPlayerTask_UpdateArrow
+{
+    [HarmonyPrefix]
+    public static bool Prefix()
+    {
+        return !PlayerControl.LocalPlayer.Data.Role.IsImpostor;
+    }
+}

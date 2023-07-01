@@ -49,22 +49,56 @@ public sealed class ImpostorHandler : MonoBehaviour
                 {
                     NormalPlayerTask normalTask = task.Cast<NormalPlayerTask>();
 
+                    // TODO: Timer tasks won't be faked properly
                     switch (task.TaskType)
                     {
-                        // These tasks can't be faked properly as impostor using the current system, so instead we pretend they are done after the first step
-                        case TaskTypes.AlignEngineOutput: // Only fakes one engine
+                        // Some tasks can't be faked properly as impostor using the current system, so instead we pretend they are done after the first step
+                        case TaskTypes.SortRecords:
+                        case TaskTypes.PickUpTowels:
+                        case TaskTypes.ResetBreakers:
+                            normalTask.Complete();
+                            return;
+
+                        case TaskTypes.AlignEngineOutput:
+                            normalTask.NextStep();
+                            normalTask.Data[console.ConsoleId + 2] = 1;
+                            break;
+
+                        case TaskTypes.OpenWaterways:
+                            normalTask.NextStep();
+                            normalTask.Data[console.ConsoleId] = 255;
+                            break;
+
+                        case TaskTypes.FuelEngines:
+                            if (normalTask.MaxStep == 1)
+                            {
+                                normalTask.NextStep();
+                            }
+                            else if (normalTask.StartAt is SystemTypes.CargoBay or SystemTypes.Engine)
+                            {
+                                normalTask.Data[0] = 0;
+                                normalTask.Data[1] = (byte) (BoolRange.Next() ? 1 : 2);
+                                normalTask.NextStep();
+                            }
+                            else
+                            {
+                                normalTask.Data[0] = 0;
+                                normalTask.Data[1] += 1;
+                                if (normalTask.Data[1] % 2 == 0)
+                                {
+                                    normalTask.NextStep();
+                                }
+                            }
+
+                            break;
+
                         case TaskTypes.CleanO2Filter:
                         case TaskTypes.ClearAsteroids:
-                        case TaskTypes.FuelEngines: // Only fakes grabbing the gas can one time
-                        case TaskTypes.OpenWaterways: // Only fakes one of the wheels
-                        case TaskTypes.PickUpTowels: // Essentially ignored
-                        case TaskTypes.ResetBreakers: // Only fakes one of the breakers
-                        case TaskTypes.SortRecords: // Only fakes the first step
                             normalTask.Complete();
                             break;
 
                         default:
-                            normalTask.NextStep(); // Timer tasks won't be faked properly
+                            normalTask.NextStep();
                             break;
                     }
 
@@ -78,7 +112,7 @@ public sealed class ImpostorHandler : MonoBehaviour
     {
         return task.TaskType switch
         {
-            TaskTypes.SubmitScan => 0, // Don't fake medscan
+            TaskTypes.SubmitScan => 0,
             TaskTypes.PrimeShields => 2,
             TaskTypes.FuelEngines => 4.1f,
             TaskTypes.ChartCourse => 3.2f,
@@ -129,7 +163,7 @@ public sealed class ImpostorHandler : MonoBehaviour
             TaskTypes.FixShower => 4,
             TaskTypes.CleanToilet => 6,
             TaskTypes.DressMannequin => 4.5f,
-            TaskTypes.PickUpTowels => 0, // Don't fake towels (actual timing of last step is 14s)
+            TaskTypes.PickUpTowels => 14,
             TaskTypes.RewindTapes => 13f,
             TaskTypes.StartFans => 3.5f,
             TaskTypes.DevelopPhotos => 3.5f,
