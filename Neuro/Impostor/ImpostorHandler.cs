@@ -52,7 +52,7 @@ public sealed class ImpostorHandler : MonoBehaviour
                     // TODO: Timer tasks won't be faked properly
                     switch (task.TaskType)
                     {
-                        // Some tasks can't be faked properly as impostor using the current system, so instead we pretend they are done after the first step
+                        // Some tasks require a lot of work to fake properly as impostor, so instead we pretend they are done after the first step
                         case TaskTypes.SortRecords:
                         case TaskTypes.PickUpTowels:
                         case TaskTypes.ResetBreakers:
