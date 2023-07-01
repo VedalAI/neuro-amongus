@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(WaterPlantsGame))]
 public sealed class WaterPlantsSolver : GeneralMinigameSolver<WaterPlantsGame>
 {
+    public override float CloseTimout => 6;
+
     public override IEnumerator CompleteMinigame(WaterPlantsGame minigame, NormalPlayerTask task)
     {
         if (task.taskStep == 0) yield return CompleteStage1(minigame);

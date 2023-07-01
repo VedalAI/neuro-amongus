@@ -8,11 +8,13 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(KeypadGame))]
 public sealed class OxygenDepletedSolver : IMinigameSolver<KeypadGame>, IMinigameOpener
 {
+    public float CloseTimout => 15;
+
     public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
     public IEnumerator CompleteMinigame(KeypadGame minigame)
     {
-        int[] numbers = Array.ConvertAll(minigame.oxyTask.targetNumber.ToString().ToCharArray(), x => (int)char.GetNumericValue(x));
+        int[] numbers = Array.ConvertAll(minigame.oxyTask.targetNumber.ToString().ToCharArray(), x => (int) char.GetNumericValue(x));
         UiElement[] buttons = minigame.ControllerSelectable.ToArray();
         foreach (int number in numbers)
         {
@@ -24,6 +26,7 @@ public sealed class OxygenDepletedSolver : IMinigameSolver<KeypadGame>, IMinigam
             minigame.ClickNumber(number);
             yield return new WaitForSeconds(0.2f);
         }
+
         yield return InGameCursor.Instance.CoMoveTo(minigame.AcceptButton);
         minigame.Enter();
     }

@@ -7,14 +7,16 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(CourseMinigame))]
 public sealed class ChartCourseSolver : GeneralMinigameSolver<CourseMinigame>
 {
-    public override IEnumerator CompleteMinigame(CourseMinigame minigame, NormalPlayerTask task) // TODO: Make sure this works Aware
+    public override float CloseTimout => 7;
+
+    public override IEnumerator CompleteMinigame(CourseMinigame minigame, NormalPlayerTask task)
     {
         // for some reason this minigame uses localPositions for everything so we have to convert them into world positions
 
         yield return InGameCursor.Instance.CoMoveTo(minigame.Ship);
         InGameCursor.Instance.StartHoldingLMB(minigame);
 
-        int start = (int)minigame.Converter.GetFloat(minigame.MyNormTask.Data);
+        int start = (int) minigame.Converter.GetFloat(minigame.MyNormTask.Data);
         for (int i = start; i < minigame.NumPoints; i++)
         {
             Vector3 point = minigame.PathPoints[i];
@@ -28,6 +30,7 @@ public sealed class ChartCourseSolver : GeneralMinigameSolver<CourseMinigame>
                 InGameCursor.Instance.StopHoldingLMB();
                 break;
             }
+
             yield return InGameCursor.Instance.CoMoveTo(worldPos, 0.7f);
             yield return new WaitForSeconds(0.1f);
         }

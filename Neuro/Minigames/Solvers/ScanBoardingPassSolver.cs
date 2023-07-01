@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(BoardPassGame))]
 public sealed class ScanBoardingPassSolver : GeneralMinigameSolver<BoardPassGame>
 {
+    public override float CloseTimout => 9;
+
     public override IEnumerator CompleteMinigame(BoardPassGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.pullButton);

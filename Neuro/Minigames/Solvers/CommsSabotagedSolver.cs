@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(TuneRadioMinigame))]
 public sealed class CommsSabotagedSolver : IMinigameSolver<TuneRadioMinigame>, IMinigameOpener
 {
+    public float CloseTimout => 11;
+
     public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
     public IEnumerator CompleteMinigame(TuneRadioMinigame minigame)

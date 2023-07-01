@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
@@ -9,7 +10,7 @@ using UnityEngine;
 namespace Neuro.Events;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-public sealed class ShipStatusComponentAttribute : Attribute
+public class ShipStatusComponentAttribute : Attribute
 {
     static ShipStatusComponentAttribute()
     {
@@ -29,4 +30,10 @@ public sealed class ShipStatusComponentAttribute : Attribute
             ShipStatus.Instance.gameObject.AddComponent(Il2CppType.From(component));
         }
     }
+}
+
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[Conditional("FULL")]
+public sealed class FullShipStatusComponentAttribute : ShipStatusComponentAttribute
+{
 }

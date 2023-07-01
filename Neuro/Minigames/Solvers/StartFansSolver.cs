@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(StartFansMinigame))]
 public sealed class StartFansSolver : IMinigameSolver<StartFansMinigame, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
 {
+    public float CloseTimout => 8.5f;
+
     public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
         return task.TaskStep == console.ConsoleId;

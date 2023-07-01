@@ -47,7 +47,6 @@ public sealed class MovementHandler : MonoBehaviour
         _waitTimer = time;
     }
 
-
     [Conditional("FULL")]
     private void FixedUpdate()
     {

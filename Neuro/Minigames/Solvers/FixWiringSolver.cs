@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(WireMinigame))]
 public sealed class FixWiringSolver : GeneralMinigameSolver<WireMinigame>
 {
+    public override float CloseTimout => 10;
+
     public override IEnumerator CompleteMinigame(WireMinigame minigame, NormalPlayerTask task)
     {
         for (int i = 0; i < minigame.LeftNodes.Count; i++)

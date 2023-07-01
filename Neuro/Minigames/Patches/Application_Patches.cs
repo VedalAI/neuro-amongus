@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Rewired;
 using UnityEngine;
 
 namespace Neuro.Minigames.Patches;

@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameOpener(typeof(MultistageMinigame))]
 public sealed class FuelEnginesSolver : IMinigameSolver<RefuelStage>, IMinigameOpener
 {
+    public float CloseTimout => 8;
+
     public bool ShouldOpenConsole(Console console, PlayerTask task)
     {
         return task.TaskType == TaskTypes.FuelEngines;

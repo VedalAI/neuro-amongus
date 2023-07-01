@@ -9,6 +9,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(SpecimenGame))]
 public sealed class StoreArtifactsSolver : GeneralMinigameSolver<SpecimenGame>
 {
+    public override float CloseTimout => 8;
+
     public override IEnumerator CompleteMinigame(SpecimenGame minigame, NormalPlayerTask task)
     {
         // Reorder artifacts so they are handled top-to-bottom

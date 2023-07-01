@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(ElecLeverGame))]
 public sealed class ResetBreakersSolver : IMinigameSolver<ElecLeverGame, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
 {
+    public float CloseTimout => 5;
+
     public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
         // We use bytes 7-13 of task.Data to implement memory about which consoles have been seen

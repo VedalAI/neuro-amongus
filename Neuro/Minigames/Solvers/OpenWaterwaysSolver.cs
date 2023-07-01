@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(WaterWheelGame))]
 public sealed class OpenWaterwaysSolver : GeneralMinigameSolver<WaterWheelGame>
 {
+    public override float CloseTimout => 15;
+
     public override IEnumerator CompleteMinigame(WaterWheelGame minigame, NormalPlayerTask task)
     {
         Transform wheelTransform = minigame.Wheel.transform;

@@ -1,14 +1,14 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
 using UnityEngine;
-using static Rewired.ComponentControls.Effects.RotateAroundAxis;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Neuro.Minigames.Solvers;
 
 [MinigameSolver(typeof(TelescopeGame))]
 public sealed class AlignTelescopeSolver : GeneralMinigameSolver<TelescopeGame>
 {
+    public override float CloseTimout => 20;
+
     public override IEnumerator CompleteMinigame(TelescopeGame minigame, NormalPlayerTask task)
     {
         const float viewDist = 3.5f;

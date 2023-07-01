@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(SwitchMinigame))]
 public sealed class FixLightsSolver : IMinigameSolver<SwitchMinigame>, IMinigameOpener
 {
+    public float CloseTimout => 99999;
+
     public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
     public IEnumerator CompleteMinigame(SwitchMinigame minigame)

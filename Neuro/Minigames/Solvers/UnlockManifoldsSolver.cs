@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(UnlockManifoldsMinigame))]
 public sealed class UnlockManifoldsSolver : GeneralMinigameSolver<UnlockManifoldsMinigame>
 {
+    public override float CloseTimout => 10;
+
     public override IEnumerator CompleteMinigame(UnlockManifoldsMinigame minigame, NormalPlayerTask task)
     {
         while (minigame.buttonCounter < minigame.Buttons.Length)

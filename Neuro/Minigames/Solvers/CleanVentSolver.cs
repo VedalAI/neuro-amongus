@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(VentCleaningMinigame))]
 public sealed class CleanVentMinigameSolver : GeneralMinigameSolver<VentCleaningMinigame>
 {
+    public override float CloseTimout => 7;
+
     public override IEnumerator CompleteMinigame(VentCleaningMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.ventLidClosed);

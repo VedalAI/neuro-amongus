@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(TowelMinigame))]
 public sealed class PickUpTowelsSolver : GeneralMinigameSolver<TowelMinigame>
 {
+    public override float CloseTimout => 21;
+
     public override IEnumerator CompleteMinigame(TowelMinigame minigame, NormalPlayerTask task)
     {
         Vector2 aboveBasket = minigame.BasketHitbox.transform.position + new Vector3(0f, 5f);

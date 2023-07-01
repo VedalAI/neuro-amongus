@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(SampleMinigame))]
 public sealed class InspectSampleSolver : IMinigameSolver<SampleMinigame>, IMinigameOpener<NormalPlayerTask>
 {
+    public float CloseTimout => 5;
+
     public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
         States state = (States) task.Data[0];

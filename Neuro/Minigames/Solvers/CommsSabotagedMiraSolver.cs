@@ -9,6 +9,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(AuthGame))]
 public sealed class CommsSabotagedMiraSolver : IMinigameSolver<AuthGame>, IMinigameOpener
 {
+    public float CloseTimout => 15f;
+
     public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
     public IEnumerator CompleteMinigame(AuthGame minigame)
@@ -40,7 +42,6 @@ public sealed class CommsSabotagedMiraSolver : IMinigameSolver<AuthGame>, IMinig
                 yield return new WaitForSeconds(0.5f);
                 yield return new WaitForSeconds(minigame.system.Timer);
             }
-        }
-        while (!minigame.MyTask.IsComplete);
+        } while (!minigame.MyTask.IsComplete);
     }
 }

@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(FillCanistersGame))]
 public sealed class FillCanistersSolver : GeneralMinigameSolver<FillCanistersGame>
 {
+    public override float CloseTimout => 17;
+
     public override IEnumerator CompleteMinigame(FillCanistersGame minigame, NormalPlayerTask task)
     {
         // this minigame also uses localPositions so convert them into world space

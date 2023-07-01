@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(DressUpMinigame))]
 public sealed class DressMannequinSolver : GeneralMinigameSolver<DressUpMinigame>
 {
+    public override float CloseTimout => 8;
+
     public override IEnumerator CompleteMinigame(DressUpMinigame minigame, NormalPlayerTask task)
     {
         // the hitbox placement in this minigame is terrible

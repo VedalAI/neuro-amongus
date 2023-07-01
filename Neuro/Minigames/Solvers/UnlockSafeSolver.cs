@@ -8,17 +8,17 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(SafeMinigame)), HarmonyPatch]
 public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
 {
-    private static bool _enablePatch = true;
+    public override float CloseTimout => 20;
 
     public override IEnumerator CompleteMinigame(SafeMinigame minigame, NormalPlayerTask task)
     {
         if (!task) yield break;
 
-        yield return SolveTumbler(minigame, task);
+        yield return SolveTumbler(minigame);
         yield return SolveSpinner(minigame, task);
     }
 
-    private IEnumerator SolveTumbler(SafeMinigame minigame, NormalPlayerTask task)
+    private IEnumerator SolveTumbler(SafeMinigame minigame)
     {
         while (!minigame.vibration[0] || !minigame.vibration[1] || !minigame.vibration[2])
         {
@@ -150,6 +150,8 @@ public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
             _enablePatch = true;
         }
     }
+
+    private static bool _enablePatch = true;
 
     [HarmonyPatch(typeof(SafeMinigame), nameof(SafeMinigame.AngleNear)), HarmonyPrefix]
     public static bool AngleNearPatch(SafeMinigame __instance, out bool __result)

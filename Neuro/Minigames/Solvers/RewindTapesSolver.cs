@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(RewindTapeMinigame))]
 public sealed class RewindTapesSolver : GeneralMinigameSolver<RewindTapeMinigame>
 {
+    public override float CloseTimout => 25;
+
     public override IEnumerator CompleteMinigame(RewindTapeMinigame minigame, NormalPlayerTask task)
     {
         if (minigame.currentTime > minigame.targetTime)

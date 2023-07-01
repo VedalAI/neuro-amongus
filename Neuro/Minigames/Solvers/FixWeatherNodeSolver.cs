@@ -9,6 +9,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(WeatherSwitchGame))]
 public sealed class FixWeatherNodeSolver : IMinigameSolver<Minigame>, IMinigameOpener
 {
+    public float CloseTimout => 10;
+
     public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
     public IEnumerator CompleteMinigame(Minigame minigame)

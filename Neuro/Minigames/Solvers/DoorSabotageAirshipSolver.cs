@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(DoorCardSwipeGame))]
 public sealed class DoorSabotageAirshipSolver : IMinigameSolver<DoorCardSwipeGame>
 {
+    public float CloseTimout => 11;
+
     public IEnumerator CompleteMinigame(DoorCardSwipeGame minigame)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.col);

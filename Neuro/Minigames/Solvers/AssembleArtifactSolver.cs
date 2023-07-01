@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(CrystalMinigame))]
 public sealed class AssembleArtifactSolver : GeneralMinigameSolver<CrystalMinigame>
 {
+    public override float CloseTimout => 10;
+
     public override IEnumerator CompleteMinigame(CrystalMinigame minigame, NormalPlayerTask task)
     {
         CrystalBehaviour[] crystals = minigame.CrystalPieces;

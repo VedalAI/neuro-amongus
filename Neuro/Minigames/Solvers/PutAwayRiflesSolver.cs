@@ -10,7 +10,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(StowArms))]
 public sealed class PutAwayRiflesSolver : IMinigameSolver<StowArms, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
 {
-    // TODO: Make sure this doesnt cause the pathfinding agent to jitter
+    public float CloseTimout => 6;
+
     public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
         // If it's not a StoreArmsTaskConsole, then it's a regular Console so it's part 2 which we always want to open

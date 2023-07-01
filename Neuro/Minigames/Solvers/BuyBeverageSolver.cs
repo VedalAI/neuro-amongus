@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(VendingMinigame))]
 public sealed class BuyBeverageMinigameSolver : GeneralMinigameSolver<VendingMinigame>
 {
+    public override float CloseTimout => 10f;
+
     public override IEnumerator CompleteMinigame(VendingMinigame minigame, NormalPlayerTask task)
     {
         UiElement[] uiElements = minigame.ControllerSelectable.ToArray();

@@ -9,6 +9,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(LeafMinigame))]
 public sealed class CleanO2FilterSolver : GeneralMinigameSolver<LeafMinigame>
 {
+    public override float CloseTimout => 11;
+
     public override IEnumerator CompleteMinigame(LeafMinigame minigame, NormalPlayerTask task)
     {
         // ValidArea is somewhere offscreen so easier to just move towards the arrows on the chute

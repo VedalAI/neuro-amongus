@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(SimonSaysGame))]
 public sealed class StartReactorSolver : GeneralMinigameSolver<SimonSaysGame>
 {
+    public override float CloseTimout => 25;
+
     public override IEnumerator CompleteMinigame(SimonSaysGame minigame, NormalPlayerTask task)
     {
         while (!task.IsComplete)
@@ -24,6 +26,7 @@ public sealed class StartReactorSolver : GeneralMinigameSolver<SimonSaysGame>
 
             if (!task.IsComplete) yield return InGameCursor.Instance.CoMoveTo(minigame.Buttons[minigame[0]], 0.5f);
         }
+
         InGameCursor.Instance.StopMovement();
     }
 }

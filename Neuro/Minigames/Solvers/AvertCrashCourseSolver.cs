@@ -9,6 +9,9 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(AirshipAuthGame))]
 public sealed class AvertCrashCourseSolver : IMinigameSolver<AirshipAuthGame>, IMinigameOpener
 {
+    public float CloseTimout => 99999;
+
+    // TODO: Don't open consoles that are already fixed
     public bool ShouldOpenConsole(Console console, PlayerTask task) => true;
 
     public IEnumerator CompleteMinigame(AirshipAuthGame minigame)
@@ -32,7 +35,7 @@ public sealed class AvertCrashCourseSolver : IMinigameSolver<AirshipAuthGame>, I
                     break;
                 }
             }
-            
+
             if (codeNumber == minigame.system.TargetCode)
             {
                 yield return InGameCursor.Instance.CoMoveTo(minigame.selectableButtons.At(^1));
@@ -40,7 +43,6 @@ public sealed class AvertCrashCourseSolver : IMinigameSolver<AirshipAuthGame>, I
                 yield return new WaitForSeconds(0.5f);
                 yield return new WaitForSeconds(minigame.system.codeResetTimer);
             }
-        }
-        while (!minigame.MyTask.IsComplete);
+        } while (!minigame.MyTask.IsComplete);
     }
 }

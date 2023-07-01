@@ -9,6 +9,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(RecordsMinigame))]
 public sealed class SortRecordsSolver : GeneralMinigameSolver<RecordsMinigame>
 {
+    public override float CloseTimout => 5;
+
     public override IEnumerator CompleteMinigame(RecordsMinigame minigame, NormalPlayerTask task)
     {
         if (minigame.ShelfContent.active) yield return PlaceBook(minigame);

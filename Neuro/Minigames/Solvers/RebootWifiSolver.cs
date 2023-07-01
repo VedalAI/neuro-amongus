@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(WifiGame))]
 public sealed class RebootWifiSolver : IMinigameSolver<WifiGame, NormalPlayerTask>, IMinigameOpener<NormalPlayerTask>
 {
+    public float CloseTimout => 10;
+
     public bool ShouldOpenConsole(Console console, NormalPlayerTask task)
     {
         return task.TimerStarted is TimerState.NotStarted or TimerState.Finished;

@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(AlignGame))]
 public sealed class AlignEngineOutputSolver : GeneralMinigameSolver<AlignGame>
 {
+    public override float CloseTimout => 5;
+
     public override IEnumerator CompleteMinigame(AlignGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.col);

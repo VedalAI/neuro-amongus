@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
 using UnityEngine;
-using static Il2CppSystem.Uri;
 
 namespace Neuro.Minigames.Solvers;
 
@@ -9,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameOpener(typeof(AutoMultistageMinigame))]
 public sealed class UploadDataAirshipSolver : IMinigameSolver<AirshipUploadGame, NormalPlayerTask>, IMinigameOpener
 {
+    public float CloseTimout => 13;
+
     public bool ShouldOpenConsole(Console console, PlayerTask task)
     {
         return task.TaskType == TaskTypes.UploadData;

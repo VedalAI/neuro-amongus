@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(BurgerMinigame))]
 public sealed class MakeBurgerSolver : GeneralMinigameSolver<BurgerMinigame>
 {
+    public override float CloseTimout => 12;
+
     public override IEnumerator CompleteMinigame(BurgerMinigame minigame, NormalPlayerTask task)
     {
         yield return new WaitForSeconds(0.5f);

@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(AdjustSteeringGame))]
 public sealed class StabilizeSteeringAirshipSolver : GeneralMinigameSolver<AdjustSteeringGame>
 {
+    public override float CloseTimout => 6;
+
     public override IEnumerator CompleteMinigame(AdjustSteeringGame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Thrust);

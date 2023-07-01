@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(EmergencyMinigame))]
 public sealed class EmergencySolver : IMinigameSolver<EmergencyMinigame>
 {
+    public float CloseTimout => 3;
+
     // since Emergency Button is a SystemConsole, we cannot use ShouldOpenConsole
     // we also do not have plans to allow opening other system consoles (cams, admin table, etc)
     // so just use a static function to check if we can use the button

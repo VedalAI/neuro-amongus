@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(TempMinigame))]
 public sealed class RecordTemperatureSolver : GeneralMinigameSolver<TempMinigame>
 {
+    public override float CloseTimout => 15;
+
     public override IEnumerator CompleteMinigame(TempMinigame minigame, NormalPlayerTask task)
     {
         int direction = minigame.logValue < minigame.readingValue ? 1 : -1;

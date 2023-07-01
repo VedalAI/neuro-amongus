@@ -10,6 +10,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(EnterCodeMinigame))]
 public sealed class EnterIdCodeSolver : GeneralMinigameSolver<EnterCodeMinigame>
 {
+    public override float CloseTimout => 10;
+
     public override IEnumerator CompleteMinigame(EnterCodeMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.Card);
@@ -22,6 +24,7 @@ public sealed class EnterIdCodeSolver : GeneralMinigameSolver<EnterCodeMinigame>
             minigame.EnterDigit(number);
             yield return new WaitForSeconds(0.2f);
         }
+
         yield return InGameCursor.Instance.CoMoveTo(minigame.ControllerSelectable.At(11));
 
         minigame.AcceptDigits();

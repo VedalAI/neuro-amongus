@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(KeyMinigame))]
 public sealed class InsertKeysSolver : GeneralMinigameSolver<KeyMinigame>
 {
+    public override float CloseTimout => 5;
+
     public override IEnumerator CompleteMinigame(KeyMinigame minigame, NormalPlayerTask task)
     {
         yield return InGameCursor.Instance.CoMoveTo(minigame.key);

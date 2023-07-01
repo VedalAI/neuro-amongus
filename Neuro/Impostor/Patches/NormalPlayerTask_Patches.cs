@@ -1,7 +1,4 @@
 using HarmonyLib;
-using System.Collections;
-using System.Linq;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
 
 namespace Neuro.Impostor.Patches;
 

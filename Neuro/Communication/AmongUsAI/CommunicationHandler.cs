@@ -10,7 +10,6 @@ using Reactor.Utilities.Attributes;
 using UnityEngine;
 using Neuro.Events;
 using Neuro.Utilities;
-using Neuro.Recording.LocalPlayer;
 
 namespace Neuro.Communication.AmongUsAI;
 

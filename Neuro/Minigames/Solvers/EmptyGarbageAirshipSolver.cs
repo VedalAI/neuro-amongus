@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameOpener(typeof(AutoMultistageMinigame))]
 public sealed class EmptyGarbageAirshipSolver : IMinigameSolver<AirshipGarbageGame>, IMinigameOpener
 {
+    public float CloseTimout => 7;
+
     public bool ShouldOpenConsole(Console console, PlayerTask task)
     {
         return task.TaskType == TaskTypes.EmptyGarbage;
@@ -24,6 +26,7 @@ public sealed class EmptyGarbageAirshipSolver : IMinigameSolver<AirshipGarbageGa
             yield return InGameCursor.Instance.CoMoveTo(minigame.can.Handle.transform.position + new Vector3(0f, -1f), 2);
             yield return new WaitForSeconds(0.05f);
         }
+
         InGameCursor.Instance.StopHoldingLMB();
     }
 }

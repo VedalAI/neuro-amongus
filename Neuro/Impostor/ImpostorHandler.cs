@@ -58,22 +58,86 @@ public sealed class ImpostorHandler : MonoBehaviour
                         case TaskTypes.FuelEngines: // Only fakes grabbing the gas can one time
                         case TaskTypes.OpenWaterways: // Only fakes one of the wheels
                         case TaskTypes.PickUpTowels: // Essentially ignored
-                        case TaskTypes.PutAwayPistols: // Essentially ignored
-                        case TaskTypes.PutAwayRifles: // Essentially ignored
                         case TaskTypes.ResetBreakers: // Only fakes one of the breakers
                         case TaskTypes.SortRecords: // Only fakes the first step
                             normalTask.Complete();
                             break;
 
                         default:
-                            normalTask.NextStep();
+                            normalTask.NextStep(); // Timer tasks won't be faked properly
                             break;
                     }
 
-                    MovementHandler.Instance.Wait(3f);
+                    MovementHandler.Instance.Wait(GetWaitTime(normalTask));
                 }
             }
         }
+    }
+
+    private static float GetWaitTime(NormalPlayerTask task)
+    {
+        return task.TaskType switch
+        {
+            TaskTypes.SubmitScan => 0, // Don't fake medscan
+            TaskTypes.PrimeShields => 2,
+            TaskTypes.FuelEngines => 4.1f,
+            TaskTypes.ChartCourse => 3.2f,
+            TaskTypes.StartReactor => 14,
+            TaskTypes.SwipeCard => 3.9f,
+            TaskTypes.ClearAsteroids => 13,
+            TaskTypes.UploadData => 8f,
+            TaskTypes.InspectSample => 2,
+            TaskTypes.EmptyChute => 3.2f,
+            TaskTypes.EmptyGarbage => 3.2f,
+            TaskTypes.AlignEngineOutput => 1.9f,
+            TaskTypes.FixWiring => 3.5f,
+            TaskTypes.CalibrateDistributor => 5,
+            TaskTypes.DivertPower => 1.9f,
+            TaskTypes.UnlockManifolds => 4.2f,
+            TaskTypes.CleanO2Filter => 5.5f,
+            TaskTypes.StabilizeSteering => 2.4f,
+            TaskTypes.AssembleArtifact => 5,
+            TaskTypes.SortSamples => 5,
+            TaskTypes.MeasureWeather => 5,
+            TaskTypes.EnterIdCode => 5,
+            TaskTypes.BuyBeverage => 4.8f,
+            TaskTypes.ProcessData => 10,
+            TaskTypes.RunDiagnostics => 1.8f,
+            TaskTypes.WaterPlants => 2,
+            TaskTypes.MonitorOxygen => 3.5f,
+            TaskTypes.StoreArtifacts => 4.4f,
+            TaskTypes.FillCanisters => 8,
+            TaskTypes.ActivateWeatherNodes when task.TaskStep == 0 => 5.5f,
+            TaskTypes.ActivateWeatherNodes => 1.5f,
+            TaskTypes.InsertKeys => 2.5f,
+            TaskTypes.ScanBoardingPass => 4,
+            TaskTypes.OpenWaterways => 7.5f,
+            TaskTypes.ReplaceWaterJug => 6,
+            TaskTypes.RepairDrill => 3.4f,
+            TaskTypes.AlignTelescope => 5,
+            TaskTypes.RecordTemperature => 6,
+            TaskTypes.RebootWifi when task.TimerStarted == NormalPlayerTask.TimerState.NotStarted => 1.5f,
+            TaskTypes.RebootWifi => 4.7f,
+            TaskTypes.PolishRuby => 5,
+            TaskTypes.ResetBreakers => 1.4f,
+            TaskTypes.Decontaminate => 7.5f,
+            TaskTypes.MakeBurger => 6.5f,
+            TaskTypes.UnlockSafe => 10,
+            TaskTypes.SortRecords => 1.6f,
+            TaskTypes.PutAwayPistols when task.TaskStep == 0 => 0.5f,
+            TaskTypes.PutAwayPistols => 3,
+            TaskTypes.FixShower => 4,
+            TaskTypes.CleanToilet => 6,
+            TaskTypes.DressMannequin => 4.5f,
+            TaskTypes.PickUpTowels => 0, // Don't fake towels (actual timing of last step is 14s)
+            TaskTypes.RewindTapes => 13f,
+            TaskTypes.StartFans => 3.5f,
+            TaskTypes.DevelopPhotos => 3.5f,
+            TaskTypes.PutAwayRifles when task.TaskStep == 0 => 0.5f,
+            TaskTypes.PutAwayRifles => 2.5f,
+            TaskTypes.VentCleaning => 3.3f,
+            _ => throw new ArgumentOutOfRangeException(nameof(task))
+        };
     }
 
     [HideFromIl2Cpp]

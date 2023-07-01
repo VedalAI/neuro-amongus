@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(DoorBreakerGame), false)]
 public sealed class DoorSabotagePolusSolver : IMinigameSolver<DoorBreakerGame>
 {
+    public float CloseTimout => 5;
+
     public IEnumerator CompleteMinigame(DoorBreakerGame minigame)
     {
         foreach (SpriteRenderer button in minigame.Buttons)

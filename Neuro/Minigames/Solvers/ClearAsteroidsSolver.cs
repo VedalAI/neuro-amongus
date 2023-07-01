@@ -9,6 +9,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(WeaponsMinigame))]
 public sealed class ClearAsteroidsMinigameSolver : GeneralMinigameSolver<WeaponsMinigame>
 {
+    public override float CloseTimout => 25f;
+
     public override IEnumerator CompleteMinigame(WeaponsMinigame minigame, NormalPlayerTask task)
     {
         InGameCursor.Instance.SnapToCenter();

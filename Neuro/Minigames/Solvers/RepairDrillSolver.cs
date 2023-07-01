@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(DrillMinigame))]
 public sealed class RepairDrillSolver : GeneralMinigameSolver<DrillMinigame>
 {
+    public override float CloseTimout => 7;
+
     public override IEnumerator CompleteMinigame(DrillMinigame minigame, NormalPlayerTask task)
     {
         int buttonIndex = 0;

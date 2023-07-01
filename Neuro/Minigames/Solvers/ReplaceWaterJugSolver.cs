@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameOpener(typeof(MultistageMinigame))]
 public sealed class ReplaceWaterJugSolver : IMinigameSolver<WaterStage>, IMinigameOpener
 {
+    public float CloseTimout => 20;
+
     public bool ShouldOpenConsole(Console console, PlayerTask task)
     {
         return task.TaskType == TaskTypes.ReplaceWaterJug;

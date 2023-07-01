@@ -4,6 +4,8 @@ namespace Neuro.Minigames;
 
 public interface IMinigameSolver
 {
+    float CloseTimout { get; }
+
     IEnumerator CompleteMinigame(Minigame minigame, PlayerTask task);
 }
 

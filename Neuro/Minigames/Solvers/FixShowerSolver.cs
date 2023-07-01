@@ -8,6 +8,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(FixShowerMinigame))]
 public sealed class FixShowerSolver : GeneralMinigameSolver<FixShowerMinigame>
 {
+    public override float CloseTimout => 10;
+
     public override IEnumerator CompleteMinigame(FixShowerMinigame minigame, NormalPlayerTask task)
     {
         do

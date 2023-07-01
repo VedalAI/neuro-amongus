@@ -7,6 +7,8 @@ namespace Neuro.Minigames.Solvers;
 [MinigameSolver(typeof(SortMinigame))]
 public sealed class SortSamplesSolver : GeneralMinigameSolver<SortMinigame>
 {
+    public override float CloseTimout => 10;
+
     public override IEnumerator CompleteMinigame(SortMinigame minigame, NormalPlayerTask task)
     {
         bool secondPlant = false, secondAnimal = false, secondMineral = false;
@@ -31,6 +33,7 @@ public sealed class SortSamplesSolver : GeneralMinigameSolver<SortMinigame>
                     secondMineral = true;
                     break;
             }
+
             InGameCursor.Instance.StopHoldingLMB();
             yield return new WaitForSeconds(0.1f);
         }
