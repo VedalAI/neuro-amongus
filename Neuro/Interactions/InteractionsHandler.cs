@@ -23,7 +23,7 @@ public static class InteractionsHandler
                 UseConsole(console);
                 break;
 
-            case SystemConsole system:
+            case SystemConsole system: // TODO: Should we check vitals?
                 UseSystemConsole(system);
                 break;
 

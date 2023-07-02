@@ -44,7 +44,7 @@ public sealed class DeadMovementHandler : MonoBehaviour
 
         switch (PlayerControl.LocalPlayer.Data.Role.Il2CppCastToTopLevel())
         {
-            case GuardianAngelRole role:
+            case GuardianAngelRole role: // TODO: Protect more smartly
                 if (followPlayer is null || followPlayer.Data.IsDead)
                 {
                     followPlayer = GetRandomAlivePlayer(false);
