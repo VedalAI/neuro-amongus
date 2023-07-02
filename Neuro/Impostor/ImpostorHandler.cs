@@ -49,7 +49,6 @@ public sealed class ImpostorHandler : MonoBehaviour
                 {
                     NormalPlayerTask normalTask = task.Cast<NormalPlayerTask>();
 
-                    // TODO: Timer tasks won't be faked properly
                     switch (task.TaskType)
                     {
                         // Some tasks require a lot of work to fake properly as impostor, so instead we pretend they are done after the first step
@@ -90,6 +89,26 @@ public sealed class ImpostorHandler : MonoBehaviour
                                 }
                             }
 
+                            break;
+
+                        case TaskTypes.InspectSample when normalTask.TimerStarted == NormalPlayerTask.TimerState.Finished:
+                        case TaskTypes.DevelopPhotos when normalTask.TimerStarted == NormalPlayerTask.TimerState.Finished:
+                        case TaskTypes.RebootWifi when normalTask.TimerStarted == NormalPlayerTask.TimerState.Finished:
+                            normalTask.Complete();
+                            break;
+
+                        case TaskTypes.InspectSample:
+                            if (normalTask.TimerStarted != NormalPlayerTask.TimerState.NotStarted) return;
+                            normalTask.TaskTimer = 60;
+                            normalTask.TimerStarted = NormalPlayerTask.TimerState.Started;
+                            normalTask.Data[0] = (byte) SampleMinigame.States.Processing;
+                            break;
+
+                        case TaskTypes.DevelopPhotos:
+                        case TaskTypes.RebootWifi:
+                            if (normalTask.TimerStarted != NormalPlayerTask.TimerState.NotStarted) return;
+                            normalTask.TaskTimer = 60;
+                            normalTask.TimerStarted = NormalPlayerTask.TimerState.Started;
                             break;
 
                         case TaskTypes.CleanO2Filter:
