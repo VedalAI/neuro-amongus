@@ -1,5 +1,4 @@
 ﻿using System;
-using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.ImGui;
 using UnityEngine;
@@ -97,7 +96,7 @@ public sealed class DebugWindow : MonoBehaviour
 
                 if (_selectedTab is {IsEnabled: true})
                 {
-                    NeuroUtilities.GUILayoutDivider();
+                    GUILayoutUtils.GUILayoutDivider();
 
                     //Create a scrollbarview for all tabs that suddenly become bigger than what fits.
                     // positionOnScrollbar = GUILayout.BeginScrollView(positionOnScrollbar, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Height(Screen.height/2));

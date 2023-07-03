@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Neuro.Events;
-using Neuro.Utilities;
+using Neuro.Extensions;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
@@ -23,7 +23,6 @@ public sealed class DeadMovementHandler : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
@@ -97,7 +96,7 @@ public sealed class DeadMovementHandler : MonoBehaviour
         Console closestConsole = null;
         float closestDistance = 999f;
 
-        foreach (Console console in NeuroUtilities.GetOpenableConsoles(false))
+        foreach (Console console in ConsoleFinder.GetOpenableConsoles(false))
         {
             float distance = Vector2.Distance(console.transform.position, PlayerControl.LocalPlayer.GetTruePosition());
             if (distance < closestDistance)

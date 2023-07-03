@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Attributes;
 using System;
 using Neuro.Events;
-using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +28,6 @@ public sealed class MinigameTimeHandler : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

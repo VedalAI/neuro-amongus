@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Neuro.Caching;
 using Neuro.Pathfinding.DataStructures;
-using Neuro.Utilities;
+using Neuro.Threading;
 using UnityEngine;
 
 namespace Neuro.Pathfinding;
 
-public sealed class PathfindingThread : NeuroThread
+public sealed class PathfindingThread : ParallelThreadWorker
 {
     private readonly ConcurrentQueue<string> _queue = new();
     private readonly ConcurrentDictionary<string, (Vector2 start, Vector2 target)> _requests = new();
@@ -347,7 +348,7 @@ public sealed class PathfindingThread : NeuroThread
         renderer.SetPosition(1, calculatedPosition + new Vector3(0, widthMultiplier));
         renderer.widthMultiplier = widthMultiplier;
         renderer.positionCount = 2;
-        renderer.material = NeuroUtilities.MaskShaderMat;
+        renderer.material = UnityCache.MaskShaderMat;
         renderer.startColor = color;
         renderer.endColor = color;
     }

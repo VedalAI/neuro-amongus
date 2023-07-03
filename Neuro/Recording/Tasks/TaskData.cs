@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.Linq;
 using BepInEx.Unity.IL2CPP.Utils;
-using Neuro.Gizmos;
+using Neuro.Caching;
+using Neuro.Debugging.Tabs;
 using Neuro.Minigames;
 using Neuro.Pathfinding;
 using Neuro.Recording.Common;
-using Neuro.Utilities;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
 using Random = System.Random;
@@ -57,7 +57,7 @@ public partial class TaskData
             renderer.SetPosition(i, new Vector3(path[i].x, path[i].y, path[i].y / 1000f + 0.0005f));
         }
 
-        renderer.material = NeuroUtilities.MaskShaderMat;
+        renderer.material = UnityCache.MaskShaderMat;
         renderer.widthMultiplier = 0.2f;
 
         Random random = new(id);

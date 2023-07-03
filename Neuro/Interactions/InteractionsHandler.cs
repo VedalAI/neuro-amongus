@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
+using Neuro.Extensions;
 using Neuro.Minigames;
 using Neuro.Minigames.Solvers;
 using Neuro.Movement;
 using Neuro.Recording.LocalPlayer;
-using Neuro.Utilities;
 using UnityEngine;
 
 namespace Neuro.Interactions;

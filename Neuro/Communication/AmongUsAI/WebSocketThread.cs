@@ -2,11 +2,11 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Neuro.Utilities;
+using Neuro.Threading;
 
 namespace Neuro.Communication.AmongUsAI;
 
-public sealed class WebSocketThread : NeuroThread
+public sealed class WebSocketThread : ParallelThreadWorker
 {
     private static readonly IPEndPoint _endPoint = new(IPAddress.Parse("127.0.0.1"), 6969);
 

@@ -1,12 +1,15 @@
-﻿using System;
+﻿extern alias JetBrains;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
+using MeansImplicitUse = JetBrains::JetBrains.Annotations.MeansImplicitUseAttribute;
 
 namespace Neuro.Events;
 
 [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+[MeansImplicitUse]
 public sealed class EventHandlerAttribute : Attribute
 {
     static EventHandlerAttribute()

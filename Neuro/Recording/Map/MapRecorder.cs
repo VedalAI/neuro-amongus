@@ -4,7 +4,6 @@ using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Pathfinding;
 using Neuro.Recording.Common;
-using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -19,14 +18,12 @@ public sealed class MapRecorder : MonoBehaviour
     {
     }
 
-    [HideFromIl2Cpp]
-    public MapFrame Frame { get; } = new();
+    [HideFromIl2Cpp] public MapFrame Frame { get; } = new();
 
     private void Awake()
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

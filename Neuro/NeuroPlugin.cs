@@ -7,7 +7,7 @@ using HarmonyLib;
 using Neuro.Communication.AmongUsAI;
 using Neuro.Debugging;
 using Neuro.Recording;
-using Neuro.Utilities;
+using Neuro.Resources;
 using Reactor;
 
 namespace Neuro;

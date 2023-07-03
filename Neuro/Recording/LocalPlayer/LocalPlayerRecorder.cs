@@ -1,8 +1,8 @@
 ﻿using System;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
+using Neuro.Extensions;
 using Neuro.Recording.Common;
-using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
@@ -30,14 +30,12 @@ public sealed class LocalPlayerRecorder : MonoBehaviour
     {
     }
 
-    [HideFromIl2Cpp]
-    public LocalPlayerFrame Frame { get; } = new();
+    [HideFromIl2Cpp] public LocalPlayerFrame Frame { get; } = new();
 
     private void Awake()
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

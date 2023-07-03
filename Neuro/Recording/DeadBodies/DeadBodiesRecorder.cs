@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Il2CppInterop.Runtime.Attributes;
+using Neuro.Caching;
 using Neuro.Events;
-using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -23,7 +23,6 @@ public sealed class DeadBodiesRecorder : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

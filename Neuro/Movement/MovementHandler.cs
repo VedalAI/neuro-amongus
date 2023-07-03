@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Neuro.Events;
-using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 using Neuro.Communication.AmongUsAI;
@@ -27,7 +26,6 @@ public sealed class MovementHandler : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
@@ -95,7 +93,7 @@ public sealed class MovementHandler : MonoBehaviour
             Console closestConsole = null;
             float closestDistance = 999f;
 
-            foreach (Console console in NeuroUtilities.GetOpenableConsoles(true))
+            foreach (Console console in ConsoleFinder.GetOpenableConsoles(true))
             {
                 float distance = PathfindingHandler.Instance.GetPathLength(console);
                 if (distance < closestDistance)

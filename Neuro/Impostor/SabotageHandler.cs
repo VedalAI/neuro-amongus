@@ -6,7 +6,7 @@ using BepInEx.Unity.IL2CPP.Utils;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Cursor;
 using Neuro.Events;
-using Neuro.Utilities;
+using Neuro.Extensions;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -45,7 +45,6 @@ public sealed class SabotageHandler : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

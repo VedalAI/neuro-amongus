@@ -2,8 +2,8 @@
 using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
-using Neuro.Impostor;
-using Neuro.Utilities;
+using Neuro.Debugging.Tabs;
+using Neuro.Extensions;
 
 namespace Neuro.Debugging.Patches;
 

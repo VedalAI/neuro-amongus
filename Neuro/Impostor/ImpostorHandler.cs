@@ -3,10 +3,11 @@ using Reactor.Utilities.Attributes;
 using System;
 using System.Collections;
 using Il2CppInterop.Runtime.Attributes;
-using Neuro.Utilities;
+using Neuro.Caching;
 using Neuro.Events;
 using Neuro.Cursor;
 using Neuro.Movement;
+using Neuro.Recording;
 
 namespace Neuro.Impostor;
 
@@ -25,7 +26,6 @@ public sealed class ImpostorHandler : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
@@ -256,7 +256,6 @@ public sealed class ImpostorHandler : MonoBehaviour
         previousVent = Vent.currentVent;
         yield return InGameCursor.Instance.CoMoveTo(Vent.currentVent.Buttons[targetButtonIndex]);
         yield return InGameCursor.Instance.CoPressLMB();
-        yield break;
     }
 
     [HideFromIl2Cpp]

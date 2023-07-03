@@ -1,5 +1,4 @@
-﻿using Neuro.Utilities;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Neuro.Recording.OtherPlayers;
 
@@ -21,7 +20,7 @@ public partial class OtherPlayerData
 
     public void UpdateVisible(PlayerControl owner)
     {
-        if (owner.MyPhysics.Animations.IsPlayingEnterVentAnimation() || owner.MyPhysics.Animations.IsPlayingExitVentAnimation())
+        if (owner.MyPhysics.Animations.IsPlayingEnterVentAnimation() || IsPlayingExitVentAnimation(owner.MyPhysics.Animations))
         {
             TimesSawVent++;
         }
@@ -39,5 +38,10 @@ public partial class OtherPlayerData
     {
         TimesSawVent = 0;
         RoundTimeVisible = 0;
+    }
+
+    private static bool IsPlayingExitVentAnimation(PlayerAnimations animations)
+    {
+        return animations.Animator.GetCurrentAnimation() == animations.group.ExitVentAnim;
     }
 }

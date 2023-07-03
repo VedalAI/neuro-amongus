@@ -1,4 +1,4 @@
-using Neuro.Utilities;
+using Neuro.Extensions;
 
 namespace Neuro.Recording.Common;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using Neuro.Utilities.Collections;
+using Neuro.Caching.Collections;
 using UnityEngine;
 
 namespace Neuro.Events;

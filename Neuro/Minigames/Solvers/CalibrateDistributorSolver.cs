@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using Neuro.Cursor;
-using Neuro.Utilities;
+using Neuro.Extensions;
 
 namespace Neuro.Minigames.Solvers;
 

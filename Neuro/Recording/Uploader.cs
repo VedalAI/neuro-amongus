@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BepInEx.Unity.IL2CPP.Utils;
 using Il2CppInterop.Runtime.Attributes;
-using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -25,7 +24,6 @@ public sealed class Uploader : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
@@ -65,6 +63,28 @@ public sealed class Uploader : MonoBehaviour
         if (task.IsCompletedSuccessfully)
         {
             Info("Server returned: " + task.Result.ReasonPhrase + ", code: " + task.Result.StatusCode);
+        }
+    }
+
+    private class WaitForTask : IEnumerator
+    {
+        private readonly Task _task;
+
+        object IEnumerator.Current => null;
+
+        public WaitForTask(Task task)
+        {
+            _task = task ?? throw new ArgumentNullException(nameof(task));
+        }
+
+        bool IEnumerator.MoveNext()
+        {
+            return !_task.IsCompleted;
+        }
+
+        void IEnumerator.Reset()
+        {
+            throw new NotSupportedException();
         }
     }
 }

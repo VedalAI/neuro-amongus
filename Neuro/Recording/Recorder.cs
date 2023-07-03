@@ -5,7 +5,6 @@ using Google.Protobuf;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Communication.AmongUsAI;
 using Neuro.Events;
-using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -28,7 +27,6 @@ public sealed class Recorder : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

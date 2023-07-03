@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections;
 using Il2CppInterop.Runtime.Attributes;
-using Neuro.Utilities;
+using Neuro.Caching;
+using Neuro.Resources;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -12,7 +13,9 @@ public sealed class InGameCursor : MonoBehaviour
 {
     public static InGameCursor Instance { get; private set; }
 
-    public InGameCursor(IntPtr ptr) : base(ptr) { }
+    public InGameCursor(IntPtr ptr) : base(ptr)
+    {
+    }
 
     private SpriteRenderer _renderer;
 
@@ -37,7 +40,6 @@ public sealed class InGameCursor : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
@@ -46,7 +48,7 @@ public sealed class InGameCursor : MonoBehaviour
 
         gameObject.layer = LayerMask.NameToLayer("UI");
 
-        transform.SetParent(NeuroUtilities.MainCamera.transform, false);
+        transform.SetParent(UnityCache.MainCamera.transform, false);
         transform.localPosition = new Vector3(0f, 0f, -650);
         Hide();
 
@@ -103,14 +105,14 @@ public sealed class InGameCursor : MonoBehaviour
     public void SnapToCenter(bool stopMovement = true)
         => SnapTo(transform.parent.position, stopMovement);
 
-    public void SnapToPositionOnCircle(Vector2 center, float radius, float angle, bool stopMovement = true)
-        => SnapTo(GetPositionOnCircle(center, radius, angle), stopMovement);
+    public void SnapToPositionOnCircle(Vector2 center, float radius, float angleDegrees, bool stopMovement = true)
+        => SnapTo(GetPositionOnCircle(center, radius, angleDegrees), stopMovement);
 
-    public void SnapToPositionOnCircle(Component center, float radius, float angle, bool stopMovement = true)
-        => SnapToPositionOnCircle(center.transform.position, radius, angle, stopMovement);
+    public void SnapToPositionOnCircle(Component center, float radius, float angleDegrees, bool stopMovement = true)
+        => SnapToPositionOnCircle(center.transform.position, radius, angleDegrees, stopMovement);
 
-    public void SnapToPositionOnCircle(GameObject center, float radius, float angle, bool stopMovement = true)
-        => SnapToPositionOnCircle(center.transform.position, radius, angle, stopMovement);
+    public void SnapToPositionOnCircle(GameObject center, float radius, float angleDegrees, bool stopMovement = true)
+        => SnapToPositionOnCircle(center.transform.position, radius, angleDegrees, stopMovement);
 
     [HideFromIl2Cpp]
     public IEnumerator CoMoveTo(Vector2 targetPosition, float speed = 1f)
@@ -248,8 +250,8 @@ public sealed class InGameCursor : MonoBehaviour
         _clickLock = null;
     }
 
-    public static Vector2 GetPositionOnCircle(Vector2 center, float radius, float angle)
+    public static Vector2 GetPositionOnCircle(Vector2 center, float radius, float angleDegrees)
     {
-        return center + new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius;
+        return center + new Vector2(Mathf.Cos(angleDegrees * Mathf.Deg2Rad), Mathf.Sin(angleDegrees * Mathf.Deg2Rad)) * radius;
     }
 }

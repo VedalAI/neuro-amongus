@@ -2,7 +2,6 @@
 using System.Linq;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
-using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -13,16 +12,16 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
 {
     public static OtherPlayersRecorder Instance { get; private set; }
 
-    public OtherPlayersRecorder(IntPtr ptr) : base(ptr) { }
+    public OtherPlayersRecorder(IntPtr ptr) : base(ptr)
+    {
+    }
 
-    [HideFromIl2Cpp]
-    public OtherPlayersFrame Frame { get; } = new();
+    [HideFromIl2Cpp] public OtherPlayersFrame Frame { get; } = new();
 
     private void Awake()
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
@@ -48,7 +47,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
             if (Visibility.IsVisible(playerControl.GetTruePosition()))
             {
                 player.UpdateVisible(playerControl);
-            } 
+            }
             else
             {
                 player.IsVisible = false;

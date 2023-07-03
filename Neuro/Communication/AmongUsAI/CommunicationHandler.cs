@@ -9,7 +9,6 @@ using Neuro.Recording;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 using Neuro.Events;
-using Neuro.Utilities;
 
 namespace Neuro.Communication.AmongUsAI;
 
@@ -37,7 +36,6 @@ public sealed class CommunicationHandler : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

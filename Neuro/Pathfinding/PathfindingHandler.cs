@@ -5,7 +5,6 @@ using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
 using Neuro.Pathfinding.DataStructures;
 using Neuro.Recording.Common;
-using Neuro.Utilities;
 using Reactor.Utilities.Attributes;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
@@ -39,7 +38,6 @@ public sealed class PathfindingHandler : MonoBehaviour
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }

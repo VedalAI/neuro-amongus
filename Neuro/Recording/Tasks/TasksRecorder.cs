@@ -2,7 +2,7 @@
 using System.Linq;
 using Il2CppInterop.Runtime.Attributes;
 using Neuro.Events;
-using Neuro.Utilities;
+using Neuro.Extensions;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -17,14 +17,12 @@ public sealed class TasksRecorder : MonoBehaviour
     {
     }
 
-    [HideFromIl2Cpp]
-    public TasksFrame Frame { get; } = new();
+    [HideFromIl2Cpp] public TasksFrame Frame { get; } = new();
 
     private void Awake()
     {
         if (Instance)
         {
-            NeuroUtilities.WarnDoubleSingletonInstance();
             Destroy(this);
             return;
         }
