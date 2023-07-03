@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = LSTMModel(7).to(device)
+    model = LSTMModel().to(device)
     model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model_final_new.pt"))
     model.eval()
 

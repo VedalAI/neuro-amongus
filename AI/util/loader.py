@@ -100,11 +100,11 @@ def load_game(file) -> Game:
             if len(game.states) == 0:
                 return None
             
-            try:
-                if game.states[0].header["version"] != [3]:
-                    return None
-            except KeyError:
-                return None
+            # try:
+            #     if game.states[0].header["version"] != [3]:
+            #         return None
+            # except KeyError:
+            #     return None
                 
             print("Converting to neural network format...")
             data = (game.get_x(), game.get_y())

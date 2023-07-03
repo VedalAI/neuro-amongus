@@ -5,8 +5,8 @@ from nn.model import LSTMModel
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-base_model = LSTMModel(7).to(device)
-base_model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model 59.pt"), strict=False)
+base_model = LSTMModel().to(device)
+base_model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model.pt"), strict=False)
 
 actions_model = LSTMModel().to(device)
 actions_model.load_state_dict(torch.load(os.path.dirname(__file__) + "/model_finetuned.pt"), strict=False)

@@ -86,7 +86,9 @@ class LSTMModel(torch.nn.Module):
         actions_x = torch.nn.Dropout(p=0.25)(actions_x)
         actions_x = torch.sigmoid(self.actions_fc3(actions_x))
         
-        y = torch.cat((movement_x[: :4], actions_x), 1)
+        y = torch.cat((movement_x[:, :4], actions_x), 1)
+        
+        # y = movement_x
 
         return y, hidden
 

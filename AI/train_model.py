@@ -15,9 +15,9 @@ def main():
     model = LSTMModel().to(device)
 
     criterion = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.0005) #0.0005
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.0002) #0.0005
 
-    READ_RECORDINGS = True
+    READ_RECORDINGS = False
     
     if READ_RECORDINGS:
         games = read_all_recordings()
@@ -38,7 +38,9 @@ def main():
         print("Saving val dataset...")
         save_data(os.path.dirname(__file__) + "/val_dataset.pkl", val_dataset)
     else:
+        print("Loading train dataset...")
         train_dataset = pickle.load(open(os.path.dirname(__file__) + "/train_dataset.pkl", "rb"))
+        print("Loading val dataset...")
         val_dataset = pickle.load(open(os.path.dirname(__file__) + "/val_dataset.pkl", "rb"))
         
     train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
@@ -69,7 +71,7 @@ def main():
             for x, y in train_loader:
                 optimizer.zero_grad()
                 y_pred = model(x)[0]
-                loss = criterion(y_pred, y)
+                loss = criterion(y_pred, y[:, :4])
                 loss.backward()
                 
                 optimizer.step()
@@ -82,7 +84,7 @@ def main():
             model.eval()
             for x, y in val_loader:
                 y_pred = model(x)[0]
-                loss = criterion(y_pred, y)
+                loss = criterion(y_pred, y[:, :4])
                 total_loss += loss.item()
             print(f"Epoch {epoch} validation loss: {total_loss / len(val_loader)}")
             
