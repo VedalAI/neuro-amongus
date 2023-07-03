@@ -23,7 +23,7 @@ public static class InteractionsHandler
                 UseConsole(console);
                 break;
 
-            case SystemConsole system: // TODO: Should we check vitals?
+            case SystemConsole system: // TODO: Should we check vitals? CAMS??
                 UseSystemConsole(system);
                 break;
 
@@ -50,9 +50,6 @@ public static class InteractionsHandler
             case PlatformConsole platform:
                 UsePlatform(platform);
                 break;
-
-            // case Vent vent:
-            //     break;
         }
     }
 
