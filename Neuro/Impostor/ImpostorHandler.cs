@@ -237,7 +237,6 @@ public sealed class ImpostorHandler : MonoBehaviour
         }
 
         HudManager.Instance.ImpostorVentButton.DoClick();
-        InGameCursor.Instance.Hide();
         previousVent = null;
     }
 
@@ -254,6 +253,7 @@ public sealed class ImpostorHandler : MonoBehaviour
         }
 
         previousVent = Vent.currentVent;
+        InGameCursor.Instance.HideWhen(() => !Vent.currentVent);
         yield return InGameCursor.Instance.CoMoveTo(Vent.currentVent.Buttons[targetButtonIndex]);
         yield return InGameCursor.Instance.CoPressLMB();
     }
@@ -275,11 +275,5 @@ public sealed class ImpostorHandler : MonoBehaviour
         }
 
         return -1;
-    }
-
-    [EventHandler(EventTypes.MeetingStarted)]
-    private static void HideCursor()
-    {
-        InGameCursor.Instance.Hide();
     }
 }

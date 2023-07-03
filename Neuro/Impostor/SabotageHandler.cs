@@ -70,7 +70,6 @@ public sealed class SabotageHandler : MonoBehaviour
         while (!ShouldTriggerSabotage()) yield return null;
 
         HudManager.Instance.ToggleMapVisible(GameManager.Instance.GetMapOptions());
-        InGameCursor.Instance.SnapToCenter();
 
         yield return new WaitForSeconds(0.3f);
 

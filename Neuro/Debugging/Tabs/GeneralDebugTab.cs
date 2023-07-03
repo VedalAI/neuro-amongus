@@ -39,7 +39,7 @@ public sealed class GeneralDebugTab : DebugTab
 
         if (PlayerControl.LocalPlayer)
         {
-            GUILayoutUtils.GUILayoutDivider();
+            GUILayoutUtils.HorizontalDivider();
             if (GUILayout.Button("Murder Self")) PlayerControl.LocalPlayer.MurderPlayer(PlayerControl.LocalPlayer);
         }
     }

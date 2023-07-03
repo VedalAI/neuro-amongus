@@ -96,7 +96,7 @@ public sealed class DebugWindow : MonoBehaviour
 
                 if (_selectedTab is {IsEnabled: true})
                 {
-                    GUILayoutUtils.GUILayoutDivider();
+                    GUILayoutUtils.HorizontalDivider();
 
                     //Create a scrollbarview for all tabs that suddenly become bigger than what fits.
                     // positionOnScrollbar = GUILayout.BeginScrollView(positionOnScrollbar, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Height(Screen.height/2));

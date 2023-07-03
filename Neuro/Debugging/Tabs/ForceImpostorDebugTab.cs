@@ -18,7 +18,7 @@ public class ForceImpostorDebugTab : DebugTab
     {
         Enabled = GUILayout.Toggle(Enabled, $"Force Impostor: {(Enabled ? "Enabled" : "Disabled")}", GUI.skin.button);
         if (!Enabled) return;
-        GUILayoutUtils.GUILayoutDivider();
+        GUILayoutUtils.HorizontalDivider();
 
         IEnumerable<string> allPlayerNames = GameData.Instance.AllPlayers.ToArray().Where(d => d != null).Select(d => d.PlayerName);
         foreach (string playerName in allPlayerNames)

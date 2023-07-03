@@ -29,7 +29,7 @@ public sealed class TasksDebugTab : DebugTab
             minigame.Begin(null);
         }
 
-        GUILayoutUtils.GUILayoutDivider();
+        GUILayoutUtils.HorizontalDivider();
 
         foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>().Where(t => !t.IsComplete))
         {

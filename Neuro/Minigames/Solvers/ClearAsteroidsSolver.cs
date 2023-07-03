@@ -13,8 +13,6 @@ public sealed class ClearAsteroidsMinigameSolver : GeneralMinigameSolver<Weapons
 
     public override IEnumerator CompleteMinigame(WeaponsMinigame minigame, NormalPlayerTask task)
     {
-        InGameCursor.Instance.SnapToCenter();
-
         while (!task.IsComplete)
         {
             Asteroid closest = minigame.asteroidPool.activeChildren.ToArray().OfIl2CppType<Asteroid>()

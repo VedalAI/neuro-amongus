@@ -5,7 +5,7 @@ namespace Neuro.Debugging;
 
 public static class GUILayoutUtils
 {
-    public static void GUILayoutDivider()
+    public static void HorizontalDivider()
     {
         GUILayout.Label(string.Empty, GUI.skin.horizontalSlider);
     }

@@ -17,7 +17,7 @@ public sealed class RecordingDebugTab : DebugTab
 
     public override void BuildUI()
     {
-        GUILayoutUtils.GUILayoutDivider();
+        GUILayoutUtils.HorizontalDivider();
         BuildDeadBodiesRecorderUI();
         BuildLocalPlayerRecorderUI();
         BuildMapRecorderUI();
