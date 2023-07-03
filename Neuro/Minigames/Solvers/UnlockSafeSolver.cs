@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using HarmonyLib;
 using Neuro.Cursor;
+using Neuro.Extensions.Harmony;
 using UnityEngine;
 
 namespace Neuro.Minigames.Solvers;
 
-[MinigameSolver(typeof(SafeMinigame)), HarmonyPatch]
+[MinigameSolver(typeof(SafeMinigame))]
+[FullHarmonyPatch]
 public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
 {
     public override float CloseTimout => 20;
@@ -153,8 +155,9 @@ public sealed class UnlockSafeSolver : GeneralMinigameSolver<SafeMinigame>
 
     private static bool _enablePatch = true;
 
-    [HarmonyPatch(typeof(SafeMinigame), nameof(SafeMinigame.AngleNear)), HarmonyPrefix]
-    public static bool AngleNearPatch(SafeMinigame __instance, out bool __result)
+    [HarmonyPatch(typeof(SafeMinigame), nameof(SafeMinigame.AngleNear))]
+    [HarmonyPrefix]
+    public static bool AlwaysCorrectAnglePatch(SafeMinigame __instance, out bool __result)
     {
         __result = true;
         return !_enablePatch;

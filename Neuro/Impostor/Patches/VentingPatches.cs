@@ -1,13 +1,14 @@
-﻿#if FULL
-using HarmonyLib;
+﻿using HarmonyLib;
 using System.Collections;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
+using Neuro.Extensions.Harmony;
 
 namespace Neuro.Impostor.Patches;
 
-[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
-public static class PlayerPhysics_CoEnterVent
+[FullHarmonyPatch]
+public static class VentingPatches
 {
+    [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
     [HarmonyPostfix]
     public static void Postfix(PlayerPhysics __instance, ref Il2CppSystem.Collections.IEnumerator __result)
     {
@@ -21,4 +22,3 @@ public static class PlayerPhysics_CoEnterVent
         yield return ImpostorHandler.Instance.CoStartVentOut();
     }
 }
-#endif

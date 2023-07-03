@@ -3,11 +3,12 @@ using HarmonyLib;
 
 namespace Neuro.Resources.Patches;
 
-[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.Awake))]
-public static class AmongUsClient_Awake
+[HarmonyPatch]
+public static class LoadResourcesPatches
 {
+    [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.Awake))]
     [HarmonyPrefix]
-    public static void Prefix()
+    public static void LoadOxygenFilterPatch()
     {
         try
         {

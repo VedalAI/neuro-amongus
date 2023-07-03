@@ -2,11 +2,12 @@
 
 namespace Neuro.Caching.Patches;
 
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
-public static class PlayerControl_Die
+[HarmonyPatch]
+public static class CachingPatches
 {
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
     [HarmonyPostfix]
-    public static void Postfix(DeathReason reason)
+    public static void CacheDeadBodyPatch(DeathReason reason)
     {
         if (reason != DeathReason.Kill) return;
         ComponentCache<DeadBody>.FetchObjects();

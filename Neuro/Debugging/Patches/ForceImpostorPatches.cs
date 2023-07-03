@@ -4,14 +4,17 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Neuro.Debugging.Tabs;
 using Neuro.Extensions;
+using Neuro.Extensions.Harmony;
 
 namespace Neuro.Debugging.Patches;
 
-public class RoleManager_Patches
+[DebugHarmonyPatch]
+public static class ForceImpostorPatches
 {
+    [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
     [HarmonyPrefix]
     [HarmonyPriority(Priority.Last)]
-    public static bool Prefix()
+    public static bool SelectRolesPatch()
     {
         if (!ForceImpostorDebugTab.Enabled) return true;
         if (!GameManager.Instance.IsNormal()) return true;
