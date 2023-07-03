@@ -1,4 +1,5 @@
-﻿using System;
+﻿extern alias JetBrains;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,10 +7,12 @@ using System.Reflection;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
 using UnityEngine;
+using MeansImplicitUse = JetBrains::JetBrains.Annotations.MeansImplicitUseAttribute;
 
 namespace Neuro.Events;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[MeansImplicitUse]
 public class ShipStatusComponentAttribute : Attribute
 {
     static ShipStatusComponentAttribute()

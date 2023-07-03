@@ -1,12 +1,15 @@
-﻿using System;
+﻿extern alias JetBrains;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
+using MeansImplicitUse = JetBrains::JetBrains.Annotations.MeansImplicitUseAttribute;
 
 namespace Neuro.Debugging;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[MeansImplicitUse]
 public sealed class DebugTabAttribute : Attribute
 {
     static DebugTabAttribute()
