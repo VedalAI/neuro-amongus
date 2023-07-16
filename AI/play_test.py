@@ -1,17 +1,15 @@
-import socket
 import os
-from time import sleep
-
-import torch
-import numpy as np
-
-from data.game_state import GameState
-from data.proto import Frame, NnOutput, Vector2
-from nn.model import LSTMModel, Model
-
-from data.game import WINDOW_LENGTH
+import socket
 
 import matplotlib.pyplot as plt
+import numpy as np
+import torch
+
+from data.game import WINDOW_LENGTH
+from data.game_state import GameState
+from data.proto import Frame, NnOutput, Vector2
+from nn.model import LSTMModel
+
 
 def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -21,7 +19,7 @@ def main():
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(("localhost", 6969))
-    
+
     kill_history = []
     report_history = []
     vent_history = []
@@ -40,7 +38,7 @@ def main():
             hidden = None
             x_history = []
             while True:
-                data = conn.recv(2048) # TODO: fix error when disconnecting
+                data = conn.recv(2048)  # TODO: fix error when disconnecting
                 if not data:
                     print("no data")
                     break
@@ -48,14 +46,14 @@ def main():
                 frame = Frame().parse(data)
                 if frame.header is not None:
                     header = frame.header
-                    
+
                 if last_game_state is not None:
                     last_game_state.data["local_player"]["velocity"] = last_velocity
                 state = GameState(frame, last_game_state, header, check_frames=False)
                 last_game_state = state
 
                 x = state.get_x()
-                
+
                 is_imposter = x[0] == 1
 
                 # print(x)
@@ -76,11 +74,11 @@ def main():
                 y, hidden = model(x_history_tensor, hidden)
                 y = y.detach().cpu().numpy()[0]
                 y = [float(o) for o in y]
-                
+
                 print(y)
-                
+
                 threshold = min(0.5, np.max(y[0:3]) - 0.01)
-                
+
                 print(threshold)
 
                 new_y = [0, 0]
@@ -103,7 +101,7 @@ def main():
                 # max length of 20
                 if len(kill_history) > 20:
                     kill_history.pop(0)
-                    
+
                 report_history.append(y[4])
                 # max length of 20
                 if len(report_history) > 20:
@@ -113,7 +111,7 @@ def main():
                 # max length of 20
                 if len(vent_history) > 20:
                     vent_history.pop(0)
-                    
+
                 # plot
                 plt.clf()
                 # set axis limits
@@ -122,7 +120,7 @@ def main():
                     plt.plot(kill_history, label="kill", color="red")
                 plt.plot(report_history, label="report", color="blue")
                 plt.plot(vent_history, label="vent", color="green")
-                
+
                 # normalize
                 if new_y[0] != 0 and new_y[1] != 0:
                     new_y[0] /= np.sqrt(2)
@@ -132,7 +130,7 @@ def main():
                 print(new_y)
 
                 conn.sendall(bytes(output))
-                
+
                 plt.pause(0.01)
                 #sleep(0.05) # todo: fix
         # except Exception as e:

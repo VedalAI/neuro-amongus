@@ -1,9 +1,9 @@
 ﻿using Neuro.Pathfinding;
 using UnityEngine;
 
-namespace Neuro.Debugging.Tabs;
+namespace Neuro.Debugging.Tabs.Disabled;
 
-[DebugTab]
+// [DebugTab]
 public sealed class PathfindingDebugTab : DebugTab
 {
     public override string Name => "Pathfinding";

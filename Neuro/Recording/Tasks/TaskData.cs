@@ -30,10 +30,18 @@ public partial class TaskData
         {
             data.ConsolesOfInterest.Add(PositionData.Create(consoleOfInterest));
 
-            if (!GizmosDebugTab.EnableTaskPaths) continue;
-
-            DrawPath(PathfindingHandler.Instance.GetPath(consoleOfInterest, false), consoleOfInterest.GetInstanceID());
+            if (GizmosDebugTab.EnableTaskPaths) DrawPath(PathfindingHandler.Instance.GetPath(consoleOfInterest, false), consoleOfInterest.GetInstanceID());
         }
+
+        return data;
+    }
+
+    public static TaskData CreateFake(Component component)
+    {
+        TaskData data = new();
+        data.ConsolesOfInterest.Add(PositionData.Create(component));
+
+        if (GizmosDebugTab.EnableTaskPaths) DrawPath(PathfindingHandler.Instance.GetPath(component, false), component.GetInstanceID());
 
         return data;
     }

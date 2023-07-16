@@ -6,6 +6,8 @@
         <VersionPrefix>1.0.0</VersionPrefix>
         <VersionSuffix>dev</VersionSuffix>
 
+        <NoWarn>$(NoWarn);BepInEx002</NoWarn>
+
         <TargetFramework>net6.0</TargetFramework>
         <LangVersion>latest</LangVersion>
 

@@ -3,3 +3,4 @@ requests>=2.28.2
 betterproto[compiler]>=2.0.0b5
 torch>=2.0.0
 numpy>=1.24.2
+matplotlib>=3.7.2

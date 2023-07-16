@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using Neuro.Caching;
 using Neuro.Communication.AmongUsAI;
+using Neuro.Recording.Tasks;
 using UnityEngine;
 
 namespace Neuro.Debugging.Tabs;
@@ -37,10 +39,15 @@ public sealed class GeneralDebugTab : DebugTab
             }
         }
 
-        if (PlayerControl.LocalPlayer)
+        if (!PlayerControl.LocalPlayer) return;
+        GUILayoutUtils.HorizontalDivider();
+
+        if (GUILayout.Button("Murder Self")) PlayerControl.LocalPlayer.MurderPlayer(PlayerControl.LocalPlayer);
+
+        if (_enableWebsocket && CommunicationHandler.Instance.IsConnected && MovementSuggestion.Instance)
         {
-            GUILayoutUtils.HorizontalDivider();
-            if (GUILayout.Button("Murder Self")) PlayerControl.LocalPlayer.MurderPlayer(PlayerControl.LocalPlayer);
+            if (GUILayout.Button("Suggest Meeting Button")) MovementSuggestion.Instance.SuggestTarget(ShipStatus.Instance.GetComponentsInChildren<SystemConsole>().First(c => c.MinigamePrefab.name.Contains("Emergency")));
+            if (GUILayout.Button("Clear Suggestion")) MovementSuggestion.Instance.ClearSuggestion();
         }
     }
 

@@ -38,6 +38,17 @@ public sealed class TasksRecorder : MonoBehaviour
         float closestDistance = 999f;*/
 
         Frame.Tasks.Clear();
+        Frame.Sabotage = null;
+
+        if (MovementSuggestion.Instance && MovementSuggestion.Instance.Enabled)
+        {
+            TaskData fakeData = TaskData.CreateFake(MovementSuggestion.Instance.Target);
+            Frame.Tasks.AddRange(Enumerable.Repeat(fakeData, 10));
+            Frame.Sabotage = fakeData;
+
+            return;
+        }
+
         foreach (NormalPlayerTask task in PlayerControl.LocalPlayer.myTasks.ToArray().OfIl2CppType<NormalPlayerTask>().Where(t => !t.IsComplete))
         {
             TaskData data = TaskData.Create(task);
@@ -62,8 +73,7 @@ public sealed class TasksRecorder : MonoBehaviour
             TaskData.DrawPath(path, closestConsole);
         }*/
 
-
         PlayerTask sabotage = PlayerControl.LocalPlayer.myTasks._items.FirstOrDefault(s => PlayerTask.TaskIsEmergency(s) && !s.IsComplete);
-        Frame.Sabotage = sabotage ? TaskData.Create(sabotage) : null;
+        if (sabotage) Frame.Sabotage = TaskData.Create(sabotage);
     }
 }

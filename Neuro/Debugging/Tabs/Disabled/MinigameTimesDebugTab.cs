@@ -3,9 +3,9 @@ using System.Linq;
 using Neuro.Minigames;
 using UnityEngine;
 
-namespace Neuro.Debugging.Tabs;
+namespace Neuro.Debugging.Tabs.Disabled;
 
-[DebugTab]
+// [DebugTab]
 public sealed class MinigameTimesDebugTab : DebugTab
 {
     public override string Name => "Minigames";
