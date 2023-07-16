@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Neuro.Events;
 using Reactor.Utilities.Attributes;
@@ -46,7 +45,6 @@ public sealed class MovementHandler : MonoBehaviour
         _waitTimer = time;
     }
 
-    [Conditional("FULL")]
     private void FixedUpdate()
     {
         if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer || !CommunicationHandler.IsPresentAndConnected) return;
