@@ -35,10 +35,11 @@ public sealed class MovementHandler : MonoBehaviour
         CreateArrow();
     }
 
-    private readonly Queue<Vector2> _positionHistory = new();
-    private float _unstuckTimer = 0f;
+    private Vector2 _lastPosition;
+    private float _timeSinceLastPositionUpdate;
+    private float _unstuckTimer;
 
-    private float _waitTimer = 0f;
+    private float _waitTimer;
 
     public void Wait(float time)
     {
@@ -50,19 +51,22 @@ public sealed class MovementHandler : MonoBehaviour
     {
         if (MeetingHud.Instance || Minigame.Instance || !PlayerControl.LocalPlayer || !CommunicationHandler.IsPresentAndConnected) return;
 
-        if (_positionHistory.Count > 100) _positionHistory.Dequeue();
-        _positionHistory.Enqueue(PlayerControl.LocalPlayer.GetTruePosition());
-        if (_positionHistory.Count < 50) return;
-
-        // Get the average position of the last 100 frames
-        Vector2 averagePosition = Vector2.zero;
-        foreach (Vector2 position in _positionHistory) averagePosition += position;
-        averagePosition /= _positionHistory.Count;
-
-        if ((averagePosition - PlayerControl.LocalPlayer.GetTruePosition()).magnitude < 0.1f)
+        Vector2 truePos = PlayerControl.LocalPlayer.GetTruePosition();
+        if (_lastPosition == truePos)
         {
-            // player is stuck
-            _unstuckTimer = 2f;
+            _timeSinceLastPositionUpdate += Time.fixedDeltaTime;
+        }
+        else
+        {
+            _lastPosition = truePos;
+            _timeSinceLastPositionUpdate = 0;
+        }
+
+        if (_timeSinceLastPositionUpdate > 1)
+        {
+            // Player is stuck
+            _unstuckTimer = 1;
+            _timeSinceLastPositionUpdate = 0;
         }
     }
 
@@ -110,18 +114,21 @@ public sealed class MovementHandler : MonoBehaviour
                 Vector2[] path = PathfindingHandler.Instance.GetPath(closestConsole, false);
                 if (path is {Length: > 1})
                 {
-                    direction = (path[1] - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
+                    Vector2 normalizedDirection = (path[1] - PlayerControl.LocalPlayer.GetTruePosition()).normalized;
 
                     // Quantize direction into 8 directions
-                    if (direction.x > 0.5f) direction.x = 1f;
-                    else if (direction.x < -0.5f) direction.x = -1f;
-                    else direction.x = 0f;
-
-                    if (direction.y > 0.5f) direction.y = 1f;
-                    else if (direction.y < -0.5f) direction.y = -1f;
-                    else direction.y = 0f;
-
-                    direction = direction.normalized;
+                    direction = new Vector2(
+                        normalizedDirection.x switch
+                        {
+                            > 0.5f => 1f,
+                            < -0.5f => -1f,
+                            _ => 0f
+                        }, normalizedDirection.y switch
+                        {
+                            > 0.5f => 1f,
+                            < -0.5f => -1f,
+                            _ => 0f
+                        }).normalized;
                 }
             }
         }
