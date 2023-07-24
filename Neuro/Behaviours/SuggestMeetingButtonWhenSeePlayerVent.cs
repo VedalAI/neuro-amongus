@@ -9,9 +9,9 @@ using Reactor.Utilities.Attributes;
 namespace Neuro.Behaviours;
 
 [RegisterInIl2Cpp, FullShipStatusComponent]
-public sealed class SuggestMeetingButtonWhenSawPlayerVent : TriggerableBehaviour
+public sealed class SuggestMeetingButtonWhenSeePlayerVent : TriggerableBehaviour
 {
-    public SuggestMeetingButtonWhenSawPlayerVent(nint ptr) : base(ptr)
+    public SuggestMeetingButtonWhenSeePlayerVent(nint ptr) : base(ptr)
     {
     }
 
