@@ -6,6 +6,7 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Neuro.Communication.AmongUsAI;
 using Neuro.Debugging;
+using Neuro.Minigames.Solvers;
 using Neuro.Recording;
 using Neuro.Resources;
 using Reactor;
@@ -37,5 +38,6 @@ public partial class NeuroPlugin : BasePlugin
     {
         AddComponent<CommunicationHandler>();
         AddComponent<DebugWindow>();
+        AddComponent<something>();
     }
 }
