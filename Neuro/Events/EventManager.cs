@@ -30,7 +30,7 @@ public static class EventManager
             {
                 foreach (Object obj in HandlerInstances)
                 {
-                    if (obj.GetType() == eventHandler.DeclaringType)
+                    if (eventHandler.DeclaringType!.IsInstanceOfType(obj))
                     {
                         eventHandler.Invoke(obj, args);
                     }

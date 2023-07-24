@@ -17,6 +17,15 @@ public static class GameTestingPatches
     [DebugHarmonyPrefix]
     public static void StartWithOnePlayerPatch(GameStartManager __instance)
     {
+        // TODO: why is this not working
         __instance.MinPlayers = 1;
     }
+
+    [DebugHarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
+    [DebugHarmonyPatch(typeof(LogicGameFlowHnS), nameof(LogicGameFlowHnS.CheckEndCriteria))]
+    [DebugHarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.IsGameOverDueToDeath))]
+    [DebugHarmonyPatch(typeof(LogicGameFlowHnS), nameof(LogicGameFlowHnS.IsGameOverDueToDeath))]
+    [DebugHarmonyPrefix]
+    [HarmonyPriority(Priority.First)]
+    public static bool StopGameEndingPatch() => false;
 }

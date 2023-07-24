@@ -1,4 +1,5 @@
-﻿using Neuro.Events;
+﻿using System.Linq;
+using Neuro.Events;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -32,6 +33,9 @@ public sealed class MovementSuggestion : MonoBehaviour
         Target = target;
         Enabled = true;
     }
+
+    public void SuggestMeetingButton()
+        => SuggestTarget(ShipStatus.Instance.GetComponentsInChildren<SystemConsole>().First(c => c.MinigamePrefab.name.Contains("Emergency")));
 
     public void ClearSuggestion()
     {

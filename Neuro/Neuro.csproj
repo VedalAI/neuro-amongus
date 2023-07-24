@@ -18,16 +18,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.6.13" />
-        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.670" />
+        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.7.11" />
+        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.671" />
         <PackageReference Include="Google.Protobuf" Version="3.22.1" />
-        <PackageReference Include="Reactor" Version="2.1.0" />
+        <PackageReference Include="Reactor" Version="2.2.0" />
 
-        <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
         <PackageReference Include="BepInEx.AutoPlugin" Version="1.1.0" PrivateAssets="all" />
         <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.0.1" PrivateAssets="all" />
         <PackageReference Include="Grpc.Tools" Version="2.53.0" PrivateAssets="all" />
-        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap3" Aliases="JetBrains" PrivateAssets="all" />
+        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" Aliases="JetBrains" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>

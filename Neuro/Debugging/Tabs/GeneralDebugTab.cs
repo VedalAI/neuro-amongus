@@ -44,9 +44,9 @@ public sealed class GeneralDebugTab : DebugTab
 
         if (GUILayout.Button("Murder Self")) PlayerControl.LocalPlayer.MurderPlayer(PlayerControl.LocalPlayer);
 
-        if (_enableWebsocket && CommunicationHandler.Instance.IsConnected && MovementSuggestion.Instance)
+        if (MovementSuggestion.Instance)
         {
-            if (GUILayout.Button("Suggest Meeting Button")) MovementSuggestion.Instance.SuggestTarget(ShipStatus.Instance.GetComponentsInChildren<SystemConsole>().First(c => c.MinigamePrefab.name.Contains("Emergency")));
+            if (GUILayout.Button("Suggest Meeting Button")) MovementSuggestion.Instance.SuggestMeetingButton();
             if (GUILayout.Button("Clear Suggestion")) MovementSuggestion.Instance.ClearSuggestion();
         }
     }

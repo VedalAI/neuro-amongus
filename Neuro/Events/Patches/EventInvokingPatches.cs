@@ -7,9 +7,9 @@ public static class EventInvokingPatches
 {
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     [HarmonyPostfix]
-    public static void MeetingEndedPatch()
+    public static void ExileCutsceneEndedPatch()
     {
-        EventManager.InvokeEvent(EventTypes.MeetingEnded);
+        EventManager.InvokeEvent(EventTypes.ExileCutsceneEnded);
     }
 
     [HarmonyPatch(typeof(GameManager), nameof(GameManager.StartGame))]
@@ -24,5 +24,12 @@ public static class EventInvokingPatches
     public static void MeetingStartedPatch(MeetingHud __instance)
     {
         EventManager.InvokeEvent(EventTypes.MeetingStarted, __instance);
+    }
+
+    [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Close))]
+    [HarmonyPostfix]
+    public static void MeetingEndedPatch()
+    {
+        EventManager.InvokeEvent(EventTypes.MeetingEnded);
     }
 }
