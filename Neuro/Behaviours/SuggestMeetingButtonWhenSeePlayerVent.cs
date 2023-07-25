@@ -23,6 +23,7 @@ public sealed class SuggestMeetingButtonWhenSeePlayerVent : TriggerableBehaviour
     {
         base.FixedUpdate();
 
+        if (PlayerControl.LocalPlayer.Data.Role.IsImpostor) return;
         if (MeetingHud.Instance) return;
         if (!OtherPlayersRecorder.Instance) return;
 
@@ -43,13 +44,13 @@ public sealed class SuggestMeetingButtonWhenSeePlayerVent : TriggerableBehaviour
     [HideFromIl2Cpp]
     protected override void OnTrigger()
     {
-        MovementSuggestion.Instance.SuggestMeetingButton();
+        MovementSuggestion.Instance.SuggestMeetingButton<SuggestMeetingButtonWhenSeePlayerVent>();
     }
 
     [HideFromIl2Cpp]
     protected override void OnEnd()
     {
-        MovementSuggestion.Instance.ClearSuggestion();
+        MovementSuggestion.Instance.ClearSuggestion<SuggestMeetingButtonWhenSeePlayerVent>();
     }
 
     [HideFromIl2Cpp]

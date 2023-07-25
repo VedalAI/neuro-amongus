@@ -94,9 +94,16 @@ public class AnchoredUnstableList<T> : IReadOnlyList<T>
         }
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public T this[int index]
+    {
+        get
+        {
+            CleanupList();
+            return _list[index].item;
+        }
+    }
 
-    T IReadOnlyList<T>.this[int index] => throw new NotSupportedException();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     private void CleanupList()
     {

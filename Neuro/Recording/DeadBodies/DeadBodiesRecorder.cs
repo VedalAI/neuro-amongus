@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Neuro.Recording.DeadBodies;
 
 [RegisterInIl2Cpp, ShipStatusComponent]
-public sealed class DeadBodiesRecorder : MonoBehaviour
+public sealed class DeadBodiesRecorder : MonoBehaviour // TODO: add dead bodies seen on cams
 {
     public static DeadBodiesRecorder Instance { get; private set; }
 

@@ -40,9 +40,9 @@ public sealed class TasksRecorder : MonoBehaviour
         Frame.Tasks.Clear();
         Frame.Sabotage = null;
 
-        if (MovementSuggestion.Instance && MovementSuggestion.Instance.Enabled)
+        if (MovementSuggestion.Instance && MovementSuggestion.Instance.CurrentTarget)
         {
-            TaskData fakeData = TaskData.CreateFake(MovementSuggestion.Instance.Target);
+            TaskData fakeData = TaskData.CreateFake(MovementSuggestion.Instance.CurrentTarget);
             Frame.Tasks.AddRange(Enumerable.Repeat(fakeData, 10));
             Frame.Sabotage = fakeData;
 

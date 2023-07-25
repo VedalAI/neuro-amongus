@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Neuro.Behaviours;
 
 [RegisterInIl2Cpp]
-public abstract class TriggerableBehaviour : MonoBehaviour // TODO: What happens if multiple of these trigger at the same time
+public abstract class TriggerableBehaviour : MonoBehaviour
 {
     protected TriggerableBehaviour(nint ptr) : base(ptr)
     {

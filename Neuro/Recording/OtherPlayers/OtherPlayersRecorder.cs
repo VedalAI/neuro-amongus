@@ -44,7 +44,7 @@ public sealed class OtherPlayersRecorder : MonoBehaviour
                 Frame.LastSeenPlayers.Add(player);
             }
 
-            if (Visibility.IsVisible(playerControl.GetTruePosition()))
+            if (Visibility.IsVisible(playerControl.GetTruePosition())) // TODO: add players seen on cams
             {
                 player.UpdateVisible(playerControl);
             }

@@ -46,8 +46,8 @@ public sealed class GeneralDebugTab : DebugTab
 
         if (MovementSuggestion.Instance)
         {
-            if (GUILayout.Button("Suggest Meeting Button")) MovementSuggestion.Instance.SuggestMeetingButton();
-            if (GUILayout.Button("Clear Suggestion")) MovementSuggestion.Instance.ClearSuggestion();
+            if (GUILayout.Button("Suggest Meeting Button")) MovementSuggestion.Instance.SuggestMeetingButton<GeneralDebugTab>();
+            if (GUILayout.Button("Clear Suggestion")) MovementSuggestion.Instance.ClearSuggestion<GeneralDebugTab>();
         }
     }
 
