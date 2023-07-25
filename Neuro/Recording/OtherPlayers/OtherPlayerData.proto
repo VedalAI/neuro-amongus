@@ -5,9 +5,13 @@ import "Recording/Common/Vector2.proto";
 
 message OtherPlayerData {
     uint32 Id = 1;
+
     Vector2 LastSeenPosition = 2;
     float LastSeenTime = 3;
+
     uint32 TimesSawVent = 4;
+    uint32 TimesSawKill = 8; // TODO: should be implmeneted
+
     float RoundTimeVisible = 5;
     float GameTimeVisible = 6;
     bool IsVisible = 7;

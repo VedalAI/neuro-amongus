@@ -44,6 +44,7 @@ public sealed class MovementSuggestion : MonoBehaviour
         if (_targets.Find(t => t.type == typeof(T)) is { } suggestion)
         {
             suggestion.target = target;
+            suggestion.priority = priority;
         }
         else
         {

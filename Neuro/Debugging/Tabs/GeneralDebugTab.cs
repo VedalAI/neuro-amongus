@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
@@ -16,7 +15,7 @@ public sealed class GeneralDebugTab : DebugTab
 {
     public override string Name => "​General";
 
-    private bool _unityExplorerLoaded = false;
+    private bool _unityExplorerLoaded;
 
     private bool _enableWebsocket
     {
